@@ -9,7 +9,7 @@ import (
 	// "github.com/hashicorp/terraform/helper/schema"
 	//_"github.com/hashicorp/terraform/helper/validation"
 
-	"github.com/gomorpheus/morpheusapi"
+	"github.com/gomorpheus/morpheus-go/morpheusapi"
 	"log"
 	"fmt"
 	"errors"

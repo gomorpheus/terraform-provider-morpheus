@@ -1,7 +1,7 @@
 package morpheus
 
 import (
-	"github.com/gomorpheus/morpheusapi"
+	"github.com/gomorpheus/morpheus-go/morpheusapi"
 )
 
 // Config is the configuration structure used to instantiate the Morpheus

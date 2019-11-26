@@ -4,7 +4,6 @@ import (
 	//"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
-	_"github.com/gomorpheus/morpheusapi"
 )
 
 // func Provider() *schema.Provider {
