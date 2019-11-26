@@ -8,7 +8,7 @@
 
 This is the Terraform provider for the Morpheus data appliance. It interfaces with the [Morpheus API](https://bertramdev.github.io/morpheus-apidoc/) using the morpheusapi client. Like all [Terraform Providers](https://github.com/terraform-providers/), it is written in Go.
 
-This is being developed in conjunction with [morpheusapi](https://github.com/gomorpheus/morpheusapi).  
+This is being developed in conjunction with [morpheusapi](https://github.com/gomorpheus/morpheus-go/morpheusapi).  
 
 **BETA** This library is actively under development and is only available as a prototype, **version 0.1**. A fully featured version will be available in the near future.
 
@@ -109,10 +109,10 @@ Our `Makefile` is under construction. You can use the following steps to build t
 First install dependencies.
 
 ```bash
-go get -v github.com/gomorpheus/morpheusapi/...
+go get -v github.com/gomorpheus/morpheus-go/morpheusapi/...
 ```
 
-<!-- Alternatively, you could just use: `cd $GOPATH/src/github.com/gomorpheus && git clone https://github.com/gomorpheus/morpheusapi.git`. -->
+<!-- Alternatively, you could just use: `cd $GOPATH/src/github.com/gomorpheus && git clone https://github.com/gomorpheus/morpheus-go/morpheusapi.git`. -->
 
 Build the executable using `go build`.
 
