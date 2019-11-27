@@ -1,6 +1,6 @@
 ## 1.0 (Unreleased)
 
-## 0.2 (November 27, 2019)
+## 0.1 (November 27, 2019)
 
 NOTES:
 
