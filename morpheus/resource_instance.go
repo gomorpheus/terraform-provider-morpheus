@@ -3,7 +3,7 @@ package morpheus
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	//"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
-	"github.com/gomorpheus/morpheus-go/morpheusapi"
+	"github.com/gomorpheus/morpheus-go-sdk"
 	"log"
 	"fmt"
 	"errors"
