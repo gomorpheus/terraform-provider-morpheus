@@ -244,8 +244,8 @@ the resulting payload looks like this:
 {
   "zoneId": 40,
   "instance": {
-    "name": "jd-azureapache1",
-    "cloud": "qa-azure2",
+    "name": "tftest",
+    "cloud": "qa-azure",
     "site": {
       "id": 1
     },
@@ -802,13 +802,11 @@ func resourceInstanceUpdate(d *schema.ResourceData, meta interface{}) error {
 func resourceInstanceDelete(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*morpheus.Client)
 	id := d.Id()
-	req := &morpheus.Request{}
-	// req := &morpheus.Request{
-	// 	QueryParams:map[string]string{
-	// 		"force": string(USE_FORCE),
-	// 	},
-	// }
-	//return errors.New("oh no...")
+	req := &morpheus.Request{
+		QueryParams:map[string]string{
+			"force": string(USE_FORCE),
+		},
+	}
 	resp, err := client.DeleteInstance(toInt64(id), req)
 	if err != nil {
 		if resp != nil && resp.StatusCode == 404 {

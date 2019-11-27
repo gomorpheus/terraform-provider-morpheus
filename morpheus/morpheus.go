@@ -10,13 +10,6 @@ import (
 
 // global stuff here
 
-// func asBool(v interface{}) bool {
-// 	s := v.(string)
-// 	return s == "1" || s == "true" || s == "on"
-// }
-
-
-
 var (
 	USE_FORCE = (os.Getenv("USE_FORCE") == "true")
 )
