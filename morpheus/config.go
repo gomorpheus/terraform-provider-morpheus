@@ -18,14 +18,14 @@ type Config struct {
 
 	Insecure         bool
 
-	client           *morpheusapi.Client
+	client           *morpheus.Client
 	terraformVersion string
 	userAgent        string
 }
 
-func (c *Config) Client() (*morpheusapi.Client, error) {
+func (c *Config) Client() (*morpheus.Client, error) {
 	if c.client == nil {
-		client := morpheusapi.NewClient(c.Url)
+		client := morpheus.NewClient(c.Url)
 		// should validate url here too, and maybe ping it
 		// logging with access token or username and password?
 		if c.Username != "" {

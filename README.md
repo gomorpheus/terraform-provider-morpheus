@@ -6,9 +6,9 @@
 
 <img src="https://www.morpheusdata.com/wp-content/uploads/2018/06/cropped-morpheus_highres.png" width="600px">
 
-This is the Terraform provider for the Morpheus data appliance. It interfaces with the [Morpheus API](https://bertramdev.github.io/morpheus-apidoc/) using the morpheusapi client. Like all [Terraform Providers](https://github.com/terraform-providers/), it is written in Go.
+This is the Terraform provider for the Morpheus data appliance. It interfaces with the [Morpheus API](https://bertramdev.github.io/morpheus-apidoc/) using the morpheus-go-sdk client. Like all [Terraform Providers](https://github.com/terraform-providers/), it is written in Go.
 
-This is being developed in conjunction with [morpheusapi](https://github.com/gomorpheus/morpheus-go-sdk).  
+This is being developed in conjunction with [morpheus-go-sdk](https://github.com/gomorpheus/morpheus-go-sdk).  
 
 **BETA** This library is actively under development and is only available as a prototype, **version 0.1**. A fully featured version will be available in the near future.
 

@@ -123,7 +123,7 @@ func resourceCloud() *schema.Resource {
 
 
 func resourceCloudCreate(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*morpheusapi.Client)
+	client := meta.(*morpheus.Client)
 	name := d.Get("name").(string)
 	code := d.Get("code").(string)
 	location := d.Get("location").(string)
@@ -152,7 +152,7 @@ func resourceCloudCreate(d *schema.ResourceData, meta interface{}) error {
 		},
 	}
 
-	req := &morpheusapi.Request{Body: payload}
+	req := &morpheus.Request{Body: payload}
 
 	resp, err := client.CreateCloud(req)
 	if err != nil {
@@ -160,7 +160,7 @@ func resourceCloudCreate(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 	log.Printf("API RESPONSE: ", resp)
-	result := resp.Result.(*morpheusapi.CreateCloudResult)
+	result := resp.Result.(*morpheus.CreateCloudResult)
 	cloud := result.Cloud
 	// Successfully created resource, now set id
 	d.SetId(int64ToString(cloud.ID))
@@ -168,17 +168,17 @@ func resourceCloudCreate(d *schema.ResourceData, meta interface{}) error {
 }
 
 func resourceCloudRead(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*morpheusapi.Client)
+	client := meta.(*morpheus.Client)
 	id := d.Id()
 	name := d.Get("name").(string)
 
 	// lookup by name if we do not have an id yet
-	var resp *morpheusapi.Response
+	var resp *morpheus.Response
 	var err error
 	if id == "" && name != "" {
 		resp, err = client.FindCloudByName(name)
 	} else if id != "" {
-		resp, err = client.GetCloud(toInt64(id), &morpheusapi.Request{})
+		resp, err = client.GetCloud(toInt64(id), &morpheus.Request{})
 		// todo: ignore 404 errors...
 	} else {
 		return errors.New("Cloud cannot be read without name or id")
@@ -196,7 +196,7 @@ func resourceCloudRead(d *schema.ResourceData, meta interface{}) error {
 	log.Printf("API RESPONSE:", resp)
 
 	// store resource data	
-	result := resp.Result.(*morpheusapi.GetCloudResult)
+	result := resp.Result.(*morpheus.GetCloudResult)
 	cloud := result.Cloud
 	if cloud == nil {
 		return fmt.Errorf("Cloud not found in response data.") // should not happen
@@ -215,14 +215,14 @@ func resourceCloudRead(d *schema.ResourceData, meta interface{}) error {
 }
 
 func resourceCloudUpdate(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*morpheusapi.Client)
+	client := meta.(*morpheus.Client)
 	id := d.Id()
 	name := d.Get("name").(string)
 	code := d.Get("code").(string)
 	location := d.Get("location").(string)
 	// clouds := d.Get("clouds").([]interface{})
 
-	req := &morpheusapi.Request{
+	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"zone": map[string]interface{}{
 				"name": name,
@@ -238,7 +238,7 @@ func resourceCloudUpdate(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 	log.Printf("API RESPONSE: ", resp)
-	result := resp.Result.(*morpheusapi.UpdateCloudResult)
+	result := resp.Result.(*morpheus.UpdateCloudResult)
 	cloud := result.Cloud
 	// Successfully updated resource, now set id
 	d.SetId(int64ToString(cloud.ID))
@@ -246,9 +246,9 @@ func resourceCloudUpdate(d *schema.ResourceData, meta interface{}) error {
 }
 
 func resourceCloudDelete(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*morpheusapi.Client)
+	client := meta.(*morpheus.Client)
 	id := d.Id()
-	req := &morpheusapi.Request{}
+	req := &morpheus.Request{}
 	resp, err := client.DeleteCloud(toInt64(id), req)
 	if err != nil {
 		if resp != nil && resp.StatusCode == 404 {
@@ -260,7 +260,7 @@ func resourceCloudDelete(d *schema.ResourceData, meta interface{}) error {
 		}
 	}
 	log.Printf("API RESPONSE:", resp)
-	// result := resp.Result.(*morpheusapi.DeleteCloudResult)
+	// result := resp.Result.(*morpheus.DeleteCloudResult)
 	//d.setId("") // implicit
 	return nil
 }

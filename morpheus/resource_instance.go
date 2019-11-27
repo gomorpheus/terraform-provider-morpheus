@@ -300,12 +300,12 @@ the resulting payload looks like this:
 // try to make this terraform resource easy to use, that means settings cloud and group
 // with names easily like cloud: "My Cloud"
 func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*morpheusapi.Client)
+	client := meta.(*morpheus.Client)
 	name := d.Get("name").(string)
 
 	// todo: needs to use /api/options/groups
 	// group needs to be converted to instance.site.id
-	var group *morpheusapi.Group
+	var group *morpheus.Group
 	groupName := d.Get("group").(string)
 	if groupName == "" {
 		return errors.New("instance configuration requires 'group'")
@@ -314,12 +314,12 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 		if groupErr != nil {
 			return groupErr
 		}
-		group = groupResponse.Result.(*morpheusapi.GetGroupResult).Group
+		group = groupResponse.Result.(*morpheus.GetGroupResult).Group
 	}
 
 	// todo: needs to use /api/options/groups, heh
 	// cloud needs to be converted to zoneId
-	var cloud *morpheusapi.Cloud
+	var cloud *morpheus.Cloud
 	cloudName := d.Get("cloud").(string)
 	if cloudName == "" {
 		return errors.New("instance configuration requires 'cloud'")
@@ -328,19 +328,19 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 		if findErr != nil {
 			return findErr
 		}
-		cloud = findResponse.Result.(*morpheusapi.GetCloudResult).Cloud
+		cloud = findResponse.Result.(*morpheus.GetCloudResult).Cloud
 	}
 
-	var optionResp *morpheusapi.Response
+	var optionResp *morpheus.Response
 	var optionErr error
 
 	// type
-	var instanceType *morpheusapi.OptionSourceOption
+	var instanceType *morpheus.OptionSourceOption
 	instanceTypeCode := d.Get("type").(string)
 	if instanceTypeCode == "" {
 		return errors.New("instance configuration requires 'type'")
 	} else {
-		optionResp, optionErr = client.GetOptionSource("instanceTypes", &morpheusapi.Request{
+		optionResp, optionErr = client.GetOptionSource("instanceTypes", &morpheus.Request{
 			QueryParams:map[string]string{
 		        "groupId": int64ToString(group.ID),
 		        "cloudId": int64ToString(cloud.ID),
@@ -349,8 +349,8 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 		if optionErr != nil {
 			return optionErr
 		}
-		optionSourceData := optionResp.Result.(*morpheusapi.GetOptionSourceResult).Data
-		var matchingOptions []*morpheusapi.OptionSourceOption
+		optionSourceData := optionResp.Result.(*morpheus.GetOptionSourceResult).Data
+		var matchingOptions []*morpheus.OptionSourceOption
 		for i := 0; i < len(*optionSourceData); i++ {
 			item := (*optionSourceData)[i] // .(optionSourceOption)
 			// if item.Value.(string) == instanceTypeCode {
@@ -373,13 +373,13 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 	}
 	
 	// Layout
-	var layout *morpheusapi.LayoutOption // OptionSourceOption
+	var layout *morpheus.LayoutOption // OptionSourceOption
 	layoutCode := d.Get("layout").(string)
 	if layoutCode == "" {
 		return errors.New("instance configuration requires 'layout'")
 	} else {
-		//optionResp, optionErr = client.GetOptionSource("layoutsForCloud", &morpheusapi.Request{
-		optionResp, optionErr = client.GetOptionSourceLayouts(&morpheusapi.Request{
+		//optionResp, optionErr = client.GetOptionSource("layoutsForCloud", &morpheus.Request{
+		optionResp, optionErr = client.GetOptionSourceLayouts(&morpheus.Request{
 			QueryParams:map[string]string{
 		        "groupId": int64ToString(group.ID),
 		        "cloudId": int64ToString(cloud.ID),
@@ -390,9 +390,9 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 		if optionErr != nil {
 			return optionErr
 		}
-		//optionSourceData := optionResp.Result.(*morpheusapi.GetOptionSourceResult).Data
-		optionSourceData := optionResp.Result.(*morpheusapi.GetOptionSourceLayoutsResult).Data
-		var matchingOptions []*morpheusapi.LayoutOption
+		//optionSourceData := optionResp.Result.(*morpheus.GetOptionSourceResult).Data
+		optionSourceData := optionResp.Result.(*morpheus.GetOptionSourceLayoutsResult).Data
+		var matchingOptions []*morpheus.LayoutOption
 		for i := 0; i < len(*optionSourceData); i++ {
 			item := (*optionSourceData)[i]
 			if item.Name == layoutCode ||  item.Code == layoutCode || int64ToString(item.ID) == layoutCode {
@@ -414,12 +414,12 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 
 	// Plan
 	// plan needs to be converted to instance.plan.id
-	var plan *morpheusapi.InstancePlan
+	var plan *morpheus.InstancePlan
 	planCode := d.Get("plan").(string)
 	if planCode == "" {
 		return errors.New("instance configuration requires 'plan'")
 	} else {
-		planResp, planErr := client.FindInstancePlanByCode(planCode, &morpheusapi.Request{
+		planResp, planErr := client.FindInstancePlanByCode(planCode, &morpheus.Request{
 			QueryParams:map[string]string{
 		        "groupId": int64ToString(group.ID),
 		        "zoneId": int64ToString(cloud.ID),
@@ -429,7 +429,7 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 		if planErr != nil {
 			return planErr
 		}
-		plan = planResp.Result.(*morpheusapi.GetInstancePlanResult).Plan
+		plan = planResp.Result.(*morpheus.GetInstancePlanResult).Plan
 	}
 
 	// config is a big map of who knows what
@@ -488,7 +488,7 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	// Resource Pool
-	var resourcePool *morpheusapi.OptionSourceOption
+	var resourcePool *morpheus.OptionSourceOption
 	var resourcePoolIdStr string
 	if d.Get("resource_pool") != nil {
 		// look it up by name/externalId and pass config.resourcePoolId, ugh
@@ -497,8 +497,8 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 		if resourcePoolName == "" {
 			return errors.New("instance configuration requires 'resource_pool'")
 		} else {
-			//optionResp, optionErr = client.GetOptionSource("resourcePoolsForCloud", &morpheusapi.Request{
-			optionResp, optionErr = client.GetOptionSource("zonePools", &morpheusapi.Request{
+			//optionResp, optionErr = client.GetOptionSource("resourcePoolsForCloud", &morpheus.Request{
+			optionResp, optionErr = client.GetOptionSource("zonePools", &morpheus.Request{
 				QueryParams:map[string]string{
 			        "groupId": int64ToString(group.ID),
 			        "siteId": int64ToString(group.ID),
@@ -512,8 +512,8 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 				return optionErr
 			}
 			// note: resourcePool.Value is a float64... why!?
-			optionSourceData := optionResp.Result.(*morpheusapi.GetOptionSourceResult).Data
-			var matchingOptions []*morpheusapi.OptionSourceOption
+			optionSourceData := optionResp.Result.(*morpheus.GetOptionSourceResult).Data
+			var matchingOptions []*morpheus.OptionSourceOption
 			for i := 0; i < len(*optionSourceData); i++ {
 				item := (*optionSourceData)[i]
 				if item.Name == resourcePoolName || item.ExternalId == resourcePoolName || int64ToString(int64(item.Value.(float64))) == resourcePoolName || int64ToString(item.ID) == resourcePoolName {
@@ -542,8 +542,8 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 	if d.Get("volumes") != nil {
 		
 		// load datastore options
-		//optionResp, optionErr = client.GetOptionSource("resourcePoolsForCloud", &morpheusapi.Request{
-		datastoresResp, datastoresErr := client.GetOptionSource("datastores", &morpheusapi.Request{
+		//optionResp, optionErr = client.GetOptionSource("resourcePoolsForCloud", &morpheus.Request{
+		datastoresResp, datastoresErr := client.GetOptionSource("datastores", &morpheus.Request{
 			QueryParams:map[string]string{
 		        "groupId": int64ToString(group.ID),
 		        "siteId": int64ToString(group.ID),
@@ -587,9 +587,9 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 			// lookup datastore by name (partial name) and set datastoreId
 			if item["datastore"] != nil {
 				datastoreName := item["datastore"].(string)
-				var datastore *morpheusapi.OptionSourceOption
-				datastoreList := datastoresResp.Result.(*morpheusapi.GetOptionSourceResult).Data
-				var matchingDatastores []*morpheusapi.OptionSourceOption
+				var datastore *morpheus.OptionSourceOption
+				datastoreList := datastoresResp.Result.(*morpheus.GetOptionSourceResult).Data
+				var matchingDatastores []*morpheus.OptionSourceOption
 				for i := 0; i < len(*datastoreList); i++ {
 					item := (*datastoreList)[i]
 					if item.Name == datastoreName || int64ToString(item.ID) == datastoreName {
@@ -623,8 +623,8 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 	if d.Get("interfaces") != nil {
 
 		// load networking options
-		// networkOptionsResp, networkOptionsErr := client.GetOptionSource("zoneNetworkOptions", &morpheusapi.Request{
-		networkOptionsResp, networkOptionsErr := client.GetOptionSourceZoneNetworkOptions(&morpheusapi.Request{
+		// networkOptionsResp, networkOptionsErr := client.GetOptionSource("zoneNetworkOptions", &morpheus.Request{
+		networkOptionsResp, networkOptionsErr := client.GetOptionSourceZoneNetworkOptions(&morpheus.Request{
 			QueryParams:map[string]string{
 		        "groupId": int64ToString(group.ID),
 		        "siteId": int64ToString(group.ID),
@@ -660,10 +660,10 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 				} else {
 					// lookup network by name
 					networkName := item["network"].(string)
-					var network *morpheusapi.NetworkOption
-					networkOptionsResult := networkOptionsResp.Result.(*morpheusapi.GetOptionSourceZoneNetworkOptionsResult)
+					var network *morpheus.NetworkOption
+					networkOptionsResult := networkOptionsResp.Result.(*morpheus.GetOptionSourceZoneNetworkOptionsResult)
 					networkList := networkOptionsResult.Data.Networks
-					var matchingNetworks []*morpheusapi.NetworkOption
+					var matchingNetworks []*morpheus.NetworkOption
 					for i := 0; i < len(*networkList); i++ {
 						item := (*networkList)[i]
 						if item.Name == networkName || item.ID == networkName {
@@ -707,7 +707,7 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 		payload["networkInterfaces"] = networkInterfaces // .([]map[string]interface{})
 	}
 
-	req := &morpheusapi.Request{Body: payload}
+	req := &morpheus.Request{Body: payload}
 	resp, err := client.CreateInstance(req)
 	log.Printf("API REQUEST:", req) // debug
 	if err != nil {
@@ -715,7 +715,7 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 	log.Printf("API RESPONSE: ", resp)
-	result := resp.Result.(*morpheusapi.CreateInstanceResult)
+	result := resp.Result.(*morpheus.CreateInstanceResult)
 	instance := result.Instance
 	// Successfully created resource, now set id
 	d.SetId(int64ToString(instance.ID))
@@ -723,17 +723,17 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 }
 
 func resourceInstanceRead(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*morpheusapi.Client)
+	client := meta.(*morpheus.Client)
 	id := d.Id()
 	name := d.Get("name").(string)
 
 	// lookup by name if we do not have an id yet
-	var resp *morpheusapi.Response
+	var resp *morpheus.Response
 	var err error
 	if id == "" && name != "" {
 		resp, err = client.FindInstanceByName(name)
 	} else if id != "" {
-		resp, err = client.GetInstance(toInt64(id), &morpheusapi.Request{})
+		resp, err = client.GetInstance(toInt64(id), &morpheus.Request{})
 		// todo: ignore 404 errors...
 	} else {
 		return errors.New("Instance cannot be read without name or id")
@@ -751,7 +751,7 @@ func resourceInstanceRead(d *schema.ResourceData, meta interface{}) error {
 	log.Printf("API RESPONSE:", resp)
 
 	// store resource data	
-	result := resp.Result.(*morpheusapi.GetInstanceResult)
+	result := resp.Result.(*morpheus.GetInstanceResult)
 	instance := result.Instance
 	if instance == nil {
 		return fmt.Errorf("Instance not found in response data.") // should not happen
@@ -769,14 +769,14 @@ func resourceInstanceRead(d *schema.ResourceData, meta interface{}) error {
 }
 
 func resourceInstanceUpdate(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*morpheusapi.Client)
+	client := meta.(*morpheus.Client)
 	id := d.Id()
 	name := d.Get("name").(string)
 	code := d.Get("code").(string)
 	location := d.Get("location").(string)
 	// instances := d.Get("instances").([]interface{})
 
-	req := &morpheusapi.Request{
+	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"zone": map[string]interface{}{
 				"name": name,
@@ -792,7 +792,7 @@ func resourceInstanceUpdate(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 	log.Printf("API RESPONSE: ", resp)
-	result := resp.Result.(*morpheusapi.UpdateInstanceResult)
+	result := resp.Result.(*morpheus.UpdateInstanceResult)
 	instance := result.Instance
 	// Successfully updated resource, now set id
 	d.SetId(int64ToString(instance.ID))
@@ -800,10 +800,10 @@ func resourceInstanceUpdate(d *schema.ResourceData, meta interface{}) error {
 }
 
 func resourceInstanceDelete(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*morpheusapi.Client)
+	client := meta.(*morpheus.Client)
 	id := d.Id()
-	req := &morpheusapi.Request{}
-	// req := &morpheusapi.Request{
+	req := &morpheus.Request{}
+	// req := &morpheus.Request{
 	// 	QueryParams:map[string]string{
 	// 		"force": string(USE_FORCE),
 	// 	},
@@ -820,7 +820,7 @@ func resourceInstanceDelete(d *schema.ResourceData, meta interface{}) error {
 		}
 	}
 	log.Printf("API RESPONSE:", resp)
-	// result := resp.Result.(*morpheusapi.DeleteInstanceResult)
+	// result := resp.Result.(*morpheus.DeleteInstanceResult)
 	//d.setId("") // implicit
 	return nil
 }

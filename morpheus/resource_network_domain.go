@@ -56,14 +56,14 @@ func resourceNetworkDomain() *schema.Resource {
 
 
 func resourceNetworkDomainCreate(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*morpheusapi.Client)
+	client := meta.(*morpheus.Client)
 	name := d.Get("name").(string)
 	description := d.Get("description").(string)
 	// publicZone := d.Get("public_zone").(bool) // .(bool)
 	// domainController := d.Get("domain_controller").(bool) // .(bool)
 	//active := d.Get("active").(bool)
 
-	req := &morpheusapi.Request{
+	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"networkDomain": map[string]interface{}{
 				"name": name,
@@ -81,7 +81,7 @@ func resourceNetworkDomainCreate(d *schema.ResourceData, meta interface{}) error
 	}
 	log.Printf("API RESPONSE: ", resp)
 
-	result := resp.Result.(*morpheusapi.CreateNetworkDomainResult)
+	result := resp.Result.(*morpheus.CreateNetworkDomainResult)
 	networkDomain := result.NetworkDomain
 	// Successfully created resource, now set id
 	d.SetId(int64ToString(networkDomain.ID))
@@ -90,17 +90,17 @@ func resourceNetworkDomainCreate(d *schema.ResourceData, meta interface{}) error
 }
 
 func resourceNetworkDomainRead(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*morpheusapi.Client)
+	client := meta.(*morpheus.Client)
 	id := d.Id()
 	name := d.Get("name").(string)
 
 	// lookup by name if we do not have an id yet
-	var resp *morpheusapi.Response
+	var resp *morpheus.Response
 	var err error
 	if id == "" && name != "" {
 		resp, err = client.FindNetworkDomainByName(name)
 	} else if id != "" {
-		resp, err = client.GetNetworkDomain(toInt64(id), &morpheusapi.Request{})
+		resp, err = client.GetNetworkDomain(toInt64(id), &morpheus.Request{})
 	} else {
 		return errors.New("NetworkDomain cannot be read without name or id")
 	}
@@ -117,7 +117,7 @@ func resourceNetworkDomainRead(d *schema.ResourceData, meta interface{}) error {
 	log.Printf("API RESPONSE:", resp)
 
 	// store resource data	
-	result := resp.Result.(*morpheusapi.GetNetworkDomainResult)
+	result := resp.Result.(*morpheus.GetNetworkDomainResult)
 	networkDomain := result.NetworkDomain
 	if networkDomain != nil {
 		d.SetId(int64ToString(networkDomain.ID))
@@ -137,7 +137,7 @@ func resourceNetworkDomainRead(d *schema.ResourceData, meta interface{}) error {
 }
 
 func resourceNetworkDomainUpdate(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*morpheusapi.Client)
+	client := meta.(*morpheus.Client)
 	id := d.Id()
 	name := d.Get("name").(string)
 	description := d.Get("description").(string)
@@ -145,7 +145,7 @@ func resourceNetworkDomainUpdate(d *schema.ResourceData, meta interface{}) error
 	// domainController := d.Get("domain_controller").(bool) // .(bool)
 	//active := d.Get("active").(bool)
 
-	req := &morpheusapi.Request{
+	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"networkDomain": map[string]interface{}{
 				"name": name,
@@ -162,7 +162,7 @@ func resourceNetworkDomainUpdate(d *schema.ResourceData, meta interface{}) error
 		return err
 	}
 	log.Printf("API RESPONSE: ", resp)
-	result := resp.Result.(*morpheusapi.UpdateNetworkDomainResult)
+	result := resp.Result.(*morpheus.UpdateNetworkDomainResult)
 	networkDomain := result.NetworkDomain
 	// Successfully updated resource, now set id
 	// err, it should not have changed though..
@@ -171,11 +171,11 @@ func resourceNetworkDomainUpdate(d *schema.ResourceData, meta interface{}) error
 }
 
 func resourceNetworkDomainDelete(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*morpheusapi.Client)
+	client := meta.(*morpheus.Client)
 	id := d.Id()
-	req := &morpheusapi.Request{}
+	req := &morpheus.Request{}
 	resp, err := client.DeleteNetworkDomain(toInt64(id), req)
-	//result := resp.Result.(*morpheusapi.DeleteNetworkDomainResult)
+	//result := resp.Result.(*morpheus.DeleteNetworkDomainResult)
 	if err != nil {
 		if resp != nil && resp.StatusCode == 404 {
 			log.Printf("API 404:", resp, err)

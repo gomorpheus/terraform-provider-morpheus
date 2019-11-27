@@ -46,7 +46,7 @@ func resourceMorpheusGroup() *schema.Resource {
 
 
 func resourceMorpheusGroupCreate(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*morpheusapi.Client)
+	client := meta.(*morpheus.Client)
 	name := d.Get("name").(string)
 	code := d.Get("code").(string)
 	location := d.Get("location").(string)
@@ -67,7 +67,7 @@ func resourceMorpheusGroupCreate(d *schema.ResourceData, meta interface{}) error
 			if findErr != nil {
 				return findErr
 			}
-			cloud := findResponse.Result.(*morpheusapi.GetCloudResult).Cloud
+			cloud := findResponse.Result.(*morpheus.GetCloudResult).Cloud
 			cloudPayload := map[string]interface{}{
 				"id": cloud.ID,
 				"name": cloud.Name,
@@ -76,7 +76,7 @@ func resourceMorpheusGroupCreate(d *schema.ResourceData, meta interface{}) error
 		}
 	}
 
-	req := &morpheusapi.Request{
+	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"group": map[string]interface{}{
 				"name": name,
@@ -92,7 +92,7 @@ func resourceMorpheusGroupCreate(d *schema.ResourceData, meta interface{}) error
 		return err
 	}
 	log.Printf("API RESPONSE: ", resp)
-	result := resp.Result.(*morpheusapi.CreateGroupResult)
+	result := resp.Result.(*morpheus.CreateGroupResult)
 	group := result.Group
 	
 	
@@ -100,7 +100,7 @@ func resourceMorpheusGroupCreate(d *schema.ResourceData, meta interface{}) error
 	// or, even better the api should do this all in 1 request
 	// doUpdateClouds = false
 	if doUpdateClouds {
-		req2 := &morpheusapi.Request{
+		req2 := &morpheus.Request{
 			Body: map[string]interface{}{
 				"group": map[string]interface{}{
 					"zones": clouds,
@@ -121,17 +121,17 @@ func resourceMorpheusGroupCreate(d *schema.ResourceData, meta interface{}) error
 }
 
 func resourceMorpheusGroupRead(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*morpheusapi.Client)
+	client := meta.(*morpheus.Client)
 	id := d.Id()
 	name := d.Get("name").(string)
 
 	// lookup by name if we do not have an id yet
-	var resp *morpheusapi.Response
+	var resp *morpheus.Response
 	var err error
 	if id == "" && name != "" {
 		resp, err = client.FindGroupByName(name)
 	} else if id != "" {
-		resp, err = client.GetGroup(toInt64(id), &morpheusapi.Request{})
+		resp, err = client.GetGroup(toInt64(id), &morpheus.Request{})
 		// todo: ignore 404 errors...
 	} else {
 		return errors.New("Group cannot be read without name or id")
@@ -149,7 +149,7 @@ func resourceMorpheusGroupRead(d *schema.ResourceData, meta interface{}) error {
 	log.Printf("API RESPONSE:", resp)
 
 	// store resource data	
-	result := resp.Result.(*morpheusapi.GetGroupResult)
+	result := resp.Result.(*morpheus.GetGroupResult)
 	group := result.Group
 	if group != nil {
 		d.SetId(int64ToString(group.ID))
@@ -166,14 +166,14 @@ func resourceMorpheusGroupRead(d *schema.ResourceData, meta interface{}) error {
 }
 
 func resourceMorpheusGroupUpdate(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*morpheusapi.Client)
+	client := meta.(*morpheus.Client)
 	id := d.Id()
 	name := d.Get("name").(string)
 	code := d.Get("code").(string)
 	location := d.Get("location").(string)
 	// clouds := d.Get("clouds").([]interface{})
 
-	req := &morpheusapi.Request{
+	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"group": map[string]interface{}{
 				"name": name,
@@ -189,7 +189,7 @@ func resourceMorpheusGroupUpdate(d *schema.ResourceData, meta interface{}) error
 		return err
 	}
 	log.Printf("API RESPONSE: ", resp)
-	result := resp.Result.(*morpheusapi.UpdateGroupResult)
+	result := resp.Result.(*morpheus.UpdateGroupResult)
 	group := result.Group
 	// Successfully updated resource, now set id
 	d.SetId(int64ToString(group.ID))
@@ -197,9 +197,9 @@ func resourceMorpheusGroupUpdate(d *schema.ResourceData, meta interface{}) error
 }
 
 func resourceMorpheusGroupDelete(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*morpheusapi.Client)
+	client := meta.(*morpheus.Client)
 	id := d.Id()
-	req := &morpheusapi.Request{}
+	req := &morpheus.Request{}
 	resp, err := client.DeleteGroup(toInt64(id), req)
 	if err != nil {
 		if resp != nil && resp.StatusCode == 404 {
@@ -211,7 +211,7 @@ func resourceMorpheusGroupDelete(d *schema.ResourceData, meta interface{}) error
 		}
 	}
 	log.Printf("API RESPONSE:", resp)
-	// result := resp.Result.(*morpheusapi.DeleteGroupResult)
+	// result := resp.Result.(*morpheus.DeleteGroupResult)
 	//d.setId("") // implicit
 	return nil
 }
