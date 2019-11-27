@@ -99,7 +99,7 @@ If you are actively developing the provider, always remember to [build](#Buildin
 Use terraform to create resources.
 
 ```bash
-terraform init && terraform plan && terraform apply
+terraform init examples && terraform plan examples && terraform apply examples
 ```
 
 Use `[morpheus-cli](/gomorpheus/morpheus-cli)` to see that the resources were created.
