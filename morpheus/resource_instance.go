@@ -803,9 +803,10 @@ func resourceInstanceDelete(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*morpheus.Client)
 	id := d.Id()
 	req := &morpheus.Request{
-		QueryParams:map[string]string{
-			"force": string(USE_FORCE),
-		},
+		QueryParams:map[string]string{},
+	}
+	if USE_FORCE {
+		req.QueryParams["force"] = "true"
 	}
 	resp, err := client.DeleteInstance(toInt64(id), req)
 	if err != nil {
