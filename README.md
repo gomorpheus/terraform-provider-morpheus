@@ -89,7 +89,7 @@ For more information on configuring morpheus resources, visit the [Provider Wiki
 
 Example | Description
 --------- | -----------
-[example_instance.tf.json](/gomorpheus/morpheus-go-sdk/blob/master/examples/example_instance.tf.json) | Basic instance resource example.
+[example_instance.tf.json](/gomorpheus/terraform-provider-morpheus/blob/master/examples/example_instance.tf.json) | Basic instance resource example.
 
 
 ### Testing the provider
