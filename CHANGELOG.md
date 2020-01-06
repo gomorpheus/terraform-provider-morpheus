@@ -10,5 +10,5 @@ FEATURES:
 
 * **New Resource:** `morpheus_cloud`
 * **New Resource:** `morpheus_group`
-* **New Resource:** `morpheus_network_domain`
 * **New Resource:** `morpheus_instance`
+* **New Resource:** `morpheus_network_domain`
