@@ -1,6 +1,6 @@
 module github.com/gomorpheus/terraform-provider-morpheus
 
-go 1.13
+go 1.14
 
 require (
 	github.com/gomorpheus/morpheus-go-sdk v0.0.0-00010101000000-000000000000
@@ -11,4 +11,3 @@ require (
 // voodoo
 replace github.com/gomorpheus/morpheus-go-sdk => ../morpheus-go-sdk
 
-replace github.com/go-resty/resty => gopkg.in/resty.v1 v1.11.0
