@@ -4,9 +4,9 @@
 - Docs: [Morpheus Documentation](https://docs.morpheusdata.com)
 - Support: [Morpheus Support](https://support.morpheusdata.com)
 
-<img src="https://www.morpheusdata.com/wp-content/uploads/2018/06/cropped-morpheus_highres.png" width="600px">
+<img src="https://morpheusdata.com/wp-content/uploads/2020/04/morpheus-logo-v2.svg" width="600px">
 
-This is the Terraform provider for the Morpheus data appliance. It interfaces with the [Morpheus API](https://bertramdev.github.io/morpheus-apidoc/) using the morpheus-go-sdk client. Like all [Terraform Providers](https://github.com/terraform-providers/), it is written in Go.
+This is the Terraform provider for the Morpheus data appliance. It interfaces with the [Morpheus API](https://apidocs.morpheusdata.com/) using the morpheus-go-sdk client. Like all [Terraform Providers](https://github.com/terraform-providers/), it is written in Go.
 
 This is being developed in conjunction with [morpheus-go-sdk](https://github.com/gomorpheus/morpheus-go-sdk).  
 
@@ -159,7 +159,7 @@ While working on the provider, you may also be working on the [morpheus-go-sdk](
 
 ### External Resources
 
-- [Morpheus API](https://bertramdev.github.io/morpheus-apidoc/)
+- [Morpheus API](https://apidocs.morpheusdata.com/)
 - [Writing Custom Providers](https://www.terraform.io/docs/extend/writing-custom-providers.html)
 - [Terraform Plugin SDK](https://github.com/hashicorp/terraform-plugin-sdk)
 
