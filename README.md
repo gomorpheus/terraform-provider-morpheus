@@ -1,10 +1,10 @@
+<img src="https://morpheusdata.com/wp-content/uploads/2020/04/morpheus-logo-v2.svg" width="200px">
+
 # Terraform Provider for Morpheus
 
 - Website: https://www.morpheusdata.com/
 - Docs: [Morpheus Documentation](https://docs.morpheusdata.com)
 - Support: [Morpheus Support](https://support.morpheusdata.com)
-
-<img src="https://morpheusdata.com/wp-content/uploads/2020/04/morpheus-logo-v2.svg" width="600px">
 
 This is the Terraform provider for the Morpheus data appliance. It interfaces with the [Morpheus API](https://apidocs.morpheusdata.com/) using the morpheus-go-sdk client. Like all [Terraform Providers](https://github.com/terraform-providers/), it is written in Go.
 
