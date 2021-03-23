@@ -1,18 +1,19 @@
 package morpheus
 
-// this is for Groups/Sites. 
+// this is for Groups/Sites.
 // this resource has an extra Morpheus prefix in it
-// to distinguish it from ResourceGroups. 
+// to distinguish it from ResourceGroups.
 
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	// "github.com/hashicorp/terraform/helper/schema"
 	//_"github.com/hashicorp/terraform/helper/validation"
 
-	"github.com/gomorpheus/morpheus-go-sdk"
-	"log"
-	"fmt"
 	"errors"
+	"fmt"
+	"log"
+
+	"github.com/gomorpheus/morpheus-go-sdk"
 )
 
 func resourceMorpheusGroup() *schema.Resource {
@@ -23,27 +24,37 @@ func resourceMorpheusGroup() *schema.Resource {
 		Delete: resourceMorpheusGroupDelete,
 
 		Schema: map[string]*schema.Schema{
+			// Required inputs
 			"name": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+				Description: "A unique name scoped to your account for the group",
+				Type:        schema.TypeString,
+				Required:    true,
 			},
 			"code": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
+				Description: "Optional code for use with policies",
+				Type:        schema.TypeString,
+				Optional:    true,
 			},
 			"location": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
+				Description: "Optional location argument for your group",
+				Type:        schema.TypeString,
+				Optional:    true,
 			},
 			"clouds": {
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem:     &schema.Schema{Type: schema.TypeString},
+				Description: "An array of all the clouds assigned to this group",
+				Type:        schema.TypeList,
+				Optional:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+			},
+			// Computed outputs
+			"id": {
+				Description: "The ID of the group.",
+				Type:        schema.TypeString,
+				Computed:    true,
 			},
 		},
 	}
 }
-
 
 func resourceMorpheusGroupCreate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*morpheus.Client)
@@ -51,7 +62,7 @@ func resourceMorpheusGroupCreate(d *schema.ResourceData, meta interface{}) error
 	code := d.Get("code").(string)
 	location := d.Get("location").(string)
 	// clouds := d.Get("clouds").([]interface{})
-	
+
 	// clouds is an array of string names, lookup each one via api.
 	// then the api expects it an array of objects, but only looks for id right now
 	// once api is better this should get simpler
@@ -69,7 +80,7 @@ func resourceMorpheusGroupCreate(d *schema.ResourceData, meta interface{}) error
 			}
 			cloud := findResponse.Result.(*morpheus.GetCloudResult).Cloud
 			cloudPayload := map[string]interface{}{
-				"id": cloud.ID,
+				"id":   cloud.ID,
 				"name": cloud.Name,
 			}
 			clouds = append(clouds, cloudPayload)
@@ -79,8 +90,8 @@ func resourceMorpheusGroupCreate(d *schema.ResourceData, meta interface{}) error
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"group": map[string]interface{}{
-				"name": name,
-				"code": code,
+				"name":     name,
+				"code":     code,
 				"location": location,
 				// "zones": clouds,
 			},
@@ -94,8 +105,7 @@ func resourceMorpheusGroupCreate(d *schema.ResourceData, meta interface{}) error
 	log.Printf("API RESPONSE: ", resp)
 	result := resp.Result.(*morpheus.CreateGroupResult)
 	group := result.Group
-	
-	
+
 	// oh ya..update zones too.. should use Partial thingy
 	// or, even better the api should do this all in 1 request
 	// doUpdateClouds = false
@@ -148,7 +158,7 @@ func resourceMorpheusGroupRead(d *schema.ResourceData, meta interface{}) error {
 	}
 	log.Printf("API RESPONSE:", resp)
 
-	// store resource data	
+	// store resource data
 	result := resp.Result.(*morpheus.GetGroupResult)
 	group := result.Group
 	if group != nil {
@@ -159,9 +169,9 @@ func resourceMorpheusGroupRead(d *schema.ResourceData, meta interface{}) error {
 		// d.Set("clouds", group.Clouds)
 		// todo: more fields
 	} else {
-		return fmt.Errorf("Group not found in response data.")	 // should not happen
+		return fmt.Errorf("Group not found in response data.") // should not happen
 	}
-	
+
 	return nil
 }
 
@@ -176,8 +186,8 @@ func resourceMorpheusGroupUpdate(d *schema.ResourceData, meta interface{}) error
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"group": map[string]interface{}{
-				"name": name,
-				"code": code,
+				"name":     name,
+				"code":     code,
 				"location": location,
 				// "clouds": clouds,
 			},

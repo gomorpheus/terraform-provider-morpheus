@@ -1,12 +1,13 @@
 package morpheus
 
 import (
+	"errors"
+	"fmt"
+	"log"
+
+	"github.com/gomorpheus/morpheus-go-sdk"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
-	"github.com/gomorpheus/morpheus-go-sdk"
-	"log"
-	"fmt"
-	"errors"
 )
 
 func resourceCloud() *schema.Resource {
@@ -18,47 +19,53 @@ func resourceCloud() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			"name": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+				Description: "",
+				Type:        schema.TypeString,
+				Required:    true,
 			},
 			"type": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+				Description: "",
+				Type:        schema.TypeString,
+				Required:    true,
 			},
 			"code": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
+				Description: "",
+				Type:        schema.TypeString,
+				Optional:    true,
 			},
 			"location": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Default: "", //eh?
+				Description: "",
+				Type:        schema.TypeString,
+				Optional:    true,
+				Default:     "", //eh?
 			},
 			"description": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
+				Description: "",
+				Type:        schema.TypeString,
+				Optional:    true,
 			},
 			"visibility": &schema.Schema{
-				Type:     schema.TypeString,
+				Description:  "",
+				Type:         schema.TypeString,
 				Optional:     true,
 				ValidateFunc: validation.StringInSlice([]string{"private", "public", ""}, false),
 				Default:      "private",
 			},
 			"enabled": &schema.Schema{
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default: true,
+				Description: "",
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     true,
 			},
-
 
 			"config": {
-				Type:     schema.TypeMap,
-				Optional: true,
-				Elem:     &schema.Schema{Type: schema.TypeString},
+				Description: "",
+				Type:        schema.TypeMap,
+				Optional:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
 			},
-		
 
-   // 			"api_url": &schema.Schema{
+			// 			"api_url": &schema.Schema{
 			// 	Type:     schema.TypeString,
 			// 	Required: false,
 			// },
@@ -106,21 +113,21 @@ func resourceCloud() *schema.Resource {
 			// a TON more to add...
 
 			"tenants": {
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem:     &schema.Schema{Type: schema.TypeString},
+				Description: "",
+				Type:        schema.TypeList,
+				Optional:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
 			},
 
 			"groups": {
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem:     &schema.Schema{Type: schema.TypeString},
+				Description: "",
+				Type:        schema.TypeList,
+				Optional:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
 			},
-
 		},
 	}
 }
-
 
 func resourceCloudCreate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*morpheus.Client)
@@ -140,13 +147,13 @@ func resourceCloudCreate(d *schema.ResourceData, meta interface{}) error {
 
 	payload := map[string]interface{}{
 		"zone": map[string]interface{}{
-			"name": name,
-			"code": code,
+			"name":     name,
+			"code":     code,
 			"location": location,
 			"zoneType": map[string]interface{}{
 				"code": cloudTypeCode,
 			},
-			"config": config,
+			"config":     config,
 			"visibility": visibility,
 			// "groups": groups,
 		},
@@ -195,13 +202,13 @@ func resourceCloudRead(d *schema.ResourceData, meta interface{}) error {
 	}
 	log.Printf("API RESPONSE:", resp)
 
-	// store resource data	
+	// store resource data
 	result := resp.Result.(*morpheus.GetCloudResult)
 	cloud := result.Cloud
 	if cloud == nil {
 		return fmt.Errorf("Cloud not found in response data.") // should not happen
 	}
-	
+
 	d.SetId(int64ToString(cloud.ID))
 	d.Set("name", cloud.Name)
 	d.Set("code", cloud.Code)
@@ -225,8 +232,8 @@ func resourceCloudUpdate(d *schema.ResourceData, meta interface{}) error {
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"zone": map[string]interface{}{
-				"name": name,
-				"code": code,
+				"name":     name,
+				"code":     code,
 				"location": location,
 				// "clouds": clouds,
 			},
