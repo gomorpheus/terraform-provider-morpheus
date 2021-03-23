@@ -32,10 +32,6 @@ resource "morpheus_group" "name" {
 - **code** (String) Optional code for use with policies
 - **location** (String) Optional location argument for your group
 
-### Read-Only
-
-- **id** (String) The ID of the group.
-
 ## Import
 
 Import is supported using the following syntax:

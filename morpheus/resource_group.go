@@ -47,11 +47,6 @@ func resourceMorpheusGroup() *schema.Resource {
 				Elem:        &schema.Schema{Type: schema.TypeString},
 			},
 			// Computed outputs
-			"id": {
-				Description: "The ID of the group.",
-				Type:        schema.TypeString,
-				Computed:    true,
-			},
 		},
 	}
 }
@@ -69,7 +64,7 @@ func resourceMorpheusGroupCreate(d *schema.ResourceData, meta interface{}) error
 	doUpdateClouds := false
 	var clouds []map[string]interface{}
 	//clouds := make([]map[string]interface{}, 0, len(cloudNames))
-	if d.Get("clouds") != nil {
+	if len(d.Get("clouds").([]interface{})) > 0 {
 		doUpdateClouds = true
 		cloudNames := d.Get("clouds").([]interface{})
 		//clouds = make([]map[string]interface{}, 0, len(cloudNames))
