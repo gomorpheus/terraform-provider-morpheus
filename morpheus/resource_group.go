@@ -63,7 +63,7 @@ func resourceMorpheusGroupCreate(d *schema.ResourceData, meta interface{}) error
 	doUpdateClouds := false
 	var clouds []map[string]interface{}
 	//clouds := make([]map[string]interface{}, 0, len(cloudNames))
-	if len(d.Get("clouds").([]interface{})) > 0 {
+	if d.Get("clouds") != nil {
 		doUpdateClouds = true
 		cloudNames := d.Get("clouds").([]interface{})
 		//clouds = make([]map[string]interface{}, 0, len(cloudNames))
