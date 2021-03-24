@@ -30,9 +30,9 @@ resource "morpheus_network_domain" "name" {
 - **description** (String) The user friendly description of the network domain
 - **domain_controller** (Boolean) The domain controller used to facilitate an automated domain join operation
 - **id** (String) The ID of this resource.
-- **public_zone** (Boolean)
+- **public_zone** (Boolean) Whether the domain will be public or private
 - **tenant** (Number)
-- **visibility** (String)
+- **visibility** (String) Determines whether the resource is visible in sub-tenants or not
 
 ## Import
 

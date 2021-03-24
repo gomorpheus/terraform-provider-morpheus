@@ -30,6 +30,7 @@ resource "morpheus_group" "name" {
 
 - **clouds** (List of String) An array of all the clouds assigned to this group
 - **code** (String) Optional code for use with policies
+- **id** (String) The ID of this resource.
 - **location** (String) Optional location argument for your group
 
 ## Import

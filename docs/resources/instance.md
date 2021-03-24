@@ -23,24 +23,24 @@ resource "morpheus_instance" "name" {
 ### Required
 
 - **cloud** (String)
-- **group** (String)
-- **layout** (String)
-- **name** (String)
-- **plan** (String)
-- **type** (String)
+- **group** (String) The group to provision the instance into
+- **layout** (String) The layout to provision the instance from
+- **name** (String) The name of the instance
+- **plan** (String) The service plan associated with the instance
+- **type** (String) The type of instance to provision
 
 ### Optional
 
-- **config** (Map of String)
+- **config** (Map of String) The instance configuration options
 - **create_user** (String)
-- **description** (String)
-- **environment** (String)
+- **description** (String) The user friendly description of the instance
+- **environment** (String) The environment to assign the instance to
 - **evars** (Block List) (see [below for nested schema](#nestedblock--evars))
 - **id** (String) The ID of this resource.
 - **interfaces** (Block List) (see [below for nested schema](#nestedblock--interfaces))
 - **metadata** (Block List) (see [below for nested schema](#nestedblock--metadata))
 - **resource_pool** (String)
-- **tags** (List of String)
+- **tags** (List of String) Tags to assign to the instance
 - **user_group** (String)
 - **version** (String)
 - **volumes** (Block List) (see [below for nested schema](#nestedblock--volumes))
@@ -50,8 +50,8 @@ resource "morpheus_instance" "name" {
 
 Required:
 
-- **name** (String)
-- **value** (String)
+- **name** (String) The name of the environment variable
+- **value** (String) The value of the environment variable
 
 
 <a id="nestedblock--interfaces"></a>
@@ -61,8 +61,8 @@ Optional:
 
 - **ip_address** (String)
 - **ip_mode** (String)
-- **network** (String)
-- **network_interface_type_id** (Number)
+- **network** (String) The network to assign the network interface to
+- **network_interface_type_id** (Number) The network interface type
 
 
 <a id="nestedblock--metadata"></a>
@@ -70,8 +70,8 @@ Optional:
 
 Required:
 
-- **name** (String)
-- **value** (String)
+- **name** (String) The name of the metadata
+- **value** (String) The value of the metadata
 
 
 <a id="nestedblock--volumes"></a>
@@ -80,12 +80,12 @@ Required:
 Optional:
 
 - **datastore** (String)
-- **datastore_id** (Number)
-- **name** (String)
+- **datastore_id** (Number) The ID of the datastore
+- **name** (String) The name/type of the LV being created
 - **root** (Boolean)
-- **size** (Number)
-- **size_id** (Number)
-- **storage_type** (Number)
+- **size** (Number) The size of the LV being created
+- **size_id** (Number) The ID of an existing LV to assign to the instance
+- **storage_type** (Number) The ID of the LV type
 
 ## Import
 

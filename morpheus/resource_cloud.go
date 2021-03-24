@@ -19,47 +19,47 @@ func resourceCloud() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			"name": &schema.Schema{
-				Description: "",
+				Description: "A unique name scoped to your account for the cloud",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
 			"type": &schema.Schema{
-				Description: "",
+				Description: "The cloud type code",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
 			"code": &schema.Schema{
-				Description: "",
+				Description: "Optional code for use with policies",
 				Type:        schema.TypeString,
 				Optional:    true,
 			},
 			"location": &schema.Schema{
-				Description: "",
+				Description: "Optional location for your cloud",
 				Type:        schema.TypeString,
 				Optional:    true,
 				Default:     "", //eh?
 			},
 			"description": &schema.Schema{
-				Description: "",
+				Description: "The user friendly description of the cloud",
 				Type:        schema.TypeString,
 				Optional:    true,
 			},
 			"visibility": &schema.Schema{
-				Description:  "",
+				Description:  "Determines whether the resource is visible in sub-tenants or not",
 				Type:         schema.TypeString,
 				Optional:     true,
 				ValidateFunc: validation.StringInSlice([]string{"private", "public", ""}, false),
 				Default:      "private",
 			},
 			"enabled": &schema.Schema{
-				Description: "",
+				Description: "Determines whether the cloud is active or not",
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Default:     true,
 			},
 
 			"config": {
-				Description: "",
+				Description: "The cloud configuration settings",
 				Type:        schema.TypeMap,
 				Optional:    true,
 				Elem:        &schema.Schema{Type: schema.TypeString},
@@ -120,7 +120,7 @@ func resourceCloud() *schema.Resource {
 			},
 
 			"groups": {
-				Description: "",
+				Description: "The group the cloud is assigned to",
 				Type:        schema.TypeList,
 				Optional:    true,
 				Elem:        &schema.Schema{Type: schema.TypeString},

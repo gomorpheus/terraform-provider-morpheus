@@ -20,12 +20,12 @@ func resourceInstance() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			"name": &schema.Schema{
-				Description: "",
+				Description: "The name of the instance",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
 			"description": &schema.Schema{
-				Description: "",
+				Description: "The user friendly description of the instance",
 				Type:        schema.TypeString,
 				Optional:    true,
 			},
@@ -35,12 +35,12 @@ func resourceInstance() *schema.Resource {
 				Required:    true,
 			},
 			"group": &schema.Schema{
-				Description: "",
+				Description: "The group to provision the instance into",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
 			"type": &schema.Schema{
-				Description: "",
+				Description: "The type of instance to provision",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
@@ -50,12 +50,12 @@ func resourceInstance() *schema.Resource {
 				Optional:    true,
 			},
 			"layout": &schema.Schema{
-				Description: "",
+				Description: "The layout to provision the instance from",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
 			"plan": &schema.Schema{
-				Description: "",
+				Description: "The service plan associated with the instance",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
@@ -65,18 +65,18 @@ func resourceInstance() *schema.Resource {
 				Optional:    true,
 			},
 			"environment": &schema.Schema{
-				Description: "",
+				Description: "The environment to assign the instance to",
 				Type:        schema.TypeString,
 				Optional:    true,
 			},
 			"tags": {
-				Description: "",
+				Description: "Tags to assign to the instance",
 				Type:        schema.TypeList,
 				Optional:    true,
 				Elem:        &schema.Schema{Type: schema.TypeString},
 			},
 			"config": {
-				Description: "",
+				Description: "The instance configuration options",
 				Type:        schema.TypeMap,
 				Optional:    true,
 				Elem:        &schema.Schema{Type: schema.TypeString},
@@ -93,18 +93,18 @@ func resourceInstance() *schema.Resource {
 				Optional:    true,
 			},
 			"metadata": {
-				Description: "",
+				Description: "Metadata assigned to the instance",
 				Type:        schema.TypeList,
 				Optional:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"name": {
-							Description: "",
+							Description: "The name of the metadata",
 							Type:        schema.TypeString,
 							Required:    true,
 						},
 						"value": {
-							Description: "",
+							Description: "The value of the metadata",
 							Type:        schema.TypeString,
 							Required:    true,
 						},
@@ -117,18 +117,18 @@ func resourceInstance() *schema.Resource {
 				},
 			},
 			"evars": {
-				Description: "",
+				Description: "The environment variables to assign to the instance",
 				Type:        schema.TypeList,
 				Optional:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"name": {
-							Description: "",
+							Description: "The name of the environment variable",
 							Type:        schema.TypeString,
 							Required:    true,
 						},
 						"value": {
-							Description: "",
+							Description: "The value of the environment variable",
 							Type:        schema.TypeString,
 							Required:    true,
 						},
@@ -146,7 +146,7 @@ func resourceInstance() *schema.Resource {
 				},
 			},
 			"volumes": {
-				Description: "",
+				Description: "The instance volumes to create",
 				Type:        schema.TypeList,
 				Optional:    true,
 				Elem: &schema.Resource{
@@ -162,22 +162,22 @@ func resourceInstance() *schema.Resource {
 							Optional:    true,
 						},
 						"name": {
-							Description: "",
+							Description: "The name/type of the LV being created",
 							Type:        schema.TypeString,
 							Optional:    true,
 						},
 						"size": {
-							Description: "",
+							Description: "The size of the LV being created",
 							Type:        schema.TypeInt,
 							Optional:    true,
 						},
 						"size_id": {
-							Description: "",
+							Description: "The ID of an existing LV to assign to the instance",
 							Type:        schema.TypeInt,
 							Optional:    true,
 						},
 						"storage_type": {
-							Description: "",
+							Description: "The ID of the LV type",
 							Type:        schema.TypeInt,
 							Optional:    true,
 						},
@@ -187,7 +187,7 @@ func resourceInstance() *schema.Resource {
 							Optional:    true,
 						},
 						"datastore_id": {
-							Description: "",
+							Description: "The ID of the datastore",
 							Type:        schema.TypeInt,
 							Optional:    true,
 						},
@@ -195,7 +195,7 @@ func resourceInstance() *schema.Resource {
 				},
 			},
 			"interfaces": {
-				Description: "",
+				Description: "The instance network interfaces to create",
 				Type:        schema.TypeList,
 				Optional:    true,
 				Elem: &schema.Resource{
@@ -203,7 +203,7 @@ func resourceInstance() *schema.Resource {
 						// allows any value in the format network-*
 						// otherwise looks up network by name or id
 						"network": {
-							Description: "",
+							Description: "The network to assign the network interface to",
 							Type:        schema.TypeString,
 							Optional:    true,
 						},
@@ -228,7 +228,7 @@ func resourceInstance() *schema.Resource {
 							Optional:    true,
 						},
 						"network_interface_type_id": {
-							Description: "",
+							Description: "The network interface type",
 							Type:        schema.TypeInt,
 							Optional:    true,
 						},

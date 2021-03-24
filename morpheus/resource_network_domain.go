@@ -29,7 +29,7 @@ func resourceNetworkDomain() *schema.Resource {
 				Optional:    true,
 			},
 			"public_zone": &schema.Schema{
-				Description: "",
+				Description: "Whether the domain will be public or private",
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Default:     false,
@@ -47,7 +47,7 @@ func resourceNetworkDomain() *schema.Resource {
 				Default:     true,
 			},
 			"visibility": &schema.Schema{
-				Description:  "",
+				Description:  "Determines whether the resource is visible in sub-tenants or not",
 				Type:         schema.TypeString,
 				Optional:     true,
 				ValidateFunc: validation.StringInSlice([]string{"private", "public", ""}, false),

@@ -46,7 +46,6 @@ func resourceMorpheusGroup() *schema.Resource {
 				Optional:    true,
 				Elem:        &schema.Schema{Type: schema.TypeString},
 			},
-			// Computed outputs
 		},
 	}
 }

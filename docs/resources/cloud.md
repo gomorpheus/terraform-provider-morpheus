@@ -22,20 +22,20 @@ resource "morpheus_cloud" "name" {
 
 ### Required
 
-- **name** (String)
-- **type** (String)
+- **name** (String) A unique name scoped to your account for the cloud
+- **type** (String) The cloud type code
 
 ### Optional
 
-- **code** (String)
-- **config** (Map of String)
-- **description** (String)
-- **enabled** (Boolean)
-- **groups** (List of String)
+- **code** (String) Optional code for use with policies
+- **config** (Map of String) The cloud configuration settings
+- **description** (String) The user friendly description of the cloud
+- **enabled** (Boolean) Determines whether the cloud is active or not
+- **groups** (List of String) The group the cloud is assigned to
 - **id** (String) The ID of this resource.
-- **location** (String)
+- **location** (String) Optional location for your cloud
 - **tenants** (List of String)
-- **visibility** (String)
+- **visibility** (String) Determines whether the resource is visible in sub-tenants or not
 
 ## Import
 
