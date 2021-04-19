@@ -3,11 +3,12 @@ package morpheus
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	//"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
-	"github.com/gomorpheus/morpheus-go-sdk"
-	"log"
-	"fmt"
 	"errors"
+	"fmt"
+	"log"
 	"strings"
+
+	"github.com/gomorpheus/morpheus-go-sdk"
 )
 
 func resourceInstance() *schema.Resource {
@@ -19,76 +20,93 @@ func resourceInstance() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			"name": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+				Description: "The name of the instance",
+				Type:        schema.TypeString,
+				Required:    true,
 			},
 			"description": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
+				Description: "The user friendly description of the instance",
+				Type:        schema.TypeString,
+				Optional:    true,
 			},
 			"cloud": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+				Description: "",
+				Type:        schema.TypeString,
+				Required:    true,
 			},
 			"group": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+				Description: "The group to provision the instance into",
+				Type:        schema.TypeString,
+				Required:    true,
 			},
 			"type": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+				Description: "The type of instance to provision",
+				Type:        schema.TypeString,
+				Required:    true,
 			},
 			"version": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
+				Description: "",
+				Type:        schema.TypeString,
+				Optional:    true,
 			},
 			"layout": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+				Description: "The layout to provision the instance from",
+				Type:        schema.TypeString,
+				Required:    true,
 			},
 			"plan": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+				Description: "The service plan associated with the instance",
+				Type:        schema.TypeString,
+				Required:    true,
 			},
 			"resource_pool": {
-				Type:         schema.TypeString,
-				Optional:     true,
+				Description: "",
+				Type:        schema.TypeString,
+				Optional:    true,
 			},
 			"environment": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
+				Description: "The environment to assign the instance to",
+				Type:        schema.TypeString,
+				Optional:    true,
 			},
 			"tags": {
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem:     &schema.Schema{Type: schema.TypeString},
+				Description: "Tags to assign to the instance",
+				Type:        schema.TypeList,
+				Optional:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
 			},
 			"config": {
-				Type:     schema.TypeMap,
-				Optional: true,
-				Elem:     &schema.Schema{Type: schema.TypeString},
+				Description: "The instance configuration options",
+				Type:        schema.TypeMap,
+				Optional:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
 			},
 			"create_user": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
+				Description: "",
+				Type:        schema.TypeString,
+				Optional:    true,
 			},
-			//todo: lookup user_group			
+			//todo: lookup user_group
 			"user_group": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
+				Description: "",
+				Type:        schema.TypeString,
+				Optional:    true,
 			},
 			"metadata": {
-				Type:     schema.TypeList,
-				Optional: true,
+				Description: "Metadata assigned to the instance",
+				Type:        schema.TypeList,
+				Optional:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"name": {
-							Type:         schema.TypeString,
-							Required:     true,
+							Description: "The name of the metadata",
+							Type:        schema.TypeString,
+							Required:    true,
 						},
 						"value": {
-							Type:         schema.TypeString,
-							Required:     true,
+							Description: "The value of the metadata",
+							Type:        schema.TypeString,
+							Required:    true,
 						},
 						// "masked": {
 						// 	Type:         schema.TypeBool,
@@ -99,17 +117,20 @@ func resourceInstance() *schema.Resource {
 				},
 			},
 			"evars": {
-				Type:     schema.TypeList,
-				Optional: true,
+				Description: "The environment variables to assign to the instance",
+				Type:        schema.TypeList,
+				Optional:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"name": {
-							Type:         schema.TypeString,
-							Required:     true,
+							Description: "The name of the environment variable",
+							Type:        schema.TypeString,
+							Required:    true,
 						},
 						"value": {
-							Type:         schema.TypeString,
-							Required:     true,
+							Description: "The value of the environment variable",
+							Type:        schema.TypeString,
+							Required:    true,
 						},
 						// "masked": {
 						// 	Type:         schema.TypeBool,
@@ -125,8 +146,9 @@ func resourceInstance() *schema.Resource {
 				},
 			},
 			"volumes": {
-				Type:     schema.TypeList,
-				Optional: true,
+				Description: "The instance volumes to create",
+				Type:        schema.TypeList,
+				Optional:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						// "id": {
@@ -135,48 +157,57 @@ func resourceInstance() *schema.Resource {
 						// 	// Default:     -1,
 						// },
 						"root": {
-							Type:         schema.TypeBool,
-							Optional:     true,
+							Description: "",
+							Type:        schema.TypeBool,
+							Optional:    true,
 						},
 						"name": {
-							Type:         schema.TypeString,
-							Optional:     true,
+							Description: "The name/type of the LV being created",
+							Type:        schema.TypeString,
+							Optional:    true,
 						},
 						"size": {
-							Type:         schema.TypeInt,
-							Optional:     true,
+							Description: "The size of the LV being created",
+							Type:        schema.TypeInt,
+							Optional:    true,
 						},
 						"size_id": {
-							Type:         schema.TypeInt,
-							Optional:     true,
+							Description: "The ID of an existing LV to assign to the instance",
+							Type:        schema.TypeInt,
+							Optional:    true,
 						},
 						"storage_type": {
-							Type:         schema.TypeInt,
-							Optional:     true,
+							Description: "The ID of the LV type",
+							Type:        schema.TypeInt,
+							Optional:    true,
 						},
 						"datastore": {
-							Type:         schema.TypeString,
-							Optional:     true,
+							Description: "",
+							Type:        schema.TypeString,
+							Optional:    true,
 						},
 						"datastore_id": {
-							Type:         schema.TypeInt,
-							Optional:     true,
+							Description: "The ID of the datastore",
+							Type:        schema.TypeInt,
+							Optional:    true,
 						},
 					},
 				},
 			},
 			"interfaces": {
-				Type:     schema.TypeList,
-				Optional: true,
+				Description: "The instance network interfaces to create",
+				Type:        schema.TypeList,
+				Optional:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						// allows any value in the format network-*
 						// otherwise looks up network by name or id
 						"network": {
-							Type:         schema.TypeString,
-							Optional:     true,
+							Description: "The network to assign the network interface to",
+							Type:        schema.TypeString,
+							Optional:    true,
 						},
-						//todo: support look for these too, 
+						//todo: support look for these too,
 						// until then, can just use network: "networkGroup-55"
 						// "network_group": {
 						// 	Type:         schema.TypeString,
@@ -187,22 +218,23 @@ func resourceInstance() *schema.Resource {
 						// 	Optional:     true,
 						// },
 						"ip_address": {
-							Type:         schema.TypeString,
-							Optional:     true,
+							Description: "",
+							Type:        schema.TypeString,
+							Optional:    true,
 						},
 						"ip_mode": {
-							Type:         schema.TypeString,
-							Optional:     true,
+							Description: "",
+							Type:        schema.TypeString,
+							Optional:    true,
 						},
 						"network_interface_type_id": {
-							Type:         schema.TypeInt,
-							Optional:     true,
+							Description: "The network interface type",
+							Type:        schema.TypeInt,
+							Optional:    true,
 						},
 					},
 				},
 			},
-			
-
 		},
 	}
 }
@@ -211,24 +243,24 @@ func resourceInstance() *schema.Resource {
 
 Here is the sequence of options and api requests for the select dropdowns.
 
-Groups: 
+Groups:
 	http://localhost:8080/api/options/groups
-Clouds: 
+Clouds:
 	http://localhost:8080/api/options/clouds?groupId=1
-Type: 
+Type:
 	http://localhost:8080/api/options/instanceTypes?groupId=1
 	http://localhost:8080/api/instance-types?code=activemq
 	http://localhost:8080/api/instance-types/1
 Name:
-Description: 
-Environment: 
+Description:
+Environment:
 	http://localhost:8080/api/options/environments
-Tags (optional): 
-Version: 
+Tags (optional):
+Version:
 	http://localhost:8080/api/options/instanceVersions?groupId=1&cloudId=39&instanceTypeId=1
-Layout: 
+Layout:
 	http://localhost:8080/api/options/layoutsForCloud?groupId=1&cloudId=39&instanceTypeId=1&version=5.11
-Plan: 
+Plan:
 	http://localhost:8080/api/instances/service-plans?zoneId=39&layoutId=9&siteId=1
 
 Volumes:
@@ -341,10 +373,10 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 		return errors.New("instance configuration requires 'type'")
 	} else {
 		optionResp, optionErr = client.GetOptionSource("instanceTypes", &morpheus.Request{
-			QueryParams:map[string]string{
-		        "groupId": int64ToString(group.ID),
-		        "cloudId": int64ToString(cloud.ID),
-		    },
+			QueryParams: map[string]string{
+				"groupId": int64ToString(group.ID),
+				"cloudId": int64ToString(cloud.ID),
+			},
 		})
 		if optionErr != nil {
 			return optionErr
@@ -354,8 +386,8 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 		for i := 0; i < len(*optionSourceData); i++ {
 			item := (*optionSourceData)[i] // .(optionSourceOption)
 			// if item.Value.(string) == instanceTypeCode {
-			if item.Name == instanceTypeCode ||  item.Code == instanceTypeCode || int64ToString(item.ID) == instanceTypeCode {
-				matchingOptions = append(matchingOptions, &item)	
+			if item.Name == instanceTypeCode || item.Code == instanceTypeCode || int64ToString(item.ID) == instanceTypeCode {
+				matchingOptions = append(matchingOptions, &item)
 			}
 		}
 		matchingOptionCount := len(matchingOptions)
@@ -366,12 +398,12 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	// version
-	// the api never even looks for this, it just dictates the options for layout.. 
+	// the api never even looks for this, it just dictates the options for layout..
 	var instanceVersion string
 	if d.Get("version") != nil {
 		instanceVersion = d.Get("version").(string)
 	}
-	
+
 	// Layout
 	var layout *morpheus.LayoutOption // OptionSourceOption
 	layoutCode := d.Get("layout").(string)
@@ -380,12 +412,12 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 	} else {
 		//optionResp, optionErr = client.GetOptionSource("layoutsForCloud", &morpheus.Request{
 		optionResp, optionErr = client.GetOptionSourceLayouts(&morpheus.Request{
-			QueryParams:map[string]string{
-		        "groupId": int64ToString(group.ID),
-		        "cloudId": int64ToString(cloud.ID),
-		        "instanceTypeId": int64ToString(instanceType.ID),
-		        // "version": instanceVersion,
-		    },
+			QueryParams: map[string]string{
+				"groupId":        int64ToString(group.ID),
+				"cloudId":        int64ToString(cloud.ID),
+				"instanceTypeId": int64ToString(instanceType.ID),
+				// "version": instanceVersion,
+			},
 		})
 		if optionErr != nil {
 			return optionErr
@@ -395,8 +427,8 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 		var matchingOptions []*morpheus.LayoutOption
 		for i := 0; i < len(*optionSourceData); i++ {
 			item := (*optionSourceData)[i]
-			if item.Name == layoutCode ||  item.Code == layoutCode || int64ToString(item.ID) == layoutCode {
-				if (instanceVersion != "") {
+			if item.Name == layoutCode || item.Code == layoutCode || int64ToString(item.ID) == layoutCode {
+				if instanceVersion != "" {
 					if instanceVersion == item.Version {
 						matchingOptions = append(matchingOptions, &item)
 					}
@@ -420,11 +452,11 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 		return errors.New("instance configuration requires 'plan'")
 	} else {
 		planResp, planErr := client.FindInstancePlanByCode(planCode, &morpheus.Request{
-			QueryParams:map[string]string{
-		        "groupId": int64ToString(group.ID),
-		        "zoneId": int64ToString(cloud.ID),
-		        "layoutId": int64ToString(layout.ID),
-		    },
+			QueryParams: map[string]string{
+				"groupId":  int64ToString(group.ID),
+				"zoneId":   int64ToString(cloud.ID),
+				"layoutId": int64ToString(layout.ID),
+			},
 		})
 		if planErr != nil {
 			return planErr
@@ -446,12 +478,12 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 			"id": group.ID,
 		},
 		"plan": map[string]interface{}{
-			"id": plan.ID,
+			"id":   plan.ID,
 			"code": plan.Code,
 			"name": plan.Name,
 		},
 		"layout": map[string]interface{}{
-			"id": layout.ID,
+			"id":   layout.ID,
 			"code": layout.Code,
 			"name": layout.Name,
 		},
@@ -499,14 +531,14 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 		} else {
 			//optionResp, optionErr = client.GetOptionSource("resourcePoolsForCloud", &morpheus.Request{
 			optionResp, optionErr = client.GetOptionSource("zonePools", &morpheus.Request{
-				QueryParams:map[string]string{
-			        "groupId": int64ToString(group.ID),
-			        "siteId": int64ToString(group.ID),
-			        "cloudId": int64ToString(cloud.ID),
-			        "instanceTypeId": int64ToString(instanceType.ID),
-			        "layoutId": int64ToString(layout.ID),
-			        "planId": int64ToString(plan.ID),
-			    },
+				QueryParams: map[string]string{
+					"groupId":        int64ToString(group.ID),
+					"siteId":         int64ToString(group.ID),
+					"cloudId":        int64ToString(cloud.ID),
+					"instanceTypeId": int64ToString(instanceType.ID),
+					"layoutId":       int64ToString(layout.ID),
+					"planId":         int64ToString(plan.ID),
+				},
 			})
 			if optionErr != nil {
 				return optionErr
@@ -528,31 +560,31 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 			resourcePoolIdStr = int64ToString(int64(resourcePool.Value.(float64)))
 			//vmware and aws want different properties, one wants externalId too still? err
 			config["resourcePoolId"] = resourcePoolIdStr // resourcePool.Value.(string)
-			config["resourcePool"] = resourcePoolIdStr // resourcePool.Value.(string)
+			config["resourcePool"] = resourcePoolIdStr   // resourcePool.Value.(string)
 		}
 	}
 
 	payload := map[string]interface{}{
-		"zoneId": cloud.ID,
+		"zoneId":   cloud.ID,
 		"instance": instancePayload,
-		"config": config,
+		"config":   config,
 	}
 
 	// volumes
 	if d.Get("volumes") != nil {
-		
+
 		// load datastore options
 		//optionResp, optionErr = client.GetOptionSource("resourcePoolsForCloud", &morpheus.Request{
 		datastoresResp, datastoresErr := client.GetOptionSource("datastores", &morpheus.Request{
-			QueryParams:map[string]string{
-		        "groupId": int64ToString(group.ID),
-		        "siteId": int64ToString(group.ID),
-		        "cloudId": int64ToString(cloud.ID),
-		        "zoneId": int64ToString(cloud.ID),
-		        "instanceTypeId": int64ToString(instanceType.ID),
-		        "layoutId": int64ToString(layout.ID),
-		        "planId": int64ToString(plan.ID),
-		    },
+			QueryParams: map[string]string{
+				"groupId":        int64ToString(group.ID),
+				"siteId":         int64ToString(group.ID),
+				"cloudId":        int64ToString(cloud.ID),
+				"zoneId":         int64ToString(cloud.ID),
+				"instanceTypeId": int64ToString(instanceType.ID),
+				"layoutId":       int64ToString(layout.ID),
+				"planId":         int64ToString(plan.ID),
+			},
 		})
 		if datastoresErr != nil {
 			return datastoresErr
@@ -604,7 +636,7 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 						if strings.HasPrefix(item.Name, datastoreName) {
 							matchingDatastores = append(matchingDatastores, &item)
 						}
-					}	
+					}
 				}
 				matchingDatastoreCount := len(matchingDatastores)
 				if matchingDatastoreCount != 1 {
@@ -625,15 +657,15 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 		// load networking options
 		// networkOptionsResp, networkOptionsErr := client.GetOptionSource("zoneNetworkOptions", &morpheus.Request{
 		networkOptionsResp, networkOptionsErr := client.GetOptionSourceZoneNetworkOptions(&morpheus.Request{
-			QueryParams:map[string]string{
-		        "groupId": int64ToString(group.ID),
-		        "siteId": int64ToString(group.ID),
-		        "cloudId": int64ToString(cloud.ID),
-		        "zoneId": int64ToString(cloud.ID),
-		        "instanceTypeId": int64ToString(instanceType.ID),
-		        "layoutId": int64ToString(layout.ID),
-		        "poolId": resourcePoolIdStr,
-		    },
+			QueryParams: map[string]string{
+				"groupId":        int64ToString(group.ID),
+				"siteId":         int64ToString(group.ID),
+				"cloudId":        int64ToString(cloud.ID),
+				"zoneId":         int64ToString(cloud.ID),
+				"instanceTypeId": int64ToString(instanceType.ID),
+				"layoutId":       int64ToString(layout.ID),
+				"poolId":         resourcePoolIdStr,
+			},
 		})
 		if networkOptionsErr != nil {
 			return networkOptionsErr
@@ -678,7 +710,7 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 							if strings.HasPrefix(item.Name, networkName) {
 								matchingNetworks = append(matchingNetworks, &item)
 							}
-						}	
+						}
 					}
 					matchingNetworksCount := len(matchingNetworks)
 					if matchingNetworksCount != 1 {
@@ -702,7 +734,7 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 			if item["network_interface_type_id"] != nil {
 				row["networkInterfaceTypeId"] = item["network_interface_type_id"] //.(int)
 			}
-			networkInterfaces = append(networkInterfaces, row)	
+			networkInterfaces = append(networkInterfaces, row)
 		}
 		payload["networkInterfaces"] = networkInterfaces // .([]map[string]interface{})
 	}
@@ -750,13 +782,13 @@ func resourceInstanceRead(d *schema.ResourceData, meta interface{}) error {
 	}
 	log.Printf("API RESPONSE:", resp)
 
-	// store resource data	
+	// store resource data
 	result := resp.Result.(*morpheus.GetInstanceResult)
 	instance := result.Instance
 	if instance == nil {
 		return fmt.Errorf("Instance not found in response data.") // should not happen
 	}
-	
+
 	d.SetId(int64ToString(instance.ID))
 	d.Set("name", instance.Name)
 	d.Set("description", instance.Description)
@@ -779,8 +811,8 @@ func resourceInstanceUpdate(d *schema.ResourceData, meta interface{}) error {
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"zone": map[string]interface{}{
-				"name": name,
-				"code": code,
+				"name":     name,
+				"code":     code,
 				"location": location,
 				// "instances": instances,
 			},
@@ -803,7 +835,7 @@ func resourceInstanceDelete(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*morpheus.Client)
 	id := d.Id()
 	req := &morpheus.Request{
-		QueryParams:map[string]string{},
+		QueryParams: map[string]string{},
 	}
 	if USE_FORCE {
 		req.QueryParams["force"] = "true"

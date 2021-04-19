@@ -1,12 +1,13 @@
 package morpheus
 
 import (
+	"errors"
+	"fmt"
+	"log"
+
+	"github.com/gomorpheus/morpheus-go-sdk"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
-	"github.com/gomorpheus/morpheus-go-sdk"
-	"log"
-	"fmt"
-	"errors"
 )
 
 func resourceNetworkDomain() *schema.Resource {
@@ -18,42 +19,48 @@ func resourceNetworkDomain() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			"name": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+				Description: "The name of the network domain",
+				Type:        schema.TypeString,
+				Required:    true,
 			},
 			"description": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
+				Description: "The user friendly description of the network domain",
+				Type:        schema.TypeString,
+				Optional:    true,
 			},
 			"public_zone": &schema.Schema{
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default: false,
+				Description: "Whether the domain will be public or private",
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     false,
 			},
 			"domain_controller": &schema.Schema{
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default: false,
+				Description: "The domain controller used to facilitate an automated domain join operation",
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     false,
 			},
 			"active": &schema.Schema{
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default: true,
+				Description: "The state of the network domain",
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     true,
 			},
 			"visibility": &schema.Schema{
-				Type:     schema.TypeString,
+				Description:  "Determines whether the resource is visible in sub-tenants or not",
+				Type:         schema.TypeString,
 				Optional:     true,
 				ValidateFunc: validation.StringInSlice([]string{"private", "public", ""}, false),
 				Default:      "private",
 			},
 			"tenant": &schema.Schema{
-				Type:     schema.TypeInt,
-				Optional: true,
+				Description: "",
+				Type:        schema.TypeInt,
+				Optional:    true,
 			},
 		},
 	}
 }
-
 
 func resourceNetworkDomainCreate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*morpheus.Client)
@@ -66,7 +73,7 @@ func resourceNetworkDomainCreate(d *schema.ResourceData, meta interface{}) error
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"networkDomain": map[string]interface{}{
-				"name": name,
+				"name":        name,
 				"description": description,
 				// "publicZone": publicZone,
 				// "domainController": domainController,
@@ -116,7 +123,7 @@ func resourceNetworkDomainRead(d *schema.ResourceData, meta interface{}) error {
 	}
 	log.Printf("API RESPONSE:", resp)
 
-	// store resource data	
+	// store resource data
 	result := resp.Result.(*morpheus.GetNetworkDomainResult)
 	networkDomain := result.NetworkDomain
 	if networkDomain != nil {
@@ -130,9 +137,9 @@ func resourceNetworkDomainRead(d *schema.ResourceData, meta interface{}) error {
 		// d.Set("fqdn", networkDomain.Fqdn)
 		// todo: more fields
 	} else {
-		return fmt.Errorf("NetworkDomain not found in response data.")	 // should not happen
+		return fmt.Errorf("NetworkDomain not found in response data.") // should not happen
 	}
-	
+
 	return nil
 }
 
@@ -148,7 +155,7 @@ func resourceNetworkDomainUpdate(d *schema.ResourceData, meta interface{}) error
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"networkDomain": map[string]interface{}{
-				"name": name,
+				"name":        name,
 				"description": description,
 				// "publicZone": publicZone,
 				// "domainController": domainController,
