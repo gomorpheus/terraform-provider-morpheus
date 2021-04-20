@@ -47,6 +47,6 @@ provider "morpheus" {
 
 ### Optional
 
-- **access_token** (String) Access Token of Morpheus user. This can be used instead of authenticating with Username and Password.
-- **password** (String) Password of Morpheus user for authentication
+- **access_token** (String, Sensitive) Access Token of Morpheus user. This can be used instead of authenticating with Username and Password.
+- **password** (String, Sensitive) Password of Morpheus user for authentication
 - **username** (String) Username of Morpheus user for authentication

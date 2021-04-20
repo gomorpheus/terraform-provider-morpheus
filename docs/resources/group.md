@@ -5,17 +5,18 @@ description: |-
   
 ---
 
-# Resource `morpheus_group`
+# morpheus_group
 
 
 
 ## Example Usage
 
 ```terraform
-resource "morpheus_group" "name" {
-  name     = ""
-  code     = ""
-  location = ""
+resource "morpheus_group" "terraform_group" {
+  name      = "tfgroup"
+  code      = "tfgroup"
+  location  = "denver"
+  cloud_ids = [1]
 }
 ```
 
@@ -28,7 +29,7 @@ resource "morpheus_group" "name" {
 
 ### Optional
 
-- **clouds** (List of String) An array of all the clouds assigned to this group
+- **cloud_ids** (Set of Number) An array of all the clouds assigned to this group
 - **code** (String) Optional code for use with policies
 - **id** (String) The ID of this resource.
 - **location** (String) Optional location argument for your group

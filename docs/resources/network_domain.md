@@ -5,7 +5,7 @@ description: |-
   
 ---
 
-# Resource `morpheus_network_domain`
+# morpheus_network_domain
 
 
 
@@ -13,7 +13,12 @@ description: |-
 
 ```terraform
 resource "morpheus_network_domain" "name" {
-  
+  name        = ""
+  description = ""
+  public_zone = true
+  visibility  = "public"
+  tenant_id   = 1
+  active      = true
 }
 ```
 
@@ -27,11 +32,14 @@ resource "morpheus_network_domain" "name" {
 ### Optional
 
 - **active** (Boolean) The state of the network domain
+- **auto_join_domain** (Boolean) Whether to automatically join machines to the domain
 - **description** (String) The user friendly description of the network domain
 - **domain_controller** (Boolean) The domain controller used to facilitate an automated domain join operation
+- **domain_password** (String, Sensitive) The password of the account used to facilitate an automated domain join operation
+- **domain_username** (String) The username of the account used to facilitate an automated domain join operation
 - **id** (String) The ID of this resource.
 - **public_zone** (Boolean) Whether the domain will be public or private
-- **tenant** (Number)
+- **tenant_id** (Number) The tenant to assign the network domain
 - **visibility** (String) Determines whether the resource is visible in sub-tenants or not
 
 ## Import

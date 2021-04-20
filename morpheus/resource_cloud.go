@@ -1,57 +1,56 @@
 package morpheus
 
 import (
-	"errors"
-	"fmt"
+	"context"
 	"log"
 
 	"github.com/gomorpheus/morpheus-go-sdk"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceCloud() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceCloudCreate,
-		Read:   resourceCloudRead,
-		Update: resourceCloudUpdate,
-		Delete: resourceCloudDelete,
+		CreateContext: resourceCloudCreate,
+		ReadContext:   resourceCloudRead,
+		UpdateContext: resourceCloudUpdate,
+		DeleteContext: resourceCloudDelete,
 
 		Schema: map[string]*schema.Schema{
-			"name": &schema.Schema{
+			"name": {
 				Description: "A unique name scoped to your account for the cloud",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
-			"type": &schema.Schema{
+			"type": {
 				Description: "The cloud type code",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
-			"code": &schema.Schema{
+			"code": {
 				Description: "Optional code for use with policies",
 				Type:        schema.TypeString,
 				Optional:    true,
 			},
-			"location": &schema.Schema{
+			"location": {
 				Description: "Optional location for your cloud",
 				Type:        schema.TypeString,
 				Optional:    true,
-				Default:     "", //eh?
 			},
-			"description": &schema.Schema{
+			"description": {
 				Description: "The user friendly description of the cloud",
 				Type:        schema.TypeString,
 				Optional:    true,
 			},
-			"visibility": &schema.Schema{
+			"visibility": {
 				Description:  "Determines whether the resource is visible in sub-tenants or not",
 				Type:         schema.TypeString,
 				Optional:     true,
 				ValidateFunc: validation.StringInSlice([]string{"private", "public", ""}, false),
 				Default:      "private",
 			},
-			"enabled": &schema.Schema{
+			"enabled": {
 				Description: "Determines whether the cloud is active or not",
 				Type:        schema.TypeBool,
 				Optional:    true,
@@ -65,46 +64,46 @@ func resourceCloud() *schema.Resource {
 				Elem:        &schema.Schema{Type: schema.TypeString},
 			},
 
-			// 			"api_url": &schema.Schema{
+			// 			"api_url": {
 			// 	Type:     schema.TypeString,
 			// 	Required: false,
 			// },
-			// "username": &schema.Schema{
+			// "username": {
 			// 	Type:     schema.TypeString,
 			// 	Required: false,
 			// },
-			// "password": &schema.Schema{
+			// "password": {
 			// 	Type:     schema.TypeString,
 			// 	Required: false,
 			// },
-			// "datacenter": &schema.Schema{
+			// "datacenter": {
 			// 	Type:     schema.TypeString,
 			// 	Required: false,
 			// },
-			// "cluster": &schema.Schema{
+			// "cluster": {
 			// 	Type:     schema.TypeString,
 			// 	Required: false,
 			// },
-			// "resource_pool": &schema.Schema{
+			// "resource_pool": {
 			// 	Type:     schema.TypeString,
 			// 	Required: false,
 			// },
-			// "rpc_mode": &schema.Schema{
+			// "rpc_mode": {
 			// 	Type:     schema.TypeString,
 			// 	Required: false,
 			// 	// Default: "guestexec",
 			// },
-			// "hide_host_selection": &schema.Schema{
+			// "hide_host_selection": {
 			// 	Type:     schema.TypeBool,
 			// 	Required: false,
 			// 	// Default: false,
 			// },
-			// "enable_vnc": &schema.Schema{
+			// "enable_vnc": {
 			// 	Type:     schema.TypeBool,
 			// 	Required: false,
 			// 	// Default: false,
 			// },
-			// "import_existing": &schema.Schema{
+			// "import_existing": {
 			// 	Type:     schema.TypeBool,
 			// 	Required: false,
 			// 	// Default: false,
@@ -129,8 +128,12 @@ func resourceCloud() *schema.Resource {
 	}
 }
 
-func resourceCloudCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceCloudCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*morpheus.Client)
+
+	// Warning or errors can be collected in a slice type
+	var diags diag.Diagnostics
+
 	name := d.Get("name").(string)
 	code := d.Get("code").(string)
 	location := d.Get("location").(string)
@@ -163,19 +166,24 @@ func resourceCloudCreate(d *schema.ResourceData, meta interface{}) error {
 
 	resp, err := client.CreateCloud(req)
 	if err != nil {
-		log.Printf("API FAILURE:", resp, err)
-		return err
+		log.Printf("API FAILURE: %s - %s", resp, err)
+		return diag.FromErr(err)
 	}
-	log.Printf("API RESPONSE: ", resp)
+	log.Printf("API RESPONSE: %s", resp)
 	result := resp.Result.(*morpheus.CreateCloudResult)
 	cloud := result.Cloud
 	// Successfully created resource, now set id
 	d.SetId(int64ToString(cloud.ID))
-	return resourceCloudRead(d, meta)
+	resourceCloudRead(ctx, d, meta)
+	return diags
 }
 
-func resourceCloudRead(d *schema.ResourceData, meta interface{}) error {
+func resourceCloudRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*morpheus.Client)
+
+	// Warning or errors can be collected in a slice type
+	var diags diag.Diagnostics
+
 	id := d.Id()
 	name := d.Get("name").(string)
 
@@ -188,25 +196,25 @@ func resourceCloudRead(d *schema.ResourceData, meta interface{}) error {
 		resp, err = client.GetCloud(toInt64(id), &morpheus.Request{})
 		// todo: ignore 404 errors...
 	} else {
-		return errors.New("Cloud cannot be read without name or id")
+		return diag.Errorf("Cloud cannot be read without name or id")
 	}
 	if err != nil {
 		// 404 is ok?
 		if resp != nil && resp.StatusCode == 404 {
-			log.Printf("API 404:", resp, err)
-			return nil
+			log.Printf("API 404: %s - %s", resp, err)
+			return diag.FromErr(err)
 		} else {
-			log.Printf("API FAILURE:", resp, err)
-			return err
+			log.Printf("API FAILURE: %s - %s", resp, err)
+			return diag.FromErr(err)
 		}
 	}
-	log.Printf("API RESPONSE:", resp)
+	log.Printf("API RESPONSE: %s", resp)
 
 	// store resource data
 	result := resp.Result.(*morpheus.GetCloudResult)
 	cloud := result.Cloud
 	if cloud == nil {
-		return fmt.Errorf("Cloud not found in response data.") // should not happen
+		return diag.Errorf("Cloud not found in response data.") // should not happen
 	}
 
 	d.SetId(int64ToString(cloud.ID))
@@ -218,10 +226,10 @@ func resourceCloudRead(d *schema.ResourceData, meta interface{}) error {
 	// d.Set("groups", cloud.Groups)
 	// todo: more fields
 
-	return nil
+	return diags
 }
 
-func resourceCloudUpdate(d *schema.ResourceData, meta interface{}) error {
+func resourceCloudUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*morpheus.Client)
 	id := d.Id()
 	name := d.Get("name").(string)
@@ -241,33 +249,37 @@ func resourceCloudUpdate(d *schema.ResourceData, meta interface{}) error {
 	}
 	resp, err := client.UpdateCloud(toInt64(id), req)
 	if err != nil {
-		log.Printf("API FAILURE:", resp, err)
-		return err
+		log.Printf("API FAILURE: %s - %s", resp, err)
+		return diag.FromErr(err)
 	}
-	log.Printf("API RESPONSE: ", resp)
+	log.Printf("API RESPONSE: %s", resp)
 	result := resp.Result.(*morpheus.UpdateCloudResult)
 	cloud := result.Cloud
 	// Successfully updated resource, now set id
 	d.SetId(int64ToString(cloud.ID))
-	return resourceCloudRead(d, meta)
+	return resourceCloudRead(ctx, d, meta)
 }
 
-func resourceCloudDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceCloudDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*morpheus.Client)
+
+	// Warning or errors can be collected in a slice type
+	var diags diag.Diagnostics
+
 	id := d.Id()
 	req := &morpheus.Request{}
 	resp, err := client.DeleteCloud(toInt64(id), req)
 	if err != nil {
 		if resp != nil && resp.StatusCode == 404 {
-			log.Printf("API 404:", resp, err)
-			return nil
+			log.Printf("API 404: %s - %s", resp, err)
+			return diag.FromErr(err)
 		} else {
-			log.Printf("API FAILURE:", resp, err)
-			return err
+			log.Printf("API FAILURE: %s - %s", resp, err)
+			return diag.FromErr(err)
 		}
 	}
-	log.Printf("API RESPONSE:", resp)
+	log.Printf("API RESPONSE: %s", resp)
 	// result := resp.Result.(*morpheus.DeleteCloudResult)
-	//d.setId("") // implicit
-	return nil
+	d.SetId("")
+	return diags
 }

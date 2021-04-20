@@ -5,7 +5,7 @@ description: |-
   
 ---
 
-# Resource `morpheus_instance`
+# morpheus_instance
 
 
 
@@ -35,15 +35,15 @@ resource "morpheus_instance" "name" {
 - **create_user** (String)
 - **description** (String) The user friendly description of the instance
 - **environment** (String) The environment to assign the instance to
-- **evars** (Block List) (see [below for nested schema](#nestedblock--evars))
+- **evars** (Block List) The environment variables to assign to the instance (see [below for nested schema](#nestedblock--evars))
 - **id** (String) The ID of this resource.
-- **interfaces** (Block List) (see [below for nested schema](#nestedblock--interfaces))
-- **metadata** (Block List) (see [below for nested schema](#nestedblock--metadata))
+- **interfaces** (Block List) The instance network interfaces to create (see [below for nested schema](#nestedblock--interfaces))
+- **metadata** (Block List) Metadata assigned to the instance (see [below for nested schema](#nestedblock--metadata))
 - **resource_pool** (String)
 - **tags** (List of String) Tags to assign to the instance
 - **user_group** (String)
 - **version** (String)
-- **volumes** (Block List) (see [below for nested schema](#nestedblock--volumes))
+- **volumes** (Block List) The instance volumes to create (see [below for nested schema](#nestedblock--volumes))
 
 <a id="nestedblock--evars"></a>
 ### Nested Schema for `evars`

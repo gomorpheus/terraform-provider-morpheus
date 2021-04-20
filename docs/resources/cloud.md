@@ -5,7 +5,7 @@ description: |-
   
 ---
 
-# Resource `morpheus_cloud`
+# morpheus_cloud
 
 
 
@@ -13,7 +13,13 @@ description: |-
 
 ```terraform
 resource "morpheus_cloud" "name" {
-  
+  name        = "morpheus_vsphere"
+  description = ""
+  type        = "vmware"
+  code        = ""
+  visibility  = "public"
+  enabled     = true
+  config     = ""
 }
 ```
 
@@ -42,5 +48,5 @@ resource "morpheus_cloud" "name" {
 Import is supported using the following syntax:
 
 ```shell
-terraform import morpheus_cloud.foo <my-id>
+terraform import morpheus_cloud.vsphere <my-id>
 ```

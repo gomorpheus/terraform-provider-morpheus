@@ -1,1 +1,1 @@
-terraform import morpheus_cloud.foo <my-id>
+terraform import morpheus_cloud.vsphere <my-id>
