@@ -12,19 +12,25 @@ import (
 
 func resourceNetworkDomain() *schema.Resource {
 	return &schema.Resource{
+<<<<<<< HEAD
 		Description: "Provides a Morpheus network domain resource.",
 
+=======
+>>>>>>> 00ad688 (Migrate code to SDK v2)
 		CreateContext: resourceNetworkDomainCreate,
 		ReadContext:   resourceNetworkDomainRead,
 		UpdateContext: resourceNetworkDomainUpdate,
 		DeleteContext: resourceNetworkDomainDelete,
 
 		Schema: map[string]*schema.Schema{
+<<<<<<< HEAD
 			"id": {
 				Description: "The ID of the network domain",
 				Type:        schema.TypeString,
 				Computed:    true,
 			},
+=======
+>>>>>>> 00ad688 (Migrate code to SDK v2)
 			"name": {
 				Description: "The name of the network domain",
 				Type:        schema.TypeString,

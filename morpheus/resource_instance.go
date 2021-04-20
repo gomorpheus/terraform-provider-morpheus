@@ -14,19 +14,25 @@ import (
 
 func resourceInstance() *schema.Resource {
 	return &schema.Resource{
+<<<<<<< HEAD
 		Description: "Provides a Morpheus instance resource.",
 
+=======
+>>>>>>> 00ad688 (Migrate code to SDK v2)
 		CreateContext: resourceInstanceCreate,
 		ReadContext:   resourceInstanceRead,
 		UpdateContext: resourceInstanceUpdate,
 		DeleteContext: resourceInstanceDelete,
 
 		Schema: map[string]*schema.Schema{
+<<<<<<< HEAD
 			"id": {
 				Description: "The ID of the instance",
 				Type:        schema.TypeString,
 				Computed:    true,
 			},
+=======
+>>>>>>> 00ad688 (Migrate code to SDK v2)
 			"name": {
 				Description: "The name of the instance",
 				Type:        schema.TypeString,
