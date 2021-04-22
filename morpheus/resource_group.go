@@ -18,12 +18,19 @@ import (
 
 func resourceMorpheusGroup() *schema.Resource {
 	return &schema.Resource{
+		Description: "Provides a Morpheus group resource.",
+
 		CreateContext: resourceMorpheusGroupCreate,
 		ReadContext:   resourceMorpheusGroupRead,
 		UpdateContext: resourceMorpheusGroupUpdate,
 		DeleteContext: resourceMorpheusGroupDelete,
 
 		Schema: map[string]*schema.Schema{
+			"id": {
+				Description: "The ID of the group",
+				Type:        schema.TypeString,
+				Computed:    true,
+			},
 			// Required inputs
 			"name": {
 				Description: "A unique name scoped to your account for the group",

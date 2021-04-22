@@ -12,12 +12,19 @@ import (
 
 func resourceCloud() *schema.Resource {
 	return &schema.Resource{
+		Description: "Provides a Morpheus cloud resource.",
+
 		CreateContext: resourceCloudCreate,
 		ReadContext:   resourceCloudRead,
 		UpdateContext: resourceCloudUpdate,
 		DeleteContext: resourceCloudDelete,
 
 		Schema: map[string]*schema.Schema{
+			"id": {
+				Description: "The ID of the cloud",
+				Type:        schema.TypeString,
+				Computed:    true,
+			},
 			"name": {
 				Description: "A unique name scoped to your account for the cloud",
 				Type:        schema.TypeString,

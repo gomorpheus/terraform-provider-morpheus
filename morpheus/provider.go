@@ -10,9 +10,6 @@ import (
 func Provider() *schema.Provider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
-
-			// todo: use environment defaults , just uncomment DefaultFunc below...
-
 			"url": {
 				Type:        schema.TypeString,
 				Required:    true,

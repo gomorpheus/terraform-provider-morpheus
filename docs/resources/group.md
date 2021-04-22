@@ -2,17 +2,17 @@
 page_title: "morpheus_group Resource - terraform-provider-morpheus"
 subcategory: ""
 description: |-
-  
+  Provides a Morpheus group resource.
 ---
 
 # morpheus_group
 
-
+Provides a Morpheus group resource.
 
 ## Example Usage
 
 ```terraform
-resource "morpheus_group" "terraform_group" {
+resource "morpheus_group" "tf_example_group" {
   name      = "tfgroup"
   code      = "tfgroup"
   location  = "denver"
@@ -31,13 +31,16 @@ resource "morpheus_group" "terraform_group" {
 
 - **cloud_ids** (Set of Number) An array of all the clouds assigned to this group
 - **code** (String) Optional code for use with policies
-- **id** (String) The ID of this resource.
 - **location** (String) Optional location argument for your group
+
+### Read-Only
+
+- **id** (String) The ID of the group
 
 ## Import
 
 Import is supported using the following syntax:
 
 ```shell
-terraform import morpheus_group.foo <my-id>
+terraform import morpheus_group.tf_example_group 1
 ```

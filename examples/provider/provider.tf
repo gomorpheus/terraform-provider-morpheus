@@ -1,4 +1,3 @@
-// Pin the version
 terraform {
   required_providers {
     morpheus = {
@@ -8,7 +7,7 @@ terraform {
   }
 }
 
-// Configure the provider
+# Configure the provider
 provider "morpheus" {
   url      = "${var.morpheus_url}"
   username = "${var.morpheus_username}"

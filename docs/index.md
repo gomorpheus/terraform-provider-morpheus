@@ -7,20 +7,17 @@ description: |-
 
 # Morpheus Provider
 
-Morpheus is a next-generation hybrid cloud management and application infrastructure automation engine.
-
-The Morpheus provider is used to interact with the Morpheus Cloud Management Platform (CMP) appliance. The provider needs to be configured with the proper credentials before it can be used.
+The Morpheus provider is used to interact with the resources supported by [Morpheus Cloud Management Platform (CMP)](https://morpheusdata.com/). The provider needs to be configured with the proper credentials before it can be used.
 
 Use the navigation to the left to read about the available resources.
 
-## Authenticating with Morpheus
+## Authentication
 
 The Morpheus provider supports authentication via username/password or an access token. The [authentication guide](guides/auth.md) describes how to obtain client credentials.
 
 ## Example Usage
 
 ```terraform
-// Pin the version
 terraform {
   required_providers {
     morpheus = {
@@ -30,7 +27,7 @@ terraform {
   }
 }
 
-// Configure the provider
+# Configure the provider
 provider "morpheus" {
   url      = "${var.morpheus_url}"
   username = "${var.morpheus_username}"
