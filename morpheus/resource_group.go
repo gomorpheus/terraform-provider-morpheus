@@ -18,11 +18,7 @@ import (
 
 func resourceMorpheusGroup() *schema.Resource {
 	return &schema.Resource{
-<<<<<<< HEAD
-		Description: "Provides a Morpheus group resource.",
-
-=======
->>>>>>> 00ad688 (Migrate code to SDK v2)
+		Description:   "Provides a Morpheus group resource.",
 		CreateContext: resourceMorpheusGroupCreate,
 		ReadContext:   resourceMorpheusGroupRead,
 		UpdateContext: resourceMorpheusGroupUpdate,
