@@ -10,6 +10,13 @@ To learn more about how to create issues and pull requests in this repository, a
 - [Terraform](https://www.terraform.io/downloads.html) >= 0.13.x
 - [Go](https://golang.org/doc/install) >= 1.14
 
+## Getting started
+If you wish to work on the provider, you'll first need [Go](http://www.golang.org) installed on your machine (version 1.14+ is required). You'll also need to correctly setup a [GOPATH](http://golang.org/doc/code.html#GOPATH), as well as adding `$GOPATH/bin` to our `$PATH`.
+
+### Developing the SDK
+
+While working on the provider, you may also be working on the [morpheus-go-sdk](https://github.com/gomorpheus/morpheus-go-sdk), which can be found at `$GOPATH/src/github.com/gomorpheus/morpheus-go-sdk`.
+
 ## Building the Provider
 
 1. Clone the repository
@@ -39,20 +46,6 @@ In order to run the full suite of Acceptance tests, run `make testacc`.
 $ make testacc
 ```
 
-## Adding Dependencies
-
-This provider uses [Go modules](https://github.com/golang/go/wiki/Modules).
-Please see the Go documentation for the most up to date information about using Go modules.
-
-To add a new dependency `github.com/author/dependency` to your Terraform provider:
-
-```
-go get github.com/author/dependency
-go mod tidy
-```
-
-Then commit the changes to `go.mod` and `go.sum`.
-
 ## Generating Docs
 
 To generate or update documentation, run `go generate`.
@@ -65,7 +58,3 @@ $ go generate
 The following checklists are meant to be used for PRs to give developers and reviewers confidence that the proper changes have been made:
 
 * [New resource](checklist-resource.md)
-
-## References
-
-The [reference documentation](references.md) includes more background material on specific functionality. This documentation is intended for developers extending or updating the Terraform Morpheus Provider. Typical operators writing and applying Terraform configurations do not need to read or understand this material.

@@ -9,16 +9,14 @@ Implementing a new resource is a good way to learn more about how Terraform inte
 
 ## Schema
 
-- [ ] __Uses Globally Unique ID__: The `id` field needs to be globally unique. Since many of the HCP services use IDs that are only unique within a particular project, you may need to create an `id` for Terraform using the `linkURL()` helper function. This function will produce an `id` of the following format: `/project/<project_id>/<resource_type>/<resource_id>`. If the service uses `ID` for a resource ID that is not globally unique, the resource ID should be specified in the Terraform schema as `<resource_type>_id`.
+- [ ] __Uses Globally Unique ID__: The `id` field needs to be globally unique.
 - [ ] __Validates Fields Where Possible__: All fields that can be validated client-side should include a `ValidateFunc` or `ValidateDiagFunc`.
 These validations should favor validators provided by this project, or [Terraform `helper/validation` package](https://godoc.org/github.com/hashicorp/terraform/helper/validation) functions.
-- [ ] __Does Not Use Project ID Input__: There should not be an input field for `project_id` in the schema. Instead of the user providing a `project_id` explicitly, the provider uses the authentication scope to determine which project is accessible. This prevents the user from needing to locate and provide their project ID. `client.Config.ProjectID` should be used to retrieve the implied project ID.
 
 ## CRUD Operations
 
 - [ ] __Uses Context-Aware CRUD Functions__: The context-aware CRUD functions (eg. `CreateContext`, `ReadContext`, etc.) should be used over their deprecated counterparts (eg. `Create`, `Read`, etc.).
 - [ ] __Uses Context For API Calls__: The `context.Context` that is passed into the CRUD functions should be passed into all API calls, most often by setting the `Context` field of a `*Params` object. This allows the API calls to be cancelled properly by Terraform.
-- [ ] __Uses DRY API Calls__: API calls that are needed in more than one resource should be encapsulated in a wrapper function located in `internal/clients/`. This prevents verbose request blocks from being duplicated across the codebase. Wrapper functions can also be implemented for single-use API requests, but are not required.
 - [ ] __Handles Existing Resource Prior To Create__: Before calling the API creation function, there should be a check to ensure that the resource does not already exist. If it does exist, the user should see a helpful log message that they may need to import the resource.
 - [ ] __Implements Immediate Resource ID Set During Create__: Immediately after calling the API creation function, the resource ID should be set with [`d.SetId()`](https://godoc.org/github.com/hashicorp/terraform/helper/schema#ResourceData.SetId) before other API operations or returning.
 - [ ] __Refreshes Attributes During Read__: All attributes available in the API should have [`d.Set()`](https://godoc.org/github.com/hashicorp/terraform/helper/schema#ResourceData.Set) called to set their values in the Terraform state during the `Read` function.

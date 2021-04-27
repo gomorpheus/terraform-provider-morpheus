@@ -1,11 +1,5 @@
 # Pull Request Submission and Lifecycle
 
-__Note for internal service teams__: The pull request lifecycle below will be
-roughly the same for internal teams, but you will not need to fork the repo to
-create pull requests, and our recommendation is to get a review from one other
-member of your service team, in addition to a review from one member of the
-provider team.
-
 We appreciate direct contributions to the provider codebase. Here's what to
 expect:
 

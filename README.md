@@ -16,7 +16,7 @@ This is being developed in conjunction with [morpheus-go-sdk](https://github.com
 ## Requirements
 ------------
 
-* [Terraform](https://www.terraform.io/) | 0.12+
+* [Terraform](https://www.terraform.io/) | 0.13+
 * [Go](https://golang.org/dl/) 1.14 (to build the provider plugin)
 
 ## Building the provider
@@ -35,51 +35,38 @@ As an alternative to cloning manually, you can use `go get`:
 go get -v github.com/gomorpheus/terraform-provider-morpheus/...
 ```
 
-Enter the provider directory and build the provider.
+Enter the provider directory.
 
 ```sh
 cd $GOPATH/src/github.com/gomorpheus/terraform-provider-morpheus
-go build -o terraform-provider-morpheus
+```
+
+Build the provider using `make dev`. This will place the provider onto your system in a [Terraform 0.13-compliant](https://www.terraform.io/upgrade-guides/0-13.html#in-house-providers) manner.
+
+```bash
+make dev
+```
+
+You'll need to ensure that your Terraform file contains the information necessary to find the plugin when running `terraform init`. `make dev` will use a version number of 0.0.1, so the following block will work:
+
+```hcl
+terraform {
+  required_providers {
+    morpheus = {
+      source = "localhost/providers/morpheus"
+      version = "0.0.1"
+    }
+  }
+}
 ```
 
 ## Using the Provider
+
 ---------------------
 
-When the provider is out of beta the documentation will be available alongside the Terraform provider on the Terraform registry, but during the beta phase the best resource is this [guide]().
+When the provider is out of beta the documentation will be available alongside the Terraform provider on the Terraform registry, but during the beta phase the best resource is this [guide](docs/guides/getting_started.md).
 
 ## Developing the provider
 -------------------------
-If you wish to work on the provider, you'll first need [Go](http://www.golang.org) installed on your machine (version 1.13+ is required). You'll also need to correctly setup a [GOPATH](http://golang.org/doc/code.html#GOPATH), as well as adding `$GOPATH/bin` to our `$PATH`.
 
-### Developing the SDK
-
-While working on the provider, you may also be working on the [morpheus-go-sdk](https://github.com/gomorpheus/morpheus-go-sdk), which can be found at `$GOPATH/src/github.com/gomorpheus/morpheus-go-sdk`.
-
-## Testing the provider
-------------------------
-If you are actively developing the provider, always remember to [build](#Building-the-provider) first in order to test your changes.
-
-Use terraform to create resources.
-
-```bash
-terraform init examples && terraform plan examples && terraform apply examples
-```
-
-Use `[morpheus-cli](/gomorpheus/morpheus-cli)` to see that the resources were created.
-
-```bash
-morpheus groups list -s tftest
-morpheus network-domains list -s tftest
-```
-
-Use terraform to destroy resources.
-
-```bash
-terraform destroy
-```
-
-<!-- 
-### Installing the provider
-To use a released provider in your Terraform environment, run [`terraform init`](https://www.terraform.io/docs/commands/init.html) and Terraform will automatically install the provider. To specify a particular provider version when installing released providers, see the [Terraform documentation on provider versioning](https://www.terraform.io/docs/configuration/providers.html#version-provider-versions).
-
-To instead use a custom-built provider in your Terraform environment (e.g. the provider binary from the build instructions below), follow the instructions to [install it as a plugin.](https://www.terraform.io/docs/plugins/basics.html#installing-a-plugin) After placing it into your plugins directory,  run `terraform init` to initialize it. -->
+See the [`contributing`](contributing/) directory for more developer documentation.

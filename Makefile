@@ -15,6 +15,9 @@ dev:
 	mkdir -p $(INSTALL_PATH)	
 	go build -o $(INSTALL_PATH)/terraform-provider-morpheus main.go
 
+gendocs:
+	go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs
+
 all:
 	mkdir -p $(BUILD_ALL_PATH)
 	GOOS=darwin go build -o $(BUILD_ALL_PATH)/terraform-provider-morpheus_darwin-amd64 main.go
@@ -54,4 +57,4 @@ gencheck:
 	@git diff --compact-summary --exit-code || \
 		(echo; echo "Unexpected difference in directories after code generation. Run 'go generate' command and commit."; exit 1)
 
-.PHONY: testacc tools
+.PHONY: dev all fmt fmtcheck test testacc depscheck gencheck tools gendocs
