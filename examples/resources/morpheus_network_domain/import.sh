@@ -1,1 +1,1 @@
-terraform import morpheus_network_domain.foo <my-id>
+terraform import morpheus_network_domain.tf_example_network_domain 1

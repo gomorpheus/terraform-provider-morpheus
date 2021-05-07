@@ -1,9 +1,7 @@
 package morpheus
 
 import (
-	//"fmt"
 	"strconv"
-	//"errors"
 )
 
 // This file contains some helper methods for things like
@@ -97,8 +95,6 @@ func BoolValueSlice(src []*bool) []bool {
 	return dst
 }
 
-
-
 // Int64 returns a pointer to the int64 value passed in.
 // func Int64(v int64) *int64 {
 // 	return &v
@@ -134,4 +130,3 @@ func BoolValueSlice(src []*bool) []bool {
 // 	}
 // 	return dst
 // }
-

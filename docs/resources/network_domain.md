@@ -2,18 +2,24 @@
 page_title: "morpheus_network_domain Resource - terraform-provider-morpheus"
 subcategory: ""
 description: |-
-  
+This resource creates a Morpheus network domain.
+  Provides a Morpheus network domain resource.
 ---
 
-# Resource `morpheus_network_domain`
+# morpheus_network_domain
 
-
+Provides a Morpheus network domain resource.
 
 ## Example Usage
 
 ```terraform
-resource "morpheus_network_domain" "name" {
-  
+resource "morpheus_network_domain" "tf_example_network_domain" {
+  name        = "tfexampledomain"
+  description = "Terraform example network domain"
+  public_zone = true
+  visibility  = "private"
+  tenant_id   = 1
+  active      = true
 }
 ```
 
@@ -27,17 +33,23 @@ resource "morpheus_network_domain" "name" {
 ### Optional
 
 - **active** (Boolean) The state of the network domain
+- **auto_join_domain** (Boolean) Whether to automatically join machines to the domain
 - **description** (String) The user friendly description of the network domain
 - **domain_controller** (Boolean) The domain controller used to facilitate an automated domain join operation
-- **id** (String) The ID of this resource.
+- **domain_password** (String, Sensitive) The password of the account used to facilitate an automated domain join operation
+- **domain_username** (String) The username of the account used to facilitate an automated domain join operation
 - **public_zone** (Boolean) Whether the domain will be public or private
-- **tenant** (Number)
+- **tenant_id** (Number) The tenant to assign the network domain
 - **visibility** (String) Determines whether the resource is visible in sub-tenants or not
+
+### Read-Only
+
+- **id** (String) The ID of the network domain
 
 ## Import
 
 Import is supported using the following syntax:
 
 ```shell
-terraform import morpheus_network_domain.foo <my-id>
+terraform import morpheus_network_domain.tf_example_network_domain 1
 ```

@@ -1,4 +1,4 @@
-resource "morpheus_instance" "name" {
+resource "morpheus_instance" "tf_example_instance" {
   description   = "Terraform instance example"
   cloud_id      = data.morpheus_cloud.vsphere.id
   group_id      = data.morpheus_group.all.id

@@ -1,1 +1,1 @@
-terraform import morpheus_instance.foo <my-id>
+terraform import morpheus_instance.tf_example_instance 1

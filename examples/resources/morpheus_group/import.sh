@@ -1,1 +1,1 @@
-terraform import morpheus_group.foo <my-id>
+terraform import morpheus_group.tf_example_group 1

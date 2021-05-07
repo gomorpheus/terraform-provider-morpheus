@@ -5,12 +5,12 @@ package morpheus
 // to distinguish it from ResourceGroups.
 
 import (
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	// "github.com/hashicorp/terraform/helper/schema"
-	//_"github.com/hashicorp/terraform/helper/validation"
+	"context"
+	"encoding/json"
 
-	"errors"
-	"fmt"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+
 	"log"
 
 	"github.com/gomorpheus/morpheus-go-sdk"
@@ -18,40 +18,51 @@ import (
 
 func resourceMorpheusGroup() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceMorpheusGroupCreate,
-		Read:   resourceMorpheusGroupRead,
-		Update: resourceMorpheusGroupUpdate,
-		Delete: resourceMorpheusGroupDelete,
+		Description: "Provides a Morpheus group resource.",
+
+		CreateContext: resourceMorpheusGroupCreate,
+		ReadContext:   resourceMorpheusGroupRead,
+		UpdateContext: resourceMorpheusGroupUpdate,
+		DeleteContext: resourceMorpheusGroupDelete,
 
 		Schema: map[string]*schema.Schema{
+			"id": {
+				Description: "The ID of the group",
+				Type:        schema.TypeString,
+				Computed:    true,
+			},
 			// Required inputs
-			"name": &schema.Schema{
+			"name": {
 				Description: "A unique name scoped to your account for the group",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
-			"code": &schema.Schema{
+			"code": {
 				Description: "Optional code for use with policies",
 				Type:        schema.TypeString,
 				Optional:    true,
 			},
-			"location": &schema.Schema{
+			"location": {
 				Description: "Optional location argument for your group",
 				Type:        schema.TypeString,
 				Optional:    true,
 			},
-			"clouds": {
+			"cloud_ids": {
 				Description: "An array of all the clouds assigned to this group",
-				Type:        schema.TypeList,
+				Type:        schema.TypeSet,
 				Optional:    true,
-				Elem:        &schema.Schema{Type: schema.TypeString},
+				Elem:        &schema.Schema{Type: schema.TypeInt},
 			},
 		},
 	}
 }
 
-func resourceMorpheusGroupCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceMorpheusGroupCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*morpheus.Client)
+
+	// Warning or errors can be collected in a slice type
+	var diags diag.Diagnostics
+
 	name := d.Get("name").(string)
 	code := d.Get("code").(string)
 	location := d.Get("location").(string)
@@ -62,20 +73,12 @@ func resourceMorpheusGroupCreate(d *schema.ResourceData, meta interface{}) error
 	// once api is better this should get simpler
 	doUpdateClouds := false
 	var clouds []map[string]interface{}
-	//clouds := make([]map[string]interface{}, 0, len(cloudNames))
-	if d.Get("clouds") != nil {
+	cloudIds := d.Get("cloud_ids").(*schema.Set).List()
+	if len(cloudIds) > 0 {
 		doUpdateClouds = true
-		cloudNames := d.Get("clouds").([]interface{})
-		//clouds = make([]map[string]interface{}, 0, len(cloudNames))
-		for i := 0; i < len(cloudNames); i++ {
-			findResponse, findErr := client.FindCloudByName(cloudNames[i].(string))
-			if findErr != nil {
-				return findErr
-			}
-			cloud := findResponse.Result.(*morpheus.GetCloudResult).Cloud
+		for _, v := range cloudIds {
 			cloudPayload := map[string]interface{}{
-				"id":   cloud.ID,
-				"name": cloud.Name,
+				"id": v,
 			}
 			clouds = append(clouds, cloudPayload)
 		}
@@ -87,16 +90,18 @@ func resourceMorpheusGroupCreate(d *schema.ResourceData, meta interface{}) error
 				"name":     name,
 				"code":     code,
 				"location": location,
-				// "zones": clouds,
 			},
 		},
 	}
+	jsonRequest, _ := json.Marshal(req.Body)
+	log.Printf("API JSON REQUEST: %s", string(jsonRequest))
+	log.Printf("API REQUEST: %s", req) // debug
 	resp, err := client.CreateGroup(req)
 	if err != nil {
-		log.Printf("API FAILURE:", resp, err)
-		return err
+		log.Printf("API FAILURE: %s - %s", resp, err)
+		return diag.FromErr(err)
 	}
-	log.Printf("API RESPONSE: ", resp)
+	log.Printf("API RESPONSE: %s", resp)
 	result := resp.Result.(*morpheus.CreateGroupResult)
 	group := result.Group
 
@@ -111,21 +116,29 @@ func resourceMorpheusGroupCreate(d *schema.ResourceData, meta interface{}) error
 				},
 			},
 		}
+		jsonRequest, _ := json.Marshal(req2.Body)
+		log.Printf("API JSON REQUEST: %s", string(jsonRequest))
+		log.Printf("API REQUEST: %s", req2) // debug
 		resp2, err2 := client.UpdateGroupClouds(group.ID, req2)
 		if err2 != nil {
-			log.Printf("API FAILURE:", resp2, err2)
-			return err
+			log.Printf("API FAILURE: %s - %s", resp2, err2)
+			return diag.FromErr(err2)
 		}
-		log.Printf("API RESPONSE: ", resp2)
+		log.Printf("API RESPONSE: %s", resp2)
 	}
 
 	// Successfully created resource, now set id
 	d.SetId(int64ToString(group.ID))
-	return resourceMorpheusGroupRead(d, meta)
+	resourceMorpheusGroupRead(ctx, d, meta)
+	return diags
 }
 
-func resourceMorpheusGroupRead(d *schema.ResourceData, meta interface{}) error {
+func resourceMorpheusGroupRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*morpheus.Client)
+
+	// Warning or errors can be collected in a slice type
+	var diags diag.Diagnostics
+
 	id := d.Id()
 	name := d.Get("name").(string)
 
@@ -138,19 +151,19 @@ func resourceMorpheusGroupRead(d *schema.ResourceData, meta interface{}) error {
 		resp, err = client.GetGroup(toInt64(id), &morpheus.Request{})
 		// todo: ignore 404 errors...
 	} else {
-		return errors.New("Group cannot be read without name or id")
+		return diag.Errorf("Group cannot be read without name or id")
 	}
 	if err != nil {
 		// 404 is ok?
 		if resp != nil && resp.StatusCode == 404 {
-			log.Printf("API 404:", resp, err)
-			return nil
+			log.Printf("API 404: %s - %s", resp, err)
+			return diag.FromErr(err)
 		} else {
-			log.Printf("API FAILURE:", resp, err)
-			return err
+			log.Printf("API FAILURE: %s - %s", resp, err)
+			return diag.FromErr(err)
 		}
 	}
-	log.Printf("API RESPONSE:", resp)
+	log.Printf("API RESPONSE: %s", resp)
 
 	// store resource data
 	result := resp.Result.(*morpheus.GetGroupResult)
@@ -160,16 +173,21 @@ func resourceMorpheusGroupRead(d *schema.ResourceData, meta interface{}) error {
 		d.Set("name", group.Name)
 		d.Set("code", group.Code)
 		d.Set("location", group.Location)
-		// d.Set("clouds", group.Clouds)
-		// todo: more fields
+		var clouds []int64
+		if len(group.Clouds) > 0 {
+			for _, v := range group.Clouds {
+				clouds = append(clouds, v.ID)
+			}
+		}
+		d.Set("cloud_ids", clouds)
 	} else {
-		return fmt.Errorf("Group not found in response data.") // should not happen
+		return diag.Errorf("Group not found in response data.") // should not happen
 	}
 
-	return nil
+	return diags
 }
 
-func resourceMorpheusGroupUpdate(d *schema.ResourceData, meta interface{}) error {
+func resourceMorpheusGroupUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*morpheus.Client)
 	id := d.Id()
 	name := d.Get("name").(string)
@@ -183,39 +201,83 @@ func resourceMorpheusGroupUpdate(d *schema.ResourceData, meta interface{}) error
 				"name":     name,
 				"code":     code,
 				"location": location,
-				// "clouds": clouds,
 			},
 		},
 	}
+	jsonRequest, _ := json.Marshal(req.Body)
+	log.Printf("API JSON REQUEST: %s", string(jsonRequest))
+	log.Printf("API REQUEST: %s", req) // debug
 	resp, err := client.UpdateGroup(toInt64(id), req)
 	if err != nil {
-		log.Printf("API FAILURE:", resp, err)
-		return err
+		log.Printf("API FAILURE: %s - %s", resp, err)
+		return diag.FromErr(err)
 	}
-	log.Printf("API RESPONSE: ", resp)
+	log.Printf("API RESPONSE: %s", resp)
 	result := resp.Result.(*morpheus.UpdateGroupResult)
 	group := result.Group
+
+	// clouds is an array of string names, lookup each one via api.
+	// then the api expects it an array of objects, but only looks for id right now
+	// once api is better this should get simpler
+	doUpdateClouds := false
+	var clouds []map[string]interface{}
+	cloudIds := d.Get("cloud_ids").(*schema.Set).List()
+	if len(cloudIds) > 0 {
+		doUpdateClouds = true
+		for _, v := range cloudIds {
+			cloudPayload := map[string]interface{}{
+				"id": v,
+			}
+			clouds = append(clouds, cloudPayload)
+		}
+	}
+	// oh ya..update zones too.. should use Partial thingy
+	// or, even better the api should do this all in 1 request
+	// doUpdateClouds = false
+	if doUpdateClouds {
+		req2 := &morpheus.Request{
+			Body: map[string]interface{}{
+				"group": map[string]interface{}{
+					"zones": clouds,
+				},
+			},
+		}
+		jsonRequest, _ := json.Marshal(req2.Body)
+		log.Printf("API JSON REQUEST: %s", string(jsonRequest))
+		log.Printf("API REQUEST: %s", req2) // debug
+		resp2, err2 := client.UpdateGroupClouds(group.ID, req2)
+		if err2 != nil {
+			log.Printf("API FAILURE: %s - %s", resp2, err2)
+			return diag.FromErr(err2)
+		}
+		log.Printf("API RESPONSE: %s", resp2)
+	}
+
 	// Successfully updated resource, now set id
 	d.SetId(int64ToString(group.ID))
-	return resourceMorpheusGroupRead(d, meta)
+	return resourceMorpheusGroupRead(ctx, d, meta)
 }
 
-func resourceMorpheusGroupDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceMorpheusGroupDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*morpheus.Client)
+
+	// Warning or errors can be collected in a slice type
+	var diags diag.Diagnostics
+
 	id := d.Id()
 	req := &morpheus.Request{}
 	resp, err := client.DeleteGroup(toInt64(id), req)
 	if err != nil {
 		if resp != nil && resp.StatusCode == 404 {
-			log.Printf("API 404:", resp, err)
-			return nil
+			log.Printf("API 404: %s - %s", resp, err)
+			return diag.FromErr(err)
 		} else {
-			log.Printf("API FAILURE:", resp, err)
-			return err
+			log.Printf("API FAILURE: %s - %s", resp, err)
+			return diag.FromErr(err)
 		}
 	}
-	log.Printf("API RESPONSE:", resp)
+	log.Printf("API RESPONSE: %s", resp)
 	// result := resp.Result.(*morpheus.DeleteGroupResult)
-	//d.setId("") // implicit
-	return nil
+	d.SetId("")
+	return diags
 }

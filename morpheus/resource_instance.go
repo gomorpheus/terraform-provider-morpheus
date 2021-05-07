@@ -1,10 +1,11 @@
 package morpheus
 
 import (
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	//"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
-	"errors"
-	"fmt"
+	"context"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+
 	"log"
 	"strings"
 
@@ -13,48 +14,55 @@ import (
 
 func resourceInstance() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceInstanceCreate,
-		Read:   resourceInstanceRead,
-		Update: resourceInstanceUpdate,
-		Delete: resourceInstanceDelete,
+		Description: "Provides a Morpheus instance resource.",
+
+		CreateContext: resourceInstanceCreate,
+		ReadContext:   resourceInstanceRead,
+		UpdateContext: resourceInstanceUpdate,
+		DeleteContext: resourceInstanceDelete,
 
 		Schema: map[string]*schema.Schema{
-			"name": &schema.Schema{
+			"id": {
+				Description: "The ID of the instance",
+				Type:        schema.TypeString,
+				Computed:    true,
+			},
+			"name": {
 				Description: "The name of the instance",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
-			"description": &schema.Schema{
+			"description": {
 				Description: "The user friendly description of the instance",
 				Type:        schema.TypeString,
 				Optional:    true,
 			},
-			"cloud": &schema.Schema{
+			"cloud": {
 				Description: "",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
-			"group": &schema.Schema{
+			"group": {
 				Description: "The group to provision the instance into",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
-			"type": &schema.Schema{
+			"type": {
 				Description: "The type of instance to provision",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
-			"version": &schema.Schema{
+			"version": {
 				Description: "",
 				Type:        schema.TypeString,
 				Optional:    true,
 			},
-			"layout": &schema.Schema{
+			"layout": {
 				Description: "The layout to provision the instance from",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
-			"plan": &schema.Schema{
+			"plan": {
 				Description: "The service plan associated with the instance",
 				Type:        schema.TypeString,
 				Required:    true,
@@ -64,7 +72,7 @@ func resourceInstance() *schema.Resource {
 				Type:        schema.TypeString,
 				Optional:    true,
 			},
-			"environment": &schema.Schema{
+			"environment": {
 				Description: "The environment to assign the instance to",
 				Type:        schema.TypeString,
 				Optional:    true,
@@ -81,13 +89,13 @@ func resourceInstance() *schema.Resource {
 				Optional:    true,
 				Elem:        &schema.Schema{Type: schema.TypeString},
 			},
-			"create_user": &schema.Schema{
+			"create_user": {
 				Description: "",
 				Type:        schema.TypeString,
 				Optional:    true,
 			},
 			//todo: lookup user_group
-			"user_group": &schema.Schema{
+			"user_group": {
 				Description: "",
 				Type:        schema.TypeString,
 				Optional:    true,
@@ -331,8 +339,12 @@ the resulting payload looks like this:
 // We need to make the API easier to use. In the meantime,
 // try to make this terraform resource easy to use, that means settings cloud and group
 // with names easily like cloud: "My Cloud"
-func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceInstanceCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*morpheus.Client)
+
+	// Warning or errors can be collected in a slice type
+	var diags diag.Diagnostics
+
 	name := d.Get("name").(string)
 
 	// todo: needs to use /api/options/groups
@@ -340,11 +352,11 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 	var group *morpheus.Group
 	groupName := d.Get("group").(string)
 	if groupName == "" {
-		return errors.New("instance configuration requires 'group'")
+		return diag.Errorf("instance configuration requires 'group'")
 	} else {
 		groupResponse, groupErr := client.FindGroupByName(groupName)
 		if groupErr != nil {
-			return groupErr
+			return diag.FromErr(groupErr)
 		}
 		group = groupResponse.Result.(*morpheus.GetGroupResult).Group
 	}
@@ -354,11 +366,11 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 	var cloud *morpheus.Cloud
 	cloudName := d.Get("cloud").(string)
 	if cloudName == "" {
-		return errors.New("instance configuration requires 'cloud'")
+		return diag.Errorf("instance configuration requires 'cloud'")
 	} else {
 		findResponse, findErr := client.FindCloudByName(cloudName)
 		if findErr != nil {
-			return findErr
+			return diag.FromErr(findErr)
 		}
 		cloud = findResponse.Result.(*morpheus.GetCloudResult).Cloud
 	}
@@ -370,7 +382,7 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 	var instanceType *morpheus.OptionSourceOption
 	instanceTypeCode := d.Get("type").(string)
 	if instanceTypeCode == "" {
-		return errors.New("instance configuration requires 'type'")
+		return diag.Errorf("instance configuration requires 'type'")
 	} else {
 		optionResp, optionErr = client.GetOptionSource("instanceTypes", &morpheus.Request{
 			QueryParams: map[string]string{
@@ -379,7 +391,7 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 			},
 		})
 		if optionErr != nil {
-			return optionErr
+			return diag.FromErr(optionErr)
 		}
 		optionSourceData := optionResp.Result.(*morpheus.GetOptionSourceResult).Data
 		var matchingOptions []*morpheus.OptionSourceOption
@@ -392,7 +404,7 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 		}
 		matchingOptionCount := len(matchingOptions)
 		if matchingOptionCount != 1 {
-			return fmt.Errorf("Found %d Instance Types for '%v'", matchingOptionCount, instanceTypeCode)
+			return diag.Errorf("Found %d Instance Types for '%v'", matchingOptionCount, instanceTypeCode)
 		}
 		instanceType = matchingOptions[0]
 	}
@@ -408,7 +420,7 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 	var layout *morpheus.LayoutOption // OptionSourceOption
 	layoutCode := d.Get("layout").(string)
 	if layoutCode == "" {
-		return errors.New("instance configuration requires 'layout'")
+		return diag.Errorf("instance configuration requires 'layout'")
 	} else {
 		//optionResp, optionErr = client.GetOptionSource("layoutsForCloud", &morpheus.Request{
 		optionResp, optionErr = client.GetOptionSourceLayouts(&morpheus.Request{
@@ -420,7 +432,7 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 			},
 		})
 		if optionErr != nil {
-			return optionErr
+			return diag.FromErr(optionErr)
 		}
 		//optionSourceData := optionResp.Result.(*morpheus.GetOptionSourceResult).Data
 		optionSourceData := optionResp.Result.(*morpheus.GetOptionSourceLayoutsResult).Data
@@ -439,7 +451,7 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 		}
 		matchingOptionCount := len(matchingOptions)
 		if matchingOptionCount != 1 {
-			return fmt.Errorf("Found %d Layouts for '%v'. You may need to specify version.", matchingOptionCount, layoutCode)
+			return diag.Errorf("Found %d Layouts for '%v'. You may need to specify version.", matchingOptionCount, layoutCode)
 		}
 		layout = matchingOptions[0]
 	}
@@ -449,7 +461,7 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 	var plan *morpheus.InstancePlan
 	planCode := d.Get("plan").(string)
 	if planCode == "" {
-		return errors.New("instance configuration requires 'plan'")
+		return diag.Errorf("instance configuration requires 'plan'")
 	} else {
 		planResp, planErr := client.FindInstancePlanByCode(planCode, &morpheus.Request{
 			QueryParams: map[string]string{
@@ -459,7 +471,7 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 			},
 		})
 		if planErr != nil {
-			return planErr
+			return diag.FromErr(planErr)
 		}
 		plan = planResp.Result.(*morpheus.GetInstancePlanResult).Plan
 	}
@@ -527,7 +539,7 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 		// /api/options/zonePools?groupId=456&siteId=456&zoneId=53&cloudId=53&instanceTypeId=1&planId=75&layoutId=3
 		resourcePoolName := d.Get("resource_pool").(string)
 		if resourcePoolName == "" {
-			return errors.New("instance configuration requires 'resource_pool'")
+			return diag.Errorf("instance configuration requires 'resource_pool'")
 		} else {
 			//optionResp, optionErr = client.GetOptionSource("resourcePoolsForCloud", &morpheus.Request{
 			optionResp, optionErr = client.GetOptionSource("zonePools", &morpheus.Request{
@@ -541,7 +553,7 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 				},
 			})
 			if optionErr != nil {
-				return optionErr
+				return diag.FromErr(optionErr)
 			}
 			// note: resourcePool.Value is a float64... why!?
 			optionSourceData := optionResp.Result.(*morpheus.GetOptionSourceResult).Data
@@ -554,7 +566,7 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 			}
 			matchingOptionCount := len(matchingOptions)
 			if matchingOptionCount != 1 {
-				return fmt.Errorf("Found %d Resource Pools for '%v'.", matchingOptionCount, resourcePoolName)
+				return diag.Errorf("Found %d Resource Pools for '%v'.", matchingOptionCount, resourcePoolName)
 			}
 			resourcePool = matchingOptions[0]
 			resourcePoolIdStr = int64ToString(int64(resourcePool.Value.(float64)))
@@ -587,7 +599,7 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 			},
 		})
 		if datastoresErr != nil {
-			return datastoresErr
+			return diag.FromErr(datastoresErr)
 		}
 
 		// payload["volumes"] = d.Get("volumes").([]map[string]interface{})
@@ -640,7 +652,7 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 				}
 				matchingDatastoreCount := len(matchingDatastores)
 				if matchingDatastoreCount != 1 {
-					return fmt.Errorf("Found %d Datastores for '%v'.", matchingDatastoreCount, datastoreName)
+					return diag.Errorf("Found %d Datastores for '%v'.", matchingDatastoreCount, datastoreName)
 				}
 				datastore = matchingDatastores[0]
 
@@ -668,7 +680,7 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 			},
 		})
 		if networkOptionsErr != nil {
-			return networkOptionsErr
+			return diag.FromErr(networkOptionsErr)
 		}
 
 		// need to make NetworkInterface an object...
@@ -714,7 +726,7 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 					}
 					matchingNetworksCount := len(matchingNetworks)
 					if matchingNetworksCount != 1 {
-						return fmt.Errorf("Found %d Networks for '%v'.", matchingNetworksCount, networkName)
+						return diag.Errorf("Found %d Networks for '%v'.", matchingNetworksCount, networkName)
 					}
 					network = matchingNetworks[0]
 
@@ -741,21 +753,26 @@ func resourceInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 
 	req := &morpheus.Request{Body: payload}
 	resp, err := client.CreateInstance(req)
-	log.Printf("API REQUEST:", req) // debug
+	log.Printf("API REQUEST: %s", req) // debug
 	if err != nil {
-		log.Printf("API FAILURE:", resp, err)
-		return err
+		log.Printf("API FAILURE: %s - %s", resp, err)
+		return diag.FromErr(err)
 	}
-	log.Printf("API RESPONSE: ", resp)
+	log.Printf("API RESPONSE: %s", resp)
 	result := resp.Result.(*morpheus.CreateInstanceResult)
 	instance := result.Instance
 	// Successfully created resource, now set id
 	d.SetId(int64ToString(instance.ID))
-	return resourceInstanceRead(d, meta)
+	resourceInstanceRead(ctx, d, meta)
+	return diags
 }
 
-func resourceInstanceRead(d *schema.ResourceData, meta interface{}) error {
+func resourceInstanceRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*morpheus.Client)
+
+	// Warning or errors can be collected in a slice type
+	var diags diag.Diagnostics
+
 	id := d.Id()
 	name := d.Get("name").(string)
 
@@ -768,25 +785,25 @@ func resourceInstanceRead(d *schema.ResourceData, meta interface{}) error {
 		resp, err = client.GetInstance(toInt64(id), &morpheus.Request{})
 		// todo: ignore 404 errors...
 	} else {
-		return errors.New("Instance cannot be read without name or id")
+		return diag.Errorf("Instance cannot be read without name or id")
 	}
 	if err != nil {
 		// 404 is ok?
 		if resp != nil && resp.StatusCode == 404 {
-			log.Printf("API 404:", resp, err)
-			return nil
+			log.Printf("API 404: %s - %s", resp, err)
+			return diag.FromErr(err)
 		} else {
-			log.Printf("API FAILURE:", resp, err)
-			return err
+			log.Printf("API FAILURE: %s - %s", resp, err)
+			return diag.FromErr(err)
 		}
 	}
-	log.Printf("API RESPONSE:", resp)
+	log.Printf("API RESPONSE: %s", resp)
 
 	// store resource data
 	result := resp.Result.(*morpheus.GetInstanceResult)
 	instance := result.Instance
 	if instance == nil {
-		return fmt.Errorf("Instance not found in response data.") // should not happen
+		return diag.Errorf("Instance not found in response data.") // should not happen
 	}
 
 	d.SetId(int64ToString(instance.ID))
@@ -797,10 +814,10 @@ func resourceInstanceRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("config", instance.Config)
 	// todo: more fields
 
-	return nil
+	return diags
 }
 
-func resourceInstanceUpdate(d *schema.ResourceData, meta interface{}) error {
+func resourceInstanceUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*morpheus.Client)
 	id := d.Id()
 	name := d.Get("name").(string)
@@ -820,19 +837,23 @@ func resourceInstanceUpdate(d *schema.ResourceData, meta interface{}) error {
 	}
 	resp, err := client.UpdateInstance(toInt64(id), req)
 	if err != nil {
-		log.Printf("API FAILURE:", resp, err)
-		return err
+		log.Printf("API FAILURE: %s - %s", resp, err)
+		return diag.FromErr(err)
 	}
-	log.Printf("API RESPONSE: ", resp)
+	log.Printf("API RESPONSE: %s", resp)
 	result := resp.Result.(*morpheus.UpdateInstanceResult)
 	instance := result.Instance
 	// Successfully updated resource, now set id
 	d.SetId(int64ToString(instance.ID))
-	return resourceInstanceRead(d, meta)
+	return resourceInstanceRead(ctx, d, meta)
 }
 
-func resourceInstanceDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceInstanceDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*morpheus.Client)
+
+	// Warning or errors can be collected in a slice type
+	var diags diag.Diagnostics
+
 	id := d.Id()
 	req := &morpheus.Request{
 		QueryParams: map[string]string{},
@@ -843,15 +864,15 @@ func resourceInstanceDelete(d *schema.ResourceData, meta interface{}) error {
 	resp, err := client.DeleteInstance(toInt64(id), req)
 	if err != nil {
 		if resp != nil && resp.StatusCode == 404 {
-			log.Printf("API 404:", resp, err)
+			log.Printf("API 404: %s - %s", resp, err)
 			return nil
 		} else {
-			log.Printf("API FAILURE:", resp, err)
-			return err
+			log.Printf("API FAILURE: %s - %s", resp, err)
+			return diag.FromErr(err)
 		}
 	}
-	log.Printf("API RESPONSE:", resp)
+	log.Printf("API RESPONSE: %s", resp)
 	// result := resp.Result.(*morpheus.DeleteInstanceResult)
-	//d.setId("") // implicit
-	return nil
+	d.SetId("") // implicit
+	return diags
 }

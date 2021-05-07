@@ -5,13 +5,13 @@ description: |-
 {{ .Description | plainmarkdown | trimspace | prefixlines "  " }}
 ---
 
-# Resource `morpheus_instance`
+# morpheus_instance
 
 {{ .Description | trimspace }}
 
 ## Example Usage
 
-{{tffile "examples/resources/morpheus_instance/instance.tf"}}
+{{tffile "examples/resources/morpheus_instance/resource.tf"}}
 
 {{ .SchemaMarkdown | trimspace }}
 

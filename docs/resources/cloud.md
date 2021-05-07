@@ -2,18 +2,25 @@
 page_title: "morpheus_cloud Resource - terraform-provider-morpheus"
 subcategory: ""
 description: |-
-  
+This resource creates a Morpheus cloud
+  Provides a Morpheus cloud resource.
 ---
 
-# Resource `morpheus_cloud`
+# morpheus_cloud
 
-
+Provides a Morpheus cloud resource.
 
 ## Example Usage
 
 ```terraform
-resource "morpheus_cloud" "name" {
-  
+resource "morpheus_cloud" "tf_example_cloud" {
+  name        = "morpheus_vsphere"
+  description = ""
+  type        = "vmware"
+  code        = ""
+  visibility  = "public"
+  enabled     = true
+  config     = ""
 }
 ```
 
@@ -32,15 +39,18 @@ resource "morpheus_cloud" "name" {
 - **description** (String) The user friendly description of the cloud
 - **enabled** (Boolean) Determines whether the cloud is active or not
 - **groups** (List of String) The group the cloud is assigned to
-- **id** (String) The ID of this resource.
 - **location** (String) Optional location for your cloud
 - **tenants** (List of String)
 - **visibility** (String) Determines whether the resource is visible in sub-tenants or not
+
+### Read-Only
+
+- **id** (String) The ID of the cloud
 
 ## Import
 
 Import is supported using the following syntax:
 
 ```shell
-terraform import morpheus_cloud.foo <my-id>
+terraform import morpheus_cloud.tf_example_cloud 1
 ```

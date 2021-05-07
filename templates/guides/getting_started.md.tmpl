@@ -1,0 +1,25 @@
+---
+subcategory: ""
+page_title: "Authenticate to Morpheus"
+description: |-
+    A guide to obtaining client credentials and adding them to provider configuration.
+---
+
+# Getting Started with the Morpheus Provider
+
+## Before you begin
+
+* [Install Terraform](https://www.terraform.io/intro/getting-started/install.html)
+and read the Terraform getting started guide that follows. This guide will
+assume basic proficiency with Terraform
+* 
+* 
+* Build the Morpheus Terraform provider using the `make dev` command. 
+
+## Configuring the provider
+
+{{ tffile "examples/provider/provider.tf" }}
+
+## Create a Morpheus instance using the `morpheus_instance` resource
+
+{{ tffile "examples/guides/instance_creation/main.tf" }}
