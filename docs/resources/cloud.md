@@ -2,7 +2,6 @@
 page_title: "morpheus_cloud Resource - terraform-provider-morpheus"
 subcategory: ""
 description: |-
-This resource creates a Morpheus cloud
   Provides a Morpheus cloud resource.
 ---
 
@@ -20,7 +19,7 @@ resource "morpheus_cloud" "tf_example_cloud" {
   code        = ""
   visibility  = "public"
   enabled     = true
-  config     = ""
+  config      = ""
 }
 ```
 

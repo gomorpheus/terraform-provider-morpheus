@@ -7,13 +7,11 @@ package morpheus
 import (
 	"context"
 	"encoding/json"
-
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-
 	"log"
 
 	"github.com/gomorpheus/morpheus-go-sdk"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceMorpheusGroup() *schema.Resource {
