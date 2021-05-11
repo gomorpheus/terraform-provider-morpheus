@@ -5,5 +5,5 @@ resource "morpheus_cloud" "tf_example_cloud" {
   code        = ""
   visibility  = "public"
   enabled     = true
-  config     = ""
+  config      = ""
 }

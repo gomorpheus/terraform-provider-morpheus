@@ -1,11 +1,11 @@
 ---
-page_title: "morpheus_instance Resource - terraform-provider-morpheus"
+page_title: "morpheus_vsphere_instance Resource - terraform-provider-morpheus"
 subcategory: ""
 description: |-
   Provides a Morpheus instance resource.
 ---
 
-# morpheus_instance
+# morpheus_vsphere_instance
 
 Provides a Morpheus instance resource.
 
@@ -21,10 +21,10 @@ resource "morpheus_instance" "tf_example_instance" {
   plan          = "1 CPU, 4GB Memory"
   environment   = "dev"
   resource_pool = "democluster"
-  labels        = ["demo","terraform"]
+  labels        = ["demo", "terraform"]
 
-  interfaces  {
-    network   = "VM Network"
+  interfaces {
+    network = "VM Network"
   }
 
   ports {
@@ -34,7 +34,7 @@ resource "morpheus_instance" "tf_example_instance" {
   }
 
   tags = {
-    name  = "ranchertf"
+    name = "ranchertf"
   }
 
   evar {
@@ -51,12 +51,11 @@ resource "morpheus_instance" "tf_example_instance" {
 
 ### Required
 
-- **cloud** (String)
-- **group** (String) The group to provision the instance into
-- **layout** (String) The layout to provision the instance from
-- **name** (String) The name of the instance
-- **plan** (String) The service plan associated with the instance
-- **type** (String) The type of instance to provision
+- **cloud_id** (Number) The ID of the cloud associated with the instance
+- **group_id** (Number) The ID of the group associated with the instance
+- **instance_layout_id** (Number) The layout to provision the instance from
+- **instance_type_id** (Number) The type of instance to provision
+- **plan_id** (Number) The service plan associated with the instance
 
 ### Optional
 
@@ -64,11 +63,14 @@ resource "morpheus_instance" "tf_example_instance" {
 - **create_user** (String)
 - **description** (String) The user friendly description of the instance
 - **environment** (String) The environment to assign the instance to
-- **evars** (Block List) The environment variables to assign to the instance (see [below for nested schema](#nestedblock--evars))
+- **evar** (Block List) (see [below for nested schema](#nestedblock--evar))
 - **interfaces** (Block List) The instance network interfaces to create (see [below for nested schema](#nestedblock--interfaces))
+- **labels** (List of String)
 - **metadata** (Block List) Metadata assigned to the instance (see [below for nested schema](#nestedblock--metadata))
-- **resource_pool** (String)
-- **tags** (List of String) Tags to assign to the instance
+- **name** (String) The name of the instance
+- **resource_pool_id** (Number)
+- **tags** (Map of String) Tags to assign to the instance
+- **timeouts** (Block, Optional) (see [below for nested schema](#nestedblock--timeouts))
 - **user_group** (String)
 - **version** (String)
 - **volumes** (Block List) The instance volumes to create (see [below for nested schema](#nestedblock--volumes))
@@ -77,13 +79,15 @@ resource "morpheus_instance" "tf_example_instance" {
 
 - **id** (String) The ID of the instance
 
-<a id="nestedblock--evars"></a>
-### Nested Schema for `evars`
+<a id="nestedblock--evar"></a>
+### Nested Schema for `evar`
 
-Required:
+Optional:
 
-- **name** (String) The name of the environment variable
-- **value** (String) The value of the environment variable
+- **export** (Boolean)
+- **masked** (Boolean)
+- **name** (String)
+- **value** (String)
 
 
 <a id="nestedblock--interfaces"></a>
@@ -93,7 +97,7 @@ Optional:
 
 - **ip_address** (String)
 - **ip_mode** (String)
-- **network** (String) The network to assign the network interface to
+- **network_id** (Number) The network to assign the network interface to
 - **network_interface_type_id** (Number) The network interface type
 
 
@@ -106,12 +110,22 @@ Required:
 - **value** (String) The value of the metadata
 
 
+<a id="nestedblock--timeouts"></a>
+### Nested Schema for `timeouts`
+
+Optional:
+
+- **create** (String)
+- **delete** (String)
+- **read** (String)
+- **update** (String)
+
+
 <a id="nestedblock--volumes"></a>
 ### Nested Schema for `volumes`
 
 Optional:
 
-- **datastore** (String)
 - **datastore_id** (Number) The ID of the datastore
 - **name** (String) The name/type of the LV being created
 - **root** (Boolean)

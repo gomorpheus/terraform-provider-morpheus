@@ -7,10 +7,10 @@ resource "morpheus_instance" "tf_example_instance" {
   plan          = "1 CPU, 4GB Memory"
   environment   = "dev"
   resource_pool = "democluster"
-  labels        = ["demo","terraform"]
+  labels        = ["demo", "terraform"]
 
-  interfaces  {
-    network   = "VM Network"
+  interfaces {
+    network = "VM Network"
   }
 
   ports {
@@ -20,7 +20,7 @@ resource "morpheus_instance" "tf_example_instance" {
   }
 
   tags = {
-    name  = "ranchertf"
+    name = "ranchertf"
   }
 
   evar {

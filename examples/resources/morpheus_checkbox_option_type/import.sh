@@ -1,0 +1,1 @@
+terraform import morpheus_checkbox_option_type.tf_example_checkbox_option_type 1
