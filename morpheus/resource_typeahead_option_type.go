@@ -12,8 +12,7 @@ import (
 
 func resourceTypeAheadOptionType() *schema.Resource {
 	return &schema.Resource{
-		Description: "Provides a Morpheus typeahead option type resource",
-
+		Description:   "Provides a Morpheus typeahead option type resource",
 		CreateContext: resourceTypeAheadOptionTypeCreate,
 		ReadContext:   resourceTypeAheadOptionTypeRead,
 		UpdateContext: resourceTypeAheadOptionTypeUpdate,
@@ -37,7 +36,7 @@ func resourceTypeAheadOptionType() *schema.Resource {
 			},
 			"export_meta": {
 				Type:        schema.TypeBool,
-				Description: "Whether to export the text option type as a tag",
+				Description: "Whether to export the typeahead option type as a tag",
 				Optional:    true,
 				Default:     false,
 			},
@@ -53,7 +52,7 @@ func resourceTypeAheadOptionType() *schema.Resource {
 			},
 			"display_value_on_details": {
 				Type:        schema.TypeBool,
-				Description: "Display the selected value of the text option type on the associated resource's details page",
+				Description: "Display the selected value of the typeahead option type on the associated resource's details page",
 				Optional:    true,
 				Default:     false,
 			},

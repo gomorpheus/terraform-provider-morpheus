@@ -27,73 +27,76 @@ func resourceRestOptionList() *schema.Resource {
 			},
 			"description": {
 				Type:        schema.TypeString,
-				Description: "",
+				Description: "The description of the option list",
 				Optional:    true,
 			},
 			"visibility": {
 				Type:         schema.TypeString,
-				Description:  "",
+				Description:  "Whether the option list is visible in sub-tenants or not",
 				Optional:     true,
 				ValidateFunc: validation.StringInSlice([]string{"private", "public", ""}, false),
 				Default:      "private",
 			},
 			"source_url": {
 				Type:        schema.TypeString,
-				Description: "",
+				Description: "The HTTP URL used for the API request",
 				Optional:    true,
 			},
 			"source_method": {
 				Type:         schema.TypeString,
-				Description:  "",
+				Description:  "The HTTP method used for the API request",
 				Optional:     true,
 				ValidateFunc: validation.StringInSlice([]string{"GET", "POST", ""}, false),
 			},
 			"source_headers": {
 				Type:        schema.TypeSet,
-				Description: "",
+				Description: "An array of source headers to use when requesting data",
 				Optional:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"name": {
-							Type:     schema.TypeString,
-							Optional: true,
+							Type:        schema.TypeString,
+							Description: "The name of the source header",
+							Optional:    true,
 						},
 						"value": {
-							Type:     schema.TypeString,
-							Optional: true,
+							Type:        schema.TypeString,
+							Description: "The value of the source header",
+							Optional:    true,
 						},
 						"masked": {
-							Type:     schema.TypeBool,
-							Optional: true,
+							Type:        schema.TypeBool,
+							Description: "Whether the source header value is masked or not",
+							Optional:    true,
 						},
 					},
 				},
 			},
 			"real_time": {
 				Type:        schema.TypeBool,
-				Description: "",
+				Description: "Whether the list is refreshed every time an associated option type is requested",
 				Optional:    true,
 				Default:     false,
 			},
 			"ignore_ssl_errors": {
 				Type:        schema.TypeBool,
-				Description: "",
+				Description: "Whether to ignore SSL errors with the REST API endpoint",
 				Optional:    true,
 				Default:     false,
 			},
 			"initial_dataset": {
 				Type:        schema.TypeString,
-				Description: "",
+				Description: "The initial dataset used to populate the option list",
 				Optional:    true,
 			},
 			"translation_script": {
 				Type:        schema.TypeString,
-				Description: "",
+				Description: "A js script to translate the result data object into an Array containing objects with properties 'name’ and 'value’.",
 				Optional:    true,
 			},
 			"request_script": {
 				Type:        schema.TypeString,
-				Description: "",
+				Description: "A js script to prepare the API request",
 				Optional:    true,
 			},
 		},
@@ -164,7 +167,6 @@ func resourceRestOptionListRead(ctx context.Context, d *schema.ResourceData, met
 	}
 
 	if err != nil {
-		// 404 is ok?
 		if resp != nil && resp.StatusCode == 404 {
 			log.Printf("API 404: %s - %s", resp, err)
 			return diag.FromErr(err)

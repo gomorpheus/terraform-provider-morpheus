@@ -34,12 +34,12 @@ POLICY
 
 ### Optional
 
-- **dataset** (String)
-- **description** (String)
+- **dataset** (String) The dataset for the manual option list
+- **description** (String) The description of the option list
 - **id** (String) The ID of this resource.
-- **real_time** (Boolean)
-- **translation_script** (String)
-- **visibility** (String)
+- **real_time** (Boolean) Whether the list is refreshed every time an associated option type is requested
+- **translation_script** (String) A js script to translate the result data object into an Array containing objects with properties 'name’ and 'value’.
+- **visibility** (String) Whether the option list is visible in sub-tenants or not
 
 ## Import
 

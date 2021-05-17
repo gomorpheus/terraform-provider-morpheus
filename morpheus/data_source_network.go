@@ -16,7 +16,7 @@ func dataSourceMorpheusNetwork() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:        schema.TypeString,
-				Description: "The name of the Morpheus cloud.",
+				Description: "The name of the Morpheus network.",
 				Optional:    true,
 			},
 			"active": {
@@ -26,12 +26,12 @@ func dataSourceMorpheusNetwork() *schema.Resource {
 			},
 			"description": {
 				Type:        schema.TypeString,
-				Description: "The description of the plan",
+				Description: "The description of the network",
 				Computed:    true,
 			},
 			"visibility": {
 				Type:        schema.TypeString,
-				Description: "The description of the plan",
+				Description: "Whether the network is visible in sub-tenants or not",
 				Computed:    true,
 			},
 		},
@@ -54,12 +54,10 @@ func dataSourceMorpheusNetworkRead(ctx context.Context, d *schema.ResourceData, 
 		resp, err = client.FindNetworkByName(name)
 	} else if id != "" {
 		resp, err = client.GetNetwork(toInt64(id), &morpheus.Request{})
-		// todo: ignore 404 errors...
 	} else {
 		return diag.Errorf("Network cannot be read without name or id")
 	}
 	if err != nil {
-		// 404 is ok?
 		if resp != nil && resp.StatusCode == 404 {
 			log.Printf("API 404: %s - %v", resp, err)
 			return nil

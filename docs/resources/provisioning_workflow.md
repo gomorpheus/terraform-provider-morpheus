@@ -36,16 +36,16 @@ resource "morpheus_provisioning_workflow" "provisionworkflowdemo" {
 - **description** (String) The description of the provisioning workflow
 - **id** (String) The ID of this resource.
 - **platform** (String) The operating system platforms the provisioning workflow is supported on
-- **task** (Block List) (see [below for nested schema](#nestedblock--task))
-- **visibility** (String)
+- **task** (Block List) A list of tasks associated with the provisioning workflow (see [below for nested schema](#nestedblock--task))
+- **visibility** (String) Whether the provisioning workflow is visible in sub-tenants or not
 
 <a id="nestedblock--task"></a>
 ### Nested Schema for `task`
 
 Required:
 
-- **task_id** (Number)
-- **task_phase** (String)
+- **task_id** (Number) The ID of the task to associate with the provisioning workflow
+- **task_phase** (String) The phase that the task is executed
 
 ## Import
 

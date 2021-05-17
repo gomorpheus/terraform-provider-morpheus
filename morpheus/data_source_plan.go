@@ -16,7 +16,7 @@ func dataSourceMorpheusPlan() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:        schema.TypeString,
-				Description: "The name of the Morpheus cloud.",
+				Description: "The name of the Morpheus plan.",
 				Optional:    true,
 			},
 			"code": {
@@ -49,12 +49,10 @@ func dataSourceMorpheusPlanRead(ctx context.Context, d *schema.ResourceData, met
 		resp, err = client.FindPlanByName(name)
 	} else if id != "" {
 		resp, err = client.GetPlan(toInt64(id), &morpheus.Request{})
-		// todo: ignore 404 errors...
 	} else {
 		return diag.Errorf("Plan cannot be read without name or id")
 	}
 	if err != nil {
-		// 404 is ok?
 		if resp != nil && resp.StatusCode == 404 {
 			log.Printf("API 404: %s - %v", resp, err)
 			return nil
@@ -73,7 +71,6 @@ func dataSourceMorpheusPlanRead(ctx context.Context, d *schema.ResourceData, met
 		d.Set("name", plan.Name)
 		d.Set("code", plan.Code)
 		d.Set("description", plan.Description)
-		d.Set("visibility", plan.Visibility)
 	} else {
 		return diag.Errorf("Plan not found in response data.") // should not happen
 	}

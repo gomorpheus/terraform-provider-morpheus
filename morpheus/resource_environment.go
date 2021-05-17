@@ -21,7 +21,7 @@ func resourceEnvironment() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"active": {
 				Type:        schema.TypeBool,
-				Description: "Whether the environment is active",
+				Description: "Whether the environment is enabled or not",
 				Optional:    true,
 				Default:     true,
 			},
@@ -42,7 +42,7 @@ func resourceEnvironment() *schema.Resource {
 			},
 			"visibility": {
 				Type:        schema.TypeString,
-				Description: "The code of the environment",
+				Description: "Whether the environment is visible in sub-tenants or not",
 				Optional:    true,
 				Default:     "private",
 			},

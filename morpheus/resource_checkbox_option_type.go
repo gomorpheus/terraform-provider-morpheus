@@ -162,7 +162,6 @@ func resourceCheckboxOptionTypeRead(ctx context.Context, d *schema.ResourceData,
 		d.Set("field_label", optionType.FieldLabel)
 		d.Set("default_checked", optionType.DefaultValue)
 	} else {
-		log.Println(optionType)
 		return diag.Errorf("read operation: option type not found in response data") // should not happen
 	}
 

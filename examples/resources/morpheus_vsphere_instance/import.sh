@@ -1,1 +1,1 @@
-terraform import morpheus_instance.tf_example_instance 1
+terraform import morpheus_vsphere_instance.tf_example_instance 1

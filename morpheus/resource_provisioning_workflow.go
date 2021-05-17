@@ -39,25 +39,25 @@ func resourceProvisioningWorkflow() *schema.Resource {
 			},
 			"visibility": {
 				Type:         schema.TypeString,
-				Description:  "",
+				Description:  "Whether the provisioning workflow is visible in sub-tenants or not",
 				Optional:     true,
 				ValidateFunc: validation.StringInSlice([]string{"private", "public", ""}, false),
 				Default:      "private",
 			},
 			"task": {
 				Type:        schema.TypeList,
-				Description: "",
+				Description: "A list of tasks associated with the provisioning workflow",
 				Optional:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"task_id": {
 							Type:        schema.TypeInt,
-							Description: "",
+							Description: "The ID of the task to associate with the provisioning workflow",
 							Required:    true,
 						},
 						"task_phase": {
 							Type:        schema.TypeString,
-							Description: "",
+							Description: "The phase that the task is executed",
 							Required:    true,
 						},
 					},
@@ -140,7 +140,6 @@ func resourceProvisioningWorkflowRead(ctx context.Context, d *schema.ResourceDat
 	}
 
 	if err != nil {
-		// 404 is ok?
 		if resp != nil && resp.StatusCode == 404 {
 			log.Printf("API 404: %s - %s", resp, err)
 			return diag.FromErr(err)

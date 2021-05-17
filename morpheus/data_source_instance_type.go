@@ -11,7 +11,7 @@ import (
 
 func dataSourceMorpheusInstanceType() *schema.Resource {
 	return &schema.Resource{
-		Description: "Provides a Morpheus resource pool data source.",
+		Description: "Provides a Morpheus instance type data source.",
 		ReadContext: dataSourceMorpheusInstanceTypeRead,
 		Schema: map[string]*schema.Schema{
 			"name": {
@@ -26,17 +26,17 @@ func dataSourceMorpheusInstanceType() *schema.Resource {
 			},
 			"active": {
 				Type:        schema.TypeBool,
-				Description: "Optional code for use with policies",
+				Description: "Whether the instance type is enabled or not",
 				Computed:    true,
 			},
 			"description": {
 				Type:        schema.TypeString,
-				Description: "The description of the plan",
+				Description: "The description of the instance type",
 				Computed:    true,
 			},
 			"visibility": {
 				Type:        schema.TypeString,
-				Description: "The description of the plan",
+				Description: "Whether the instance type is visible in sub-tenants or not",
 				Computed:    true,
 			},
 		},

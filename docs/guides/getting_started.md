@@ -12,7 +12,8 @@ description: |-
 * [Install Terraform](https://www.terraform.io/intro/getting-started/install.html)
 and read the Terraform getting started guide that follows. This guide will
 assume basic proficiency with Terraform
-
+* 
+* 
 * Build the Morpheus Terraform provider using the `make dev` command. 
 
 ## Configuring the provider

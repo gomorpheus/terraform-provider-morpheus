@@ -11,6 +11,7 @@ import (
 
 func dataSourceMorpheusTask() *schema.Resource {
 	return &schema.Resource{
+		Description: "Provides a Morpheus task data source.",
 		ReadContext: dataSourceMorpheusTaskRead,
 		Schema: map[string]*schema.Schema{
 			"name": {
@@ -38,12 +39,10 @@ func dataSourceMorpheusTaskRead(ctx context.Context, d *schema.ResourceData, met
 		resp, err = client.FindTaskByName(name)
 	} else if id != "" {
 		resp, err = client.GetTask(toInt64(id), &morpheus.Request{})
-		// todo: ignore 404 errors...
 	} else {
 		return diag.Errorf("Task cannot be read without name or id")
 	}
 	if err != nil {
-		// 404 is ok?
 		if resp != nil && resp.StatusCode == 404 {
 			log.Printf("API 404: %s - %v", resp, err)
 			return nil

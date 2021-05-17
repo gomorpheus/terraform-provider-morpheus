@@ -44,35 +44,22 @@ func resourceOperationalWorkflow() *schema.Resource {
 			},
 			"allow_custom_config": {
 				Type:        schema.TypeBool,
-				Description: "",
+				Description: "Allow a custom configuration to be supplied",
 				Optional:    true,
 				Default:     false,
 			},
 			"visibility": {
 				Type:         schema.TypeString,
-				Description:  "",
+				Description:  "Whether the operational workflow is visible in sub-tenants or not",
 				Optional:     true,
 				ValidateFunc: validation.StringInSlice([]string{"private", "public", ""}, false),
 				Default:      "private",
 			},
-			"task": {
+			"task_ids": {
 				Type:        schema.TypeList,
-				Description: "",
+				Description: "A list of tasks ids associated with the operational workflow",
 				Optional:    true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"task_id": {
-							Type:        schema.TypeInt,
-							Description: "",
-							Required:    true,
-						},
-						"task_phase": {
-							Type:        schema.TypeString,
-							Description: "",
-							Required:    true,
-						},
-					},
-				},
+				Elem:        &schema.Schema{Type: schema.TypeInt},
 			},
 		},
 	}
@@ -88,14 +75,13 @@ func resourceOperationalWorkflowCreate(ctx context.Context, d *schema.ResourceDa
 	description := d.Get("description").(string)
 	// tasks
 	var tasks []map[string]interface{}
-	if d.Get("task") != nil {
-		taskList := d.Get("task").([]interface{})
+	if d.Get("task_ids") != nil {
+		taskList := d.Get("task_ids").([]interface{})
 		// iterate over the array of tasks
 		for i := 0; i < len(taskList); i++ {
 			row := make(map[string]interface{})
-			taskconfig := taskList[i].(map[string]interface{})
-			row["taskId"] = taskconfig["task_id"]
-			row["taskPhase"] = taskconfig["task_phase"]
+			row["taskId"] = taskList[i]
+			row["taskPhase"] = "operation"
 			tasks = append(tasks, row)
 		}
 	}
@@ -153,7 +139,6 @@ func resourceOperationalWorkflowRead(ctx context.Context, d *schema.ResourceData
 	}
 
 	if err != nil {
-		// 404 is ok?
 		if resp != nil && resp.StatusCode == 404 {
 			log.Printf("API 404: %s - %s", resp, err)
 			return diag.FromErr(err)
@@ -182,11 +167,11 @@ func resourceOperationalWorkflowRead(ctx context.Context, d *schema.ResourceData
 			}
 		}
 		d.Set("option_types", optionTypes)
+		d.Set("task_ids", workflow.Tasks)
 		d.Set("visibility", workflow.Visibility)
 		d.Set("allow_custom_config", workflow.AllowCustomConfig)
 		d.Set("platform", workflow.Platform)
 	} else {
-		log.Println(workflow)
 		return diag.Errorf("read operation: workflow not found in response data") // should not happen
 	}
 
@@ -199,6 +184,19 @@ func resourceOperationalWorkflowUpdate(ctx context.Context, d *schema.ResourceDa
 	name := d.Get("name").(string)
 	description := d.Get("description").(string)
 
+	// tasks
+	var tasks []map[string]interface{}
+	if d.Get("task_ids") != nil {
+		taskList := d.Get("task_ids").([]interface{})
+		// iterate over the array of tasks
+		for i := 0; i < len(taskList); i++ {
+			row := make(map[string]interface{})
+			row["taskId"] = taskList[i]
+			row["taskPhase"] = "operation"
+			tasks = append(tasks, row)
+		}
+	}
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"taskSet": map[string]interface{}{
@@ -209,6 +207,7 @@ func resourceOperationalWorkflowUpdate(ctx context.Context, d *schema.ResourceDa
 				"visibility":        d.Get("visibility"),
 				"platform":          d.Get("platform"),
 				"allowCustomConfig": d.Get("allow_custom_config"),
+				"tasks":             tasks,
 			},
 		},
 	}
@@ -219,10 +218,10 @@ func resourceOperationalWorkflowUpdate(ctx context.Context, d *schema.ResourceDa
 	}
 	log.Printf("API RESPONSE: %s", resp)
 	result := resp.Result.(*morpheus.UpdateTaskSetResult)
-	account := result.TaskSet
+	taskSet := result.TaskSet
 	// Successfully updated resource, now set id
 	// err, it should not have changed though..
-	d.SetId(int64ToString(account.ID))
+	d.SetId(int64ToString(taskSet.ID))
 	return resourceOperationalWorkflowRead(ctx, d, meta)
 }
 

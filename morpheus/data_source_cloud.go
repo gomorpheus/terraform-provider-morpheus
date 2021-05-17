@@ -16,7 +16,7 @@ func dataSourceMorpheusCloud() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:        schema.TypeString,
-				Description: "The name of the Morpheus cloud.",
+				Description: "The name of the Morpheus cloud",
 				Optional:    true,
 			},
 			"code": {
@@ -49,12 +49,10 @@ func dataSourceMorpheusCloudRead(ctx context.Context, d *schema.ResourceData, me
 		resp, err = client.FindCloudByName(name)
 	} else if id != "" {
 		resp, err = client.GetCloud(toInt64(id), &morpheus.Request{})
-		// todo: ignore 404 errors...
 	} else {
 		return diag.Errorf("Cloud cannot be read without name or id")
 	}
 	if err != nil {
-		// 404 is ok?
 		if resp != nil && resp.StatusCode == 404 {
 			log.Printf("API 404: %s - %v", resp, err)
 			return nil

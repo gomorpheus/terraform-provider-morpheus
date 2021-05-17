@@ -37,21 +37,13 @@ resource "morpheus_operational_workflow" "operationalworkflowdemo" {
 
 ### Optional
 
-- **allow_custom_config** (Boolean)
+- **allow_custom_config** (Boolean) Allow a custom configuration to be supplied
 - **description** (String) The description of the operational workflow
 - **id** (String) The ID of this resource.
 - **option_types** (List of Number) The option types associated with the operational workflow
 - **platform** (String) The operating system platforms the operational workflow is supported to run on
-- **task** (Block List) (see [below for nested schema](#nestedblock--task))
-- **visibility** (String)
-
-<a id="nestedblock--task"></a>
-### Nested Schema for `task`
-
-Required:
-
-- **task_id** (Number)
-- **task_phase** (String)
+- **task_ids** (List of Number) A list of tasks ids associated with the operational workflow
+- **visibility** (String) Whether the operational workflow is visible in sub-tenants or not
 
 ## Import
 

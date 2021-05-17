@@ -65,7 +65,7 @@ func resourceVsphereCloud() *schema.Resource {
 			},
 			"api_url": {
 				Type:        schema.TypeString,
-				Description: "",
+				Description: "The SDK URL of the vCenter server (https://vcenter.morpheus.local/sdk)",
 				Required:    true,
 			},
 			"username": {
@@ -80,12 +80,12 @@ func resourceVsphereCloud() *schema.Resource {
 			},
 			"datacenter": {
 				Type:        schema.TypeString,
-				Description: "",
+				Description: "The vSphere datacenter to add",
 				Required:    true,
 			},
 			"cluster": {
 				Type:        schema.TypeString,
-				Description: "",
+				Description: "The name of the vSphere cluster",
 				Required:    true,
 			},
 			"resource_pool": {
@@ -100,23 +100,26 @@ func resourceVsphereCloud() *schema.Resource {
 				Default:     "guestexec",
 			},
 			"hide_host_selection": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default:  false,
+				Type:        schema.TypeBool,
+				Description: "",
+				Optional:    true,
+				Default:     false,
 			},
 			"import_existing": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default:  false,
+				Type:        schema.TypeBool,
+				Description: "Whether to import existing virtual machines",
+				Optional:    true,
+				Default:     false,
 			},
 			"enable_vnc": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default:  false,
+				Type:        schema.TypeBool,
+				Description: "Whether to enable VNC access",
+				Optional:    true,
+				Default:     false,
 			},
 			"groups": {
-				Description: "The group the cloud is assigned to",
 				Type:        schema.TypeList,
+				Description: "The group the cloud is assigned to",
 				Optional:    true,
 				Elem:        &schema.Schema{Type: schema.TypeString},
 			},
@@ -134,7 +137,6 @@ func resourceVsphereCloudCreate(ctx context.Context, d *schema.ResourceData, met
 	code := d.Get("code").(string)
 	visibility := d.Get("visibility").(string)
 
-	// config is a big map of who knows what
 	config := make(map[string]interface{})
 	config["certificateProvider"] = "internal"
 	config["apiUrl"] = d.Get("api_url")
@@ -193,12 +195,10 @@ func resourceVsphereCloudRead(ctx context.Context, d *schema.ResourceData, meta 
 		resp, err = client.FindCloudByName(name)
 	} else if id != "" {
 		resp, err = client.GetCloud(toInt64(id), &morpheus.Request{})
-		// todo: ignore 404 errors...
 	} else {
 		return diag.Errorf("Cloud cannot be read without name or id")
 	}
 	if err != nil {
-		// 404 is ok?
 		if resp != nil && resp.StatusCode == 404 {
 			log.Printf("API 404: %s - %s", resp, err)
 			return diag.FromErr(err)
@@ -223,7 +223,14 @@ func resourceVsphereCloudRead(ctx context.Context, d *schema.ResourceData, meta 
 	d.Set("visibility", cloud.Visibility)
 	d.Set("enabled", cloud.Enabled)
 	d.Set("api_url", cloud.Config["apiUrl"])
-
+	d.Set("username", cloud.Config["username"])
+	d.Set("password", cloud.Config["password"])
+	d.Set("datacenter", cloud.Config["datacenter"])
+	d.Set("cluster", cloud.Config["cluster"])
+	d.Set("rpc_mode", cloud.Config["rpcMode"])
+	d.Set("hide_host_selection", cloud.Config["hideHostSelection"])
+	d.Set("enable_vnc", cloud.Config["enableVnc"])
+	d.Set("import_existing", cloud.Config["importExisting"])
 	return diags
 }
 
@@ -232,19 +239,35 @@ func resourceVsphereCloudUpdate(ctx context.Context, d *schema.ResourceData, met
 	id := d.Id()
 	name := d.Get("name").(string)
 	code := d.Get("code").(string)
-	location := d.Get("location").(string)
-	// clouds := d.Get("clouds").([]interface{})
+	visibility := d.Get("visibility").(string)
 
-	req := &morpheus.Request{
-		Body: map[string]interface{}{
-			"zone": map[string]interface{}{
-				"name":     name,
-				"code":     code,
-				"location": location,
-				// "clouds": clouds,
+	config := make(map[string]interface{})
+	config["certificateProvider"] = "internal"
+	config["apiUrl"] = d.Get("api_url")
+	config["username"] = d.Get("username")
+	config["password"] = d.Get("password")
+	config["datacenter"] = d.Get("datacenter")
+	config["cluster"] = d.Get("cluster")
+	config["rpcMode"] = d.Get("rpc_mode")
+	config["hideHostSelection"] = d.Get("hide_host_selection")
+	config["enableVnc"] = d.Get("enable_vnc")
+	config["importExisting"] = d.Get("import_existing")
+
+	payload := map[string]interface{}{
+		"zone": map[string]interface{}{
+			"name":        name,
+			"code":        code,
+			"location":    d.Get("location").(string),
+			"description": d.Get("description").(string),
+			"zoneType": map[string]interface{}{
+				"code": "vmware",
 			},
+			"config":     config,
+			"visibility": visibility,
 		},
 	}
+
+	req := &morpheus.Request{Body: payload}
 	resp, err := client.UpdateCloud(toInt64(id), req)
 	if err != nil {
 		log.Printf("API FAILURE: %s - %s", resp, err)

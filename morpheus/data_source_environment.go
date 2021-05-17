@@ -21,7 +21,7 @@ func dataSourceMorpheusEnvironment() *schema.Resource {
 			},
 			"name": {
 				Type:        schema.TypeString,
-				Description: "The name of the Morpheus environment.",
+				Description: "The name of the Morpheus environment",
 				Optional:    true,
 			},
 			"description": {
@@ -36,7 +36,7 @@ func dataSourceMorpheusEnvironment() *schema.Resource {
 			},
 			"visibility": {
 				Type:        schema.TypeString,
-				Description: "Whether the resource is visible in sub-tenants or not",
+				Description: "Whether the environment is visible in sub-tenants or not",
 				Computed:    true,
 			},
 		},
@@ -59,12 +59,10 @@ func dataSourceMorpheusEnvironmentRead(ctx context.Context, d *schema.ResourceDa
 		resp, err = client.FindEnvironmentByName(name)
 	} else if id != "" {
 		resp, err = client.GetEnvironment(toInt64(id), &morpheus.Request{})
-		// todo: ignore 404 errors...
 	} else {
 		return diag.Errorf("Environment cannot be read without name or id")
 	}
 	if err != nil {
-		// 404 is ok?
 		if resp != nil && resp.StatusCode == 404 {
 			log.Printf("API 404: %s - %v", resp, err)
 			return nil

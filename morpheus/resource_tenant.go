@@ -26,43 +26,43 @@ func resourceTenant() *schema.Resource {
 			},
 			"description": {
 				Type:        schema.TypeString,
-				Description: "",
+				Description: "The description of the tenant",
 				Optional:    true,
 			},
 			"enabled": {
 				Type:        schema.TypeBool,
-				Description: "",
+				Description: "Whether the tenant is enabled or not",
 				Optional:    true,
 				Default:     true,
 			},
 			"subdomain": {
 				Type:        schema.TypeString,
-				Description: "",
+				Description: "Sets the custom login url or login prefix for logging into a sub-tenant user",
 				Optional:    true,
 			},
 			"base_role": {
 				Type:        schema.TypeString,
-				Description: "",
+				Description: "The default base role for the account",
 				Optional:    true,
 			},
 			"currency": {
 				Type:        schema.TypeString,
-				Description: "",
+				Description: "Currency ISO Code to be used for the account",
 				Optional:    true,
 			},
 			"account_number": {
 				Type:        schema.TypeInt,
-				Description: "",
+				Description: "An optional field that can be used for billing and accounting",
 				Optional:    true,
 			},
 			"account_name": {
 				Type:        schema.TypeString,
-				Description: "",
+				Description: "An optional field that can be used for billing and accounting",
 				Optional:    true,
 			},
 			"customer_number": {
 				Type:        schema.TypeInt,
-				Description: "",
+				Description: "An optional field that can be used for billing and accounting",
 				Optional:    true,
 			},
 		},
@@ -131,7 +131,6 @@ func resourceTenantRead(ctx context.Context, d *schema.ResourceData, meta interf
 	}
 
 	if err != nil {
-		// 404 is ok?
 		if resp != nil && resp.StatusCode == 404 {
 			log.Printf("API 404: %s - %s", resp, err)
 			return diag.FromErr(err)

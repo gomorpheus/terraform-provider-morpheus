@@ -16,7 +16,7 @@ func dataSourceMorpheusInstanceLayout() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:        schema.TypeString,
-				Description: "The name of the Morpheus cloud.",
+				Description: "The name of the Morpheus instance layout",
 				Optional:    true,
 			},
 			"code": {
@@ -26,7 +26,7 @@ func dataSourceMorpheusInstanceLayout() *schema.Resource {
 			},
 			"description": {
 				Type:        schema.TypeString,
-				Description: "The description of the plan",
+				Description: "The description of the instance layout",
 				Computed:    true,
 			},
 		},
@@ -49,12 +49,10 @@ func dataSourceMorpheusInstanceLayoutRead(ctx context.Context, d *schema.Resourc
 		resp, err = client.FindInstanceLayoutByName(name)
 	} else if id != "" {
 		resp, err = client.GetInstanceLayout(toInt64(id), &morpheus.Request{})
-		// todo: ignore 404 errors...
 	} else {
-		return diag.Errorf("Instance type cannot be read without name or id")
+		return diag.Errorf("Instance layout cannot be read without name or id")
 	}
 	if err != nil {
-		// 404 is ok?
 		if resp != nil && resp.StatusCode == 404 {
 			log.Printf("API 404: %s - %v", resp, err)
 			return nil
@@ -67,14 +65,14 @@ func dataSourceMorpheusInstanceLayoutRead(ctx context.Context, d *schema.Resourc
 
 	// store resource data
 	result := resp.Result.(*morpheus.GetInstanceLayoutResult)
-	instanceType := result.InstanceLayout
-	if instanceType != nil {
-		d.SetId(int64ToString(instanceType.ID))
-		d.Set("name", instanceType.Name)
-		d.Set("code", instanceType.Code)
-		d.Set("description", instanceType.Description)
+	instanceLayout := result.InstanceLayout
+	if instanceLayout != nil {
+		d.SetId(int64ToString(instanceLayout.ID))
+		d.Set("name", instanceLayout.Name)
+		d.Set("code", instanceLayout.Code)
+		d.Set("description", instanceLayout.Description)
 	} else {
-		return diag.Errorf("Instance type not found in response data.") // should not happen
+		return diag.Errorf("Instance layout not found in response data.") // should not happen
 	}
 	return diags
 }

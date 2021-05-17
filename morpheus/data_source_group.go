@@ -11,7 +11,7 @@ import (
 
 func dataSourceMorpheusGroup() *schema.Resource {
 	return &schema.Resource{
-		Description: "Provides a Morpheus cloud data source.",
+		Description: "Provides a Morpheus group data source.",
 		ReadContext: dataSourceMorpheusGroupRead,
 		Schema: map[string]*schema.Schema{
 			"name": {
@@ -49,12 +49,10 @@ func dataSourceMorpheusGroupRead(ctx context.Context, d *schema.ResourceData, me
 		resp, err = client.FindGroupByName(name)
 	} else if id != "" {
 		resp, err = client.GetGroup(toInt64(id), &morpheus.Request{})
-		// todo: ignore 404 errors...
 	} else {
 		return diag.Errorf("Group cannot be read without name or id")
 	}
 	if err != nil {
-		// 404 is ok?
 		if resp != nil && resp.StatusCode == 404 {
 			log.Printf("API 404: %s - %v", resp, err)
 			return nil

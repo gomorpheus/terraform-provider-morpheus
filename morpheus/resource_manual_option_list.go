@@ -27,30 +27,30 @@ func resourceManualOptionList() *schema.Resource {
 			},
 			"description": {
 				Type:        schema.TypeString,
-				Description: "",
+				Description: "The description of the option list",
 				Optional:    true,
 			},
 			"visibility": {
 				Type:         schema.TypeString,
-				Description:  "",
+				Description:  "Whether the option list is visible in sub-tenants or not",
 				Optional:     true,
 				ValidateFunc: validation.StringInSlice([]string{"private", "public", ""}, false),
 				Default:      "private",
 			},
 			"dataset": {
 				Type:        schema.TypeString,
-				Description: "",
+				Description: "The dataset for the manual option list",
 				Optional:    true,
 			},
 			"real_time": {
 				Type:        schema.TypeBool,
-				Description: "",
+				Description: "Whether the list is refreshed every time an associated option type is requested",
 				Optional:    true,
 				Default:     false,
 			},
 			"translation_script": {
 				Type:        schema.TypeString,
-				Description: "",
+				Description: "A js script to translate the result data object into an Array containing objects with properties 'name’ and 'value’.",
 				Optional:    true,
 			},
 		},
@@ -117,7 +117,6 @@ func resourceManualOptionListRead(ctx context.Context, d *schema.ResourceData, m
 	}
 
 	if err != nil {
-		// 404 is ok?
 		if resp != nil && resp.StatusCode == 404 {
 			log.Printf("API 404: %s - %s", resp, err)
 			return diag.FromErr(err)

@@ -1,0 +1,1 @@
+terraform import morpheus_vsphere_cloud.tf_example_cloud 1

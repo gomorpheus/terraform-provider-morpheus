@@ -11,6 +11,7 @@ import (
 
 func dataSourceMorpheusOptionType() *schema.Resource {
 	return &schema.Resource{
+		Description: "Provides a Morpheus option type data source.",
 		ReadContext: dataSourceMorpheusOptionTypeRead,
 		Schema: map[string]*schema.Schema{
 			"name": {
@@ -38,12 +39,10 @@ func dataSourceMorpheusOptionTypeRead(ctx context.Context, d *schema.ResourceDat
 		resp, err = client.FindOptionTypeByName(name)
 	} else if id != "" {
 		resp, err = client.GetOptionType(toInt64(id), &morpheus.Request{})
-		// todo: ignore 404 errors...
 	} else {
-		return diag.Errorf("OptionType cannot be read without name or id")
+		return diag.Errorf("Option type cannot be read without name or id")
 	}
 	if err != nil {
-		// 404 is ok?
 		if resp != nil && resp.StatusCode == 404 {
 			log.Printf("API 404: %s - %v", resp, err)
 			return nil
@@ -61,7 +60,7 @@ func dataSourceMorpheusOptionTypeRead(ctx context.Context, d *schema.ResourceDat
 		d.SetId(int64ToString(optionType.ID))
 		d.Set("name", optionType.Name)
 	} else {
-		return diag.Errorf("OptionType set not found in response data.") // should not happen
+		return diag.Errorf("Option type not found in response data.") // should not happen
 	}
 	return diags
 }

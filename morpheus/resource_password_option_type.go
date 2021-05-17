@@ -152,7 +152,6 @@ func resourcePasswordOptionTypeRead(ctx context.Context, d *schema.ResourceData,
 	}
 
 	if err != nil {
-		// 404 is ok?
 		if resp != nil && resp.StatusCode == 404 {
 			log.Printf("API 404: %s - %s", resp, err)
 			return diag.FromErr(err)

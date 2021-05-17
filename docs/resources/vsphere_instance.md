@@ -12,19 +12,49 @@ Provides a Morpheus instance resource.
 ## Example Usage
 
 ```terraform
-resource "morpheus_instance" "tf_example_instance" {
-  description   = "Terraform instance example"
-  cloud_id      = data.morpheus_cloud.vsphere.id
-  group_id      = data.morpheus_group.all.id
-  type          = "centos"
-  layout        = "centos"
-  plan          = "1 CPU, 4GB Memory"
-  environment   = "dev"
-  resource_pool = "democluster"
-  labels        = ["demo", "terraform"]
+data "morpheus_group" "morpheus_lab" {
+  name = "GRTLAB"
+}
+
+data "morpheus_cloud" "morpheus_vsphere" {
+  name = "GRTVCENTER"
+}
+
+data "morpheus_resource_pool" "vsphere_resource_pool" {
+  name = "GRT-Cluster"
+  cloud_id = data.morpheus_cloud.vsphere.id
+}
+
+data "morpheus_instance_type" "apache" {
+  name = "apache"
+}
+
+data "morpheus_instance_layout" "apache" {
+  name = "Apache"
+}
+
+data "morpheus_network" "vmnetwork" {
+  name = "VM Network"
+}
+
+data "morpheus_plan" "vmware" {
+  name = "1 CPU, 4GB Memory"
+}
+
+resource "morpheus_vsphere_instance" "tf_example_instance" {
+  name               = "tfdemo"
+  description        = "Terraform instance example"
+  cloud_id           = data.morpheus_cloud.morpheus_vsphere.id
+  group_id           = data.morpheus_group.morpheus_lab.id
+  instance_type_id   = data.morpheus_instance_type.apache.id
+  instance_layout_id = data.morpheus_instance_layout.apache.id
+  plan_id            = data.morpheus_plan.vmware.id
+  environment        = "dev"
+  resource_pool_id   = data.morpheus_resource_pool.vsphere_resource_pool.id
+  labels             = ["demo", "terraform"]
 
   interfaces {
-    network = "VM Network"
+    network_id = data.morpheus_network.vmnetwork.id
   }
 
   ports {
@@ -34,7 +64,7 @@ resource "morpheus_instance" "tf_example_instance" {
   }
 
   tags = {
-    name = "ranchertf"
+    name = "apachetf"
   }
 
   evar {
@@ -59,20 +89,19 @@ resource "morpheus_instance" "tf_example_instance" {
 
 ### Optional
 
-- **config** (Map of String) The instance configuration options
-- **create_user** (String)
+- **asset_tag** (String) The asset tag associated with the instance
+- **create_user** (Boolean) Whether to create a user account on the instance that is associated with the provisioning user account
 - **description** (String) The user friendly description of the instance
 - **environment** (String) The environment to assign the instance to
-- **evar** (Block List) (see [below for nested schema](#nestedblock--evar))
+- **evar** (Block List) The environment variables to create (see [below for nested schema](#nestedblock--evar))
 - **interfaces** (Block List) The instance network interfaces to create (see [below for nested schema](#nestedblock--interfaces))
-- **labels** (List of String)
-- **metadata** (Block List) Metadata assigned to the instance (see [below for nested schema](#nestedblock--metadata))
+- **labels** (List of String) The list of labels to add to the instance
 - **name** (String) The name of the instance
-- **resource_pool_id** (Number)
+- **resource_pool_id** (Number) The ID of the resource pool to provision the instance to
+- **skip_agent_install** (Boolean) Whether to skip installation of the Morpheus agent
 - **tags** (Map of String) Tags to assign to the instance
 - **timeouts** (Block, Optional) (see [below for nested schema](#nestedblock--timeouts))
-- **user_group** (String)
-- **version** (String)
+- **user_group_id** (Number)
 - **volumes** (Block List) The instance volumes to create (see [below for nested schema](#nestedblock--volumes))
 
 ### Read-Only
@@ -84,10 +113,10 @@ resource "morpheus_instance" "tf_example_instance" {
 
 Optional:
 
-- **export** (Boolean)
-- **masked** (Boolean)
-- **name** (String)
-- **value** (String)
+- **export** (Boolean) Whether the environment variable is exported as an instance tag
+- **masked** (Boolean) Whether the environment variable is masked for security purposes
+- **name** (String) The name of the environment variable
+- **value** (String) The value of the environment variable
 
 
 <a id="nestedblock--interfaces"></a>
@@ -99,15 +128,6 @@ Optional:
 - **ip_mode** (String)
 - **network_id** (Number) The network to assign the network interface to
 - **network_interface_type_id** (Number) The network interface type
-
-
-<a id="nestedblock--metadata"></a>
-### Nested Schema for `metadata`
-
-Required:
-
-- **name** (String) The name of the metadata
-- **value** (String) The value of the metadata
 
 
 <a id="nestedblock--timeouts"></a>
@@ -128,7 +148,7 @@ Optional:
 
 - **datastore_id** (Number) The ID of the datastore
 - **name** (String) The name/type of the LV being created
-- **root** (Boolean)
+- **root** (Boolean) Whether the volume is the root volume of the instance
 - **size** (Number) The size of the LV being created
 - **size_id** (Number) The ID of an existing LV to assign to the instance
 - **storage_type** (Number) The ID of the LV type
@@ -138,5 +158,5 @@ Optional:
 Import is supported using the following syntax:
 
 ```shell
-terraform import morpheus_instance.tf_example_instance 1
+terraform import morpheus_vsphere_instance.tf_example_instance 1
 ```

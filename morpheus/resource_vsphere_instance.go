@@ -46,6 +46,7 @@ func resourceVsphereInstance() *schema.Resource {
 			"cloud_id": {
 				Description: "The ID of the cloud associated with the instance",
 				Type:        schema.TypeInt,
+				ForceNew:    true,
 				Required:    true,
 			},
 			"group_id": {
@@ -56,25 +57,23 @@ func resourceVsphereInstance() *schema.Resource {
 			"instance_type_id": {
 				Description: "The type of instance to provision",
 				Type:        schema.TypeInt,
+				ForceNew:    true,
 				Required:    true,
-			},
-			"version": {
-				Description: "",
-				Type:        schema.TypeString,
-				Optional:    true,
 			},
 			"instance_layout_id": {
 				Description: "The layout to provision the instance from",
 				Type:        schema.TypeInt,
+				ForceNew:    true,
 				Required:    true,
 			},
 			"plan_id": {
 				Description: "The service plan associated with the instance",
 				Type:        schema.TypeInt,
+				ForceNew:    true,
 				Required:    true,
 			},
 			"resource_pool_id": {
-				Description: "",
+				Description: "The ID of the resource pool to provision the instance to",
 				Type:        schema.TypeInt,
 				Optional:    true,
 			},
@@ -85,7 +84,7 @@ func resourceVsphereInstance() *schema.Resource {
 			},
 			"labels": {
 				Type:        schema.TypeList,
-				Description: "",
+				Description: "The list of labels to add to the instance",
 				Optional:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -97,65 +96,56 @@ func resourceVsphereInstance() *schema.Resource {
 				Optional:    true,
 				Elem:        &schema.Schema{Type: schema.TypeString},
 			},
-			"config": {
-				Description: "The instance configuration options",
-				Type:        schema.TypeMap,
-				Optional:    true,
-				Elem:        &schema.Schema{Type: schema.TypeString},
-			},
 			"create_user": {
+				Description: "Whether to create a user account on the instance that is associated with the provisioning user account",
+				Type:        schema.TypeBool,
+				ForceNew:    true,
+				Optional:    true,
+				Default:     true,
+			},
+			"user_group_id": {
 				Description: "",
-				Type:        schema.TypeString,
+				Type:        schema.TypeInt,
+				ForceNew:    true,
 				Optional:    true,
 			},
-			"user_group": {
-				Description: "",
+			"asset_tag": {
+				Description: "The asset tag associated with the instance",
 				Type:        schema.TypeString,
+				ForceNew:    true,
 				Optional:    true,
 			},
-			"metadata": {
-				Description: "Metadata assigned to the instance",
-				Type:        schema.TypeList,
+			"skip_agent_install": {
+				Description: "Whether to skip installation of the Morpheus agent",
+				Type:        schema.TypeBool,
+				ForceNew:    true,
 				Optional:    true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"name": {
-							Description: "The name of the metadata",
-							Type:        schema.TypeString,
-							Required:    true,
-						},
-						"value": {
-							Description: "The value of the metadata",
-							Type:        schema.TypeString,
-							Required:    true,
-						},
-					},
-				},
+				Default:     false,
 			},
 			"evar": {
 				Type:        schema.TypeList,
-				Description: "",
+				Description: "The environment variables to create",
 				Optional:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"name": {
 							Type:        schema.TypeString,
-							Description: "",
+							Description: "The name of the environment variable",
 							Optional:    true,
 						},
 						"value": {
 							Type:        schema.TypeString,
-							Description: "",
+							Description: "The value of the environment variable",
 							Optional:    true,
 						},
 						"export": {
 							Type:        schema.TypeBool,
-							Description: "",
+							Description: "Whether the environment variable is exported as an instance tag",
 							Optional:    true,
 						},
 						"masked": {
 							Type:        schema.TypeBool,
-							Description: "",
+							Description: "Whether the environment variable is masked for security purposes",
 							Optional:    true,
 						},
 					},
@@ -168,7 +158,7 @@ func resourceVsphereInstance() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"root": {
-							Description: "",
+							Description: "Whether the volume is the root volume of the instance",
 							Type:        schema.TypeBool,
 							Optional:    true,
 						},
@@ -268,10 +258,35 @@ func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, 
 	instanceLayout := instanceLayoutResult.InstanceLayout
 	log.Printf("Instance Layout: %v", instanceLayout)
 
-	// config is a big map of who knows what
-	var config map[string]interface{}
+	// Config
+	config := make(map[string]interface{})
 	if d.Get("config") != nil {
 		config = d.Get("config").(map[string]interface{})
+	}
+
+	// Resource Pool
+	resourcePoolResp, err := client.GetResourcePool(int64(cloud), int64(d.Get("resource_pool_id").(int)), &morpheus.Request{})
+	if err != nil {
+		diag.FromErr(err)
+	}
+	resourcePoolResult := resourcePoolResp.Result.(*morpheus.GetResourcePoolResult)
+	resourcePool := resourcePoolResult.ResourcePool
+	log.Printf("Instance Layout: %v", resourcePool)
+	config["resourcePoolId"] = resourcePool.ID
+
+	// Create User
+	if d.Get("create_user") != nil {
+		config["createUser"] = d.Get("create_user").(bool)
+	}
+
+	// Asset Tag
+	if d.Get("asset_tag") != nil {
+		config["smbiosAssetTag"] = d.Get("asset_tag").(string)
+	}
+
+	// Skip Agent Install
+	if d.Get("skip_agent_install") != nil {
+		config["noAgent"] = d.Get("skip_agent_install").(bool)
 	}
 
 	instancePayload := map[string]interface{}{
@@ -292,32 +307,23 @@ func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, 
 		},
 	}
 
+	// Description
 	if d.Get("description") != nil {
 		instancePayload["description"] = d.Get("description").(string)
 	}
 
-	if d.Get("create_user") != nil {
-		config["createUser"] = d.Get("create_user") //.(bool)
+	// Environment
+	if d.Get("environment") != nil {
+		instancePayload["instanceContext"] = d.Get("environment").(string)
 	}
 
-	if d.Get("user_group") != nil {
-		//todo: lookup user_group by name please
-		//userGroupId := d.Get("user_group").(int64)
+	// User Group ID
+	if d.Get("user_group_id") != nil {
 		userGroupPayload := map[string]interface{}{
-			"id": d.Get("user_group"),
+			"id": d.Get("user_group_id").(int),
 		}
 		instancePayload["userGroup"] = userGroupPayload
 	}
-
-	// Resource Pool
-	resourcePoolResp, err := client.GetResourcePool(int64(cloud), int64(d.Get("resource_pool_id").(int)), &morpheus.Request{})
-	if err != nil {
-		diag.FromErr(err)
-	}
-	resourcePoolResult := resourcePoolResp.Result.(*morpheus.GetResourcePoolResult)
-	resourcePool := resourcePoolResult.ResourcePool
-	log.Printf("Instance Layout: %v", resourcePool)
-	config["resourcePoolId"] = resourcePool.ID
 
 	payload := map[string]interface{}{
 		"zoneId":   cloud,
@@ -328,7 +334,6 @@ func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, 
 	// tags
 	if d.Get("tags") != nil {
 		tagsInput := d.Get("tags").(map[string]interface{})
-		log.Println(tagsInput)
 		var tags []map[string]interface{}
 		for key, value := range tagsInput {
 			tag := make(map[string]interface{})
@@ -336,100 +341,27 @@ func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, 
 			tag["value"] = value.(string)
 			tags = append(tags, tag)
 		}
-		log.Printf("Tag JSON Input: %s", tags)
 		payload["tags"] = tags
 	}
 
-	// labels
+	// Labels
 	if d.Get("labels") != nil {
 		payload["labels"] = d.Get("labels")
 	}
 
-	// evars
+	// Environment Variables
 	if d.Get("evar") != nil {
-		evarList := d.Get("evar").([]interface{})
-		var evars []map[string]interface{}
-		// iterate over the array of evars
-		for i := 0; i < len(evarList); i++ {
-			row := make(map[string]interface{})
-			evarconfig := evarList[i].(map[string]interface{})
-			for k, v := range evarconfig {
-				switch k {
-				case "name":
-					row["name"] = v.(string)
-					log.Printf("evar name: %s", v.(string))
-				case "value":
-					row["value"] = v.(string)
-					log.Printf("evar value: %s", v.(string))
-				case "export":
-					row["export"] = v.(bool)
-					log.Printf("evar export: %t", v)
-				case "masked":
-					row["masked"] = v
-					log.Printf("evar masked: %t", v)
-				}
-				log.Printf("evar string: %s", row)
-			}
-			evars = append(evars, row)
-			log.Printf("evars payload: %s", evars)
-		}
-		payload["evars"] = evars
+		payload["evars"] = parseEnvironmentVariables(d.Get("evar").([]interface{}))
 	}
 
-	// volumes
-	if d.Get("volumes") != nil {
-		volumeList := d.Get("volumes").([]interface{})
-		var volumes []map[string]interface{}
-		for i := 0; i < len(volumeList); i++ {
-			row := make(map[string]interface{})
-			item := (volumeList)[i].(map[string]interface{})
-			if item["root"] != nil {
-				row["rootVolume"] = item["root"]
-			}
-			if item["name"] != nil {
-				row["name"] = item["name"] // .(string)
-			}
-			if item["size"] != nil {
-				row["size"] = item["size"] // .(int)
-			}
-			if item["size_id"] != nil {
-				row["sizeId"] = item["size_id"] // .(int)
-			}
-			if item["storage_type"] != nil {
-				row["storageType"] = item["storage_type"] // .(int)
-			}
-			if item["datastore_id"] != nil {
-				row["datastoreId"] = item["datastore_id"] // .(int)
-			}
-			volumes = append(volumes, row)
-		}
-		payload["volumes"] = volumes // .([]map[string]interface{})
-	}
-
-	// networkInterfaces
+	// Network Interfaces
 	if d.Get("interfaces") != nil {
-		interfaceList := d.Get("interfaces").([]interface{})
-		var networkInterfaces []map[string]interface{}
-		for i := 0; i < len(interfaceList); i++ {
-			row := make(map[string]interface{})
-			item := (interfaceList)[i].(map[string]interface{})
-			if item["network_id"] != nil {
-				row["network"] = map[string]interface{}{
-					"id": fmt.Sprintf("network-%d", item["network_id"].(int)),
-				}
-			}
-			if item["ip_address"] != nil {
-				row["ipAddress"] = item["ip_address"] //.(string)
-			}
-			if item["ip_mode"] != nil {
-				row["ipMode"] = item["ip_mode"] // .(string)
-			}
-			if item["network_interface_type_id"] != nil {
-				row["networkInterfaceTypeId"] = item["network_interface_type_id"] //.(int)
-			}
-			networkInterfaces = append(networkInterfaces, row)
-		}
-		payload["networkInterfaces"] = networkInterfaces // .([]map[string]interface{})
+		payload["networkInterfaces"] = parseNetworkInterfaces(d.Get("interfaces").([]interface{}))
+	}
+
+	// Volumes
+	if d.Get("volumes") != nil {
+		payload["volumes"] = parseStorageVolumes(d.Get("volumes").([]interface{}))
 	}
 
 	req := &morpheus.Request{Body: payload}
@@ -447,7 +379,7 @@ func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, 
 
 	stateConf := &resource.StateChangeConf{
 		Pending: []string{"provisioning", "starting", "stopping"},
-		Target:  []string{"running", "failed"},
+		Target:  []string{"running", "failed", "warning"},
 		Refresh: func() (interface{}, string, error) {
 			instanceDetails, err := client.GetInstance(instance.ID, &morpheus.Request{})
 			if err != nil {
@@ -491,12 +423,10 @@ func resourceVsphereInstanceRead(ctx context.Context, d *schema.ResourceData, me
 		resp, err = client.FindInstanceByName(name)
 	} else if id != "" {
 		resp, err = client.GetInstance(toInt64(id), &morpheus.Request{})
-		// todo: ignore 404 errors...
 	} else {
 		return diag.Errorf("Instance cannot be read without name or id")
 	}
 	if err != nil {
-		// 404 is ok?
 		if resp != nil && resp.StatusCode == 404 {
 			log.Printf("API 404: %s - %s", resp, err)
 			return diag.FromErr(err)
@@ -517,7 +447,33 @@ func resourceVsphereInstanceRead(ctx context.Context, d *schema.ResourceData, me
 	d.SetId(int64ToString(instance.ID))
 	d.Set("name", instance.Name)
 	d.Set("description", instance.Description)
-	d.Set("config", instance.Config)
+	d.Set("cloud_id", instance.Cloud["id"])
+	d.Set("group_id", instance.Group["id"])
+	d.Set("instance_type_id", instance.InstanceType["id"])
+	d.Set("instance_layout_id", instance.Layout["id"])
+	d.Set("plan_id", instance.Plan.ID)
+	d.Set("resource_pool_id", instance.Config["resourcePoolId"])
+	d.Set("environment", instance.Environment)
+	d.Set("labels", instance.Labels)
+	d.Set("evar", instance.EnvironmentVariables)
+	// Tags
+	tags := make(map[string]interface{})
+	if instance.Tags != nil {
+		output := instance.Tags
+		tagList := *output
+		// iterate over the array of tags
+		for i := 0; i < len(tagList); i++ {
+			tag := tagList[i]
+			tagName := tag["name"]
+			tags[tagName.(string)] = tag["value"]
+		}
+	}
+	d.Set("tags", tags)
+	userGroup := instance.Config["userGroup"].(map[string]interface{})
+	d.Set("user_group_id", userGroup["id"])
+	d.Set("create_user", instance.Config["createUser"])
+	d.Set("asset_tag", instance.Config["smbiosAssetTag"])
+	d.Set("skip_agent_install", instance.Config["noAgent"])
 
 	return diags
 }
@@ -526,18 +482,31 @@ func resourceVsphereInstanceUpdate(ctx context.Context, d *schema.ResourceData, 
 	client := meta.(*morpheus.Client)
 	id := d.Id()
 	name := d.Get("name").(string)
-	code := d.Get("code").(string)
-	location := d.Get("location").(string)
+	description := d.Get("description").(string)
 
-	req := &morpheus.Request{
-		Body: map[string]interface{}{
-			"zone": map[string]interface{}{
-				"name":     name,
-				"code":     code,
-				"location": location,
-			},
-		},
+	// Tags
+	var tags []map[string]interface{}
+	if d.HasChange("tags") {
+		tagsInput := d.Get("tags").(map[string]interface{})
+		for key, value := range tagsInput {
+			tag := make(map[string]interface{})
+			tag["name"] = key
+			tag["value"] = value.(string)
+			tags = append(tags, tag)
+		}
 	}
+
+	instancePayload := map[string]interface{}{
+		"name":            name,
+		"description":     description,
+		"labels":          d.Get("labels"),
+		"tags":            tags,
+		"instanceContext": d.Get("environment"),
+	}
+	payload := map[string]interface{}{
+		"instance": instancePayload,
+	}
+	req := &morpheus.Request{Body: payload}
 	resp, err := client.UpdateInstance(toInt64(id), req)
 	if err != nil {
 		log.Printf("API FAILURE: %s - %s", resp, err)
@@ -577,4 +546,80 @@ func resourceVsphereInstanceDelete(ctx context.Context, d *schema.ResourceData, 
 	log.Printf("API RESPONSE: %s", resp)
 	d.SetId("")
 	return diags
+}
+
+func parseNetworkInterfaces(interfaces []interface{}) []map[string]interface{} {
+	var networkInterfaces []map[string]interface{}
+	for i := 0; i < len(interfaces); i++ {
+		row := make(map[string]interface{})
+		item := (interfaces)[i].(map[string]interface{})
+		if item["network_id"] != nil {
+			row["network"] = map[string]interface{}{
+				"id": fmt.Sprintf("network-%d", item["network_id"].(int)),
+			}
+		}
+		if item["ip_address"] != nil {
+			row["ipAddress"] = item["ip_address"] //.(string)
+		}
+		if item["ip_mode"] != nil {
+			row["ipMode"] = item["ip_mode"] // .(string)
+		}
+		if item["network_interface_type_id"] != nil {
+			row["networkInterfaceTypeId"] = item["network_interface_type_id"] //.(int)
+		}
+		networkInterfaces = append(networkInterfaces, row)
+	}
+	return networkInterfaces
+}
+
+func parseStorageVolumes(volumes []interface{}) []map[string]interface{} {
+	var storageVolumes []map[string]interface{}
+	for i := 0; i < len(volumes); i++ {
+		row := make(map[string]interface{})
+		item := (volumes)[i].(map[string]interface{})
+		if item["root"] != nil {
+			row["rootVolume"] = item["root"]
+		}
+		if item["name"] != nil {
+			row["name"] = item["name"] // .(string)
+		}
+		if item["size"] != nil {
+			row["size"] = item["size"] // .(int)
+		}
+		if item["size_id"] != nil {
+			row["sizeId"] = item["size_id"] // .(int)
+		}
+		if item["storage_type"] != nil {
+			row["storageType"] = item["storage_type"] // .(int)
+		}
+		if item["datastore_id"] != nil {
+			row["datastoreId"] = item["datastore_id"] // .(int)
+		}
+		storageVolumes = append(storageVolumes, row)
+	}
+	return storageVolumes // .([]map[string]interface{})
+}
+
+func parseEnvironmentVariables(variables []interface{}) []map[string]interface{} {
+	var evars []map[string]interface{}
+	// iterate over the array of evars
+	for i := 0; i < len(variables); i++ {
+		row := make(map[string]interface{})
+		evarconfig := variables[i].(map[string]interface{})
+		for k, v := range evarconfig {
+			switch k {
+			case "name":
+				row["name"] = v.(string)
+			case "value":
+				row["value"] = v.(string)
+			case "export":
+				row["export"] = v.(bool)
+			case "masked":
+				row["masked"] = v
+			}
+		}
+		evars = append(evars, row)
+		log.Printf("evars payload: %s", evars)
+	}
+	return evars
 }

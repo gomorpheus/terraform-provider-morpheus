@@ -29,11 +29,11 @@ resource "morpheus_environment" "sample" {
 
 ### Optional
 
-- **active** (Boolean) Whether the environment is active
+- **active** (Boolean) Whether the environment is enabled or not
 - **code** (String) The code of the environment
 - **description** (String) The description of the environment
 - **id** (String) The ID of this resource.
-- **visibility** (String) The code of the environment
+- **visibility** (String) Whether the environment is visible in sub-tenants or not
 
 ## Import
 

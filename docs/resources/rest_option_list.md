@@ -43,26 +43,26 @@ resource "morpheus_rest_option_list" "restoptionlistdemo" {
 
 ### Optional
 
-- **description** (String)
+- **description** (String) The description of the option list
 - **id** (String) The ID of this resource.
-- **ignore_ssl_errors** (Boolean)
-- **initial_dataset** (String)
-- **real_time** (Boolean)
-- **request_script** (String)
-- **source_headers** (Block Set) (see [below for nested schema](#nestedblock--source_headers))
-- **source_method** (String)
-- **source_url** (String)
-- **translation_script** (String)
-- **visibility** (String)
+- **ignore_ssl_errors** (Boolean) Whether to ignore SSL errors with the REST API endpoint
+- **initial_dataset** (String) The initial dataset used to populate the option list
+- **real_time** (Boolean) Whether the list is refreshed every time an associated option type is requested
+- **request_script** (String) A js script to prepare the API request
+- **source_headers** (Block Set) An array of source headers to use when requesting data (see [below for nested schema](#nestedblock--source_headers))
+- **source_method** (String) The HTTP method used for the API request
+- **source_url** (String) The HTTP URL used for the API request
+- **translation_script** (String) A js script to translate the result data object into an Array containing objects with properties 'name’ and 'value’.
+- **visibility** (String) Whether the option list is visible in sub-tenants or not
 
 <a id="nestedblock--source_headers"></a>
 ### Nested Schema for `source_headers`
 
 Optional:
 
-- **masked** (Boolean)
-- **name** (String)
-- **value** (String)
+- **masked** (Boolean) Whether the source header value is masked or not
+- **name** (String) The name of the source header
+- **value** (String) The value of the source header
 
 ## Import
 

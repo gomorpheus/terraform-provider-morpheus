@@ -16,12 +16,12 @@ func dataSourceMorpheusResourcePool() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"cloud_id": {
 				Type:        schema.TypeInt,
-				Description: "The name of the Morpheus cloud.",
+				Description: "The id of the Morpheus cloud to search for the resource pool.",
 				Required:    true,
 			},
 			"name": {
 				Type:        schema.TypeString,
-				Description: "The name of the Morpheus cloud.",
+				Description: "The name of the Morpheus resource pool.",
 				Optional:    true,
 			},
 			"type": {
@@ -31,12 +31,12 @@ func dataSourceMorpheusResourcePool() *schema.Resource {
 			},
 			"active": {
 				Type:        schema.TypeBool,
-				Description: "Optional code for use with policies",
+				Description: "Whether the resource pool is enabled or not",
 				Computed:    true,
 			},
 			"description": {
 				Type:        schema.TypeString,
-				Description: "The description of the plan",
+				Description: "The description of the resource pool",
 				Computed:    true,
 			},
 		},
@@ -60,12 +60,10 @@ func dataSourceMorpheusResourcePoolRead(ctx context.Context, d *schema.ResourceD
 		resp, err = client.FindResourcePoolByName(int64(cloud_id), name)
 	} else if id != "" {
 		resp, err = client.GetResourcePool(int64(cloud_id), toInt64(id), &morpheus.Request{})
-		// todo: ignore 404 errors...
 	} else {
-		return diag.Errorf("Resource Pool cannot be read without name or id")
+		return diag.Errorf("Resource pool cannot be read without name or id")
 	}
 	if err != nil {
-		// 404 is ok?
 		if resp != nil && resp.StatusCode == 404 {
 			log.Printf("API 404: %s - %v", resp, err)
 			return nil
@@ -85,7 +83,6 @@ func dataSourceMorpheusResourcePoolRead(ctx context.Context, d *schema.ResourceD
 		d.Set("active", resourcePool.Active)
 		d.Set("type", resourcePool.Type)
 		d.Set("description", resourcePool.Description)
-		d.Set("visibility", resourcePool.Visibility)
 	} else {
 		return diag.Errorf("Resource pool not found in response data.") // should not happen
 	}
