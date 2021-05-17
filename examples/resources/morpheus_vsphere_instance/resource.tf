@@ -1,13 +1,13 @@
 data "morpheus_group" "morpheus_lab" {
-  name = "GRTLAB"
+  name = "MORPHEUS"
 }
 
 data "morpheus_cloud" "morpheus_vsphere" {
-  name = "GRTVCENTER"
+  name = "MORPHEUSVCENTER"
 }
 
 data "morpheus_resource_pool" "vsphere_resource_pool" {
-  name = "GRT-Cluster"
+  name = "Morpheus-Cluster"
   cloud_id = data.morpheus_cloud.vsphere.id
 }
 
@@ -41,12 +41,6 @@ resource "morpheus_vsphere_instance" "tf_example_instance" {
 
   interfaces {
     network_id = data.morpheus_network.vmnetwork.id
-  }
-
-  ports {
-    name = "web"
-    port = "8080"
-    lb   = "none"
   }
 
   tags = {

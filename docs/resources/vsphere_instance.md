@@ -13,15 +13,15 @@ Provides a Morpheus instance resource.
 
 ```terraform
 data "morpheus_group" "morpheus_lab" {
-  name = "GRTLAB"
+  name = "MORPHEUS"
 }
 
 data "morpheus_cloud" "morpheus_vsphere" {
-  name = "GRTVCENTER"
+  name = "MORPHEUSVCENTER"
 }
 
 data "morpheus_resource_pool" "vsphere_resource_pool" {
-  name = "GRT-Cluster"
+  name = "Morpheus-Cluster"
   cloud_id = data.morpheus_cloud.vsphere.id
 }
 
@@ -64,7 +64,11 @@ resource "morpheus_vsphere_instance" "tf_example_instance" {
   }
 
   tags = {
+<<<<<<< HEAD
     name = "apachetf"
+=======
+    name = "ranchertf"
+>>>>>>> a58233c6eebe46dce78ba0355adcf885c5b6f48e
   }
 
   evar {
@@ -89,6 +93,7 @@ resource "morpheus_vsphere_instance" "tf_example_instance" {
 
 ### Optional
 
+<<<<<<< HEAD
 - **asset_tag** (String) The asset tag associated with the instance
 - **create_user** (Boolean) Whether to create a user account on the instance that is associated with the provisioning user account
 - **description** (String) The user friendly description of the instance
@@ -102,6 +107,22 @@ resource "morpheus_vsphere_instance" "tf_example_instance" {
 - **tags** (Map of String) Tags to assign to the instance
 - **timeouts** (Block, Optional) (see [below for nested schema](#nestedblock--timeouts))
 - **user_group_id** (Number)
+=======
+- **config** (Map of String) The instance configuration options
+- **create_user** (String)
+- **description** (String) The user friendly description of the instance
+- **environment** (String) The environment to assign the instance to
+- **evar** (Block List) (see [below for nested schema](#nestedblock--evar))
+- **interfaces** (Block List) The instance network interfaces to create (see [below for nested schema](#nestedblock--interfaces))
+- **labels** (List of String)
+- **metadata** (Block List) Metadata assigned to the instance (see [below for nested schema](#nestedblock--metadata))
+- **name** (String) The name of the instance
+- **resource_pool_id** (Number)
+- **tags** (Map of String) Tags to assign to the instance
+- **timeouts** (Block, Optional) (see [below for nested schema](#nestedblock--timeouts))
+- **user_group** (String)
+- **version** (String)
+>>>>>>> a58233c6eebe46dce78ba0355adcf885c5b6f48e
 - **volumes** (Block List) The instance volumes to create (see [below for nested schema](#nestedblock--volumes))
 
 ### Read-Only
@@ -113,10 +134,17 @@ resource "morpheus_vsphere_instance" "tf_example_instance" {
 
 Optional:
 
+<<<<<<< HEAD
 - **export** (Boolean) Whether the environment variable is exported as an instance tag
 - **masked** (Boolean) Whether the environment variable is masked for security purposes
 - **name** (String) The name of the environment variable
 - **value** (String) The value of the environment variable
+=======
+- **export** (Boolean)
+- **masked** (Boolean)
+- **name** (String)
+- **value** (String)
+>>>>>>> a58233c6eebe46dce78ba0355adcf885c5b6f48e
 
 
 <a id="nestedblock--interfaces"></a>
@@ -130,6 +158,18 @@ Optional:
 - **network_interface_type_id** (Number) The network interface type
 
 
+<<<<<<< HEAD
+=======
+<a id="nestedblock--metadata"></a>
+### Nested Schema for `metadata`
+
+Required:
+
+- **name** (String) The name of the metadata
+- **value** (String) The value of the metadata
+
+
+>>>>>>> a58233c6eebe46dce78ba0355adcf885c5b6f48e
 <a id="nestedblock--timeouts"></a>
 ### Nested Schema for `timeouts`
 
@@ -148,7 +188,11 @@ Optional:
 
 - **datastore_id** (Number) The ID of the datastore
 - **name** (String) The name/type of the LV being created
+<<<<<<< HEAD
 - **root** (Boolean) Whether the volume is the root volume of the instance
+=======
+- **root** (Boolean)
+>>>>>>> a58233c6eebe46dce78ba0355adcf885c5b6f48e
 - **size** (Number) The size of the LV being created
 - **size_id** (Number) The ID of an existing LV to assign to the instance
 - **storage_type** (Number) The ID of the LV type
@@ -158,5 +202,9 @@ Optional:
 Import is supported using the following syntax:
 
 ```shell
+<<<<<<< HEAD
 terraform import morpheus_vsphere_instance.tf_example_instance 1
+=======
+terraform import morpheus_instance.tf_example_instance 1
+>>>>>>> a58233c6eebe46dce78ba0355adcf885c5b6f48e
 ```

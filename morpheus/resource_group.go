@@ -226,7 +226,6 @@ func resourceMorpheusGroupUpdate(ctx context.Context, d *schema.ResourceData, me
 			clouds = append(clouds, cloudPayload)
 		}
 	}
-
 	if doUpdateClouds {
 		req2 := &morpheus.Request{
 			Body: map[string]interface{}{

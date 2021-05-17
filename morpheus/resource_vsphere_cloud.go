@@ -175,7 +175,7 @@ func resourceVsphereCloudCreate(ctx context.Context, d *schema.ResourceData, met
 	cloud := result.Cloud
 	// Successfully created resource, now set id
 	d.SetId(int64ToString(cloud.ID))
-	resourceCloudRead(ctx, d, meta)
+	resourceVsphereCloudRead(ctx, d, meta)
 	return diags
 }
 
@@ -278,7 +278,7 @@ func resourceVsphereCloudUpdate(ctx context.Context, d *schema.ResourceData, met
 	cloud := result.Cloud
 	// Successfully updated resource, now set id
 	d.SetId(int64ToString(cloud.ID))
-	return resourceCloudRead(ctx, d, meta)
+	return resourceVsphereCloudRead(ctx, d, meta)
 }
 
 func resourceVsphereCloudDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
