@@ -12,14 +12,8 @@ Provides a Morpheus cloud data source.
 ## Example Usage
 
 ```terraform
-resource "morpheus_cloud" "tf_example_cloud" {
-  name        = "morpheus_vsphere"
-  description = ""
-  type        = "vmware"
-  code        = ""
-  visibility  = "public"
-  enabled     = true
-  config      = ""
+data "morpheus_cloud" "vspherecloud" {
+  name = "morpheus_vsphere"
 }
 ```
 
