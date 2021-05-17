@@ -13,8 +13,8 @@ Provides a Morpheus manual option list resource.
 
 ```terraform
 resource "morpheus_manual_option_list" "tf_example_manual_option_list" {
-  name        = "demo"
-  description = "tetin"
+  name        = "tf_example_manual_option_list"
+  description = "Terraform manual option list example"
   dataset     = <<POLICY
 [{"name": "Level 1","value":"level1"},
  {"name": "Level 2","value":"level2"},
@@ -36,10 +36,13 @@ POLICY
 
 - **dataset** (String) The dataset for the manual option list
 - **description** (String) The description of the option list
-- **id** (String) The ID of this resource.
 - **real_time** (Boolean) Whether the list is refreshed every time an associated option type is requested
 - **translation_script** (String) A js script to translate the result data object into an Array containing objects with properties 'name’ and 'value’.
 - **visibility** (String) Whether the option list is visible in sub-tenants or not
+
+### Read-Only
+
+- **id** (String) The ID of the manual option list
 
 ## Import
 

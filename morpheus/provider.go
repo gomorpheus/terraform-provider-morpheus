@@ -45,8 +45,8 @@ func Provider() *schema.Provider {
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
-			"morpheus_checkbox_option_type":    resourceCheckboxOptionType(),
-			"morpheus_cloud":                   resourceCloud(),
+			"morpheus_checkbox_option_type": resourceCheckboxOptionType(),
+			//			"morpheus_cloud":                   resourceCloud(),
 			"morpheus_environment":             resourceEnvironment(),
 			"morpheus_group":                   resourceMorpheusGroup(),
 			"morpheus_hidden_option_type":      resourceHiddenOptionType(),

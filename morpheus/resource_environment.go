@@ -19,6 +19,11 @@ func resourceEnvironment() *schema.Resource {
 		DeleteContext: resourceEnvironmentDelete,
 
 		Schema: map[string]*schema.Schema{
+			"id": {
+				Type:        schema.TypeString,
+				Description: "The ID of the environment",
+				Computed:    true,
+			},
 			"active": {
 				Type:        schema.TypeBool,
 				Description: "Whether the environment is enabled or not",

@@ -1,6 +1,6 @@
-resource "morpheus_rest_option_list" "restoptionlistdemo" {
-  name               = "tfrestexample"
-  description        = "tetin"
+resource "morpheus_rest_option_list" "tf_example_rest_option_list" {
+  name               = "tf_example_rest_option_list"
+  description        = "Terraform REST option list example"
   visibility         = "private"
   source_url         = "https://api.github.com/repos/hashicorp/consul/releases"
   real_time          = true

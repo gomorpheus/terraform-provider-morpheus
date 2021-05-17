@@ -12,8 +12,8 @@ Provides a Morpheus cloud resource.
 ## Example Usage
 
 ```terraform
-resource "morpheus_vsphere_cloud" "morpheusvsphere" {
-  name       = "tfvsphere"
+resource "morpheus_vsphere_cloud" "tf_example_vsphere_cloud" {
+  name       = "tf_example_vsphere_cloud"
   code       = "tfvsphere"
   api_url    = "https://vcenter.morpheus.local/sdk"
   username   = "administrator@vsphere.local"
@@ -61,5 +61,5 @@ resource "morpheus_vsphere_cloud" "morpheusvsphere" {
 Import is supported using the following syntax:
 
 ```shell
-terraform import morpheus_vsphere_cloud.tf_example_cloud 1
+terraform import morpheus_vsphere_cloud.tf_example_vsphere_cloud 1
 ```

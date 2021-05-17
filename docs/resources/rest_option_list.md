@@ -12,9 +12,9 @@ Provides a Morpheus rest option list resource.
 ## Example Usage
 
 ```terraform
-resource "morpheus_rest_option_list" "restoptionlistdemo" {
-  name               = "tfrestexample"
-  description        = "tetin"
+resource "morpheus_rest_option_list" "tf_example_rest_option_list" {
+  name               = "tf_example_rest_option_list"
+  description        = "Terraform REST option list example"
   visibility         = "private"
   source_url         = "https://api.github.com/repos/hashicorp/consul/releases"
   real_time          = true
@@ -44,7 +44,6 @@ resource "morpheus_rest_option_list" "restoptionlistdemo" {
 ### Optional
 
 - **description** (String) The description of the option list
-- **id** (String) The ID of this resource.
 - **ignore_ssl_errors** (Boolean) Whether to ignore SSL errors with the REST API endpoint
 - **initial_dataset** (String) The initial dataset used to populate the option list
 - **real_time** (Boolean) Whether the list is refreshed every time an associated option type is requested
@@ -54,6 +53,10 @@ resource "morpheus_rest_option_list" "restoptionlistdemo" {
 - **source_url** (String) The HTTP URL used for the API request
 - **translation_script** (String) A js script to translate the result data object into an Array containing objects with properties 'name’ and 'value’.
 - **visibility** (String) Whether the option list is visible in sub-tenants or not
+
+### Read-Only
+
+- **id** (String) The ID of the rest option list
 
 <a id="nestedblock--source_headers"></a>
 ### Nested Schema for `source_headers`

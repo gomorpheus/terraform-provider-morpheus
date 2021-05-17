@@ -19,6 +19,11 @@ func resourceTypeAheadOptionType() *schema.Resource {
 		DeleteContext: resourceTypeAheadOptionTypeDelete,
 
 		Schema: map[string]*schema.Schema{
+			"id": {
+				Type:        schema.TypeString,
+				Description: "The ID of the typeahead option type",
+				Computed:    true,
+			},
 			"name": {
 				Type:        schema.TypeString,
 				Description: "The name of the typeahead option type",

@@ -1,14 +1,11 @@
-resource "morpheus_operational_workflow" "operationalworkflowdemo" {
-  name = "operationalworkflowdemo"
-  description = "testhing"
-  platform = "all"
-  visibility = "private"
+resource "morpheus_operational_workflow" "tf_example_operational_workflow" {
+  name                = "tf_example_operational_workflow"
+  description         = "Terraform operational workflow example"
+  platform            = "all"
+  visibility          = "private"
   allow_custom_config = true
   option_types = [
     1730
   ]
-  task {
-    task_id = 18
-    task_phase = "operation"
-  }
+  task_ids = [18]
 }

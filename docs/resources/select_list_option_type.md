@@ -12,14 +12,19 @@ Provides a Morpheus select list option type resource
 ## Example Usage
 
 ```terraform
-resource "morpheus_select_list_option_type" "tf_example_cloud" {
-  name        = "morpheus_vsphere"
-  description = ""
-  type        = "vmware"
-  code        = ""
-  visibility  = "public"
-  enabled     = true
-  config     = ""
+resource "morpheus_select_list_option_type" "tf_example_select_list_option_type" {
+  name                     = "tf_example_select_list_option_type"
+  description              = "Terraform select list option type example"
+  field_name               = "test1"
+  export_meta              = true
+  dependent_field          = "servicemsh"
+  visibility_field         = "demotestin"
+  display_value_on_details = true
+  field_label              = "numbers"
+  default_value            = "testing"
+  help_block               = "fiwefw"
+  required                 = true
+  option_list_id           = 3
 }
 ```
 
@@ -40,10 +45,13 @@ resource "morpheus_select_list_option_type" "tf_example_cloud" {
 - **field_label** (String) The label associated with the field in the UI
 - **field_name** (String) The field name of the select list option type
 - **help_block** (String) Text that provides additional details about the use of the option type
-- **id** (String) The ID of this resource.
 - **option_list_id** (Number) The ID of the associated option list
 - **required** (Boolean) Whether the option type is required
 - **visibility_field** (String) The field or code used to trigger the visibility of the field
+
+### Read-Only
+
+- **id** (String) The ID of the select list option type
 
 ## Import
 

@@ -12,14 +12,15 @@ Provides a Morpheus hidden option type resource
 ## Example Usage
 
 ```terraform
-resource "morpheus_hidden_option_type" "tf_example_cloud" {
-  name        = "morpheus_vsphere"
-  description = ""
-  type        = "vmware"
-  code        = ""
-  visibility  = "public"
-  enabled     = true
-  config      = ""
+resource "morpheus_hidden_option_type" "tf_example_hidden_option_type" {
+  name                     = "tf_example_hidden_option_type"
+  description              = "Terraform hidden option type example"
+  field_name               = "test1"
+  export_meta              = true
+  dependent_field          = "servicemsh"
+  visibility_field         = "demotestin"
+  display_value_on_details = true
+  default_value            = "testing"
 }
 ```
 
@@ -38,8 +39,11 @@ resource "morpheus_hidden_option_type" "tf_example_cloud" {
 - **display_value_on_details** (Boolean) Display the selected value of the number option type on the associated resource's details page
 - **export_meta** (Boolean) Whether to export the hidden option type as a tag
 - **field_name** (String) The field name of the hidden option type
-- **id** (String) The ID of this resource.
 - **visibility_field** (String) The field or code used to trigger the visibility of the field
+
+### Read-Only
+
+- **id** (String) The ID of the hidden option type
 
 ## Import
 

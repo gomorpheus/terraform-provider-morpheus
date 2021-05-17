@@ -12,14 +12,8 @@ Provides a Morpheus tenant resource.
 ## Example Usage
 
 ```terraform
-resource "morpheus_tenant" "tf_example_cloud" {
+resource "morpheus_tenant" "tf_example_tenant" {
   name        = "morpheus_vsphere"
-  description = ""
-  type        = "vmware"
-  code        = ""
-  visibility  = "public"
-  enabled     = true
-  config     = ""
 }
 ```
 
@@ -39,8 +33,11 @@ resource "morpheus_tenant" "tf_example_cloud" {
 - **customer_number** (Number) An optional field that can be used for billing and accounting
 - **description** (String) The description of the tenant
 - **enabled** (Boolean) Whether the tenant is enabled or not
-- **id** (String) The ID of this resource.
 - **subdomain** (String) Sets the custom login url or login prefix for logging into a sub-tenant user
+
+### Read-Only
+
+- **id** (String) The ID of the tenant
 
 ## Import
 

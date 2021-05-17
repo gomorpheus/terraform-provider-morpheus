@@ -1,5 +1,5 @@
-resource "morpheus_vsphere_cloud" "morpheusvsphere" {
-  name       = "tfvsphere"
+resource "morpheus_vsphere_cloud" "tf_example_vsphere_cloud" {
+  name       = "tf_example_vsphere_cloud"
   code       = "tfvsphere"
   api_url    = "https://vcenter.morpheus.local/sdk"
   username   = "administrator@vsphere.local"

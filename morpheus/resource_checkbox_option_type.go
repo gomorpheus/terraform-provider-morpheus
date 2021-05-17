@@ -8,6 +8,7 @@ import (
 	"github.com/gomorpheus/morpheus-go-sdk"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceCheckboxOptionType() *schema.Resource {
@@ -19,6 +20,11 @@ func resourceCheckboxOptionType() *schema.Resource {
 		DeleteContext: resourceCheckboxOptionTypeDelete,
 
 		Schema: map[string]*schema.Schema{
+			"id": {
+				Type:        schema.TypeString,
+				Description: "The ID of the checkbox option type",
+				Computed:    true,
+			},
 			"name": {
 				Type:        schema.TypeString,
 				Description: "The name of the checkbox option type",
@@ -32,7 +38,7 @@ func resourceCheckboxOptionType() *schema.Resource {
 			"field_name": {
 				Type:        schema.TypeString,
 				Description: "The field name of the checkbox option type",
-				Optional:    true,
+				Required:    true,
 			},
 			"export_meta": {
 				Type:        schema.TypeBool,
@@ -59,13 +65,14 @@ func resourceCheckboxOptionType() *schema.Resource {
 			"field_label": {
 				Type:        schema.TypeString,
 				Description: "The label associated with the field in the UI",
-				Optional:    true,
+				Required:    true,
 			},
 			"default_checked": {
-				Type:        schema.TypeString,
-				Description: "Whether the checkbox option type is checked by default",
-				Optional:    true,
-				Default:     "off",
+				Type:         schema.TypeString,
+				Description:  "Whether the checkbox option type is checked by default (on or off)",
+				Optional:     true,
+				Default:      "off",
+				ValidateFunc: validation.StringInSlice([]string{"on", "off"}, false),
 			},
 		},
 		Importer: &schema.ResourceImporter{

@@ -34,7 +34,7 @@ provider "morpheus" {
 }
 ```
 
-## Create a Morpheus instance using the `morpheus_instance` resource
+## Create a Morpheus vSphere instance using the `morpheus_vsphere_instance` resource
 
 ```terraform
 resource "morpheus_vsphere_instance" "name" {

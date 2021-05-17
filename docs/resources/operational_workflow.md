@@ -12,19 +12,16 @@ Provides a Morpheus operational workflow resource.
 ## Example Usage
 
 ```terraform
-resource "morpheus_operational_workflow" "operationalworkflowdemo" {
-  name = "operationalworkflowdemo"
-  description = "testhing"
-  platform = "all"
-  visibility = "private"
+resource "morpheus_operational_workflow" "tf_example_operational_workflow" {
+  name                = "tf_example_operational_workflow"
+  description         = "Terraform operational workflow example"
+  platform            = "all"
+  visibility          = "private"
   allow_custom_config = true
   option_types = [
     1730
   ]
-  task {
-    task_id = 18
-    task_phase = "operation"
-  }
+  task_ids = [18]
 }
 ```
 
@@ -39,11 +36,14 @@ resource "morpheus_operational_workflow" "operationalworkflowdemo" {
 
 - **allow_custom_config** (Boolean) Allow a custom configuration to be supplied
 - **description** (String) The description of the operational workflow
-- **id** (String) The ID of this resource.
 - **option_types** (List of Number) The option types associated with the operational workflow
 - **platform** (String) The operating system platforms the operational workflow is supported to run on
 - **task_ids** (List of Number) A list of tasks ids associated with the operational workflow
 - **visibility** (String) Whether the operational workflow is visible in sub-tenants or not
+
+### Read-Only
+
+- **id** (Number) The ID of the operational workflow
 
 ## Import
 

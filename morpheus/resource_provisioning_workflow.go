@@ -21,6 +21,11 @@ func resourceProvisioningWorkflow() *schema.Resource {
 		DeleteContext: resourceProvisioningWorkflowDelete,
 
 		Schema: map[string]*schema.Schema{
+			"id": {
+				Type:        schema.TypeString,
+				Description: "The ID of the provisioning workflow",
+				Computed:    true,
+			},
 			"name": {
 				Type:        schema.TypeString,
 				Description: "The name of the provisioning workflow",

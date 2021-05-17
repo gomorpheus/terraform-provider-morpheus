@@ -1,9 +1,3 @@
-resource "morpheus_tenant" "tf_example_cloud" {
+resource "morpheus_tenant" "tf_example_tenant" {
   name        = "morpheus_vsphere"
-  description = ""
-  type        = "vmware"
-  code        = ""
-  visibility  = "public"
-  enabled     = true
-  config     = ""
 }

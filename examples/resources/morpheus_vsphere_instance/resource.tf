@@ -27,8 +27,8 @@ data "morpheus_plan" "vmware" {
   name = "1 CPU, 4GB Memory"
 }
 
-resource "morpheus_vsphere_instance" "tf_example_instance" {
-  name               = "tfdemo"
+resource "morpheus_vsphere_instance" "tf_example_vsphere_instance" {
+  name               = "tfvsphere"
   description        = "Terraform instance example"
   cloud_id           = data.morpheus_cloud.morpheus_vsphere.id
   group_id           = data.morpheus_group.morpheus_lab.id

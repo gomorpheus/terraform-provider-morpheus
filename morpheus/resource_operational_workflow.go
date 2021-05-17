@@ -20,6 +20,11 @@ func resourceOperationalWorkflow() *schema.Resource {
 		DeleteContext: resourceOperationalWorkflowDelete,
 
 		Schema: map[string]*schema.Schema{
+			"id": {
+				Type:        schema.TypeInt,
+				Description: "The ID of the operational workflow",
+				Computed:    true,
+			},
 			"name": {
 				Type:        schema.TypeString,
 				Description: "The name of the operational workflow",

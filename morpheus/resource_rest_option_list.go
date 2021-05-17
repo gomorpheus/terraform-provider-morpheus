@@ -20,6 +20,11 @@ func resourceRestOptionList() *schema.Resource {
 		DeleteContext: resourceRestOptionListDelete,
 
 		Schema: map[string]*schema.Schema{
+			"id": {
+				Type:        schema.TypeString,
+				Description: "The ID of the rest option list",
+				Computed:    true,
+			},
 			"name": {
 				Type:        schema.TypeString,
 				Description: "The name of the option list",

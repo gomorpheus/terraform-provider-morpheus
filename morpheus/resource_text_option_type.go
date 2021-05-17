@@ -19,6 +19,11 @@ func resourceTextOptionType() *schema.Resource {
 		DeleteContext: resourceTextOptionTypeDelete,
 
 		Schema: map[string]*schema.Schema{
+			"id": {
+				Type:        schema.TypeString,
+				Description: "The ID of the text option type",
+				Computed:    true,
+			},
 			"name": {
 				Type:        schema.TypeString,
 				Description: "The name of the text option type",

@@ -12,11 +12,11 @@ Provides a Morpheus provisioning workflow resource.
 ## Example Usage
 
 ```terraform
-resource "morpheus_provisioning_workflow" "provisionworkflowdemo" {
-  name = "tfdemo"
-  description = "testhing"
-  platform = "all"
-  visibility = "private"
+resource "morpheus_provisioning_workflow" "tf_example_provisioning_workflow" {
+  name        = "tf_example_provisioning_workflow"
+  description = "Terraform provisioning workflow example"
+  platform    = "all"
+  visibility  = "private"
   task {
     task_id = 18
     task_phase = "configure"
@@ -34,10 +34,13 @@ resource "morpheus_provisioning_workflow" "provisionworkflowdemo" {
 ### Optional
 
 - **description** (String) The description of the provisioning workflow
-- **id** (String) The ID of this resource.
 - **platform** (String) The operating system platforms the provisioning workflow is supported on
 - **task** (Block List) A list of tasks associated with the provisioning workflow (see [below for nested schema](#nestedblock--task))
 - **visibility** (String) Whether the provisioning workflow is visible in sub-tenants or not
+
+### Read-Only
+
+- **id** (String) The ID of the provisioning workflow
 
 <a id="nestedblock--task"></a>
 ### Nested Schema for `task`

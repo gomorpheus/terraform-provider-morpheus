@@ -20,6 +20,11 @@ func resourceManualOptionList() *schema.Resource {
 		DeleteContext: resourceManualOptionListDelete,
 
 		Schema: map[string]*schema.Schema{
+			"id": {
+				Type:        schema.TypeString,
+				Description: "The ID of the manual option list",
+				Computed:    true,
+			},
 			"name": {
 				Type:        schema.TypeString,
 				Description: "The name of the option list",

@@ -19,6 +19,11 @@ func resourceTenant() *schema.Resource {
 		DeleteContext: resourceTenantDelete,
 
 		Schema: map[string]*schema.Schema{
+			"id": {
+				Type:        schema.TypeString,
+				Description: "The ID of the tenant",
+				Computed:    true,
+			},
 			"name": {
 				Type:        schema.TypeString,
 				Description: "The name of the tenant",
