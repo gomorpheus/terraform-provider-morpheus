@@ -1,14 +1,14 @@
 ---
 subcategory: ""
-page_title: "Create a Morpheus instance - Morpheus Provider"
+page_title: "Create a Morpheus vSphere instance - Morpheus Provider"
 description: |-
-    An example of creating a Morpheus instance with optional fields defaulted.
+    An example of creating a Morpheus vSphere instance with optional fields defaulted.
 ---
 
-# Create a Morpheus instance using the `morpheus_instance` resource
+# Create a Morpheus instance using the `morpheus_vsphere_instance` resource
 
 ```terraform
-resource "morpheus_instance" "name" {
+resource "morpheus_vsphere_instance" "name" {
   description   = "Terraform instance example"
   cloud_id      = data.morpheus_cloud.vsphere.id
   group_id      = data.morpheus_group.all.id
@@ -23,14 +23,8 @@ resource "morpheus_instance" "name" {
     network   = "VM Network"
   }
 
-  ports {
-    name = "web"
-    port = "8080"
-    lb   = "none"
-  }
-
   tags = {
-    name  = "ranchertf"
+    name  = "tfdemo"
   }
 
   evar {

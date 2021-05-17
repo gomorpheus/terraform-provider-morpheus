@@ -12,12 +12,6 @@ description: |-
 * [Install Terraform](https://www.terraform.io/intro/getting-started/install.html)
 and read the Terraform getting started guide that follows. This guide will
 assume basic proficiency with Terraform
-<<<<<<< HEAD
-* 
-* 
-=======
-
->>>>>>> a58233c6eebe46dce78ba0355adcf885c5b6f48e
 * Build the Morpheus Terraform provider using the `make dev` command. 
 
 ## Configuring the provider
@@ -43,7 +37,7 @@ provider "morpheus" {
 ## Create a Morpheus instance using the `morpheus_instance` resource
 
 ```terraform
-resource "morpheus_instance" "name" {
+resource "morpheus_vsphere_instance" "name" {
   description   = "Terraform instance example"
   cloud_id      = data.morpheus_cloud.vsphere.id
   group_id      = data.morpheus_group.all.id
@@ -58,14 +52,8 @@ resource "morpheus_instance" "name" {
     network   = "VM Network"
   }
 
-  ports {
-    name = "web"
-    port = "8080"
-    lb   = "none"
-  }
-
   tags = {
-    name  = "ranchertf"
+    name  = "tfdemo"
   }
 
   evar {
