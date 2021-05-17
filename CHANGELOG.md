@@ -1,6 +1,6 @@
 ## 1.0 (Unreleased)
 
-## 0.2 (May 9, 2021)
+## 0.2 (May 17, 2021)
 
 FEATURES:
 

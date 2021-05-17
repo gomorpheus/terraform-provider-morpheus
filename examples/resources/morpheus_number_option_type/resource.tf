@@ -1,14 +1,14 @@
 resource "morpheus_number_option_type" "tf_example_number_option_type" {
   name                     = "tf_example_number_option_type"
-  description              = "testing"
-  field_name               = "test1"
+  description              = "Terraform number option type example"
+  field_name               = "number_example"
   export_meta              = true
-  dependent_field          = "servicemsh"
-  visibility_field         = "demotestin"
+  dependent_field          = "dependent_example"
+  visibility_field         = "visibility_example"
   display_value_on_details = true
-  field_label              = "numbers"
-  placeholder              = "fewf"
-  default_value            = "testing"
-  help_block               = "fiwefw"
+  field_label              = "Number Example"
+  placeholder              = "12"
+  default_value            = "1"
+  help_block               = "Provide a number"
   required                 = true
 }
