@@ -1,1 +1,0 @@
-terraform import morpheus_instance.tf_example_instance 1

@@ -12,13 +12,11 @@ import (
 
 func resourceCloud() *schema.Resource {
 	return &schema.Resource{
-		Description: "Provides a Morpheus cloud resource.",
-
+		Description:   "Provides a Morpheus cloud resource.",
 		CreateContext: resourceCloudCreate,
 		ReadContext:   resourceCloudRead,
 		UpdateContext: resourceCloudUpdate,
 		DeleteContext: resourceCloudDelete,
-
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Description: "The ID of the cloud",
@@ -63,7 +61,6 @@ func resourceCloud() *schema.Resource {
 				Optional:    true,
 				Default:     true,
 			},
-
 			"config": {
 				Description: "The cloud configuration settings",
 				Type:        schema.TypeMap,
@@ -124,7 +121,6 @@ func resourceCloud() *schema.Resource {
 				Optional:    true,
 				Elem:        &schema.Schema{Type: schema.TypeString},
 			},
-
 			"groups": {
 				Description: "The group the cloud is assigned to",
 				Type:        schema.TypeList,

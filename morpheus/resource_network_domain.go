@@ -12,8 +12,7 @@ import (
 
 func resourceNetworkDomain() *schema.Resource {
 	return &schema.Resource{
-		Description: "Provides a Morpheus network domain resource.",
-
+		Description:   "Provides a Morpheus network domain resource.",
 		CreateContext: resourceNetworkDomainCreate,
 		ReadContext:   resourceNetworkDomainRead,
 		UpdateContext: resourceNetworkDomainUpdate,
@@ -166,7 +165,6 @@ func resourceNetworkDomainRead(ctx context.Context, d *schema.ResourceData, meta
 		d.Set("domain_controller", networkDomain.DomainController)
 		d.Set("visibility", networkDomain.Visibility)
 		// d.Set("fqdn", networkDomain.Fqdn)
-		// todo: more fields
 	} else {
 		return diag.Errorf("NetworkDomain not found in response data.") // should not happen
 	}
@@ -217,7 +215,6 @@ func resourceNetworkDomainDelete(ctx context.Context, d *schema.ResourceData, me
 	id := d.Id()
 	req := &morpheus.Request{}
 	resp, err := client.DeleteNetworkDomain(toInt64(id), req)
-	//result := resp.Result.(*morpheus.DeleteNetworkDomainResult)
 	if err != nil {
 		if resp != nil && resp.StatusCode == 404 {
 			log.Printf("API 404: %s - %s", resp, err)

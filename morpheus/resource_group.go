@@ -7,19 +7,16 @@ package morpheus
 import (
 	"context"
 	"encoding/json"
-
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-
 	"log"
 
 	"github.com/gomorpheus/morpheus-go-sdk"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceMorpheusGroup() *schema.Resource {
 	return &schema.Resource{
-		Description: "Provides a Morpheus group resource.",
-
+		Description:   "Provides a Morpheus group resource.",
 		CreateContext: resourceMorpheusGroupCreate,
 		ReadContext:   resourceMorpheusGroupRead,
 		UpdateContext: resourceMorpheusGroupUpdate,
@@ -149,12 +146,10 @@ func resourceMorpheusGroupRead(ctx context.Context, d *schema.ResourceData, meta
 		resp, err = client.FindGroupByName(name)
 	} else if id != "" {
 		resp, err = client.GetGroup(toInt64(id), &morpheus.Request{})
-		// todo: ignore 404 errors...
 	} else {
 		return diag.Errorf("Group cannot be read without name or id")
 	}
 	if err != nil {
-		// 404 is ok?
 		if resp != nil && resp.StatusCode == 404 {
 			log.Printf("API 404: %s - %s", resp, err)
 			return diag.FromErr(err)
@@ -231,9 +226,6 @@ func resourceMorpheusGroupUpdate(ctx context.Context, d *schema.ResourceData, me
 			clouds = append(clouds, cloudPayload)
 		}
 	}
-	// oh ya..update zones too.. should use Partial thingy
-	// or, even better the api should do this all in 1 request
-	// doUpdateClouds = false
 	if doUpdateClouds {
 		req2 := &morpheus.Request{
 			Body: map[string]interface{}{
@@ -277,7 +269,6 @@ func resourceMorpheusGroupDelete(ctx context.Context, d *schema.ResourceData, me
 		}
 	}
 	log.Printf("API RESPONSE: %s", resp)
-	// result := resp.Result.(*morpheus.DeleteGroupResult)
 	d.SetId("")
 	return diags
 }

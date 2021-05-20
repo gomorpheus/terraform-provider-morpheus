@@ -1,0 +1,1 @@
+terraform import morpheus_vsphere_instance.tf_example_vsphere_instance 1
