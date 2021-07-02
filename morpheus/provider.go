@@ -61,6 +61,7 @@ func Provider() *schema.Provider {
 			"morpheus_rest_option_list":        resourceRestOptionList(),
 			"morpheus_select_list_option_type": resourceSelectListOptionType(),
 			"morpheus_tenant":                  resourceTenant(),
+			"morpheus_terraform_spec_template": resourceTerraformSpecTemplate(),
 			"morpheus_text_option_type":        resourceTextOptionType(),
 			"morpheus_typeahead_option_type":   resourceTypeAheadOptionType(),
 			"morpheus_vsphere_cloud":           resourceVsphereCloud(),
