@@ -57,6 +57,7 @@ func Provider() *schema.Provider {
 			"morpheus_operational_workflow":    resourceOperationalWorkflow(),
 			"morpheus_password_option_type":    resourcePasswordOptionType(),
 			"morpheus_provisioning_workflow":   resourceProvisioningWorkflow(),
+			"morpheus_python_script_task":      resourcePythonScriptTask(),
 			"morpheus_rest_option_list":        resourceRestOptionList(),
 			"morpheus_select_list_option_type": resourceSelectListOptionType(),
 			"morpheus_tenant":                  resourceTenant(),
