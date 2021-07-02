@@ -21,7 +21,7 @@ func resourceOperationalWorkflow() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			"id": {
-				Type:        schema.TypeInt,
+				Type:        schema.TypeString,
 				Description: "The ID of the operational workflow",
 				Computed:    true,
 			},

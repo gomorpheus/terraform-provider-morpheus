@@ -43,7 +43,7 @@ resource "morpheus_operational_workflow" "tf_example_operational_workflow" {
 
 ### Read-Only
 
-- **id** (Number) The ID of the operational workflow
+- **id** (String) The ID of the operational workflow
 
 ## Import
 

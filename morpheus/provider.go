@@ -45,7 +45,8 @@ func Provider() *schema.Provider {
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
-			"morpheus_checkbox_option_type": resourceCheckboxOptionType(),
+			"morpheus_ansible_playbook_task": resourceAnsiblePlaybookTask(),
+			"morpheus_checkbox_option_type":  resourceCheckboxOptionType(),
 			//			"morpheus_cloud":                   resourceCloud(),
 			"morpheus_environment":             resourceEnvironment(),
 			"morpheus_group":                   resourceMorpheusGroup(),
