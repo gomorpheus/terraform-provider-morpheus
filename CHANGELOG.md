@@ -1,5 +1,17 @@
 ## 1.0 (Unreleased)
 
+## 0.3.0 (August 18, 2021)
+
+NOTES:
+
+* Migration of the provider versioning to include the patch number in the versioning.
+
+FEATURES:
+
+* **New Resource:** `morpheus_terraform_spec_template`
+* **New Resource:** `morpheus_python_script_task`
+* **New Resource:** `morpheus_ansible_playbook_task`
+
 ## 0.2 (May 17, 2021)
 
 FEATURES:

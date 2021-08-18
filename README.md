@@ -53,8 +53,8 @@ You'll need to ensure that your Terraform file contains the information necessar
 terraform {
   required_providers {
     morpheus = {
-      source = "localhost/providers/morpheus"
-      version = "0.0.1"
+      source = "morpheusdata.com/gomorpheus/morpheus"
+      version = "0.3.0"
     }
   }
 }
