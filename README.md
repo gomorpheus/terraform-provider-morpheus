@@ -1,5 +1,7 @@
 # Terraform Provider for Morpheus
 
+[![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/gomorpheus/terraform-provider-morpheus?label=release)](https://github.com/gomorpheus/terraform-provider-morpheus/releases) [![license](https://img.shields.io/github/license/gomorpheus/terraform-provider-morpheus.svg)]()
+
 <img src="https://morpheusdata.com/wp-content/uploads/2020/04/morpheus-logo-v2.svg" width="300px">
 
 - Website: https://www.morpheusdata.com/
@@ -11,13 +13,63 @@ This is the Terraform provider for the Morpheus Data Cloud Management Platform (
 
 This is being developed in conjunction with [morpheus-go-sdk](https://github.com/gomorpheus/morpheus-go-sdk).  
 
-**BETA** This library is actively under development and is only available as a prototype. A fully featured version will be available in the near future.
-
 ## Requirements
 ------------
 
 * [Terraform](https://www.terraform.io/) | 0.13+
-* [Go](https://golang.org/dl/) 1.14 (to build the provider plugin)
+* [Go](https://golang.org/dl/) 1.16 (to build the provider plugin)
+
+
+## Getting Started
+---------------------
+
+The best way to get started using the Morpheus Terraform provider is by following the [getting started guide](docs/guides/getting_started.md).
+
+## Supported Resources
+----------------------
+
+The following list of resources are supported by the Morpheus Terraform provider:
+
+| Resource Name | Description |
+|------|---------------|
+| morpheus_ansible_playbook_task | Morpheus ansible playbook automation task resource |
+| morpheus_checkbox_option_type | Morpheus checkbox option type resource |
+| morpheus_environment | Morpheus environment resource |
+| morpheus_group | Morpheus group resource |
+| morpheus_hidden_option_type | Morpheus hidden option type resource |
+| morpheus_manual_option_list | Morpheus manual option list resource |
+| morpheus_network_domain | Morpheus network domain resource |
+| morpheus_number_option_type | Morpheus number option type resource |
+| morpheus_operational_workflow | Morpheus operational automation workflow resource |
+| morpheus_password_option_type | Morpheus password option type resource |
+| morpheus_provisioning_workflow | Morpheus provisioning automation workflow resource |
+| morpheus_python_script_task | Morpheus python script automation task resource |
+| morpheus_rest_option_list | Morpheus REST API option list resource |
+| morpheus_select_list_option_type | Morpheus select list option type resource |
+| morpheus_tenant | Morpheus tenant resource |
+| morpheus_terraform_spec_template | Morpheus Terraform spec template resource |
+| morpheus_text_option_type | Morpheus text option type resource |
+| morpheus_typeahead_option_type | Morpheus typeahead option type resource |
+| morpheus_vsphere_cloud | Morpheus VMware vSphere cloud resource |
+| morpheus_vsphere_instance | Morpheus VMware vSphere instance resource |
+
+## Supported Data Sources
+----------------------
+
+The following list of data sources are supported by the Morpheus Terraform provider:
+
+| Data Source Name | Description |
+|------------------|-------------|
+| morpheus_cloud | Morpheus cloud data source |
+| morpheus_environment | Morpheus environment data source|
+| morpheus_group | Morpheus group data source |
+| morpheus_instance_layout | Morpheus isntance layout data source |
+| morpheus_instance_type | Morpheus instance type data source |
+| morpheus_network | Morpheus network data source |
+| morpheus_option_type | Morpheus option type data source |
+| morpheus_plan | Morpheus plan data source |
+| morpheus_resource_pool | Morpheus resources pool data source |
+| morpheus_task | Morpheus automation task data source |
 
 ## Building the provider
 -------------------------
@@ -59,12 +111,6 @@ terraform {
   }
 }
 ```
-
-## Using the Provider
-
----------------------
-
-When the provider is out of beta the documentation will be available alongside the Terraform provider on the Terraform registry, but during the beta phase the best resource is this [guide](docs/guides/getting_started.md).
 
 ## Developing the provider
 -------------------------

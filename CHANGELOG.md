@@ -1,4 +1,8 @@
-## 1.0 (Unreleased)
+## 0.3.1 (September 23, 2021)
+
+NOTES:
+
+* Documentation updates to the README and installation instructions for Windows.
 
 ## 0.3.0 (August 18, 2021)
 
