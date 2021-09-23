@@ -26,25 +26,25 @@ In order to use the Morpheus Terraform provider it must be installed on your loc
 Download the Morpheus Terraform provider
 
 ```
-curl -LO https://github.com/gomorpheus/terraform-provider-morpheus/releases/download/v0.3.0/terraform-provider-morpheus_0.3.0_darwin_amd64.zip
+curl -LO https://github.com/gomorpheus/terraform-provider-morpheus/releases/download/v0.3.1/terraform-provider-morpheus_0.3.1_darwin_amd64.zip
 ```
 
 Create the appropriate subdirectory within the user plugins directory for the Morpheus provider.
 
 ```
-mkdir -p ~/.terraform.d/plugins/morpheusdata.com/gomorpheus/morpheus/0.3.0/darwin_amd64
+mkdir -p ~/.terraform.d/plugins/morpheusdata.com/gomorpheus/morpheus/0.3.1/darwin_amd64
 ```
 
 Then, unzip the downloaded binary into the appropriate user plugins directory.
 
 ```
-unzip terraform-provider-morpheus_0.3.0_darwin_amd64.zip -d ~/.terraform.d/plugins/morpheusdata.com/gomorpheus/morpheus/0.3.0/darwin_amd64
+unzip terraform-provider-morpheus_0.3.1_darwin_amd64.zip -d ~/.terraform.d/plugins/morpheusdata.com/gomorpheus/morpheus/0.3.1/darwin_amd64
 ```
 
 Finally, make the binary executable
 
 ```
-chmod +x ~/.terraform.d/plugins/morpheusdata.com/gomorpheus/morpheus/0.3.0/darwin_amd64/terraform-provider-morpheus_v0.3.0
+chmod +x ~/.terraform.d/plugins/morpheusdata.com/gomorpheus/morpheus/0.3.1/darwin_amd64/terraform-provider-morpheus_v0.3.1
 ```
 
 Now that the provider is in your user plugins directory, you can use the provider in your Terraform configuration.
@@ -76,6 +76,7 @@ powershell -command "Expand-Archive terraform-provider-morpheus_0.3.1_windows_am
 
 Now that the provider is in your user plugins directory, you can use the provider in your Terraform configuration.
 
+
 </p>
 </details>
 
@@ -86,25 +87,25 @@ Now that the provider is in your user plugins directory, you can use the provide
 Download the Morpheus Terraform provider
 
 ```
-curl -LO https://github.com/gomorpheus/terraform-provider-morpheus/releases/download/v0.3.0/terraform-provider-morpheus_0.3.0_linux_amd64.zip
+curl -LO https://github.com/gomorpheus/terraform-provider-morpheus/releases/download/v0.3.1/terraform-provider-morpheus_0.3.1_linux_amd64.zip
 ```
 
 Create the appropriate subdirectory within the user plugins directory for the Morpheus provider.
 
 ```
-mkdir -p ~/.terraform.d/plugins/morpheusdata.com/gomorpheus/morpheus/0.3.0/linux_amd64
+mkdir -p ~/.terraform.d/plugins/morpheusdata.com/gomorpheus/morpheus/0.3.1/linux_amd64
 ```
 
 Then, unzip the downloaded binary into the appropriate user plugins directory.
 
 ```
-unzip terraform-provider-morpheus_0.3.0_linux_amd64.zip -d ~/.terraform.d/plugins/morpheusdata.com/gomorpheus/morpheus/0.3.0/linux_amd64
+unzip terraform-provider-morpheus_0.3.1_linux_amd64.zip -d ~/.terraform.d/plugins/morpheusdata.com/gomorpheus/morpheus/0.3.1/linux_amd64
 ```
 
 Finally, make the binary executable
 
 ```
-chmod +x ~/.terraform.d/plugins/morpheusdata.com/gomorpheus/morpheus/0.3.0/linux_amd64/terraform-provider-morpheus_v0.3.0
+chmod +x ~/.terraform.d/plugins/morpheusdata.com/gomorpheus/morpheus/0.3.1/linux_amd64/terraform-provider-morpheus_v0.3.1
 ```
 
 Now that the provider is in your user plugins directory, you can use the provider in your Terraform configuration.
@@ -134,6 +135,8 @@ provider "morpheus" {
 }
 ```
 
+The provider also supports the use of an [access token](docs/guides/auth.md#access-token) instead of specifying a username and password to authentication to the Morpheus platform. 
+
 ## Creating your first Morpheus resource
 Once the provider is configured, you can apply the Morpheus resources defined in your Terraform file. The following is an example Terraform file containing a Morpheus environment resource. Create a `main.tf` file with the following content to define the environment resource.
 
@@ -154,9 +157,9 @@ $ terraform init
 Initializing the backend...
 
 Initializing provider plugins...
-- Finding morpheusdata.com/gomorpheus/morpheus versions matching "0.3.0"...
-- Installing morpheusdata.com/gomorpheus/morpheus v0.3.0...
-- Installed morpheusdata.com/gomorpheus/morpheus v0.3.0 (unauthenticated)
+- Finding morpheusdata.com/gomorpheus/morpheus versions matching "0.3.1"...
+- Installing morpheusdata.com/gomorpheus/morpheus v0.3.1...
+- Installed morpheusdata.com/gomorpheus/morpheus v0.3.1 (unauthenticated)
 
 Terraform has created a lock file .terraform.lock.hcl to record the provider
 selections it made above. Include this file in your version control repository
