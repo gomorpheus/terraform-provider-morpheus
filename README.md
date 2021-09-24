@@ -112,6 +112,14 @@ terraform {
 }
 ```
 
+## Generating Docs
+----------------------
+From the root of the repo run:
+
+```
+go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs
+```
+
 ## Developing the provider
 -------------------------
 
