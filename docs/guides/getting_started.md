@@ -123,7 +123,7 @@ terraform {
   required_providers {
     morpheus = {
       source  = "morpheusdata.com/gomorpheus/morpheus"
-      version = "0.3.0"
+      version = "0.3.1"
     }
   }
 }
@@ -135,7 +135,7 @@ provider "morpheus" {
 }
 ```
 
-The provider also supports the use of an [access token](docs/guides/auth.md#access-token) instead of specifying a username and password to authentication to the Morpheus platform. 
+The provider also supports the use of an [access token](auth.md#access-token) instead of specifying a username and password to authentication to the Morpheus platform. 
 
 ## Creating your first Morpheus resource
 Once the provider is configured, you can apply the Morpheus resources defined in your Terraform file. The following is an example Terraform file containing a Morpheus environment resource. Create a `main.tf` file with the following content to define the environment resource.
