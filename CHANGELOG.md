@@ -1,3 +1,9 @@
+## Unreleased
+
+* **New Data Source:** `morpheus_workflow`
+* **New Resource:** `morpheus_max_cores_policy`
+* **New Resource:** `morpheus_workflow_policy`
+
 ## 0.3.1 (September 23, 2021)
 
 NOTES:
