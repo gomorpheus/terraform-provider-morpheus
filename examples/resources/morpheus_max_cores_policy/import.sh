@@ -1,0 +1,1 @@
+terraform import morpheus_max_cores_policy.tf_example_max_cores_policy 1

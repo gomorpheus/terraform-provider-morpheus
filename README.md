@@ -38,6 +38,7 @@ The following list of resources are supported by the Morpheus Terraform provider
 | morpheus_group | Morpheus group resource |
 | morpheus_hidden_option_type | Morpheus hidden option type resource |
 | morpheus_manual_option_list | Morpheus manual option list resource |
+| morpheus_max_cores_policy | Morpheus max cores policy resource |
 | morpheus_network_domain | Morpheus network domain resource |
 | morpheus_number_option_type | Morpheus number option type resource |
 | morpheus_operational_workflow | Morpheus operational automation workflow resource |

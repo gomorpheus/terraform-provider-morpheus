@@ -52,6 +52,7 @@ func Provider() *schema.Provider {
 			"morpheus_group":                   resourceMorpheusGroup(),
 			"morpheus_hidden_option_type":      resourceHiddenOptionType(),
 			"morpheus_manual_option_list":      resourceManualOptionList(),
+			"morpheus_max_cores_policy":        resourceMaxCoresPolicy(),
 			"morpheus_network_domain":          resourceNetworkDomain(),
 			"morpheus_number_option_type":      resourceNumberOptionType(),
 			"morpheus_operational_workflow":    resourceOperationalWorkflow(),
