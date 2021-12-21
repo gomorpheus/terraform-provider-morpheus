@@ -66,6 +66,7 @@ func Provider() *schema.Provider {
 			"morpheus_typeahead_option_type":   resourceTypeAheadOptionType(),
 			"morpheus_vsphere_cloud":           resourceVsphereCloud(),
 			"morpheus_vsphere_instance":        resourceVsphereInstance(),
+			"morpheus_workflow_policy":         resourceWorkflowPolicy(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"morpheus_cloud":           dataSourceMorpheusCloud(),
@@ -78,6 +79,7 @@ func Provider() *schema.Provider {
 			"morpheus_plan":            dataSourceMorpheusPlan(),
 			"morpheus_resource_pool":   dataSourceMorpheusResourcePool(),
 			"morpheus_task":            dataSourceMorpheusTask(),
+			"morpheus_workflow":        dataSourceMorpheusWorkflow(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}

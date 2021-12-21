@@ -52,6 +52,7 @@ The following list of resources are supported by the Morpheus Terraform provider
 | morpheus_typeahead_option_type | Morpheus typeahead option type resource |
 | morpheus_vsphere_cloud | Morpheus VMware vSphere cloud resource |
 | morpheus_vsphere_instance | Morpheus VMware vSphere instance resource |
+| morpheus_workflow_policy | Morpheus workflow policy resource for assigning a workflow to a group, cloud, role, user or globally |
 
 ## Supported Data Sources
 ----------------------
@@ -70,6 +71,7 @@ The following list of data sources are supported by the Morpheus Terraform provi
 | morpheus_plan | Morpheus plan data source |
 | morpheus_resource_pool | Morpheus resources pool data source |
 | morpheus_task | Morpheus automation task data source |
+| morpheus_workflow | Morpheus workflow data soure |
 
 ## Building the provider
 -------------------------
