@@ -13,7 +13,10 @@ Use the navigation to the left to read about the available resources.
 
 ## Authentication
 
-The Morpheus provider supports authentication via username/password or an access token. The [authentication guide](guides/auth.md) describes how to obtain client credentials.
+The Morpheus provider supports a number of different methods for authenticating to Morpheus:
+
+* [Static credentials](guides/auth.md#static-credentials)
+* [Environment variables](guides/auth.md#environment-variables)
 
 ## Example Usage
 

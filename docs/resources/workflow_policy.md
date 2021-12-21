@@ -27,15 +27,15 @@ resource "morpheus_workflow_policy" "tf_example_workflow_policy_global" {
 ### Required
 
 - **name** (String) The name of the workflow policy
-- **scope** (String) The field or code used to trigger the reloading of the field
-- **workflow_id** (Number) Whether to export the text option type as a tag
+- **scope** (String) The filter or scope that the policy is applied to (global, group, cloud, user, role)
+- **workflow_id** (Number) The id of the workflow associated with the policy
 
 ### Optional
 
-- **apply_to_each_user** (Boolean)
+- **apply_to_each_user** (Boolean) Whether to assign the policy at the individual user level to all users assigned the associated role
 - **cloud_id** (Number) The id of the cloud associated with the cloud scoped filter
 - **description** (String) The description of the workflow policy
-- **enabled** (Boolean) The field name of the text option type
+- **enabled** (Boolean) Whether the policy is enabled
 - **group_id** (Number) The id of the group associated with the gropu scoped filter
 - **role_id** (Number) The id of the role associated with the role scoped filter
 - **user_id** (Number) The id of the user associated with the user scoped filter
