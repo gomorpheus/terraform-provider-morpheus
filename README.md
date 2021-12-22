@@ -35,6 +35,7 @@ The following list of resources are supported by the Morpheus Terraform provider
 | morpheus_ansible_playbook_task | Morpheus ansible playbook automation task resource |
 | morpheus_checkbox_option_type | Morpheus checkbox option type resource |
 | morpheus_environment | Morpheus environment resource |
+| morpheus_execute_schedule | Morpheus execute schedule resource |
 | morpheus_group | Morpheus group resource |
 | morpheus_hidden_option_type | Morpheus hidden option type resource |
 | morpheus_manual_option_list | Morpheus manual option list resource |
@@ -66,6 +67,7 @@ The following list of data sources are supported by the Morpheus Terraform provi
 |------------------|-------------|
 | morpheus_cloud | Morpheus cloud data source |
 | morpheus_environment | Morpheus environment data source|
+| morpheus_execute_schedule | Morpheus execute schedule data source |
 | morpheus_group | Morpheus group data source |
 | morpheus_instance_layout | Morpheus isntance layout data source |
 | morpheus_instance_type | Morpheus instance type data source |
