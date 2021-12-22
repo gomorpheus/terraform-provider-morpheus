@@ -1,6 +1,8 @@
 ## Unreleased
 
 * **New Data Source:** `morpheus_workflow`
+* **New Data Source:** `morpheus_execute_schedule`
+* **New Resource:** `morpheus_execute_schedule`
 * **New Resource:** `morpheus_max_cores_policy`
 * **New Resource:** `morpheus_max_hosts_policy`
 * **New Resource:** `morpheus_max_vms_policy`
