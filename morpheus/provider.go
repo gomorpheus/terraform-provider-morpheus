@@ -64,6 +64,7 @@ func Provider() *schema.Provider {
 			"morpheus_python_script_task":      resourcePythonScriptTask(),
 			"morpheus_rest_option_list":        resourceRestOptionList(),
 			"morpheus_select_list_option_type": resourceSelectListOptionType(),
+			"morpheus_task_job":                resourceTaskJob(),
 			"morpheus_tenant":                  resourceTenant(),
 			"morpheus_terraform_spec_template": resourceTerraformSpecTemplate(),
 			"morpheus_text_option_type":        resourceTextOptionType(),
