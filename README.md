@@ -32,31 +32,32 @@ The following list of resources are supported by the Morpheus Terraform provider
 
 | Resource Name | Description |
 |------|---------------|
-| morpheus_ansible_playbook_task | Morpheus ansible playbook automation task resource |
-| morpheus_checkbox_option_type | Morpheus checkbox option type resource |
-| morpheus_environment | Morpheus environment resource |
-| morpheus_execute_schedule | Morpheus execute schedule resource |
-| morpheus_group | Morpheus group resource |
-| morpheus_hidden_option_type | Morpheus hidden option type resource |
-| morpheus_manual_option_list | Morpheus manual option list resource |
-| morpheus_max_cores_policy | Morpheus max cores policy resource |
-| morpheus_max_hosts_policy | Morpheus max hosts policy resource |
-| morpheus_max_vms_policy | Morpheus max vms policy resource |
-| morpheus_network_domain | Morpheus network domain resource |
-| morpheus_number_option_type | Morpheus number option type resource |
-| morpheus_operational_workflow | Morpheus operational automation workflow resource |
-| morpheus_password_option_type | Morpheus password option type resource |
-| morpheus_provisioning_workflow | Morpheus provisioning automation workflow resource |
-| morpheus_python_script_task | Morpheus python script automation task resource |
-| morpheus_rest_option_list | Morpheus REST API option list resource |
-| morpheus_select_list_option_type | Morpheus select list option type resource |
-| morpheus_tenant | Morpheus tenant resource |
-| morpheus_terraform_spec_template | Morpheus Terraform spec template resource |
-| morpheus_text_option_type | Morpheus text option type resource |
-| morpheus_typeahead_option_type | Morpheus typeahead option type resource |
-| morpheus_vsphere_cloud | Morpheus VMware vSphere cloud resource |
-| morpheus_vsphere_instance | Morpheus VMware vSphere instance resource |
-| morpheus_workflow_policy | Morpheus workflow policy resource for assigning a workflow to a group, cloud, role, user or globally |
+| [morpheus_ansible_playbook_task](docs/resources/ansible_playbook_task.md) | Morpheus ansible playbook automation task resource |
+| [morpheus_checkbox_option_type](docs/resources/checkbox_option_type.md) | Morpheus checkbox option type resource |
+| [morpheus_environment](docs/resources/environment.md) | Morpheus environment resource |
+| [morpheus_execute_schedule](docs/resources/execute_schedule.md) | Morpheus execute schedule resource |
+| [morpheus_group](docs/resources/group.md) | Morpheus group resource |
+| [morpheus_hidden_option_type](docs/resources/hidden_option_type.md) | Morpheus hidden option type resource |
+| [morpheus_manual_option_list](docs/resources/manual_option_list.md) | Morpheus manual option list resource |
+| [morpheus_max_cores_policy](docs/resources/max_cores_policy.md) | Morpheus max cores policy resource |
+| [morpheus_max_hosts_policy](docs/resources/max_hosts_policy.md) | Morpheus max hosts policy resource |
+| [morpheus_max_vms_policy](docs/resources/max_vms_policy.md) | Morpheus max vms policy resource |
+| [morpheus_network_domain](docs/resources/network_domain.md) | Morpheus network domain resource |
+| [morpheus_number_option_type](docs/resources/number_option_type.md) | Morpheus number option type resource |
+| [morpheus_operational_workflow](docs/resources/operational_workflow.md) | Morpheus operational automation workflow resource |
+| [morpheus_password_option_type](docs/resources/password_option_type.md) | Morpheus password option type resource |
+| [morpheus_provisiong_workflow](docs/resources/provisioning_workflow.md) | Morpheus provisioning automation workflow resource |
+| [morpheus_python_script_task](docs/resources/python_script_task.md) | Morpheus python script automation task resource |
+| [morpheus_rest_option_list](docs/resources/rest_option_list.md) | Morpheus REST API option list resource |
+| [morpheus_select_list_option_type](docs/resources/select_list_option_type.md) | Morpheus select list option type resource |
+| [morpheus_task_job](docs/resources/task_job.md) | Morpheus task job resource for scheduling automation tasks |
+| [morpheus_tenant](docs/resources/tenant.md) | Morpheus tenant resource |
+| [morpheus_terraform_spec_template](docs/resources/terraform_spec_template.md) | Morpheus Terraform spec template resource |
+| [morpheus_text_option_type](docs/resources/text_option_type.md) | Morpheus text option type resource |
+| [morpheus_typeahead_option_type](docs/resources/typeahead_option_type.md) | Morpheus typeahead option type resource |
+| [morpheus_vsphere_cloud](docs/resources/vsphere_cloud.md) | Morpheus VMware vSphere cloud resource |
+| [morpheus_vsphere_instance](docs/resources/vsphere_instance.md) | Morpheus VMware vSphere instance resource |
+| [morpheus_workflow_policy](docs/resources/workflow_policy.md) | Morpheus workflow policy resource for assigning a workflow to a group, cloud, role, user or globally |
 
 ## Supported Data Sources
 ----------------------
