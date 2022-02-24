@@ -11,6 +11,8 @@ NOTES:
 
 * Source header support for REST API option lists has been added to the `morpheus_rest_option_list` resource.
 
+* Update the reference to the morpheus-go-sdk to use a tagged version to support the automated release process.
+
 FEATURES:
 
 * **New Data Source:** `morpheus_contact`
