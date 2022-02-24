@@ -12,8 +12,20 @@ Provides a Morpheus tenant resource.
 ## Example Usage
 
 ```terraform
+data "morpheus_tenant_role" "example" {
+  name = "Tenant Admin"
+}
+
 resource "morpheus_tenant" "tf_example_tenant" {
-  name        = "morpheus_vsphere"
+  name            = "tftenant"
+  description     = "Terraform example tenant"
+  enabled         = true
+  subdomain       = "tfexample"
+  base_role_id    = data.morpheus_tenant_role.example.id
+  currency        = "USD"
+  account_number  = "12345"
+  account_name    = "tenant 12345"
+  customer_number = "12345"
 }
 ```
 
@@ -22,15 +34,15 @@ resource "morpheus_tenant" "tf_example_tenant" {
 
 ### Required
 
+- **base_role_id** (Number) The default base role for the account
 - **name** (String) The name of the tenant
 
 ### Optional
 
 - **account_name** (String) An optional field that can be used for billing and accounting
-- **account_number** (Number) An optional field that can be used for billing and accounting
-- **base_role** (String) The default base role for the account
+- **account_number** (String) An optional field that can be used for billing and accounting
 - **currency** (String) Currency ISO Code to be used for the account
-- **customer_number** (Number) An optional field that can be used for billing and accounting
+- **customer_number** (String) An optional field that can be used for billing and accounting
 - **description** (String) The description of the tenant
 - **enabled** (Boolean) Whether the tenant is enabled or not
 - **subdomain** (String) Sets the custom login url or login prefix for logging into a sub-tenant user

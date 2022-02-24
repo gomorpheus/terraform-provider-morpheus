@@ -1,7 +1,21 @@
 ## Unreleased
 
-* **New Data Source:** `morpheus_workflow`
+
+## 0.4.0 (February 24, 2022)
+
+NOTES:
+
+* The `morpheus_tenant` resource has been updated to fix an invalid api call that prevented the creation of tenants using the provider.
+
+* The name and data type of the `base_role` attribute for the `morpheus_tenant` resource has been changed. The new name is `base_role_id` and the data type is an integer instead of a string.
+
+* Source header support for REST API option lists has been added to the `morpheus_rest_option_list` resource.
+
+FEATURES:
+
 * **New Data Source:** `morpheus_execute_schedule`
+* **New Data Source:** `morpheus_tenant_role`
+* **New Data Source:** `morpheus_workflow`
 * **New Resource:** `morpheus_execute_schedule`
 * **New Resource:** `morpheus_max_cores_policy`
 * **New Resource:** `morpheus_max_hosts_policy`

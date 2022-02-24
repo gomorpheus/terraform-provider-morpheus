@@ -85,6 +85,7 @@ func Provider() *schema.Provider {
 			"morpheus_plan":             dataSourceMorpheusPlan(),
 			"morpheus_resource_pool":    dataSourceMorpheusResourcePool(),
 			"morpheus_task":             dataSourceMorpheusTask(),
+			"morpheus_tenant_role":      dataSourceMorpheusTenantRole(),
 			"morpheus_workflow":         dataSourceMorpheusWorkflow(),
 		},
 		ConfigureContextFunc: providerConfigure,

@@ -54,7 +54,7 @@ func resourceRestOptionList() *schema.Resource {
 				ValidateFunc: validation.StringInSlice([]string{"GET", "POST", ""}, false),
 			},
 			"source_headers": {
-				Type:        schema.TypeSet,
+				Type:        schema.TypeList,
 				Description: "An array of source headers to use when requesting data",
 				Optional:    true,
 				Elem: &schema.Resource{
@@ -69,11 +69,13 @@ func resourceRestOptionList() *schema.Resource {
 							Description: "The value of the source header",
 							Optional:    true,
 						},
-						"masked": {
-							Type:        schema.TypeBool,
-							Description: "Whether the source header value is masked or not",
-							Optional:    true,
-						},
+						// Masked is currently unsupported as there is no way to
+						// evaluate the state difference as the API returns a masked value payload
+						//"masked": {
+						//	Type:        schema.TypeBool,
+						//	Description: "Whether the source header value is masked or not",
+						//	Optional:    true,
+						//},
 					},
 				},
 			},
@@ -114,6 +116,25 @@ func resourceRestOptionList() *schema.Resource {
 func resourceRestOptionListCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*morpheus.Client)
 
+	headers := d.Get("source_headers").([]interface{})
+	var sourceHeaders []map[string]interface{}
+	// iterate over the array of sourceHeaders
+	for i := 0; i < len(headers); i++ {
+		row := make(map[string]interface{})
+		evarconfig := headers[i].(map[string]interface{})
+		for k, v := range evarconfig {
+			switch k {
+			case "name":
+				row["name"] = v.(string)
+			case "value":
+				row["value"] = v.(string)
+				//case "masked":
+				//	row["masked"] = v
+			}
+		}
+		sourceHeaders = append(sourceHeaders, row)
+		log.Printf("source headers payload: %s", sourceHeaders)
+	}
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
@@ -133,6 +154,9 @@ func resourceRestOptionListCreate(ctx context.Context, d *schema.ResourceData, m
 				"initialDataset":    d.Get("initial_dataset").(string),
 				"translationScript": d.Get("translation_script").(string),
 				"requestScript":     d.Get("request_script").(string),
+				"config": map[string]interface{}{
+					"sourceHeaders": sourceHeaders,
+				},
 			},
 		},
 	}
@@ -189,7 +213,6 @@ func resourceRestOptionListRead(ctx context.Context, d *schema.ResourceData, met
 		d.SetId(int64ToString(optionList.ID))
 		d.Set("name", optionList.Name)
 		d.Set("description", optionList.Description)
-		d.Set("type", optionList.Type)
 		d.Set("visibility", optionList.Visibility)
 		d.Set("initial_dataset", optionList.InitialDataset)
 		d.Set("real_time", optionList.RealTime)
@@ -209,6 +232,26 @@ func resourceRestOptionListUpdate(ctx context.Context, d *schema.ResourceData, m
 	name := d.Get("name").(string)
 	description := d.Get("description").(string)
 
+	headers := d.Get("source_headers").([]interface{})
+	var sourceHeaders []map[string]interface{}
+	// iterate over the array of sourceHeaders
+	for i := 0; i < len(headers); i++ {
+		row := make(map[string]interface{})
+		evarconfig := headers[i].(map[string]interface{})
+		for k, v := range evarconfig {
+			switch k {
+			case "name":
+				row["name"] = v.(string)
+			case "value":
+				row["value"] = v.(string)
+				//case "masked":
+				//	row["masked"] = v
+			}
+		}
+		sourceHeaders = append(sourceHeaders, row)
+		log.Printf("source headers payload: %s", sourceHeaders)
+	}
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"optionTypeList": map[string]interface{}{
@@ -223,6 +266,9 @@ func resourceRestOptionListUpdate(ctx context.Context, d *schema.ResourceData, m
 				"initialDataset":    d.Get("initial_dataset").(string),
 				"translationScript": d.Get("translation_script").(string),
 				"requestScript":     d.Get("request_script").(string),
+				"config": map[string]interface{}{
+					"sourceHeaders": sourceHeaders,
+				},
 			},
 		},
 	}
