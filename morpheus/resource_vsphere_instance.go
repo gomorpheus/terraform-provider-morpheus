@@ -103,12 +103,12 @@ func resourceVsphereInstance() *schema.Resource {
 				Optional:    true,
 				Default:     true,
 			},
-			"user_group_id": {
-				Description: "",
-				Type:        schema.TypeInt,
-				ForceNew:    true,
-				Optional:    true,
-			},
+			//"user_group_id": {
+			//	Description: "",
+			//	Type:        schema.TypeInt,
+			//	ForceNew:    true,
+			//	Optional:    true,
+			//},
 			"asset_tag": {
 				Description: "The asset tag associated with the instance",
 				Type:        schema.TypeString,
@@ -210,6 +210,7 @@ func resourceVsphereInstance() *schema.Resource {
 							Description: "",
 							Type:        schema.TypeString,
 							Optional:    true,
+							Default:     "",
 						},
 						"network_interface_type_id": {
 							Description: "The network interface type",
@@ -275,9 +276,7 @@ func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, 
 	config["resourcePoolId"] = resourcePool.ID
 
 	// Create User
-	if d.Get("create_user") != nil {
-		config["createUser"] = d.Get("create_user").(bool)
-	}
+	config["createUser"] = d.Get("create_user").(bool)
 
 	// Asset Tag
 	if d.Get("asset_tag") != nil {
@@ -285,9 +284,7 @@ func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, 
 	}
 
 	// Skip Agent Install
-	if d.Get("skip_agent_install") != nil {
-		config["noAgent"] = d.Get("skip_agent_install").(bool)
-	}
+	config["noAgent"] = d.Get("skip_agent_install").(bool)
 
 	instancePayload := map[string]interface{}{
 		"name": name,
@@ -318,12 +315,12 @@ func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, 
 	}
 
 	// User Group ID
-	if d.Get("user_group_id") != nil {
-		userGroupPayload := map[string]interface{}{
-			"id": d.Get("user_group_id").(int),
-		}
-		instancePayload["userGroup"] = userGroupPayload
-	}
+	//if d.Get("user_group_id") != nil {
+	//	userGroupPayload := map[string]interface{}{
+	//		"id": d.Get("user_group_id").(int),
+	//	}
+	//	instancePayload["userGroup"] = userGroupPayload
+	//}
 
 	payload := map[string]interface{}{
 		"zoneId":   cloud,
@@ -469,8 +466,8 @@ func resourceVsphereInstanceRead(ctx context.Context, d *schema.ResourceData, me
 		}
 	}
 	d.Set("tags", tags)
-	userGroup := instance.Config["userGroup"].(map[string]interface{})
-	d.Set("user_group_id", userGroup["id"])
+	//userGroup := instance.Config["userGroup"].(map[string]interface{})
+	//d.Set("user_group_id", userGroup["id"])
 	d.Set("create_user", instance.Config["createUser"])
 	d.Set("asset_tag", instance.Config["smbiosAssetTag"])
 	d.Set("skip_agent_install", instance.Config["noAgent"])
