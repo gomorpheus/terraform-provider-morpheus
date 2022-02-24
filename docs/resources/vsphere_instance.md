@@ -95,7 +95,6 @@ resource "morpheus_vsphere_instance" "tf_example_vsphere_instance" {
 - **skip_agent_install** (Boolean) Whether to skip installation of the Morpheus agent
 - **tags** (Map of String) Tags to assign to the instance
 - **timeouts** (Block, Optional) (see [below for nested schema](#nestedblock--timeouts))
-- **user_group_id** (Number)
 - **volumes** (Block List) The instance volumes to create (see [below for nested schema](#nestedblock--volumes))
 
 ### Read-Only
