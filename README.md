@@ -34,6 +34,7 @@ The following list of resources are supported by the Morpheus Terraform provider
 |------|---------------|
 | [morpheus_ansible_playbook_task](docs/resources/ansible_playbook_task.md) | Morpheus ansible playbook automation task resource |
 | [morpheus_checkbox_option_type](docs/resources/checkbox_option_type.md) | Morpheus checkbox option type resource |
+| [morpheus_contact](docs/resources/morpheus_contact.md) | Morpheus contact resource |
 | [morpheus_environment](docs/resources/environment.md) | Morpheus environment resource |
 | [morpheus_execute_schedule](docs/resources/execute_schedule.md) | Morpheus execute schedule resource |
 | [morpheus_group](docs/resources/group.md) | Morpheus group resource |
@@ -66,18 +67,19 @@ The following list of data sources are supported by the Morpheus Terraform provi
 
 | Data Source Name | Description |
 |------------------|-------------|
-| morpheus_cloud | Morpheus cloud data source |
-| morpheus_environment | Morpheus environment data source|
-| morpheus_execute_schedule | Morpheus execute schedule data source |
-| morpheus_group | Morpheus group data source |
-| morpheus_instance_layout | Morpheus isntance layout data source |
-| morpheus_instance_type | Morpheus instance type data source |
-| morpheus_network | Morpheus network data source |
-| morpheus_option_type | Morpheus option type data source |
-| morpheus_plan | Morpheus plan data source |
-| morpheus_resource_pool | Morpheus resources pool data source |
-| morpheus_task | Morpheus automation task data source |
-| morpheus_workflow | Morpheus workflow data soure |
+| [morpheus_cloud](docs/data-sources/cloud.md) | Morpheus cloud data source |
+| [morpheus_contact](docs/data-sources/contact.md) | Morpheus contact data soure |
+| [morpheus_environment](docs/data-sources/environment.md) | Morpheus environment data source|
+| [morpheus_execute_schedule](docs/data-sources/execute_schedule.md) | Morpheus execute schedule data source |
+| [morpheus_group](docs/data-sources/group.md) | Morpheus group data source |
+| [morpheus_instance_layout](docs/data-sources/instance_layout.md) | Morpheus isntance layout data source |
+| [morpheus_instance_type](docs/data-sources/instance_type.md) | Morpheus instance type data source |
+| [morpheus_network](docs/data-sources/network.md) | Morpheus network data source |
+| [morpheus_option_type](docs/data-sources/option_type.md) | Morpheus option type data source |
+| [morpheus_plan](docs/data-sources/plan.md) | Morpheus plan data source |
+| [morpheus_resource_pool](docs/data-sources/resource_pool.md) | Morpheus resources pool data source |
+| [morpheus_task](docs/data-sources/task.md) | Morpheus automation task data source |
+| [morpheus_workflow](docs/data-sources/workflow.md) | Morpheus workflow data soure |
 
 ## Building the provider
 -------------------------

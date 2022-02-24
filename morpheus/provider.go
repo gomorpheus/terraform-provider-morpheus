@@ -48,6 +48,7 @@ func Provider() *schema.Provider {
 			"morpheus_ansible_playbook_task": resourceAnsiblePlaybookTask(),
 			"morpheus_checkbox_option_type":  resourceCheckboxOptionType(),
 			//			"morpheus_cloud":                   resourceCloud(),
+			"morpheus_contact":                 resourceContact(),
 			"morpheus_environment":             resourceEnvironment(),
 			"morpheus_execute_schedule":        resourceExecuteSchedule(),
 			"morpheus_group":                   resourceMorpheusGroup(),
@@ -75,6 +76,7 @@ func Provider() *schema.Provider {
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"morpheus_cloud":            dataSourceMorpheusCloud(),
+			"morpheus_contact":          dataSourceMorpheusContact(),
 			"morpheus_environment":      dataSourceMorpheusEnvironment(),
 			"morpheus_execute_schedule": dataSourceMorpheusExecuteSchedule(),
 			"morpheus_group":            dataSourceMorpheusGroup(),
