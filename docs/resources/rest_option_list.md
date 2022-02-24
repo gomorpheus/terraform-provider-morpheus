@@ -31,6 +31,15 @@ resource "morpheus_rest_option_list" "tf_example_rest_option_list" {
           results.push({name: data[x].name,value:data[x].name});
         }
   POLICY
+  source_headers {
+    name = "Accept"
+    value = "application/json"
+  }
+
+  source_headers {
+    name = "Authorization"
+    value = "Basic YWRtaW46YWRtaW4="
+  }
 }
 ```
 
@@ -48,7 +57,7 @@ resource "morpheus_rest_option_list" "tf_example_rest_option_list" {
 - **initial_dataset** (String) The initial dataset used to populate the option list
 - **real_time** (Boolean) Whether the list is refreshed every time an associated option type is requested
 - **request_script** (String) A js script to prepare the API request
-- **source_headers** (Block Set) An array of source headers to use when requesting data (see [below for nested schema](#nestedblock--source_headers))
+- **source_headers** (Block List) An array of source headers to use when requesting data (see [below for nested schema](#nestedblock--source_headers))
 - **source_method** (String) The HTTP method used for the API request
 - **source_url** (String) The HTTP URL used for the API request
 - **translation_script** (String) A js script to translate the result data object into an Array containing objects with properties 'name’ and 'value’.
@@ -63,7 +72,6 @@ resource "morpheus_rest_option_list" "tf_example_rest_option_list" {
 
 Optional:
 
-- **masked** (Boolean) Whether the source header value is masked or not
 - **name** (String) The name of the source header
 - **value** (String) The value of the source header
 

@@ -45,18 +45,19 @@ func resourceTenant() *schema.Resource {
 				Description: "Sets the custom login url or login prefix for logging into a sub-tenant user",
 				Optional:    true,
 			},
-			"base_role": {
-				Type:        schema.TypeString,
+			"base_role_id": {
+				Type:        schema.TypeInt,
 				Description: "The default base role for the account",
-				Optional:    true,
+				Required:    true,
 			},
 			"currency": {
 				Type:        schema.TypeString,
 				Description: "Currency ISO Code to be used for the account",
 				Optional:    true,
+				Default:     "USD",
 			},
 			"account_number": {
-				Type:        schema.TypeInt,
+				Type:        schema.TypeString,
 				Description: "An optional field that can be used for billing and accounting",
 				Optional:    true,
 			},
@@ -66,7 +67,7 @@ func resourceTenant() *schema.Resource {
 				Optional:    true,
 			},
 			"customer_number": {
-				Type:        schema.TypeInt,
+				Type:        schema.TypeString,
 				Description: "An optional field that can be used for billing and accounting",
 				Optional:    true,
 			},
@@ -88,29 +89,32 @@ func resourceTenantCreate(ctx context.Context, d *schema.ResourceData, meta inte
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"account": map[string]interface{}{
-				"name":           name,
-				"description":    description,
-				"active":         d.Get("enabled"),
-				"subdomain":      d.Get("subdomain").(string),
-				"role":           d.Get("base_role").(string),
+				"name":        name,
+				"description": description,
+				"active":      d.Get("enabled").(bool),
+				"subdomain":   d.Get("subdomain").(string),
+				"role": map[string]interface{}{
+					"id": d.Get("base_role_id").(int),
+				},
 				"currency":       d.Get("currency").(string),
-				"accountNumber":  d.Get("account_number"),
+				"accountNumber":  d.Get("account_number").(string),
 				"accountName":    d.Get("account_name").(string),
-				"customerNumber": d.Get("customer_number"),
+				"customerNumber": d.Get("customer_number").(string),
 			},
 		},
 	}
-	resp, err := client.CreateOptionType(req)
+
+	resp, err := client.CreateTenant(req)
 	if err != nil {
 		log.Printf("API FAILURE: %s - %s", resp, err)
 		return diag.FromErr(err)
 	}
 	log.Printf("API RESPONSE: %s", resp)
 
-	result := resp.Result.(*morpheus.CreateOptionTypeResult)
-	environment := result.OptionType
+	result := resp.Result.(*morpheus.CreateTenantResult)
+	tenant := result.Tenant
 	// Successfully created resource, now set id
-	d.SetId(int64ToString(environment.ID))
+	d.SetId(int64ToString(tenant.ID))
 
 	resourceTenantRead(ctx, d, meta)
 	return diags
@@ -153,13 +157,14 @@ func resourceTenantRead(ctx context.Context, d *schema.ResourceData, meta interf
 		d.SetId(int64ToString(tenant.ID))
 		d.Set("name", tenant.Name)
 		d.Set("description", tenant.Description)
-		d.Set("active", tenant.Active)
+		d.Set("enabled", tenant.Active)
 		d.Set("subdomain", tenant.Subdomain)
-		d.Set("role", tenant.Role)
+		role := tenant.Role.(map[string]interface{})
+		d.Set("base_role_id", role["id"])
 		d.Set("currency", tenant.Currency)
-		d.Set("accountNumber", tenant.AccountNumber)
-		d.Set("accountName", tenant.AccountName)
-		d.Set("customerNumer", tenant.CustomerNumber)
+		d.Set("account_number", tenant.AccountNumber)
+		d.Set("account_name", tenant.AccountName)
+		d.Set("customer_number", tenant.CustomerNumber)
 	} else {
 		log.Println(tenant)
 		return diag.Errorf("read operation: option type not found in response data") // should not happen
@@ -177,15 +182,17 @@ func resourceTenantUpdate(ctx context.Context, d *schema.ResourceData, meta inte
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"account": map[string]interface{}{
-				"name":           name,
-				"description":    description,
-				"active":         d.Get("enabled"),
-				"subdomain":      d.Get("subdomain").(string),
-				"role":           d.Get("base_role").(string),
+				"name":        name,
+				"description": description,
+				"active":      d.Get("enabled").(bool),
+				"subdomain":   d.Get("subdomain").(string),
+				"role": map[string]interface{}{
+					"id": d.Get("base_role_id").(int),
+				},
 				"currency":       d.Get("currency").(string),
-				"accountNumber":  d.Get("account_number"),
+				"accountNumber":  d.Get("account_number").(string),
 				"accountName":    d.Get("account_name").(string),
-				"customerNumber": d.Get("customer_number"),
+				"customerNumber": d.Get("customer_number").(string),
 			},
 		},
 	}
@@ -196,8 +203,8 @@ func resourceTenantUpdate(ctx context.Context, d *schema.ResourceData, meta inte
 		return diag.FromErr(err)
 	}
 	log.Printf("API RESPONSE: %s", resp)
-	result := resp.Result.(*morpheus.UpdateOptionTypeResult)
-	account := result.OptionType
+	result := resp.Result.(*morpheus.UpdateTenantResult)
+	account := result.Tenant
 	// Successfully updated resource, now set id
 	// err, it should not have changed though..
 	d.SetId(int64ToString(account.ID))
