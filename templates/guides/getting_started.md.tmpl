@@ -7,13 +7,13 @@ description: |-
 
 # Getting Started with the Morpheus Provider
 
-This guide walks through you through getting started with using the Morpheus Terraform provider to configure and manage your Morpheus platform.
+This guide walks you through getting started with using the Morpheus Terraform provider to configure and manage your Morpheus platform.
 
 ## Before you begin
 
 [Install Terraform](https://www.terraform.io/intro/getting-started/install.html)
 and read the Terraform getting started guide that follows. This guide will
-assume basic proficiency with Terraform
+assume basic proficiency with Terraform.
 
 ## Install the Terraform provider
 ___
@@ -71,7 +71,7 @@ mkdir %APPDATA%\terraform.d\plugins\morpheusdata.com\gomorpheus\morpheus\0.4.0\w
 Then, unzip the downloaded binary into the appropriate user plugins directory.
 
 ```
-powershell -command "Expand-Archive terraform-provider-morpheus_0.4.0_windows_amd64.zip -DestinationPath %APPDATA%\terraform.d\plugins\morpheusdata.com\gomorpheus\morpheus\0.4.0\windows_amd64"
+powershell -command "Expand-Archive terraform-provider-morpheus_0.4.0_windows_amd64.zip -DestinationPath $env:appdata\terraform.d\plugins\morpheusdata.com\gomorpheus\morpheus\0.4.0\windows_amd64"
 ```
 
 Now that the provider is in your user plugins directory, you can use the provider in your Terraform configuration.

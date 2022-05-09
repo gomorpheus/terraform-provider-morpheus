@@ -1,5 +1,14 @@
 ## Unreleased
 
+NOTES:
+
+FEATURES:
+
+* **New Data Source:** `morpheus_price`
+* **New Data Source:** `morpheus_price_set`
+* **New Resource:** `morpheus_price`
+* **New Resource:** `morpheus_price_set`
+* **New Resource:** `morpheus_service_plan`
 
 ## 0.4.0 (February 24, 2022)
 
