@@ -47,10 +47,13 @@ The following list of resources are supported by the Morpheus Terraform provider
 | [morpheus_number_option_type](docs/resources/number_option_type.md) | Morpheus number option type resource |
 | [morpheus_operational_workflow](docs/resources/operational_workflow.md) | Morpheus operational automation workflow resource |
 | [morpheus_password_option_type](docs/resources/password_option_type.md) | Morpheus password option type resource |
+| [morpheus_price](docs/resources/price.md) | Morpheus price resource |
+| [morpheus_price_set](docs/resources/price_set.md) | Morpheus price set resource |
 | [morpheus_provisiong_workflow](docs/resources/provisioning_workflow.md) | Morpheus provisioning automation workflow resource |
 | [morpheus_python_script_task](docs/resources/python_script_task.md) | Morpheus python script automation task resource |
 | [morpheus_rest_option_list](docs/resources/rest_option_list.md) | Morpheus REST API option list resource |
 | [morpheus_select_list_option_type](docs/resources/select_list_option_type.md) | Morpheus select list option type resource |
+| [morpheus_service_plan](docs/resources/service_plan.md) | Morpheus service plan resource |
 | [morpheus_task_job](docs/resources/task_job.md) | Morpheus task job resource for scheduling automation tasks |
 | [morpheus_tenant](docs/resources/tenant.md) | Morpheus tenant resource |
 | [morpheus_terraform_spec_template](docs/resources/terraform_spec_template.md) | Morpheus Terraform spec template resource |
@@ -77,6 +80,8 @@ The following list of data sources are supported by the Morpheus Terraform provi
 | [morpheus_network](docs/data-sources/network.md) | Morpheus network data source |
 | [morpheus_option_type](docs/data-sources/option_type.md) | Morpheus option type data source |
 | [morpheus_plan](docs/data-sources/plan.md) | Morpheus plan data source |
+| [morpheus_price](docs/data-sources/price.md) | Morpheus price data source |
+| [morpheus_price_set](docs/data-sources/price_set.md) | Morpheus price set data source |
 | [morpheus_resource_pool](docs/data-sources/resource_pool.md) | Morpheus resources pool data source |
 | [morpheus_task](docs/data-sources/task.md) | Morpheus automation task data source |
 | [morpheus_workflow](docs/data-sources/workflow.md) | Morpheus workflow data soure |
