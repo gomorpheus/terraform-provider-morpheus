@@ -2,10 +2,13 @@
 
 NOTES:
 
+* The `morpheus_vsphere_cloud` resource has been updated to support properly managing the user credentials. This was enabled due to an API change to support proper credential handling via checksum comparisons between the Terraform value and the checksummed value returned by the API.
+
 FEATURES:
 
 * **New Data Source:** `morpheus_price`
 * **New Data Source:** `morpheus_price_set`
+* **New Data Source:** `morpheus_tenant`
 * **New Resource:** `morpheus_price`
 * **New Resource:** `morpheus_price_set`
 * **New Resource:** `morpheus_service_plan`

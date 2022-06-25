@@ -76,7 +76,7 @@ resource "morpheus_task_job" "tf_example_task_job_schedule" {
 
 ### Required
 
-- **context_type** (String) The context that the job should run as (server or instance)
+- **context_type** (String) The context that the job should run as (appliance, server, instance)
 - **name** (String) The name of the task job
 - **schedule_mode** (String) The job scheduling type (manual, date_and_time, scheduled)
 

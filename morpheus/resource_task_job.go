@@ -63,8 +63,8 @@ func resourceTaskJob() *schema.Resource {
 			},
 			"context_type": {
 				Type:         schema.TypeString,
-				ValidateFunc: validation.StringInSlice([]string{"server", "instance"}, false),
-				Description:  "The context that the job should run as (server or instance)",
+				ValidateFunc: validation.StringInSlice([]string{"appliance", "server", "instance"}, false),
+				Description:  "The context that the job should run as (appliance, server, instance)",
 				Required:     true,
 			},
 			"server_ids": {
