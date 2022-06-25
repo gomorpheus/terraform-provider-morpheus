@@ -92,6 +92,7 @@ func Provider() *schema.Provider {
 			"morpheus_price_set":        dataSourceMorpheusPriceSet(),
 			"morpheus_resource_pool":    dataSourceMorpheusResourcePool(),
 			"morpheus_task":             dataSourceMorpheusTask(),
+			"morpheus_tenant":           dataSourceMorpheusTenant(),
 			"morpheus_tenant_role":      dataSourceMorpheusTenantRole(),
 			"morpheus_workflow":         dataSourceMorpheusWorkflow(),
 		},
