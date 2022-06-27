@@ -9,9 +9,16 @@ FEATURES:
 * **New Data Source:** `morpheus_price`
 * **New Data Source:** `morpheus_price_set`
 * **New Data Source:** `morpheus_tenant`
+* **New Resource:** `morpheus_groovy_script_task`
+* **New Resource:** `morpheus_javascript_task`
+* **New Resource:** `morpheus_powershell_script_task`
 * **New Resource:** `morpheus_price`
 * **New Resource:** `morpheus_price_set`
+* **New Resource:** `morpheus_restart_task`
+* **New Resource:** `morpheus_ruby_script_task`
 * **New Resource:** `morpheus_service_plan`
+* **New Resource:** `morpheus_shell_script_task`
+* **New Resource:** `morpheus_write_attributes_task`
 
 ## 0.4.0 (February 24, 2022)
 

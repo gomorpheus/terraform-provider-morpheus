@@ -1,0 +1,1 @@
+terraform import morpheus_write_attributes.tfexample_write_attributes 1
