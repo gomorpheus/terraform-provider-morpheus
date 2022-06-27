@@ -5,7 +5,7 @@ resource "morpheus_powershell_script_task" "tfexample_powershell_local" {
   script_content      = <<EOF
   Write-Output "testing"
 EOF
-  elevated_shell                = true
+  elevated_shell      = true
   retryable           = true
   retry_count         = 1
   retry_delay_seconds = 10

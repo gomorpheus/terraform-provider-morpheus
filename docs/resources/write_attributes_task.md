@@ -15,7 +15,7 @@ Provides a Morpheus python script task resource
 resource "morpheus_write_attributes_task" "tfexample_write_attributes" {
   name                = "tfexample_write_attributes"
   code                = "tfexample_write_attributes"
-  attributes      = <<EOF
+  attributes          = <<EOF
 {"demo":"test"}
 EOF
   retryable           = true
