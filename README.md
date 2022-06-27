@@ -37,8 +37,10 @@ The following list of resources are supported by the Morpheus Terraform provider
 | [morpheus_contact](docs/resources/morpheus_contact.md) | Morpheus contact resource |
 | [morpheus_environment](docs/resources/environment.md) | Morpheus environment resource |
 | [morpheus_execute_schedule](docs/resources/execute_schedule.md) | Morpheus execute schedule resource |
+| [morpheus_groovy_task](docs/resources/groovy_script_task.md) | Morpheus groovy script task resource |
 | [morpheus_group](docs/resources/group.md) | Morpheus group resource |
 | [morpheus_hidden_option_type](docs/resources/hidden_option_type.md) | Morpheus hidden option type resource |
+| [morpheus_javascript_task](docs/resources/javascript_task.md) | Morpheus javascript task resource |
 | [morpheus_manual_option_list](docs/resources/manual_option_list.md) | Morpheus manual option list resource |
 | [morpheus_max_cores_policy](docs/resources/max_cores_policy.md) | Morpheus max cores policy resource |
 | [morpheus_max_hosts_policy](docs/resources/max_hosts_policy.md) | Morpheus max hosts policy resource |
@@ -47,13 +49,17 @@ The following list of resources are supported by the Morpheus Terraform provider
 | [morpheus_number_option_type](docs/resources/number_option_type.md) | Morpheus number option type resource |
 | [morpheus_operational_workflow](docs/resources/operational_workflow.md) | Morpheus operational automation workflow resource |
 | [morpheus_password_option_type](docs/resources/password_option_type.md) | Morpheus password option type resource |
+| [morpheus_powershell_script_task](docs/resources/powershell_script_task.md) | Morpheus powershell script task resource |
 | [morpheus_price](docs/resources/price.md) | Morpheus price resource |
 | [morpheus_price_set](docs/resources/price_set.md) | Morpheus price set resource |
 | [morpheus_provisiong_workflow](docs/resources/provisioning_workflow.md) | Morpheus provisioning automation workflow resource |
 | [morpheus_python_script_task](docs/resources/python_script_task.md) | Morpheus python script automation task resource |
 | [morpheus_rest_option_list](docs/resources/rest_option_list.md) | Morpheus REST API option list resource |
+| [morpheus_restart_task](docs/resources/restart_task.md) | Morpheus restart task resource |
+| [morpheus_ruby_script_task](docs/resources/ruby_script_task.md) | Morpheus ruby script task resource |
 | [morpheus_select_list_option_type](docs/resources/select_list_option_type.md) | Morpheus select list option type resource |
 | [morpheus_service_plan](docs/resources/service_plan.md) | Morpheus service plan resource |
+| [morpheus_shell_script_task](docs/resources/shell_script_task.md) | Morpheus shell script task resource |
 | [morpheus_task_job](docs/resources/task_job.md) | Morpheus task job resource for scheduling automation tasks |
 | [morpheus_tenant](docs/resources/tenant.md) | Morpheus tenant resource |
 | [morpheus_terraform_spec_template](docs/resources/terraform_spec_template.md) | Morpheus Terraform spec template resource |
@@ -62,6 +68,7 @@ The following list of resources are supported by the Morpheus Terraform provider
 | [morpheus_vsphere_cloud](docs/resources/vsphere_cloud.md) | Morpheus VMware vSphere cloud resource |
 | [morpheus_vsphere_instance](docs/resources/vsphere_instance.md) | Morpheus VMware vSphere instance resource |
 | [morpheus_workflow_policy](docs/resources/workflow_policy.md) | Morpheus workflow policy resource for assigning a workflow to a group, cloud, role, user or globally |
+| [morpheus_write_attributes](docs/resources/write_attributes.md) | Morpheus write attributes task resource for storing values from XaaS instance phases |
 
 ## Supported Data Sources
 ----------------------

@@ -1,0 +1,32 @@
+---
+page_title: "morpheus_groovy_script_task Resource - terraform-provider-morpheus"
+subcategory: ""
+description: |-
+{{ .Description | plainmarkdown | trimspace | prefixlines "  " }}
+---
+
+# morpheus_groovy_script_task
+
+{{ .Description | trimspace }}
+
+## Example Usage
+
+Creating the groovy script task with local script content:
+
+{{tffile "examples/resources/morpheus_groovy_script_task/resource.tf"}}
+
+Creating the groovy script task with the script fetched from a url:
+
+{{tffile "examples/resources/morpheus_groovy_script_task/resource_url.tf"}}
+
+Creating the groovy script task with the script fetch via git:
+
+{{tffile "examples/resources/morpheus_groovy_script_task/resource_git.tf"}}
+
+{{ .SchemaMarkdown | trimspace }}
+
+## Import
+
+Import is supported using the following syntax:
+
+{{codefile "shell" "examples/resources/morpheus_groovy_script_task/import.sh" }}
