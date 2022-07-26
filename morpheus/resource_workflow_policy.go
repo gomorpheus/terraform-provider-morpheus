@@ -136,7 +136,7 @@ func resourceWorkflowPolicyCreate(ctx context.Context, d *schema.ResourceData, m
 			"id": d.Get("user_id").(int),
 		}
 	case "role":
-		policy["refId"] = 4
+		policy["refId"] = d.Get("role_id").(int)
 		policy["refType"] = "Role"
 		policy["eachUser"] = d.Get("apply_to_each_user").(bool)
 		policy["role"] = map[string]interface{}{

@@ -70,31 +70,31 @@ resource "morpheus_powershell_script_task" "tfexample_powershell_git" {
 
 ### Required
 
-- **name** (String) The name of the powershell script task
-- **source_type** (String) The source of the powershell script (local, url or repository)
+- `name` (String) The name of the powershell script task
+- `source_type` (String) The source of the powershell script (local, url or repository)
 
 ### Optional
 
-- **allow_custom_config** (Boolean) Custom configuration data to pass during the execution of the shell script
-- **code** (String) The code of the powershell script task
-- **elevated_shell** (Boolean)
-- **execute_target** (String) The source of the powershell script (local, url or repository)
-- **remote_target_host** (String) The hostname or ip address of the remote target
-- **remote_target_password** (String) The password of the user account used to authenticate to the remote target
-- **remote_target_port** (String) The port used to connect to the remote target
-- **remote_target_username** (String) The username of the user account used to authenticate to the remote target
-- **repository_id** (Number) The ID of the git repository integration
-- **result_type** (String) The expected result type (value, keyValue, json)
-- **retry_count** (Number) The number of times to retry the task if there is a failure
-- **retry_delay_seconds** (Number) The number of seconds to wait between retry attempts
-- **retryable** (Boolean) Whether to retry the task if there is a failure
-- **script_content** (String) The content of the powershell script. Used when the local source type is specified
-- **script_path** (String) The path of the powershell script, either the url or the path in the repository
-- **version_ref** (String) The git reference of the repository to pull (main, master, etc.)
+- `allow_custom_config` (Boolean) Custom configuration data to pass during the execution of the shell script
+- `code` (String) The code of the powershell script task
+- `elevated_shell` (Boolean)
+- `execute_target` (String) The source of the powershell script (local, url or repository)
+- `remote_target_host` (String) The hostname or ip address of the remote target
+- `remote_target_password` (String) The password of the user account used to authenticate to the remote target
+- `remote_target_port` (String) The port used to connect to the remote target
+- `remote_target_username` (String) The username of the user account used to authenticate to the remote target
+- `repository_id` (Number) The ID of the git repository integration
+- `result_type` (String) The expected result type (value, keyValue, json)
+- `retry_count` (Number) The number of times to retry the task if there is a failure
+- `retry_delay_seconds` (Number) The number of seconds to wait between retry attempts
+- `retryable` (Boolean) Whether to retry the task if there is a failure
+- `script_content` (String) The content of the powershell script. Used when the local source type is specified
+- `script_path` (String) The path of the powershell script, either the url or the path in the repository
+- `version_ref` (String) The git reference of the repository to pull (main, master, etc.)
 
 ### Read-Only
 
-- **id** (String) The ID of the powershell script task
+- `id` (String) The ID of the powershell script task
 
 ## Import
 

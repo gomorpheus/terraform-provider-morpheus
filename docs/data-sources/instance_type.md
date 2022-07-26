@@ -22,12 +22,12 @@ data "morpheus_instance_type" "apache" {
 
 ### Optional
 
-- **id** (String) The ID of this resource.
-- **name** (String) The name of the Morpheus cloud.
+- `name` (String) The name of the Morpheus cloud.
 
 ### Read-Only
 
-- **active** (Boolean) Whether the instance type is enabled or not
-- **code** (String) Optional code for use with policies
-- **description** (String) The description of the instance type
-- **visibility** (String) Whether the instance type is visible in sub-tenants or not
+- `active` (Boolean) Whether the instance type is enabled or not
+- `code` (String) Optional code for use with policies
+- `description` (String) The description of the instance type
+- `id` (String) The ID of this resource.
+- `visibility` (String) Whether the instance type is visible in sub-tenants or not

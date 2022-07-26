@@ -22,8 +22,8 @@ data "morpheus_workflow" "example_workflow" {
 
 ### Required
 
-- **name** (String) The name of the workflow
+- `name` (String) The name of the workflow
 
-### Optional
+### Read-Only
 
-- **id** (String) The ID of this resource.
+- `id` (String) The ID of this resource.

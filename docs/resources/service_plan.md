@@ -55,43 +55,43 @@ resource "morpheus_service_plan" "tf_example_service_plan" {
 
 ### Required
 
-- **code** (String) The code for the service plan
-- **name** (String) The name of the service plan
-- **price_set_ids** (List of Number) The list of price set ids associated with the service plan
-- **provision_type** (String) The provision type of the service plan
+- `code` (String) The code for the service plan
+- `name` (String) The name of the service plan
+- `price_set_ids` (List of Number) The list of price set ids associated with the service plan
+- `provision_type` (String) The provision type of the service plan
 
 ### Optional
 
-- **active** (Boolean) Whether the service plan is active or not
-- **add_volumes** (Boolean) Whether additional volumes
-- **cores_per_socket** (Number) The number of cores per socket
-- **custom_cores** (Boolean) Whether the option to customize the number of processor cores is avaiable
-- **custom_cores_range** (Block List, Max: 1) (see [below for nested schema](#nestedblock--custom_cores_range))
-- **custom_memory** (Boolean) Whether customizable memory is an option
-- **custom_memory_range** (Block List, Max: 1) (see [below for nested schema](#nestedblock--custom_memory_range))
-- **custom_storage_range** (Block List, Max: 1) (see [below for nested schema](#nestedblock--custom_storage_range))
-- **customize_extra_volumes** (Boolean) Whether the additional volumes are customized
-- **customize_root_volume** (Boolean) Whether the root volume is customized
-- **display_order** (Number) The display or sort order of the service plan
-- **max_cores** (Number) The maximum amount of processor cores
-- **max_disks_allowed** (Number) The maximum number of disks that are allowed to be added
-- **max_memory** (Number) The maximum amount of memory in bytes
-- **max_storage** (Number) The maximum amount of storage in bytes
-- **memory_size_type** (String) The unit of measure used for the service plan memory (gb, mb)
-- **region_code** (String) The region code for the service plan
-- **storage_size_type** (String) The unit of measure used for the service plan storage (gb, mb)
+- `active` (Boolean) Whether the service plan is active or not
+- `add_volumes` (Boolean) Whether additional volumes
+- `cores_per_socket` (Number) The number of cores per socket
+- `custom_cores` (Boolean) Whether the option to customize the number of processor cores is avaiable
+- `custom_cores_range` (Block List, Max: 1) (see [below for nested schema](#nestedblock--custom_cores_range))
+- `custom_memory` (Boolean) Whether customizable memory is an option
+- `custom_memory_range` (Block List, Max: 1) (see [below for nested schema](#nestedblock--custom_memory_range))
+- `custom_storage_range` (Block List, Max: 1) (see [below for nested schema](#nestedblock--custom_storage_range))
+- `customize_extra_volumes` (Boolean) Whether the additional volumes are customized
+- `customize_root_volume` (Boolean) Whether the root volume is customized
+- `display_order` (Number) The display or sort order of the service plan
+- `max_cores` (Number) The maximum amount of processor cores
+- `max_disks_allowed` (Number) The maximum number of disks that are allowed to be added
+- `max_memory` (Number) The maximum amount of memory in bytes
+- `max_storage` (Number) The maximum amount of storage in bytes
+- `memory_size_type` (String) The unit of measure used for the service plan memory (gb, mb)
+- `region_code` (String) The region code for the service plan
+- `storage_size_type` (String) The unit of measure used for the service plan storage (gb, mb)
 
 ### Read-Only
 
-- **id** (String) The ID of the service plan
+- `id` (String) The ID of the service plan
 
 <a id="nestedblock--custom_cores_range"></a>
 ### Nested Schema for `custom_cores_range`
 
 Optional:
 
-- **maximum** (String)
-- **minimum** (String)
+- `maximum` (String)
+- `minimum` (String)
 
 
 <a id="nestedblock--custom_memory_range"></a>
@@ -99,8 +99,8 @@ Optional:
 
 Optional:
 
-- **maximum** (Number)
-- **minimum** (Number)
+- `maximum` (Number)
+- `minimum` (Number)
 
 
 <a id="nestedblock--custom_storage_range"></a>
@@ -108,8 +108,8 @@ Optional:
 
 Required:
 
-- **maximum** (String)
-- **minimum** (String)
+- `maximum` (String)
+- `minimum` (String)
 
 ## Import
 

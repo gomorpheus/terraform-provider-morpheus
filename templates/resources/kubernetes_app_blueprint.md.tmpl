@@ -1,0 +1,32 @@
+---
+page_title: "morpheus_kubernetes_app_blueprint Resource - terraform-provider-morpheus"
+subcategory: ""
+description: |-
+{{ .Description | plainmarkdown | trimspace | prefixlines "  " }}
+---
+
+# morpheus_kubernetes_app_blueprint
+
+{{ .Description | trimspace }}
+
+## Example Usage
+
+Creating the Kubernetes app blueprint with local content in yaml format:
+
+{{tffile "examples/resources/morpheus_kubernetes_app_blueprint/resource_yaml.tf"}}
+
+Creating the Kubernetes app blueprint with Kubernetes spec templates:
+
+{{tffile "examples/resources/morpheus_kubernetes_app_blueprint/resource_spec.tf"}}
+
+Creating the Kubernetes app blueprint with the blueprint fetched via git:
+
+{{tffile "examples/resources/morpheus_kubernetes_app_blueprint/resource_git.tf"}}
+
+{{ .SchemaMarkdown | trimspace }}
+
+## Import
+
+Import is supported using the following syntax:
+
+{{codefile "shell" "examples/resources/morpheus_kubernetes_app_blueprint/import.sh" }}

@@ -22,9 +22,9 @@ data "morpheus_price" "resource_price" {
 
 ### Optional
 
-- **id** (String) The ID of this resource.
-- **name** (String) The name of the Morpheus price.
+- `name` (String) The name of the Morpheus price.
 
 ### Read-Only
 
-- **code** (String) The code of the Morpheus price
+- `code` (String) The code of the Morpheus price
+- `id` (String) The ID of this resource.
