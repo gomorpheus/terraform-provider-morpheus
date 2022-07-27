@@ -78,7 +78,7 @@ The following list of data sources are supported by the Morpheus Terraform provi
 | Data Source Name | Description |
 |------------------|-------------|
 | [morpheus_cloud](docs/data-sources/cloud.md) | Morpheus cloud data source |
-| [morpheus_contact](docs/data-sources/contact.md) | Morpheus contact data soure |
+| [morpheus_contact](docs/data-sources/contact.md) | Morpheus contact data source |
 | [morpheus_environment](docs/data-sources/environment.md) | Morpheus environment data source|
 | [morpheus_execute_schedule](docs/data-sources/execute_schedule.md) | Morpheus execute schedule data source |
 | [morpheus_group](docs/data-sources/group.md) | Morpheus group data source |
@@ -91,7 +91,7 @@ The following list of data sources are supported by the Morpheus Terraform provi
 | [morpheus_price_set](docs/data-sources/price_set.md) | Morpheus price set data source |
 | [morpheus_resource_pool](docs/data-sources/resource_pool.md) | Morpheus resources pool data source |
 | [morpheus_task](docs/data-sources/task.md) | Morpheus automation task data source |
-| [morpheus_workflow](docs/data-sources/workflow.md) | Morpheus workflow data soure |
+| [morpheus_workflow](docs/data-sources/workflow.md) | Morpheus workflow data source |
 
 ## Building the provider
 -------------------------
