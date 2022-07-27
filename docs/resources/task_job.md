@@ -23,7 +23,7 @@ resource "morpheus_task_job" "tf_example_task_job_manual" {
   enabled       = true
   task_id       = data.morpheus_task.example_task.id
   schedule_mode = "manual"
-  context       = "instance"
+  context_type  = "instance"
   instance_ids  = [1, 2]
 }
 ```
@@ -41,7 +41,7 @@ resource "morpheus_task_job" "tf_example_task_job_date_and_time" {
   task_id                 = data.morpheus_task.example_task.id
   schedule_mode           = "date_and_time"
   scheduled_date_and_time = "2022-12-30T06:00:00Z"
-  context                 = "instance"
+  context_type            = "instance"
   instance_ids            = [1, 2]
 }
 ```
