@@ -96,13 +96,13 @@ func resourceVsphereInstance() *schema.Resource {
 				Optional:    true,
 				Elem:        &schema.Schema{Type: schema.TypeString},
 			},
-			"task_id": {
+			"workflow_id": {
 				Description: "The ID of the provisioning workflow to execute",
 				Type:        schema.TypeInt,
 				Optional:    true,
 			},
-			"task_name": {
-				Description: "The name of the Provisioning workflow to execute",
+			"workflow_name": {
+				Description: "The name of the provisioning workflow to execute",
 				Type:        schema.TypeString,
 				Optional:    true,
 			},
@@ -357,13 +357,13 @@ func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, 
 	}
 
 	// Provisioning Workflow ID
-	if d.Get("task_id") != nil {
-		payload["taskSetId"] = d.Get("task_id")
+	if d.Get("workflow_id") != nil {
+		payload["taskSetId"] = d.Get("workflow_id")
 	}
 
 	// Provisioning Workflow Name
-	if d.Get("task_name") != nil {
-		payload["taskSetName"] = d.Get("task_name")
+	if d.Get("workflow_name") != nil {
+		payload["taskSetName"] = d.Get("workflow_name")
 	}
 
 	// Environment Variables

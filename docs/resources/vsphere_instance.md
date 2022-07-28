@@ -93,7 +93,9 @@ resource "morpheus_vsphere_instance" "tf_example_vsphere_instance" {
 - **name** (String) The name of the instance
 - **resource_pool_id** (Number) The ID of the resource pool to provision the instance to
 - **skip_agent_install** (Boolean) Whether to skip installation of the Morpheus agent
-- **tags** (Map of String) Tags to assign to the instance
+- **tags** (Map of Strings) Tags to assign to the instance
+- **workflow_id** (String) The ID of the provisioning workflow to execute (`workflow_name` can be used alternatively, only one is needed)
+- **workflow_name** (String) The name of the provisioning workflow to execute (`workflow_id` can be used alternatively, only one is needed)
 - **timeouts** (Block, Optional) (see [below for nested schema](#nestedblock--timeouts))
 - **volumes** (Block List) The instance volumes to create (see [below for nested schema](#nestedblock--volumes))
 
