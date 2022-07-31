@@ -18,28 +18,21 @@ resource "morpheus_helm_spec_template" "tfexample_helm_spec_template_local" {
   name         = "tf-helm-spec-example-local"
   source_type  = "local"
   spec_content = <<TFEOF
----
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: v1
+kind: Service
 metadata:
-  name: nginx-deployment
-  labels:
-    app: nginx
+name: {{ template "fullname" . }}
+labels:
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
 spec:
-  replicas: 3
-  selector:
-    matchLabels:
-      app: nginx
-  template:
-    metadata:
-      labels:
-        app: nginx
-    spec:
-      containers:
-      - name: nginx
-        image: nginx:1.14.2
-        ports:
-        - containerPort: 80
+type: {{ .Values.service.type }}
+ports:
+- port: {{ .Values.service.externalPort }}
+    targetPort: {{ .Values.service.internalPort }}
+    protocol: TCP
+    name: {{ .Values.service.name }}
+selector:
+    app: {{ template "fullname" . }}
 TFEOF
 }
 ```
@@ -50,7 +43,7 @@ Creating the helm spec template with the template fetched from a url:
 resource "morpheus_helm_spec_template" "tfexample_helm_spec_template_url" {
   name        = "tf-helm-spec-example-url"
   source_type = "url"
-  spec_path   = "http://example.com/spec.yaml"
+  spec_path   = "http://example.com/chart.yaml"
 }
 ```
 

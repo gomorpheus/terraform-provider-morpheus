@@ -44,9 +44,9 @@ resource "morpheus_service_plan" "tf_example_service_plan" {
   }
 
   price_set_ids = [morpheus_price_set.tf_example_price_set_software.id,
-                   203,
-                   645,
-                   202]
+    203,
+    645,
+  202]
 }
 ```
 

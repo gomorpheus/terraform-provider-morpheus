@@ -74,17 +74,22 @@ func resourceHelmSpecTemplateCreate(ctx context.Context, d *schema.ResourceData,
 	name := d.Get("name").(string)
 
 	sourceOptions := make(map[string]interface{})
-	if d.Get("spec_content") != "" {
-		sourceOptions["content"] = d.Get("spec_content")
-	}
-	if d.Get("spec_path") != "" {
-		sourceOptions["contentPath"] = d.Get("spec_path")
-	}
-	sourceOptions["contentRef"] = d.Get("version_ref")
-	sourceOptions["repository"] = map[string]interface{}{
-		"id": d.Get("repository_id"),
-	}
 	sourceOptions["sourceType"] = d.Get("source_type")
+
+	switch d.Get("source_type") {
+	case "local":
+		sourceOptions["content"] = d.Get("spec_content")
+		sourceOptions["contentPath"] = d.Get("spec_path")
+	case "url":
+		sourceOptions["content"] = d.Get("spec_content")
+		sourceOptions["contentPath"] = d.Get("spec_path")
+	case "repository":
+		sourceOptions["contentPath"] = d.Get("spec_path")
+		sourceOptions["contentRef"] = d.Get("version_ref")
+		sourceOptions["repository"] = map[string]interface{}{
+			"id": d.Get("repository_id"),
+		}
+	}
 
 	specTemplateType := make(map[string]interface{})
 	specTemplateType["code"] = "helm"
@@ -152,10 +157,20 @@ func resourceHelmSpecTemplateRead(ctx context.Context, d *schema.ResourceData, m
 	d.SetId(intToString(helmSpecTemplate.Spectemplate.ID))
 	d.Set("name", helmSpecTemplate.Spectemplate.Name)
 	d.Set("source_type", helmSpecTemplate.Spectemplate.File.Sourcetype)
-	d.Set("spec_content", helmSpecTemplate.Spectemplate.File.Content)
-	d.Set("spec_path", helmSpecTemplate.Spectemplate.File.Contentpath)
-	d.Set("version_ref", helmSpecTemplate.Spectemplate.File.Contentref)
-	d.Set("repository_id", helmSpecTemplate.Spectemplate.File.Repository.ID)
+
+	switch helmSpecTemplate.Spectemplate.File.Sourcetype {
+	case "local":
+		d.Set("source_type", "local")
+		d.Set("spec_content", helmSpecTemplate.Spectemplate.File.Content)
+	case "url":
+		d.Set("source_type", "url")
+		d.Set("spec_path", helmSpecTemplate.Spectemplate.File.Contentpath)
+	case "git":
+		d.Set("source_type", "repository")
+		d.Set("spec_path", helmSpecTemplate.Spectemplate.File.Contentpath)
+		d.Set("repository_id", helmSpecTemplate.Spectemplate.File.Repository.ID)
+		d.Set("version_ref", helmSpecTemplate.Spectemplate.File.Contentref)
+	}
 
 	return diags
 }
@@ -166,17 +181,22 @@ func resourceHelmSpecTemplateUpdate(ctx context.Context, d *schema.ResourceData,
 	name := d.Get("name").(string)
 
 	sourceOptions := make(map[string]interface{})
-	if d.Get("spec_content") != "" {
-		sourceOptions["content"] = d.Get("spec_content")
-	}
-	if d.Get("spec_path") != "" {
-		sourceOptions["contentPath"] = d.Get("spec_path")
-	}
-	sourceOptions["contentRef"] = d.Get("version_ref")
-	sourceOptions["repository"] = map[string]interface{}{
-		"id": d.Get("repository_id"),
-	}
 	sourceOptions["sourceType"] = d.Get("source_type")
+
+	switch d.Get("source_type") {
+	case "local":
+		sourceOptions["content"] = d.Get("spec_content")
+		sourceOptions["contentPath"] = d.Get("spec_path")
+	case "url":
+		sourceOptions["content"] = d.Get("spec_content")
+		sourceOptions["contentPath"] = d.Get("spec_path")
+	case "repository":
+		sourceOptions["contentPath"] = d.Get("spec_path")
+		sourceOptions["contentRef"] = d.Get("version_ref")
+		sourceOptions["repository"] = map[string]interface{}{
+			"id": d.Get("repository_id"),
+		}
+	}
 
 	specTemplateType := make(map[string]interface{})
 	specTemplateType["code"] = "helm"

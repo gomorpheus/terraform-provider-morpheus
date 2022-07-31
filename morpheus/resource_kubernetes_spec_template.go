@@ -74,17 +74,22 @@ func resourceKubernetesSpecTemplateCreate(ctx context.Context, d *schema.Resourc
 	name := d.Get("name").(string)
 
 	sourceOptions := make(map[string]interface{})
-	if d.Get("spec_content") != "" {
-		sourceOptions["content"] = d.Get("spec_content")
-	}
-	if d.Get("spec_path") != "" {
-		sourceOptions["contentPath"] = d.Get("spec_path")
-	}
-	sourceOptions["contentRef"] = d.Get("version_ref")
-	sourceOptions["repository"] = map[string]interface{}{
-		"id": d.Get("repository_id"),
-	}
 	sourceOptions["sourceType"] = d.Get("source_type")
+
+	switch d.Get("source_type") {
+	case "local":
+		sourceOptions["content"] = d.Get("spec_content")
+		sourceOptions["contentPath"] = d.Get("spec_path")
+	case "url":
+		sourceOptions["content"] = d.Get("spec_content")
+		sourceOptions["contentPath"] = d.Get("spec_path")
+	case "repository":
+		sourceOptions["contentPath"] = d.Get("spec_path")
+		sourceOptions["contentRef"] = d.Get("version_ref")
+		sourceOptions["repository"] = map[string]interface{}{
+			"id": d.Get("repository_id"),
+		}
+	}
 
 	specTemplateType := make(map[string]interface{})
 	specTemplateType["code"] = "kubernetes"
@@ -152,10 +157,20 @@ func resourceKubernetesSpecTemplateRead(ctx context.Context, d *schema.ResourceD
 	d.SetId(intToString(kubernetesSpecTemplate.Spectemplate.ID))
 	d.Set("name", kubernetesSpecTemplate.Spectemplate.Name)
 	d.Set("source_type", kubernetesSpecTemplate.Spectemplate.File.Sourcetype)
-	d.Set("spec_content", kubernetesSpecTemplate.Spectemplate.File.Content)
-	d.Set("spec_path", kubernetesSpecTemplate.Spectemplate.File.Contentpath)
-	d.Set("version_ref", kubernetesSpecTemplate.Spectemplate.File.Contentref)
-	d.Set("repository_id", kubernetesSpecTemplate.Spectemplate.File.Repository.ID)
+
+	switch kubernetesSpecTemplate.Spectemplate.File.Sourcetype {
+	case "local":
+		d.Set("source_type", "local")
+		d.Set("spec_content", kubernetesSpecTemplate.Spectemplate.File.Content)
+	case "url":
+		d.Set("source_type", "url")
+		d.Set("spec_path", kubernetesSpecTemplate.Spectemplate.File.Contentpath)
+	case "git":
+		d.Set("source_type", "repository")
+		d.Set("spec_path", kubernetesSpecTemplate.Spectemplate.File.Contentpath)
+		d.Set("repository_id", kubernetesSpecTemplate.Spectemplate.File.Repository.ID)
+		d.Set("version_ref", kubernetesSpecTemplate.Spectemplate.File.Contentref)
+	}
 
 	return diags
 }
@@ -166,17 +181,22 @@ func resourceKubernetesSpecTemplateUpdate(ctx context.Context, d *schema.Resourc
 	name := d.Get("name").(string)
 
 	sourceOptions := make(map[string]interface{})
-	if d.Get("spec_content") != "" {
-		sourceOptions["content"] = d.Get("spec_content")
-	}
-	if d.Get("spec_path") != "" {
-		sourceOptions["contentPath"] = d.Get("spec_path")
-	}
-	sourceOptions["contentRef"] = d.Get("version_ref")
-	sourceOptions["repository"] = map[string]interface{}{
-		"id": d.Get("repository_id"),
-	}
 	sourceOptions["sourceType"] = d.Get("source_type")
+
+	switch d.Get("source_type") {
+	case "local":
+		sourceOptions["content"] = d.Get("spec_content")
+		sourceOptions["contentPath"] = d.Get("spec_path")
+	case "url":
+		sourceOptions["content"] = d.Get("spec_content")
+		sourceOptions["contentPath"] = d.Get("spec_path")
+	case "repository":
+		sourceOptions["contentPath"] = d.Get("spec_path")
+		sourceOptions["contentRef"] = d.Get("version_ref")
+		sourceOptions["repository"] = map[string]interface{}{
+			"id": d.Get("repository_id"),
+		}
+	}
 
 	specTemplateType := make(map[string]interface{})
 	specTemplateType["code"] = "kubernetes"

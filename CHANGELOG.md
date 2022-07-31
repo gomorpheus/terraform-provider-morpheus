@@ -1,7 +1,7 @@
 ## Unreleased
 
 
-## 0.5.0 (July 25, 2022)
+## 0.5.0 (July 31, 2022)
 
 NOTES:
 

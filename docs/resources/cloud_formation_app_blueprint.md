@@ -15,14 +15,47 @@ Creating the Cloud Formation app blueprint with local content in json format:
 
 ```terraform
 resource "morpheus_cloud_formation_app_blueprint" "tf_example_cloud_formation_app_blueprint_git" {
-  name           = "example_arm_app_blueprint_git"
-  description    = "example arm app blueprint"
-  category       = "armtemplates"
-  source_type    = "repository"
-  working_path   = "./test"
-  integration_id = 3
-  repository_id  = 1
-  version_ref    = "main"
+  name                   = "example_cloud_formation_app_blueprint_json"
+  description            = "Example cloud formation app blueprint"
+  category               = "cloudformation"
+  install_agent          = true
+  cloud_init_enabled     = true
+  capability_iam         = true
+  capability_named_iam   = true
+  capability_auto_expand = true
+  source_type            = "json"
+  blueprint_content      = <<TFEOF
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+
+  "Description" : "AWS CloudFormation Sample Template S3_Website_Bucket_With_Retain_On_Delete: Sample template showing how to create a publicly accessible S3 bucket configured for website access with a deletion policy of retain on delete. **WARNING** This template creates an S3 bucket that will NOT be deleted when the stack is deleted. You will be billed for the AWS resources used if you create a stack from this template.",
+
+  "Resources" : {
+    "S3Bucket" : {
+      "Type" : "AWS::S3::Bucket",
+      "Properties" : {
+        "AccessControl" : "PublicRead",
+        "WebsiteConfiguration" : {
+          "IndexDocument" : "index.html",
+          "ErrorDocument" : "error.html"
+         }
+      },
+      "DeletionPolicy" : "Retain"
+    }
+  },
+
+  "Outputs" : {
+    "WebsiteURL" : {
+      "Value" : { "Fn::GetAtt" : [ "S3Bucket", "WebsiteURL" ] },
+      "Description" : "URL for website hosted on S3"
+    },
+    "S3BucketSecureURL" : {
+      "Value" : { "Fn::Join" : [ "", [ "https://", { "Fn::GetAtt" : [ "S3Bucket", "DomainName" ] } ] ] },
+      "Description" : "Name of S3 bucket to hold website content"
+    }
+  }
+}
+TFEOF
 }
 ```
 
@@ -30,14 +63,49 @@ Creating the Cloud Formation app blueprint with local content in yaml format:
 
 ```terraform
 resource "morpheus_cloud_formation_app_blueprint" "tf_example_cloud_formation_app_blueprint_git" {
-  name           = "example_arm_app_blueprint_git"
-  description    = "example arm app blueprint"
-  category       = "armtemplates"
-  source_type    = "repository"
-  working_path   = "./test"
-  integration_id = 3
-  repository_id  = 1
-  version_ref    = "main"
+  name                   = "example_cloud_formation_app_blueprint_yaml"
+  description            = "Example cloud formation app blueprint"
+  category               = "cloudformation"
+  install_agent          = true
+  cloud_init_enabled     = true
+  capability_iam         = true
+  capability_named_iam   = true
+  capability_auto_expand = true
+  source_type            = "yaml"
+  blueprint_content      = <<TFEOF
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'AWS CloudFormation Sample Template S3_Website_Bucket_With_Retain_On_Delete:
+  Sample template showing how to create a publicly accessible S3 bucket configured
+  for website access with a deletion policy of retain on delete. **WARNING** This
+  template creates an S3 bucket that will NOT be deleted when the stack is deleted.
+  You will be billed for the AWS resources used if you create a stack from this template.'
+Resources:
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      AccessControl: PublicRead
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: error.html
+    DeletionPolicy: Retain
+Outputs:
+  WebsiteURL:
+    Value:
+      Fn::GetAtt:
+      - S3Bucket
+      - WebsiteURL
+    Description: URL for website hosted on S3
+  S3BucketSecureURL:
+    Value:
+      Fn::Join:
+      - ''
+      - - https://
+        - Fn::GetAtt:
+          - S3Bucket
+          - DomainName
+    Description: Name of S3 bucket to hold website content
+TFEOF
 }
 ```
 
@@ -45,14 +113,19 @@ Creating the Cloud Formation app blueprint with the blueprint fetched via git:
 
 ```terraform
 resource "morpheus_cloud_formation_app_blueprint" "tf_example_cloud_formation_app_blueprint_git" {
-  name           = "example_arm_app_blueprint_git"
-  description    = "example arm app blueprint"
-  category       = "armtemplates"
-  source_type    = "repository"
-  working_path   = "./test"
-  integration_id = 3
-  repository_id  = 1
-  version_ref    = "main"
+  name                   = "example_cloud_formation_app_blueprint_git"
+  description            = "Example cloud formation app blueprint"
+  category               = "cloudformation"
+  install_agent          = true
+  cloud_init_enabled     = true
+  capability_iam         = true
+  capability_named_iam   = true
+  capability_auto_expand = true
+  source_type            = "repository"
+  working_path           = "./test"
+  integration_id         = 3
+  repository_id          = 1
+  version_ref            = "main"
 }
 ```
 
@@ -66,14 +139,14 @@ resource "morpheus_cloud_formation_app_blueprint" "tf_example_cloud_formation_ap
 
 ### Optional
 
-- `blueprint_content` (String) The content of the cloud formation app blueprint. Used when the hcl or json source types are specified
-- `capability_auto_expand` (Boolean) Whether cloud init is enabled
-- `capability_iam` (Boolean) Whether cloud init is enabled
-- `capability_named_iam` (Boolean) Whether cloud init is enabled
+- `blueprint_content` (String) The content of the cloud formation app blueprint. Used when the yaml or json source types are specified
+- `capability_auto_expand` (Boolean) Whether the auto expand capability is added to the cloud formation
+- `capability_iam` (Boolean) Whether the iam capability is added to the cloud formation
+- `capability_named_iam` (Boolean) Whether the named iam capability is added to the cloud formation
 - `category` (String) The category of the cloud formation app blueprint
 - `cloud_init_enabled` (Boolean) Whether cloud init is enabled
 - `description` (String) The description of the cloud formation app blueprint
-- `install_agent` (Boolean) Whether cloud init is enabled
+- `install_agent` (Boolean) Whether to install the Morpheus agent
 - `integration_id` (Number) The ID of the git integration
 - `repository_id` (Number) The ID of the git repository
 - `version_ref` (String) The git reference of the repository to pull (main, master, etc.)

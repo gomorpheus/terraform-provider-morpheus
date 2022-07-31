@@ -166,8 +166,9 @@ func resourceWorkflowCatalogItemRead(ctx context.Context, d *schema.ResourceData
 	if err != nil {
 		panic(err)
 	}
-	workflowData := data["workflow"].(map[string]interface{})
-	workflowId := workflowData["id"]
+	catalogItemData := data["catalogItemType"].(map[string]interface{})
+	workflowData := catalogItemData["workflow"].(map[string]interface{})
+	workflowId := int(workflowData["id"].(float64))
 	d.Set("workflow_id", workflowId)
 
 	return diags

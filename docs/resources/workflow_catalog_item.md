@@ -13,13 +13,13 @@ Provides a Morpheus workflow catalog item resource
 
 ```terraform
 resource "morpheus_workflow_catalog_item" "tfexample_workflow_catalog_item" {
-  name                = "test"
-  description         = "test"
-  enabled             = true
-  featured            = true
-  workflow_id         = 1
-  context_type        = "appliance"
-  content             = <<TFEOF
+  name         = "tfexample_workflow_catalog_item"
+  description  = "Example Terraform workflow catalog item"
+  enabled      = true
+  featured     = true
+  workflow_id  = 1
+  context_type = "appliance"
+  content      = <<TFEOF
 Testing
 TFEOF
 }
@@ -30,21 +30,21 @@ TFEOF
 
 ### Required
 
-- `name` (String) The name of the workflow policy
-- `workflow_id` (Number) The id of the workflow associated with the catalog item
+- `name` (String) The name of the workflow catalog item
+- `workflow_id` (Number) The id of the workflow associated with the workflow catalog item
 
 ### Optional
 
-- `content` (String) Whether the policy is enabled
-- `context_type` (String) Whether the policy is enabled
-- `description` (String) The description of the workflow policy
-- `enabled` (Boolean) Whether the policy is enabled
-- `featured` (Boolean) Whether the policy is enabled
-- `option_type_ids` (List of Number) The list of option type ids associated with the catalog item
+- `content` (String) The markdown content associated with the workflow catalog item
+- `context_type` (String) The Morpheus context type of the operational workflow
+- `description` (String) The description of the workflow catalog item
+- `enabled` (Boolean) Whether the workflow catalog item is enabled
+- `featured` (Boolean) Whether the workflow catalog item is featured
+- `option_type_ids` (List of Number) The list of option type ids associated with the workflow catalog item
 
 ### Read-Only
 
-- `id` (String) The ID of the workflow policy
+- `id` (String) The ID of the workflow catalog item
 
 ## Import
 

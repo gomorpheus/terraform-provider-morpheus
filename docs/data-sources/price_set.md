@@ -13,7 +13,7 @@ The Price Set data source allows details of a Price Set to be retrieved by its n
 
 ```terraform
 data "morpheus_price_set" "resource_price_set" {
-  name     = "resourceprice"
+  name = "resourceprice"
 }
 ```
 

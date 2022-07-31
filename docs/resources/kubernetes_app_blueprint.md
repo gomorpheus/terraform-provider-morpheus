@@ -14,10 +14,10 @@ Provides a Morpheus kubernetes app blueprint resource
 Creating the Kubernetes app blueprint with local content in yaml format:
 
 ```terraform
-resource "morpheus_kubernetes_app_blueprint" "tfexample_kubernetes_app_blueprint_local" {
-  name              = "tf-kubernetes-app-blueprint-example-local"
-  description       = ""
-  category          = ""
+resource "morpheus_kubernetes_app_blueprint" "tfexample_kubernetes_app_blueprint_yaml" {
+  name              = "tf-kubernetes-app-blueprint-example-yaml"
+  description       = "tf example kubernetes app blueprint"
+  category          = "k8s"
   source_type       = "yaml"
   blueprint_content = <<TFEOF
 ---
@@ -49,35 +49,12 @@ TFEOF
 Creating the Kubernetes app blueprint with Kubernetes spec templates:
 
 ```terraform
-resource "morpheus_kubernetes_app_blueprint" "tfexample_kubernetes_app_blueprint_local" {
-  name              = "tf-kubernetes-app-blueprint-example-local"
-  description       = ""
-  category          = ""
-  source_type       = "yaml"
-  blueprint_content = <<TFEOF
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: nginx-deployment
-  labels:
-    app: nginx
-spec:
-  replicas: 3
-  selector:
-    matchLabels:
-      app: nginx
-  template:
-    metadata:
-      labels:
-        app: nginx
-    spec:
-      containers:
-      - name: nginx
-        image: nginx:1.14.2
-        ports:
-        - containerPort: 80
-TFEOF
+resource "morpheus_kubernetes_app_blueprint" "tfexample_kubernetes_app_blueprint_spec" {
+  name              = "tf-kubernetes-app-blueprint-example-spec"
+  description       = "tf example kubernetes app blueprint"
+  category          = "k8s"
+  source_type       = "spec"
+  spec_template_ids = [2, 3]
 }
 ```
 
@@ -85,9 +62,9 @@ Creating the Kubernetes app blueprint with the blueprint fetched via git:
 
 ```terraform
 resource "morpheus_kubernetes_app_blueprint" "tfexample_kubernetes_app_blueprint_git" {
-  name           = "tf-kubernetes-spec-example-git"
-  description    = ""
-  category       = ""
+  name           = "tf-kubernetes-app-blueprint-example-git"
+  description    = "tf example kubernetes app blueprint"
+  category       = "k8s"
   source_type    = "repository"
   integration_id = 3
   repository_id  = 1
@@ -102,19 +79,18 @@ resource "morpheus_kubernetes_app_blueprint" "tfexample_kubernetes_app_blueprint
 ### Required
 
 - `name` (String) The name of the kubernetes app blueprint
-- `source_type` (String) The source of the terraform app blueprint (hcl, json, spec or repository)
+- `source_type` (String) The source of the kubernetes app blueprint (yaml, spec or repository)
 
 ### Optional
 
-- `blueprint_content` (String) The content of the terraform app blueprint. Used when the hcl or json source types are specified
+- `blueprint_content` (String) The content of the kubernetes app blueprint. Used when the yaml source type is specified
 - `category` (String) The category of the kubernetes app blueprint
 - `description` (String) The description of the kubernetes app blueprint
 - `integration_id` (Number) The ID of the git integration
 - `repository_id` (Number) The ID of the git repository
-- `spec_template_ids` (List of Number) A list of terraform spec template ids associated with the app blueprint
+- `spec_template_ids` (List of Number) A list of kubernetes spec template ids associated with the app blueprint
 - `version_ref` (String) The git reference of the repository to pull (main, master, etc.)
-- `visibility` (String) Determines whether the app blueprint is visible in sub-tenants or not
-- `working_path` (String) The path of the kubernetes chart in the git repository
+- `working_path` (String) The path of the kubernetes app blueprint in the git repository
 
 ### Read-Only
 

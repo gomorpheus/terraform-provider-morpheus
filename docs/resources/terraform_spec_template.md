@@ -15,9 +15,9 @@ Creating the terraform spec template with local content:
 
 ```terraform
 resource "morpheus_terraform_spec_template" "tfexample_terraform_spec_template_local" {
-  name                = "tf-terraform-spec-example-local"
-  source_type         = "local"
-  spec_content      = <<EOF
+  name         = "tf-terraform-spec-example-local"
+  source_type  = "local"
+  spec_content = <<EOF
 resource "aws_instance" "instance_1" {
   ami           = "ami-0b91a410940e82c54"
   instance_type = "t2.micro"
@@ -30,9 +30,9 @@ Creating the terraform spec template with the template fetched from a url:
 
 ```terraform
 resource "morpheus_terraform_spec_template" "tfexample_terraform_spec_template_url" {
-  name                = "tf-terraform-spec-example-url"
-  source_type         = "url"
-  spec_path           = "http://example.com/spec.tf"
+  name        = "tf-terraform-spec-example-url"
+  source_type = "url"
+  spec_path   = "http://example.com/spec.tf"
 }
 ```
 
@@ -40,11 +40,11 @@ Creating the terraform spec template with the template fetched via git:
 
 ```terraform
 resource "morpheus_terraform_spec_template" "tfexample_terraform_spec_template_git" {
-  name                = "tf-terraform-spec-example-git"
-  source_type         = "repository"
-  repository_id       = 2
-  version_ref         = "main"
-  spec_path           = "Instance Types/Terraform/CloudResource/aws/vpc.tf"
+  name          = "tf-terraform-spec-example-git"
+  source_type   = "repository"
+  repository_id = 2
+  version_ref   = "main"
+  spec_path     = "Instance Types/Terraform/CloudResource/aws/vpc.tf"
 }
 ```
 

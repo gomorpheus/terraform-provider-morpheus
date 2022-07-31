@@ -169,7 +169,6 @@ func resourceHelmAppBlueprintRead(ctx context.Context, d *schema.ResourceData, m
 	d.Set("integration_id", helmBlueprint.Blueprint.Config.Helm.Git.IntegrationId)
 	d.Set("repository_id", helmBlueprint.Blueprint.Config.Helm.Git.RepoId)
 	d.Set("version_ref", helmBlueprint.Blueprint.Config.Helm.Git.Branch)
-	d.Set("visibility", helmBlueprint.Blueprint.Visibility)
 
 	return diags
 }

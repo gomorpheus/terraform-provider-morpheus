@@ -74,14 +74,13 @@ func resourceCloudFormationAppBlueprint() *schema.Resource {
 			},
 			"blueprint_content": {
 				Type:        schema.TypeString,
-				Description: "The content of the cloud formation app blueprint. Used when the hcl or json source types are specified",
+				Description: "The content of the cloud formation app blueprint. Used when the yaml or json source types are specified",
 				Optional:    true,
 			},
 			"working_path": {
 				Type:        schema.TypeString,
 				Description: "The path of the cloud formation chart in the git repository",
 				Optional:    true,
-				Default:     "./",
 			},
 			"integration_id": {
 				Type:        schema.TypeInt,
@@ -97,7 +96,6 @@ func resourceCloudFormationAppBlueprint() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The git reference of the repository to pull (main, master, etc.)",
 				Optional:    true,
-				Default:     "master",
 			},
 		},
 		Importer: &schema.ResourceImporter{
@@ -116,7 +114,6 @@ func resourceCloudFormationAppBlueprintCreate(ctx context.Context, d *schema.Res
 	blueprint_type := "cloudFormation"
 	description := d.Get("description").(string)
 	category := d.Get("category").(string)
-	visibility := d.Get("visibility")
 
 	config := make(map[string]interface{})
 	config["name"] = name
@@ -159,7 +156,6 @@ func resourceCloudFormationAppBlueprintCreate(ctx context.Context, d *schema.Res
 				"description": description,
 				"category":    category,
 				"config":      config,
-				"visibility":  visibility,
 			},
 		},
 	}
@@ -220,7 +216,6 @@ func resourceCloudFormationAppBlueprintRead(ctx context.Context, d *schema.Resou
 	d.Set("name", cloudformationBlueprint.Blueprint.Name)
 	d.Set("description", cloudformationBlueprint.Blueprint.Description)
 	d.Set("category", cloudformationBlueprint.Blueprint.Category)
-	d.Set("visibility", cloudformationBlueprint.Blueprint.Visibility)
 	d.Set("install_agent", cloudformationBlueprint.Blueprint.Config.CloudFormation.InstallAgent)
 	d.Set("cloud_init_enabled", cloudformationBlueprint.Blueprint.Config.CloudFormation.CloudInitEnabled)
 	d.Set("capability_iam", cloudformationBlueprint.Blueprint.Config.CloudFormation.IAM)
@@ -241,7 +236,6 @@ func resourceCloudFormationAppBlueprintRead(ctx context.Context, d *schema.Resou
 		d.Set("repository_id", cloudformationBlueprint.Blueprint.Config.CloudFormation.Git.RepoId)
 		d.Set("version_ref", cloudformationBlueprint.Blueprint.Config.CloudFormation.Git.Branch)
 	}
-	d.Set("visibility", cloudformationBlueprint.Blueprint.Visibility)
 	return diags
 }
 
@@ -253,7 +247,6 @@ func resourceCloudFormationAppBlueprintUpdate(ctx context.Context, d *schema.Res
 	blueprint_type := "cloudFormation"
 	description := d.Get("description").(string)
 	category := d.Get("category").(string)
-	visibility := d.Get("visibility")
 
 	config := make(map[string]interface{})
 	config["name"] = name
@@ -296,7 +289,6 @@ func resourceCloudFormationAppBlueprintUpdate(ctx context.Context, d *schema.Res
 				"description": description,
 				"category":    category,
 				"config":      config,
-				"visibility":  visibility,
 			},
 		},
 	}

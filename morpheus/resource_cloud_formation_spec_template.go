@@ -89,27 +89,47 @@ func resourceCloudFormationSpecTemplateCreate(ctx context.Context, d *schema.Res
 	name := d.Get("name").(string)
 
 	sourceOptions := make(map[string]interface{})
-	if d.Get("spec_content") != "" {
-		sourceOptions["content"] = d.Get("spec_content")
-	}
-	if d.Get("spec_path") != "" {
-		sourceOptions["contentPath"] = d.Get("spec_path")
-	}
-	sourceOptions["contentRef"] = d.Get("version_ref")
-	sourceOptions["repository"] = map[string]interface{}{
-		"id": d.Get("repository_id"),
-	}
 	sourceOptions["sourceType"] = d.Get("source_type")
 
 	specTemplateType := make(map[string]interface{})
 	specTemplateType["code"] = "cloudFormation"
 
+	config := make(map[string]interface{})
+
+	cloudformationConfig := make(map[string]interface{})
+	config["cloudformation"] = cloudformationConfig
+	if d.Get("capability_iam").(bool) {
+		cloudformationConfig["IAM"] = "on"
+	}
+	if d.Get("capability_named_iam").(bool) {
+		cloudformationConfig["CAPABILITY_NAMED_IAM"] = "on"
+	}
+	if d.Get("capability_auto_expand").(bool) {
+		cloudformationConfig["CAPABILITY_AUTO_EXPAND"] = "on"
+	}
+
+	switch d.Get("source_type") {
+	case "local":
+		sourceOptions["content"] = d.Get("spec_content")
+		sourceOptions["contentPath"] = d.Get("spec_path")
+	case "url":
+		sourceOptions["content"] = d.Get("spec_content")
+		sourceOptions["contentPath"] = d.Get("spec_path")
+	case "repository":
+		sourceOptions["contentPath"] = d.Get("spec_path")
+		sourceOptions["contentRef"] = d.Get("version_ref")
+		sourceOptions["repository"] = map[string]interface{}{
+			"id": d.Get("repository_id"),
+		}
+	}
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"specTemplate": map[string]interface{}{
-				"name": name,
-				"file": sourceOptions,
-				"type": specTemplateType,
+				"name":   name,
+				"file":   sourceOptions,
+				"type":   specTemplateType,
+				"config": config,
 			},
 		},
 	}
@@ -167,13 +187,38 @@ func resourceCloudFormationSpecTemplateRead(ctx context.Context, d *schema.Resou
 	d.SetId(intToString(cloudFormationSpecTemplate.Spectemplate.ID))
 	d.Set("name", cloudFormationSpecTemplate.Spectemplate.Name)
 	d.Set("source_type", cloudFormationSpecTemplate.Spectemplate.File.Sourcetype)
-	d.Set("spec_content", cloudFormationSpecTemplate.Spectemplate.File.Content)
-	d.Set("spec_path", cloudFormationSpecTemplate.Spectemplate.File.Contentpath)
-	d.Set("version_ref", cloudFormationSpecTemplate.Spectemplate.File.Contentref)
-	d.Set("repository_id", cloudFormationSpecTemplate.Spectemplate.File.Repository.ID)
-	d.Set("capability_iam", cloudFormationSpecTemplate.Spectemplate.Config.CloudFormation.Iam)
-	d.Set("capability_named_iam", cloudFormationSpecTemplate.Spectemplate.Config.CloudFormation.CapabilityNamedIam)
-	d.Set("capability_auto_expand", cloudFormationSpecTemplate.Spectemplate.Config.CloudFormation.CapabilityAutoExpand)
+
+	if cloudFormationSpecTemplate.Spectemplate.Config.CloudFormation.Iam == "on" {
+		d.Set("capability_iam", true)
+	} else {
+		d.Set("capability_iam", false)
+	}
+
+	if cloudFormationSpecTemplate.Spectemplate.Config.CloudFormation.CapabilityNamedIam == "on" {
+		d.Set("capability_named_iam", true)
+	} else {
+		d.Set("capability_named_iam", false)
+	}
+
+	if cloudFormationSpecTemplate.Spectemplate.Config.CloudFormation.CapabilityAutoExpand == "on" {
+		d.Set("capability_auto_expand", true)
+	} else {
+		d.Set("capability_auto_expand", false)
+	}
+
+	switch cloudFormationSpecTemplate.Spectemplate.File.Sourcetype {
+	case "local":
+		d.Set("source_type", "local")
+		d.Set("spec_content", cloudFormationSpecTemplate.Spectemplate.File.Content)
+	case "url":
+		d.Set("source_type", "url")
+		d.Set("spec_path", cloudFormationSpecTemplate.Spectemplate.File.Contentpath)
+	case "git":
+		d.Set("source_type", "repository")
+		d.Set("spec_path", cloudFormationSpecTemplate.Spectemplate.File.Contentpath)
+		d.Set("repository_id", cloudFormationSpecTemplate.Spectemplate.File.Repository.ID)
+		d.Set("version_ref", cloudFormationSpecTemplate.Spectemplate.File.Contentref)
+	}
 
 	return diags
 }
@@ -184,27 +229,47 @@ func resourceCloudFormationSpecTemplateUpdate(ctx context.Context, d *schema.Res
 	name := d.Get("name").(string)
 
 	sourceOptions := make(map[string]interface{})
-	if d.Get("spec_content") != "" {
-		sourceOptions["content"] = d.Get("spec_content")
-	}
-	if d.Get("spec_path") != "" {
-		sourceOptions["contentPath"] = d.Get("spec_path")
-	}
-	sourceOptions["contentRef"] = d.Get("version_ref")
-	sourceOptions["repository"] = map[string]interface{}{
-		"id": d.Get("repository_id"),
-	}
 	sourceOptions["sourceType"] = d.Get("source_type")
 
 	specTemplateType := make(map[string]interface{})
 	specTemplateType["code"] = "cloudFormation"
 
+	config := make(map[string]interface{})
+	cloudformationConfig := make(map[string]interface{})
+	config["cloudformation"] = cloudformationConfig
+
+	if d.Get("capability_iam").(bool) {
+		cloudformationConfig["IAM"] = "on"
+	}
+	if d.Get("capability_named_iam").(bool) {
+		cloudformationConfig["CAPABILITY_NAMED_IAM"] = "on"
+	}
+	if d.Get("capability_auto_expand").(bool) {
+		cloudformationConfig["CAPABILITY_AUTO_EXPAND"] = "on"
+	}
+
+	switch d.Get("source_type") {
+	case "local":
+		sourceOptions["content"] = d.Get("spec_content")
+		sourceOptions["contentPath"] = d.Get("spec_path")
+	case "url":
+		sourceOptions["content"] = d.Get("spec_content")
+		sourceOptions["contentPath"] = d.Get("spec_path")
+	case "repository":
+		sourceOptions["contentPath"] = d.Get("spec_path")
+		sourceOptions["contentRef"] = d.Get("version_ref")
+		sourceOptions["repository"] = map[string]interface{}{
+			"id": d.Get("repository_id"),
+		}
+	}
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"specTemplate": map[string]interface{}{
-				"name": name,
-				"file": sourceOptions,
-				"type": specTemplateType,
+				"name":   name,
+				"file":   sourceOptions,
+				"type":   specTemplateType,
+				"config": config,
 			},
 		},
 	}

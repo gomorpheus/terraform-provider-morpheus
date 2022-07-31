@@ -78,13 +78,6 @@ func resourceKubernetesAppBlueprint() *schema.Resource {
 				Elem:        &schema.Schema{Type: schema.TypeInt},
 				Optional:    true,
 			},
-			"visibility": {
-				Description:  "Determines whether the app blueprint is visible in sub-tenants or not",
-				Type:         schema.TypeString,
-				Optional:     true,
-				ValidateFunc: validation.StringInSlice([]string{"private", "public"}, false),
-				Default:      "private",
-			},
 		},
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
@@ -211,7 +204,6 @@ func resourceKubernetesAppBlueprintRead(ctx context.Context, d *schema.ResourceD
 	d.Set("name", kubernetesBlueprint.Blueprint.Name)
 	d.Set("description", kubernetesBlueprint.Blueprint.Description)
 	d.Set("category", kubernetesBlueprint.Blueprint.Category)
-	d.Set("visibility", kubernetesBlueprint.Blueprint.Visibility)
 
 	switch kubernetesBlueprint.Blueprint.Config.Kubernetes.Configtype {
 	case "yaml":
@@ -247,7 +239,6 @@ func resourceKubernetesAppBlueprintUpdate(ctx context.Context, d *schema.Resourc
 	blueprint_type := "kubernetes"
 	description := d.Get("description").(string)
 	category := d.Get("category").(string)
-	visibility := d.Get("visibility")
 
 	config := make(map[string]interface{})
 	config["name"] = name
@@ -297,7 +288,6 @@ func resourceKubernetesAppBlueprintUpdate(ctx context.Context, d *schema.Resourc
 				"description": description,
 				"category":    category,
 				"config":      config,
-				"visibility":  visibility,
 			},
 		},
 	}

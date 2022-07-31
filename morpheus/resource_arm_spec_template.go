@@ -74,20 +74,23 @@ func resourceArmSpecTemplateCreate(ctx context.Context, d *schema.ResourceData, 
 	name := d.Get("name").(string)
 
 	sourceOptions := make(map[string]interface{})
-	if d.Get("spec_content") != "" {
-		sourceOptions["content"] = d.Get("spec_content")
-	}
-	if d.Get("spec_path") != "" {
-		sourceOptions["contentPath"] = d.Get("spec_path")
-	}
-	sourceOptions["contentRef"] = d.Get("version_ref")
-	sourceOptions["repository"] = map[string]interface{}{
-		"id": d.Get("repository_id"),
-	}
 	sourceOptions["sourceType"] = d.Get("source_type")
 
 	specTemplateType := make(map[string]interface{})
 	specTemplateType["code"] = "arm"
+
+	switch d.Get("source_type") {
+	case "local":
+		sourceOptions["content"] = d.Get("spec_content")
+	case "url":
+		sourceOptions["contentPath"] = d.Get("spec_path")
+	case "repository":
+		sourceOptions["contentPath"] = d.Get("spec_path")
+		sourceOptions["contentRef"] = d.Get("version_ref")
+		sourceOptions["repository"] = map[string]interface{}{
+			"id": d.Get("repository_id"),
+		}
+	}
 
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
@@ -152,10 +155,20 @@ func resourceArmSpecTemplateRead(ctx context.Context, d *schema.ResourceData, me
 	d.SetId(intToString(armSpecTemplate.Spectemplate.ID))
 	d.Set("name", armSpecTemplate.Spectemplate.Name)
 	d.Set("source_type", armSpecTemplate.Spectemplate.File.Sourcetype)
-	d.Set("spec_content", armSpecTemplate.Spectemplate.File.Content)
-	d.Set("spec_path", armSpecTemplate.Spectemplate.File.Contentpath)
-	d.Set("version_ref", armSpecTemplate.Spectemplate.File.Contentref)
-	d.Set("repository_id", armSpecTemplate.Spectemplate.File.Repository.ID)
+
+	switch armSpecTemplate.Spectemplate.File.Sourcetype {
+	case "local":
+		d.Set("source_type", "local")
+		d.Set("spec_content", armSpecTemplate.Spectemplate.File.Content)
+	case "url":
+		d.Set("source_type", "url")
+		d.Set("spec_path", armSpecTemplate.Spectemplate.File.Contentpath)
+	case "git":
+		d.Set("source_type", "repository")
+		d.Set("spec_path", armSpecTemplate.Spectemplate.File.Contentpath)
+		d.Set("repository_id", armSpecTemplate.Spectemplate.File.Repository.ID)
+		d.Set("version_ref", armSpecTemplate.Spectemplate.File.Contentref)
+	}
 
 	return diags
 }
@@ -166,20 +179,23 @@ func resourceArmSpecTemplateUpdate(ctx context.Context, d *schema.ResourceData, 
 	name := d.Get("name").(string)
 
 	sourceOptions := make(map[string]interface{})
-	if d.Get("spec_content") != "" {
-		sourceOptions["content"] = d.Get("spec_content")
-	}
-	if d.Get("spec_path") != "" {
-		sourceOptions["contentPath"] = d.Get("spec_path")
-	}
-	sourceOptions["contentRef"] = d.Get("version_ref")
-	sourceOptions["repository"] = map[string]interface{}{
-		"id": d.Get("repository_id"),
-	}
 	sourceOptions["sourceType"] = d.Get("source_type")
 
 	specTemplateType := make(map[string]interface{})
 	specTemplateType["code"] = "arm"
+
+	switch d.Get("source_type") {
+	case "local":
+		sourceOptions["content"] = d.Get("spec_content")
+	case "url":
+		sourceOptions["contentPath"] = d.Get("spec_path")
+	case "repository":
+		sourceOptions["contentPath"] = d.Get("spec_path")
+		sourceOptions["contentRef"] = d.Get("version_ref")
+		sourceOptions["repository"] = map[string]interface{}{
+			"id": d.Get("repository_id"),
+		}
+	}
 
 	req := &morpheus.Request{
 		Body: map[string]interface{}{

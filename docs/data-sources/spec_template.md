@@ -13,7 +13,7 @@ Provides a Morpheus spec template data source.
 
 ```terraform
 data "morpheus_spec_template" "morpheus_template" {
-  name     = "tf vpc spec template"
+  name = "tf vpc spec template"
 }
 ```
 

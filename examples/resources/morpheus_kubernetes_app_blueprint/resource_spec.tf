@@ -1,30 +1,7 @@
-resource "morpheus_kubernetes_app_blueprint" "tfexample_kubernetes_app_blueprint_local" {
-  name              = "tf-kubernetes-app-blueprint-example-local"
-  description       = ""
-  category          = ""
-  source_type       = "yaml"
-  blueprint_content = <<TFEOF
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: nginx-deployment
-  labels:
-    app: nginx
-spec:
-  replicas: 3
-  selector:
-    matchLabels:
-      app: nginx
-  template:
-    metadata:
-      labels:
-        app: nginx
-    spec:
-      containers:
-      - name: nginx
-        image: nginx:1.14.2
-        ports:
-        - containerPort: 80
-TFEOF
+resource "morpheus_kubernetes_app_blueprint" "tfexample_kubernetes_app_blueprint_spec" {
+  name              = "tf-kubernetes-app-blueprint-example-spec"
+  description       = "tf example kubernetes app blueprint"
+  category          = "k8s"
+  source_type       = "spec"
+  spec_template_ids = [2, 3]
 }

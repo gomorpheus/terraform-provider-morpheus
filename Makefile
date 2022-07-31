@@ -16,6 +16,8 @@ dev:
 	go build -o $(INSTALL_PATH)/terraform-provider-morpheus main.go
 
 gendocs:
+	find examples/resources -type d -exec terraform fmt {} \;
+	find examples/data-sources -type d -exec terraform fmt {} \;
 	go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs
 
 all:

@@ -7,8 +7,8 @@ resource "morpheus_service_plan" "tf_example_arm_service_plan" {
   region_code    = "denver"
 
   // Processors
-  max_cores        = 8
-  custom_cores     = true
+  max_cores    = 8
+  custom_cores = true
   custom_cores_range {
     minimum = 2
     maximum = 4
@@ -23,15 +23,15 @@ resource "morpheus_service_plan" "tf_example_arm_service_plan" {
     maximum = 3145728
   }
   // Storage
-  max_storage             = 3221225472
-  storage_size_type       = "mb"
+  max_storage       = 3221225472
+  storage_size_type = "mb"
   custom_storage_range {
     minimum = 3000
     maximum = 5000
   }
 
   price_set_ids = [morpheus_price_set.tf_example_price_set_software.id,
-                   203,
-                   645,
-                   202]
+    203,
+    645,
+  202]
 }

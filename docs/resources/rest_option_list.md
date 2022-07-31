@@ -32,12 +32,12 @@ resource "morpheus_rest_option_list" "tf_example_rest_option_list" {
         }
   POLICY
   source_headers {
-    name = "Accept"
+    name  = "Accept"
     value = "application/json"
   }
 
   source_headers {
-    name = "Authorization"
+    name  = "Authorization"
     value = "Basic YWRtaW46YWRtaW4="
   }
 }

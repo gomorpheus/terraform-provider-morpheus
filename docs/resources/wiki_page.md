@@ -13,9 +13,9 @@ Provides a Morpheus wiki page resource
 
 ```terraform
 resource "morpheus_wiki_page" "tfexample_wiki_page" {
-  name                = "test"
-  category            = "morpheustf"
-  content             = file("${path.module}/terraform-wiki.md")
+  name     = "tfexample_wiki_page"
+  category = "morpheus-terraform"
+  content  = file("${path.module}/terraform-wiki.md")
 }
 ```
 

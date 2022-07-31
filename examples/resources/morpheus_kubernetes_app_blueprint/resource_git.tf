@@ -1,7 +1,7 @@
 resource "morpheus_kubernetes_app_blueprint" "tfexample_kubernetes_app_blueprint_git" {
-  name           = "tf-kubernetes-spec-example-git"
-  description    = ""
-  category       = ""
+  name           = "tf-kubernetes-app-blueprint-example-git"
+  description    = "tf example kubernetes app blueprint"
+  category       = "k8s"
   source_type    = "repository"
   integration_id = 3
   repository_id  = 1
