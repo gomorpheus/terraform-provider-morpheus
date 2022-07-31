@@ -1,0 +1,1 @@
+terraform import morpheus_cloud_formation_spec_template.tf_example_cloud_formation_spec_template 1

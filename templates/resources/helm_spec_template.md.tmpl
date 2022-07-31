@@ -1,0 +1,32 @@
+---
+page_title: "morpheus_helm_spec_template Resource - terraform-provider-morpheus"
+subcategory: ""
+description: |-
+{{ .Description | plainmarkdown | trimspace | prefixlines "  " }}
+---
+
+# morpheus_helm_spec_template
+
+{{ .Description | trimspace }}
+
+## Example Usage
+
+Creating the helm spec template with local content:
+
+{{tffile "examples/resources/morpheus_helm_spec_template/resource_local.tf"}}
+
+Creating the helm spec template with the template fetched from a url:
+
+{{tffile "examples/resources/morpheus_helm_spec_template/resource_url.tf"}}
+
+Creating the helm spec template with the template fetched via git:
+
+{{tffile "examples/resources/morpheus_helm_spec_template/resource_git.tf"}}
+
+{{ .SchemaMarkdown | trimspace }}
+
+## Import
+
+Import is supported using the following syntax:
+
+{{codefile "shell" "examples/resources/morpheus_helm_spec_template/import.sh" }}

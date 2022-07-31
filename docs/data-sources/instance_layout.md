@@ -22,10 +22,10 @@ data "morpheus_instance_layout" "apache" {
 
 ### Optional
 
-- **id** (String) The ID of this resource.
-- **name** (String) The name of the Morpheus instance layout
+- `name` (String) The name of the Morpheus instance layout
 
 ### Read-Only
 
-- **code** (String) Optional code for use with policies
-- **description** (String) The description of the instance layout
+- `code` (String) Optional code for use with policies
+- `description` (String) The description of the instance layout
+- `id` (String) The ID of this resource.

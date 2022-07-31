@@ -15,9 +15,9 @@ Creating the terraform spec template with local content:
 
 ```terraform
 resource "morpheus_terraform_spec_template" "tfexample_terraform_spec_template_local" {
-  name                = "tf-terraform-spec-example-local"
-  source_type         = "local"
-  spec_content      = <<EOF
+  name         = "tf-terraform-spec-example-local"
+  source_type  = "local"
+  spec_content = <<EOF
 resource "aws_instance" "instance_1" {
   ami           = "ami-0b91a410940e82c54"
   instance_type = "t2.micro"
@@ -30,9 +30,9 @@ Creating the terraform spec template with the template fetched from a url:
 
 ```terraform
 resource "morpheus_terraform_spec_template" "tfexample_terraform_spec_template_url" {
-  name                = "tf-terraform-spec-example-url"
-  source_type         = "url"
-  spec_path           = "http://example.com/spec.tf"
+  name        = "tf-terraform-spec-example-url"
+  source_type = "url"
+  spec_path   = "http://example.com/spec.tf"
 }
 ```
 
@@ -40,11 +40,11 @@ Creating the terraform spec template with the template fetched via git:
 
 ```terraform
 resource "morpheus_terraform_spec_template" "tfexample_terraform_spec_template_git" {
-  name                = "tf-terraform-spec-example-git"
-  source_type         = "repository"
-  repository_id       = 2
-  version_ref         = "main"
-  spec_path           = "Instance Types/Terraform/CloudResource/aws/vpc.tf"
+  name          = "tf-terraform-spec-example-git"
+  source_type   = "repository"
+  repository_id = 2
+  version_ref   = "main"
+  spec_path     = "Instance Types/Terraform/CloudResource/aws/vpc.tf"
 }
 ```
 
@@ -53,19 +53,19 @@ resource "morpheus_terraform_spec_template" "tfexample_terraform_spec_template_g
 
 ### Required
 
-- **name** (String) The name of the terraform spec template
-- **source_type** (String) The source of the terraform spec template (local, url or repository)
+- `name` (String) The name of the terraform spec template
+- `source_type` (String) The source of the terraform spec template (local, url or repository)
 
 ### Optional
 
-- **repository_id** (Number) The ID of the git repository integration
-- **spec_content** (String) The content of the terraform spec template. Used when the local source type is specified
-- **spec_path** (String) The path of the terraform spec template, either the url or the path in the repository
-- **version_ref** (String) The git reference of the repository to pull (main, master, etc.)
+- `repository_id` (Number) The ID of the git repository integration
+- `spec_content` (String) The content of the terraform spec template. Used when the local source type is specified
+- `spec_path` (String) The path of the terraform spec template, either the url or the path in the repository
+- `version_ref` (String) The git reference of the repository to pull (main, master, etc.)
 
 ### Read-Only
 
-- **id** (String) The ID of the terraform spec template
+- `id` (String) The ID of the terraform spec template
 
 ## Import
 

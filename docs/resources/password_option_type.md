@@ -33,25 +33,25 @@ resource "morpheus_password_option_type" "tf_example_password_option_type" {
 
 ### Required
 
-- **name** (String) The name of the password option type
+- `name` (String) The name of the password option type
 
 ### Optional
 
-- **default_value** (String) The default value of the option type
-- **dependent_field** (String) The field or code used to trigger the reloading of the field
-- **description** (String) The description of the password option type
-- **display_value_on_details** (Boolean) Display the selected value of the password option type on the associated resource's details page
-- **export_meta** (Boolean) Whether to export the password option type as a tag
-- **field_label** (String) The label associated with the field in the UI
-- **field_name** (String) The field name of the password option type
-- **help_block** (String) Password that provides additional details about the use of the option type
-- **placeholder** (String) Password in the field used as a placeholder for example purposes
-- **required** (Boolean) Whether the option type is required
-- **visibility_field** (String) The field or code used to trigger the visibility of the field
+- `default_value` (String) The default value of the option type
+- `dependent_field` (String) The field or code used to trigger the reloading of the field
+- `description` (String) The description of the password option type
+- `display_value_on_details` (Boolean) Display the selected value of the password option type on the associated resource's details page
+- `export_meta` (Boolean) Whether to export the password option type as a tag
+- `field_label` (String) The label associated with the field in the UI
+- `field_name` (String) The field name of the password option type
+- `help_block` (String) Password that provides additional details about the use of the option type
+- `placeholder` (String) Password in the field used as a placeholder for example purposes
+- `required` (Boolean) Whether the option type is required
+- `visibility_field` (String) The field or code used to trigger the visibility of the field
 
 ### Read-Only
 
-- **id** (String) The ID of the password option type
+- `id` (String) The ID of the password option type
 
 ## Import
 

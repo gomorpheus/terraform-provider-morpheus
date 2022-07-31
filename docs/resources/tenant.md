@@ -34,22 +34,22 @@ resource "morpheus_tenant" "tf_example_tenant" {
 
 ### Required
 
-- **base_role_id** (Number) The default base role for the account
-- **name** (String) The name of the tenant
+- `base_role_id` (Number) The default base role for the account
+- `name` (String) The name of the tenant
 
 ### Optional
 
-- **account_name** (String) An optional field that can be used for billing and accounting
-- **account_number** (String) An optional field that can be used for billing and accounting
-- **currency** (String) Currency ISO Code to be used for the account
-- **customer_number** (String) An optional field that can be used for billing and accounting
-- **description** (String) The description of the tenant
-- **enabled** (Boolean) Whether the tenant is enabled or not
-- **subdomain** (String) Sets the custom login url or login prefix for logging into a sub-tenant user
+- `account_name` (String) An optional field that can be used for billing and accounting
+- `account_number` (String) An optional field that can be used for billing and accounting
+- `currency` (String) Currency ISO Code to be used for the account
+- `customer_number` (String) An optional field that can be used for billing and accounting
+- `description` (String) The description of the tenant
+- `enabled` (Boolean) Whether the tenant is enabled or not
+- `subdomain` (String) Sets the custom login url or login prefix for logging into a sub-tenant user
 
 ### Read-Only
 
-- **id** (String) The ID of the tenant
+- `id` (String) The ID of the tenant
 
 ## Import
 

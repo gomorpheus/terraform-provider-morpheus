@@ -32,12 +32,12 @@ resource "morpheus_rest_option_list" "tf_example_rest_option_list" {
         }
   POLICY
   source_headers {
-    name = "Accept"
+    name  = "Accept"
     value = "application/json"
   }
 
   source_headers {
-    name = "Authorization"
+    name  = "Authorization"
     value = "Basic YWRtaW46YWRtaW4="
   }
 }
@@ -48,32 +48,32 @@ resource "morpheus_rest_option_list" "tf_example_rest_option_list" {
 
 ### Required
 
-- **name** (String) The name of the option list
+- `name` (String) The name of the option list
 
 ### Optional
 
-- **description** (String) The description of the option list
-- **ignore_ssl_errors** (Boolean) Whether to ignore SSL errors with the REST API endpoint
-- **initial_dataset** (String) The initial dataset used to populate the option list
-- **real_time** (Boolean) Whether the list is refreshed every time an associated option type is requested
-- **request_script** (String) A js script to prepare the API request
-- **source_headers** (Block List) An array of source headers to use when requesting data (see [below for nested schema](#nestedblock--source_headers))
-- **source_method** (String) The HTTP method used for the API request
-- **source_url** (String) The HTTP URL used for the API request
-- **translation_script** (String) A js script to translate the result data object into an Array containing objects with properties 'name’ and 'value’.
-- **visibility** (String) Whether the option list is visible in sub-tenants or not
+- `description` (String) The description of the option list
+- `ignore_ssl_errors` (Boolean) Whether to ignore SSL errors with the REST API endpoint
+- `initial_dataset` (String) The initial dataset used to populate the option list
+- `real_time` (Boolean) Whether the list is refreshed every time an associated option type is requested
+- `request_script` (String) A js script to prepare the API request
+- `source_headers` (Block List) An array of source headers to use when requesting data (see [below for nested schema](#nestedblock--source_headers))
+- `source_method` (String) The HTTP method used for the API request
+- `source_url` (String) The HTTP URL used for the API request
+- `translation_script` (String) A js script to translate the result data object into an Array containing objects with properties 'name’ and 'value’.
+- `visibility` (String) Whether the option list is visible in sub-tenants or not
 
 ### Read-Only
 
-- **id** (String) The ID of the rest option list
+- `id` (String) The ID of the rest option list
 
 <a id="nestedblock--source_headers"></a>
 ### Nested Schema for `source_headers`
 
 Optional:
 
-- **name** (String) The name of the source header
-- **value** (String) The value of the source header
+- `name` (String) The name of the source header
+- `value` (String) The value of the source header
 
 ## Import
 

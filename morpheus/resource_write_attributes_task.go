@@ -15,7 +15,7 @@ import (
 
 func resourceWriteAttributesTask() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Provides a Morpheus python script task resource",
+		Description:   "Provides a Morpheus write attributes task resource",
 		CreateContext: resourceWriteAttributesTaskCreate,
 		ReadContext:   resourceWriteAttributesTaskRead,
 		UpdateContext: resourceWriteAttributesTaskUpdate,
@@ -24,22 +24,22 @@ func resourceWriteAttributesTask() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Type:        schema.TypeString,
-				Description: "The ID of the python script task",
+				Description: "The ID of the write attributes task",
 				Computed:    true,
 			},
 			"name": {
 				Type:        schema.TypeString,
-				Description: "The name of the python script task",
+				Description: "The name of the write attributes task",
 				Required:    true,
 			},
 			"code": {
 				Type:        schema.TypeString,
-				Description: "The code of the python script task",
+				Description: "The code of the write attributes task",
 				Optional:    true,
 			},
 			"attributes": {
 				Type:        schema.TypeString,
-				Description: "The git reference of the repository to pull (main, master, etc.)",
+				Description: "The attributes payload",
 				StateFunc: func(v interface{}) string {
 					json, _ := structure.NormalizeJsonString(v)
 					return json
@@ -69,7 +69,7 @@ func resourceWriteAttributesTask() *schema.Resource {
 			},
 			"allow_custom_config": {
 				Type:        schema.TypeBool,
-				Description: "Custom configuration data to pass during the execution of the python script",
+				Description: "Custom configuration data to pass during the execution of the write attributes task",
 				Optional:    true,
 			},
 		},

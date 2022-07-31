@@ -1,0 +1,32 @@
+---
+page_title: "morpheus_cloud_formation_app_blueprint Resource - terraform-provider-morpheus"
+subcategory: ""
+description: |-
+{{ .Description | plainmarkdown | trimspace | prefixlines "  " }}
+---
+
+# morpheus_cloud_formation_app_blueprint
+
+{{ .Description | trimspace }}
+
+## Example Usage
+
+Creating the Cloud Formation app blueprint with local content in json format:
+
+{{tffile "examples/resources/morpheus_cloud_formation_app_blueprint/resource_json.tf"}}
+
+Creating the Cloud Formation app blueprint with local content in yaml format:
+
+{{tffile "examples/resources/morpheus_cloud_formation_app_blueprint/resource_yaml.tf"}}
+
+Creating the Cloud Formation app blueprint with the blueprint fetched via git:
+
+{{tffile "examples/resources/morpheus_cloud_formation_app_blueprint/resource_git.tf"}}
+
+{{ .SchemaMarkdown | trimspace }}
+
+## Import
+
+Import is supported using the following syntax:
+
+{{codefile "shell" "examples/resources/morpheus_cloud_formation_app_blueprint/import.sh" }}

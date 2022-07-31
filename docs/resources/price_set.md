@@ -38,21 +38,21 @@ resource "morpheus_price_set" "tf_example_price_set_software" {
 
 ### Required
 
-- **code** (String) The code of the price set
-- **name** (String) The name of the price set
-- **price_ids** (List of Number) The list of price ids associated with the price set
-- **price_unit** (String) The price unit (minute, hour, day, month, year, two year, three year, four year, five year)
-- **region_code** (String) The region code of the price set
-- **type** (String) The price type (fixed, compute, memory, cores, storage, datastore, platform, software)
+- `code` (String) The code of the price set
+- `name` (String) The name of the price set
+- `price_ids` (List of Number) The list of price ids associated with the price set
+- `price_unit` (String) The price unit (minute, hour, day, month, year, two year, three year, four year, five year)
+- `region_code` (String) The region code of the price set
+- `type` (String) The price type (fixed, compute, memory, cores, storage, datastore, platform, software)
 
 ### Optional
 
-- **cloud_id** (Number) The id of the cloud
-- **resource_pool_id** (Number) The resource pool to assign the price set to
+- `cloud_id` (Number) The id of the cloud
+- `resource_pool_id` (Number) The resource pool to assign the price set to
 
 ### Read-Only
 
-- **id** (String) The ID of the price set
+- `id` (String) The ID of the price set
 
 ## Import
 

@@ -1,0 +1,36 @@
+---
+page_title: "morpheus_terraform_app_blueprint Resource - terraform-provider-morpheus"
+subcategory: ""
+description: |-
+{{ .Description | plainmarkdown | trimspace | prefixlines "  " }}
+---
+
+# morpheus_terraform_app_blueprint
+
+{{ .Description | trimspace }}
+
+## Example Usage
+
+Creating the terraform app blueprint with local content in hcl format:
+
+{{tffile "examples/resources/morpheus_terraform_app_blueprint/resource_hcl.tf"}}
+
+Creating the terraform app blueprint with local content in json format:
+
+{{tffile "examples/resources/morpheus_terraform_app_blueprint/resource_json.tf"}}
+
+Creating the terraform app blueprint with Terraform spec templates:
+
+{{tffile "examples/resources/morpheus_terraform_app_blueprint/resource_spec.tf"}}
+
+Creating the terraform app blueprint with the blueprint fetched via git:
+
+{{tffile "examples/resources/morpheus_terraform_app_blueprint/resource_git.tf"}}
+
+{{ .SchemaMarkdown | trimspace }}
+
+## Import
+
+Import is supported using the following syntax:
+
+{{codefile "shell" "examples/resources/morpheus_terraform_app_blueprint/import.sh" }}

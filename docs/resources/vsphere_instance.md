@@ -21,7 +21,7 @@ data "morpheus_cloud" "morpheus_vsphere" {
 }
 
 data "morpheus_resource_pool" "vsphere_resource_pool" {
-  name = "Morpheus-Cluster"
+  name     = "Morpheus-Cluster"
   cloud_id = data.morpheus_cloud.vsphere.id
 }
 
@@ -75,41 +75,41 @@ resource "morpheus_vsphere_instance" "tf_example_vsphere_instance" {
 
 ### Required
 
-- **cloud_id** (Number) The ID of the cloud associated with the instance
-- **group_id** (Number) The ID of the group associated with the instance
-- **instance_layout_id** (Number) The layout to provision the instance from
-- **instance_type_id** (Number) The type of instance to provision
-- **plan_id** (Number) The service plan associated with the instance
+- `cloud_id` (Number) The ID of the cloud associated with the instance
+- `group_id` (Number) The ID of the group associated with the instance
+- `instance_layout_id` (Number) The layout to provision the instance from
+- `instance_type_id` (Number) The type of instance to provision
+- `plan_id` (Number) The service plan associated with the instance
 
 ### Optional
 
-- **asset_tag** (String) The asset tag associated with the instance
-- **create_user** (Boolean) Whether to create a user account on the instance that is associated with the provisioning user account
-- **description** (String) The user friendly description of the instance
-- **environment** (String) The environment to assign the instance to
-- **evar** (Block List) The environment variables to create (see [below for nested schema](#nestedblock--evar))
-- **interfaces** (Block List) The instance network interfaces to create (see [below for nested schema](#nestedblock--interfaces))
-- **labels** (List of String) The list of labels to add to the instance
-- **name** (String) The name of the instance
-- **resource_pool_id** (Number) The ID of the resource pool to provision the instance to
-- **skip_agent_install** (Boolean) Whether to skip installation of the Morpheus agent
-- **tags** (Map of String) Tags to assign to the instance
-- **timeouts** (Block, Optional) (see [below for nested schema](#nestedblock--timeouts))
-- **volumes** (Block List) The instance volumes to create (see [below for nested schema](#nestedblock--volumes))
+- `asset_tag` (String) The asset tag associated with the instance
+- `create_user` (Boolean) Whether to create a user account on the instance that is associated with the provisioning user account
+- `description` (String) The user friendly description of the instance
+- `environment` (String) The environment to assign the instance to
+- `evar` (Block List) The environment variables to create (see [below for nested schema](#nestedblock--evar))
+- `interfaces` (Block List) The instance network interfaces to create (see [below for nested schema](#nestedblock--interfaces))
+- `labels` (List of String) The list of labels to add to the instance
+- `name` (String) The name of the instance
+- `resource_pool_id` (Number) The ID of the resource pool to provision the instance to
+- `skip_agent_install` (Boolean) Whether to skip installation of the Morpheus agent
+- `tags` (Map of String) Tags to assign to the instance
+- `timeouts` (Block, Optional) (see [below for nested schema](#nestedblock--timeouts))
+- `volumes` (Block List) The instance volumes to create (see [below for nested schema](#nestedblock--volumes))
 
 ### Read-Only
 
-- **id** (String) The ID of the instance
+- `id` (String) The ID of the instance
 
 <a id="nestedblock--evar"></a>
 ### Nested Schema for `evar`
 
 Optional:
 
-- **export** (Boolean) Whether the environment variable is exported as an instance tag
-- **masked** (Boolean) Whether the environment variable is masked for security purposes
-- **name** (String) The name of the environment variable
-- **value** (String) The value of the environment variable
+- `export` (Boolean) Whether the environment variable is exported as an instance tag
+- `masked` (Boolean) Whether the environment variable is masked for security purposes
+- `name` (String) The name of the environment variable
+- `value` (String) The value of the environment variable
 
 
 <a id="nestedblock--interfaces"></a>
@@ -117,10 +117,10 @@ Optional:
 
 Optional:
 
-- **ip_address** (String)
-- **ip_mode** (String)
-- **network_id** (Number) The network to assign the network interface to
-- **network_interface_type_id** (Number) The network interface type
+- `ip_address` (String)
+- `ip_mode` (String)
+- `network_id` (Number) The network to assign the network interface to
+- `network_interface_type_id` (Number) The network interface type
 
 
 <a id="nestedblock--timeouts"></a>
@@ -128,10 +128,10 @@ Optional:
 
 Optional:
 
-- **create** (String)
-- **delete** (String)
-- **read** (String)
-- **update** (String)
+- `create` (String)
+- `delete` (String)
+- `read` (String)
+- `update` (String)
 
 
 <a id="nestedblock--volumes"></a>
@@ -139,12 +139,12 @@ Optional:
 
 Optional:
 
-- **datastore_id** (Number) The ID of the datastore
-- **name** (String) The name/type of the LV being created
-- **root** (Boolean) Whether the volume is the root volume of the instance
-- **size** (Number) The size of the LV being created
-- **size_id** (Number) The ID of an existing LV to assign to the instance
-- **storage_type** (Number) The ID of the LV type
+- `datastore_id` (Number) The ID of the datastore
+- `name` (String) The name/type of the LV being created
+- `root` (Boolean) Whether the volume is the root volume of the instance
+- `size` (Number) The size of the LV being created
+- `size_id` (Number) The ID of an existing LV to assign to the instance
+- `storage_type` (Number) The ID of the LV type
 
 ## Import
 

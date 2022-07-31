@@ -48,9 +48,9 @@ $ make testacc
 
 ## Generating Docs
 
-To generate or update documentation, run `go generate`.
+To generate or update documentation, run `make gendocs`.
 ```shell script
-$ go generate
+$ make gendocs
 ```
 
 ## Checklists

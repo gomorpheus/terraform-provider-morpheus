@@ -25,17 +25,17 @@ resource "morpheus_group" "tf_example_group" {
 
 ### Required
 
-- **name** (String) A unique name scoped to your account for the group
+- `name` (String) A unique name scoped to your account for the group
 
 ### Optional
 
-- **cloud_ids** (Set of Number) An array of all the clouds assigned to this group
-- **code** (String) Optional code for use with policies
-- **location** (String) Optional location argument for your group
+- `cloud_ids` (Set of Number) An array of all the clouds assigned to this group
+- `code` (String) Optional code for use with policies
+- `location` (String) Optional location argument for your group
 
 ### Read-Only
 
-- **id** (String) The ID of the group
+- `id` (String) The ID of the group
 
 ## Import
 

@@ -67,25 +67,25 @@ resource "morpheus_groovy_script_task" "tfexample_groovy_git" {
 
 ### Required
 
-- **name** (String) The name of the groovy script task
-- **source_type** (String) The source of the groovy script (local, url or repository)
+- `name` (String) The name of the groovy script task
+- `source_type` (String) The source of the groovy script (local, url or repository)
 
 ### Optional
 
-- **allow_custom_config** (Boolean) Custom configuration data to pass during the execution of the groovy script
-- **code** (String) The code of the groovy script task
-- **repository_id** (Number) The ID of the git repository integration
-- **result_type** (String) The expected result type (single value, key pairs, json)
-- **retry_count** (Number) The number of times to retry the task if there is a failure
-- **retry_delay_seconds** (Number) The number of seconds to wait between retry attempts
-- **retryable** (Boolean) Whether to retry the task if there is a failure
-- **script_content** (String) The content of the groovy script. Used when the local source type is specified
-- **script_path** (String) The path of the groovy script, either the url or the path in the repository
-- **version_ref** (String) The git reference of the repository to pull (main, master, etc.)
+- `allow_custom_config` (Boolean) Custom configuration data to pass during the execution of the groovy script
+- `code` (String) The code of the groovy script task
+- `repository_id` (Number) The ID of the git repository integration
+- `result_type` (String) The expected result type (single value, key pairs, json)
+- `retry_count` (Number) The number of times to retry the task if there is a failure
+- `retry_delay_seconds` (Number) The number of seconds to wait between retry attempts
+- `retryable` (Boolean) Whether to retry the task if there is a failure
+- `script_content` (String) The content of the groovy script. Used when the local source type is specified
+- `script_path` (String) The path of the groovy script, either the url or the path in the repository
+- `version_ref` (String) The git reference of the repository to pull (main, master, etc.)
 
 ### Read-Only
 
-- **id** (String) The ID of the groovy script task
+- `id` (String) The ID of the groovy script task
 
 ## Import
 

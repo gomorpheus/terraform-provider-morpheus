@@ -22,8 +22,8 @@ data "morpheus_execute_schedule" "daily_at_midnight" {
 
 ### Required
 
-- **name** (String) The name of the execute schedule
+- `name` (String) The name of the execute schedule
 
-### Optional
+### Read-Only
 
-- **id** (String) The ID of this resource.
+- `id` (String) The ID of this resource.
