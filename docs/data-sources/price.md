@@ -13,7 +13,7 @@ The Price data source allows details of a Price to be retrieved by its name.
 
 ```terraform
 data "morpheus_price" "resource_price" {
-  name     = "resourceprice"
+  name = "resourceprice"
 }
 ```
 
@@ -22,9 +22,9 @@ data "morpheus_price" "resource_price" {
 
 ### Optional
 
-- **id** (String) The ID of this resource.
-- **name** (String) The name of the Morpheus price.
+- `name` (String) The name of the Morpheus price.
 
 ### Read-Only
 
-- **code** (String) The code of the Morpheus price
+- `code` (String) The code of the Morpheus price
+- `id` (Number) The ID of this resource.

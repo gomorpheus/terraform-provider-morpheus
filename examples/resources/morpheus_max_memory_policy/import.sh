@@ -1,0 +1,1 @@
+terraform import morpheus_max_memory_policy.tf_example_max_memory_policy 1

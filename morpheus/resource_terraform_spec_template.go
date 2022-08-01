@@ -152,11 +152,20 @@ func resourceTerraformSpecTemplateRead(ctx context.Context, d *schema.ResourceDa
 	d.SetId(intToString(terraformSpecTemplate.Spectemplate.ID))
 	d.Set("name", terraformSpecTemplate.Spectemplate.Name)
 	d.Set("source_type", terraformSpecTemplate.Spectemplate.File.Sourcetype)
-	d.Set("spec_content", terraformSpecTemplate.Spectemplate.File.Content)
-	d.Set("spec_path", terraformSpecTemplate.Spectemplate.File.Contentpath)
-	d.Set("version_ref", terraformSpecTemplate.Spectemplate.File.Contentref)
-	d.Set("repository_id", terraformSpecTemplate.Spectemplate.File.Repository.ID)
 
+	switch terraformSpecTemplate.Spectemplate.File.Sourcetype {
+	case "local":
+		d.Set("source_type", "local")
+		d.Set("spec_content", terraformSpecTemplate.Spectemplate.File.Content)
+	case "url":
+		d.Set("source_type", "url")
+		d.Set("spec_path", terraformSpecTemplate.Spectemplate.File.Contentpath)
+	case "git":
+		d.Set("source_type", "repository")
+		d.Set("spec_path", terraformSpecTemplate.Spectemplate.File.Contentpath)
+		d.Set("repository_id", terraformSpecTemplate.Spectemplate.File.Repository.ID)
+		d.Set("version_ref", terraformSpecTemplate.Spectemplate.File.Contentref)
+	}
 	return diags
 }
 

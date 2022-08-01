@@ -22,10 +22,10 @@ data "morpheus_group" "morpheusgroup" {
 
 ### Optional
 
-- **id** (String) The ID of this resource.
-- **name** (String) The name of the Morpheus group.
+- `name` (String) The name of the Morpheus group.
 
 ### Read-Only
 
-- **code** (String) Optional code for use with policies
-- **location** (String) Optional location argument for your group
+- `code` (String) Optional code for use with policies
+- `id` (Number) The ID of this resource.
+- `location` (String) Optional location argument for your group

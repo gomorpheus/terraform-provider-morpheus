@@ -1,23 +1,58 @@
 ## Unreleased
 
+
+## 0.5.0 (July 31, 2022)
+
 NOTES:
+
+* The required Golang version has been changed from 1.14 to 1.17 to support the recent versions of the Terraform plugin sdk.
+
+* The `terraform-plugin-docs` dependency has been upgraded to 0.13.0.
+
+* The `terraform-plugin-sdk` dependcy has been upgraded to version 2.18.0.
 
 * The `morpheus_vsphere_cloud` resource has been updated to support properly managing the user credentials. This was enabled due to an API change to support proper credential handling via checksum comparisons between the Terraform value and the checksummed value returned by the API.
 
+* Update existing data sources to support using the id of the Morpheus object in addition to the name of the object.
+
 FEATURES:
 
+* **New Data Source:** `morpheus_integration`
 * **New Data Source:** `morpheus_price`
 * **New Data Source:** `morpheus_price_set`
 * **New Data Source:** `morpheus_tenant`
+* **New Data Source:** `morpheus_spec_template`
+* **New Resource:** `morpheus_arm_app_blueprint`
+* **New Resource:** `morpheus_arm_spec_template`
+* **New Resource:** `morpheus_backup_creation_policy`
+* **New Resource:** `morpheus_budget_policy`
+* **New Resource:** `morpheus_cloud_formation_app_blueprint`
+* **New Resource:** `morpheus_cloud_formation_spec_template`
+* **New Resource:** `morpheus_cluster_resource_name_policy`
 * **New Resource:** `morpheus_groovy_script_task`
+* **New Resource:** `morpheus_helm_app_blueprint`
+* **New Resource:** `morpheus_helm_spec_template`
+* **New Resource:** `morpheus_hostname_policy`
+* **New Resource:** `morpheus_instance_name_policy`
 * **New Resource:** `morpheus_javascript_task`
+* **New Resource:** `morpheus_kubernetes_app_blueprint`
+* **New Resource:** `morpheus_kubernetes_spec_template`
+* **New Resource:** `morpheus_max_containers_policy`
+* **New Resource:** `morpheus_max_memory_policy`
+* **New Resource:** `morpheus_max_storage_policy`
+* **New Resource:** `morpheus_network_quota_policy`
 * **New Resource:** `morpheus_powershell_script_task`
 * **New Resource:** `morpheus_price`
 * **New Resource:** `morpheus_price_set`
 * **New Resource:** `morpheus_restart_task`
+* **New Resource:** `morpheus_router_quota_policy`
 * **New Resource:** `morpheus_ruby_script_task`
 * **New Resource:** `morpheus_service_plan`
 * **New Resource:** `morpheus_shell_script_task`
+* **New Resource:** `morpheus_terraform_app_blueprint`
+* **New Resource:** `morpheus_user_creation_policy`
+* **New Resource:** `morpheus_wiki_page`
+* **New Resource:** `morpheus_workflow_catalog_item`
 * **New Resource:** `morpheus_write_attributes_task`
 
 ## 0.4.0 (February 24, 2022)

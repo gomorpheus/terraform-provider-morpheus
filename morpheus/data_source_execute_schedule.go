@@ -14,10 +14,16 @@ func dataSourceMorpheusExecuteSchedule() *schema.Resource {
 		Description: "Provides a Morpheus execute schedule data source.",
 		ReadContext: dataSourceMorpheusExecuteScheduleRead,
 		Schema: map[string]*schema.Schema{
+			"id": {
+				Type:          schema.TypeInt,
+				Optional:      true,
+				ConflictsWith: []string{"name"},
+			},
 			"name": {
-				Type:        schema.TypeString,
-				Description: "The name of the execute schedule",
-				Required:    true,
+				Type:          schema.TypeString,
+				Description:   "The name of the execute schedule",
+				Optional:      true,
+				ConflictsWith: []string{"id"},
 			},
 		},
 	}
@@ -29,16 +35,16 @@ func dataSourceMorpheusExecuteScheduleRead(ctx context.Context, d *schema.Resour
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
-	id := d.Id()
 	name := d.Get("name").(string)
+	id := d.Get("id").(int)
 
 	// lookup by name if we do not have an id yet
 	var resp *morpheus.Response
 	var err error
-	if id == "" && name != "" {
+	if id == 0 && name != "" {
 		resp, err = client.FindExecuteScheduleByName(name)
-	} else if id != "" {
-		resp, err = client.GetExecuteSchedule(toInt64(id), &morpheus.Request{})
+	} else if id != 0 {
+		resp, err = client.GetExecuteSchedule(int64(id), &morpheus.Request{})
 	} else {
 		return diag.Errorf("Execute schedule cannot be read without name or id")
 	}

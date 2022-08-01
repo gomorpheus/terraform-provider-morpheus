@@ -22,10 +22,10 @@ data "morpheus_cloud" "vspherecloud" {
 
 ### Optional
 
-- **id** (String) The ID of this resource.
-- **name** (String) The name of the Morpheus cloud
+- `name` (String) The name of the Morpheus cloud
 
 ### Read-Only
 
-- **code** (String) Optional code for use with policies
-- **location** (String) Optional location for your cloud
+- `code` (String) Optional code for use with policies
+- `id` (Number) The ID of this resource.
+- `location` (String) Optional location for your cloud

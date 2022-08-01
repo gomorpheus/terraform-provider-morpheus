@@ -14,10 +14,16 @@ func dataSourceMorpheusPrice() *schema.Resource {
 		Description: "The Price data source allows details of a Price to be retrieved by its name.",
 		ReadContext: dataSourceMorpheusPriceRead,
 		Schema: map[string]*schema.Schema{
+			"id": {
+				Type:          schema.TypeInt,
+				Optional:      true,
+				ConflictsWith: []string{"name"},
+			},
 			"name": {
-				Type:        schema.TypeString,
-				Description: "The name of the Morpheus price.",
-				Optional:    true,
+				Type:          schema.TypeString,
+				Description:   "The name of the Morpheus price.",
+				Optional:      true,
+				ConflictsWith: []string{"id"},
 			},
 			"code": {
 				Type:        schema.TypeString,
@@ -34,16 +40,16 @@ func dataSourceMorpheusPriceRead(ctx context.Context, d *schema.ResourceData, me
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
-	id := d.Id()
 	name := d.Get("name").(string)
+	id := d.Get("id").(int)
 
 	// lookup by name if we do not have an id yet
 	var resp *morpheus.Response
 	var err error
-	if id == "" && name != "" {
+	if id == 0 && name != "" {
 		resp, err = client.FindPriceByName(name)
-	} else if id != "" {
-		resp, err = client.GetPrice(toInt64(id), &morpheus.Request{})
+	} else if id != 0 {
+		resp, err = client.GetPrice(int64(id), &morpheus.Request{})
 	} else {
 		return diag.Errorf("Price cannot be read without name or id")
 	}

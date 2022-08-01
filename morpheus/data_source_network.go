@@ -14,10 +14,16 @@ func dataSourceMorpheusNetwork() *schema.Resource {
 		Description: "Provides a Morpheus network data source.",
 		ReadContext: dataSourceMorpheusNetworkRead,
 		Schema: map[string]*schema.Schema{
+			"id": {
+				Type:          schema.TypeInt,
+				Optional:      true,
+				ConflictsWith: []string{"name"},
+			},
 			"name": {
-				Type:        schema.TypeString,
-				Description: "The name of the Morpheus network.",
-				Optional:    true,
+				Type:          schema.TypeString,
+				Description:   "The name of the Morpheus network.",
+				Optional:      true,
+				ConflictsWith: []string{"id"},
 			},
 			"active": {
 				Type:        schema.TypeBool,
@@ -44,16 +50,16 @@ func dataSourceMorpheusNetworkRead(ctx context.Context, d *schema.ResourceData, 
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
-	id := d.Id()
 	name := d.Get("name").(string)
+	id := d.Get("id").(int)
 
 	// lookup by name if we do not have an id yet
 	var resp *morpheus.Response
 	var err error
-	if id == "" && name != "" {
+	if id == 0 && name != "" {
 		resp, err = client.FindNetworkByName(name)
-	} else if id != "" {
-		resp, err = client.GetNetwork(toInt64(id), &morpheus.Request{})
+	} else if id != 0 {
+		resp, err = client.GetNetwork(int64(id), &morpheus.Request{})
 	} else {
 		return diag.Errorf("Network cannot be read without name or id")
 	}

@@ -7,7 +7,7 @@ data "morpheus_cloud" "morpheus_vsphere" {
 }
 
 data "morpheus_resource_pool" "vsphere_resource_pool" {
-  name = "Morpheus-Cluster"
+  name     = "Morpheus-Cluster"
   cloud_id = data.morpheus_cloud.vsphere.id
 }
 

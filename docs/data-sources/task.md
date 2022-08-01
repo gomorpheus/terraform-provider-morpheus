@@ -22,5 +22,8 @@ data "morpheus_task" "deploy_app" {
 
 ### Optional
 
-- **id** (String) The ID of this resource.
-- **name** (String) The name of the task
+- `name` (String) The name of the task
+
+### Read-Only
+
+- `id` (Number) The ID of this resource.

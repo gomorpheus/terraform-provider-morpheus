@@ -14,10 +14,16 @@ func dataSourceMorpheusContact() *schema.Resource {
 		Description: "Provides a Morpheus contact data source.",
 		ReadContext: dataSourceMorpheusContactRead,
 		Schema: map[string]*schema.Schema{
+			"id": {
+				Type:          schema.TypeInt,
+				Optional:      true,
+				ConflictsWith: []string{"name"},
+			},
 			"name": {
-				Type:        schema.TypeString,
-				Description: "The name of the Morpheus contact.",
-				Required:    true,
+				Type:          schema.TypeString,
+				Description:   "The name of the Morpheus contact.",
+				Optional:      true,
+				ConflictsWith: []string{"id"},
 			},
 		},
 	}
@@ -29,16 +35,16 @@ func dataSourceMorpheusContactRead(ctx context.Context, d *schema.ResourceData, 
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
-	id := d.Id()
 	name := d.Get("name").(string)
+	id := d.Get("id").(int)
 
 	// lookup by name if we do not have an id yet
 	var resp *morpheus.Response
 	var err error
-	if id == "" && name != "" {
+	if id == 0 && name != "" {
 		resp, err = client.FindContactByName(name)
-	} else if id != "" {
-		resp, err = client.GetContact(toInt64(id), &morpheus.Request{})
+	} else if id != 0 {
+		resp, err = client.GetContact(int64(id), &morpheus.Request{})
 	} else {
 		return diag.Errorf("Contact cannot be read without name or id")
 	}

@@ -56,7 +56,7 @@ func resourceWorkflowPolicy() *schema.Resource {
 			},
 			"group_id": {
 				Type:          schema.TypeInt,
-				Description:   "The id of the group associated with the gropu scoped filter",
+				Description:   "The id of the group associated with the group scoped filter",
 				Optional:      true,
 				ForceNew:      true,
 				ConflictsWith: []string{"cloud_id", "user_id", "role_id"},
@@ -136,7 +136,7 @@ func resourceWorkflowPolicyCreate(ctx context.Context, d *schema.ResourceData, m
 			"id": d.Get("user_id").(int),
 		}
 	case "role":
-		policy["refId"] = 4
+		policy["refId"] = d.Get("role_id").(int)
 		policy["refType"] = "Role"
 		policy["eachUser"] = d.Get("apply_to_each_user").(bool)
 		policy["role"] = map[string]interface{}{

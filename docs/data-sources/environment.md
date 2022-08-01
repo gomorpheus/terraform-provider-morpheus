@@ -22,12 +22,12 @@ data "morpheus_environment" "production" {
 
 ### Optional
 
-- **id** (String) The ID of this resource.
-- **name** (String) The name of the Morpheus environment
+- `name` (String) The name of the Morpheus environment
 
 ### Read-Only
 
-- **active** (Boolean) Whether the environment is active
-- **code** (String) Optional code for use with policies
-- **description** (String) The description of the Morpheus environment
-- **visibility** (String) Whether the environment is visible in sub-tenants or not
+- `active` (Boolean) Whether the environment is active
+- `code` (String) Optional code for use with policies
+- `description` (String) The description of the Morpheus environment
+- `id` (Number) The ID of this resource.
+- `visibility` (String) Whether the environment is visible in sub-tenants or not

@@ -2,12 +2,12 @@
 page_title: "morpheus_write_attributes_task Resource - terraform-provider-morpheus"
 subcategory: ""
 description: |-
-  Provides a Morpheus python script task resource
+  Provides a Morpheus write attributes task resource
 ---
 
 # morpheus_write_attributes_task
 
-Provides a Morpheus python script task resource
+Provides a Morpheus write attributes task resource
 
 ## Example Usage
 
@@ -30,20 +30,20 @@ EOF
 
 ### Required
 
-- **name** (String) The name of the python script task
+- `name` (String) The name of the write attributes task
 
 ### Optional
 
-- **allow_custom_config** (Boolean) Custom configuration data to pass during the execution of the python script
-- **attributes** (String) The git reference of the repository to pull (main, master, etc.)
-- **code** (String) The code of the python script task
-- **retry_count** (Number) The number of times to retry the task if there is a failure
-- **retry_delay_seconds** (Number) The number of seconds to wait between retry attempts
-- **retryable** (Boolean) Whether to retry the task if there is a failure
+- `allow_custom_config` (Boolean) Custom configuration data to pass during the execution of the write attributes task
+- `attributes` (String) The attributes payload
+- `code` (String) The code of the write attributes task
+- `retry_count` (Number) The number of times to retry the task if there is a failure
+- `retry_delay_seconds` (Number) The number of seconds to wait between retry attempts
+- `retryable` (Boolean) Whether to retry the task if there is a failure
 
 ### Read-Only
 
-- **id** (String) The ID of the python script task
+- `id` (String) The ID of the write attributes task
 
 ## Import
 
