@@ -1,5 +1,13 @@
 ## Unreleased
 
+FEATURES:
+
+* **New Data Source:** `morpheus_blueprint`
+* **New Data Source:** `morpheus_job`
+* **New Data Source:** `morpheus_node_type`
+* **New Data Source:** `morpheus_option_list`
+* **New Data Source:** `morpheus_policy`
+* **New Data Source:** `morpheus_power_schedule`
 
 ## 0.5.0 (July 31, 2022)
 

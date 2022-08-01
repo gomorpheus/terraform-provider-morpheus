@@ -98,6 +98,7 @@ The following list of data sources are supported by the Morpheus Terraform provi
 
 | Data Source Name | Description |
 |------------------|-------------|
+| [morpheus_blueprint](docs/data-sources/blueprint.md) | Morpheus blueprint data source |
 | [morpheus_cloud](docs/data-sources/cloud.md) | Morpheus cloud data source |
 | [morpheus_contact](docs/data-sources/contact.md) | Morpheus contact data source |
 | [morpheus_environment](docs/data-sources/environment.md) | Morpheus environment data source|
@@ -106,14 +107,21 @@ The following list of data sources are supported by the Morpheus Terraform provi
 | [morpheus_instance_layout](docs/data-sources/instance_layout.md) | Morpheus isntance layout data source |
 | [morpheus_instance_type](docs/data-sources/instance_type.md) | Morpheus instance type data source |
 | [morpheus_integration](docs/data-sources/integration.md) | Morpheus integration data source |
+| [morpheus_job](docs/data-sources/job.md) | Morpheus job data source |
 | [morpheus_network](docs/data-sources/network.md) | Morpheus network data source |
+| [morpheus_node_type](docs/data-sources/node_type.md) | Morpheus node type data source |
+| [morpheus_option_list](docs/data-sources/option_list.md) | Morpheus option list data source |
 | [morpheus_option_type](docs/data-sources/option_type.md) | Morpheus option type data source |
 | [morpheus_plan](docs/data-sources/plan.md) | Morpheus plan data source |
+| [morpheus_policy](docs/data-sources/policy.md) | Morpheus policy data source |
+| [morpheus_power_schedule](docs/data-sources/power_schedule.md) | Morpheus power schedule data source |
 | [morpheus_price](docs/data-sources/price.md) | Morpheus price data source |
 | [morpheus_price_set](docs/data-sources/price_set.md) | Morpheus price set data source |
 | [morpheus_resource_pool](docs/data-sources/resource_pool.md) | Morpheus resources pool data source |
 | [morpheus_spec_template](docs/data-sources/spec_template.md) | Morpheus spec template data source |
 | [morpheus_task](docs/data-sources/task.md) | Morpheus automation task data source |
+| [morpheus_tenant_role](docs/data-sources/tenant_role.md) | Morpheus automation tenant role data source |
+| [morpheus_tenant](docs/data-sources/tenant.md) | Morpheus automation tenant data source |
 | [morpheus_workflow](docs/data-sources/workflow.md) | Morpheus workflow data source |
 
 ## Building the provider

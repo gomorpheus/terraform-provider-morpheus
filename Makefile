@@ -15,6 +15,13 @@ dev:
 	mkdir -p $(INSTALL_PATH)	
 	go build -o $(INSTALL_PATH)/terraform-provider-morpheus main.go
 
+gen-data-source:
+	mkdir -p examples/data-sources/morpheus_$(data-source)
+	touch examples/data-sources/morpheus_$(data-source)/data-source.tf
+	cp templates/data-sources/tenant.md.tmpl templates/data-sources/$(data-source).md.tmpl
+	sed -i '.bak' 's/tenant/$(data-source)/g' templates/data-sources/$(data-source).md.tmpl
+	rm templates/data-sources/$(data-source).md.tmpl.bak
+
 gendocs:
 	find examples/resources -type d -exec terraform fmt {} \;
 	find examples/data-sources -type d -exec terraform fmt {} \;
