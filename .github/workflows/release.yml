@@ -9,7 +9,7 @@ jobs:
     steps:
       -
         name: Checkout
-        uses: actions/checkout@v2.4.0
+        uses: actions/checkout@v3
       -
         name: Unshallow
         run: git fetch --prune --unshallow
@@ -24,7 +24,7 @@ jobs:
         uses: crazy-max/ghaction-import-gpg@v4
         with:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
-          passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          passphrase: ${{ secrets.PASSPHRASE }}
       -
         name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v3.0.0
@@ -33,5 +33,4 @@ jobs:
           args: release --rm-dist
         env:
           GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
-          # GitHub sets this automatically
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
