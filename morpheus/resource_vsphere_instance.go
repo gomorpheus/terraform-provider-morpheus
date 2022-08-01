@@ -97,14 +97,14 @@ func resourceVsphereInstance() *schema.Resource {
 				Elem:        &schema.Schema{Type: schema.TypeString},
 			},
 			"workflow_id": {
-				Description:   "The ID of the provisioning workflow to execute",
+				Description:   "The ID of the provisioning workflow to execute (`workflow_name` can be used alternatively, only one is needed)",
 				Type:          schema.TypeInt,
 				ForceNew:      true,
 				Optional:      true,
 				ConflictsWith: []string{"workflow_name"},
 			},
 			"workflow_name": {
-				Description:   "The name of the provisioning workflow to execute",
+				Description:   "The name of the provisioning workflow to execute (`workflow_id` can be used alternatively, only one is needed)",
 				Type:          schema.TypeString,
 				ForceNew:      true,
 				Optional:      true,
