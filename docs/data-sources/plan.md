@@ -28,4 +28,4 @@ data "morpheus_plan" "vmware" {
 
 - `code` (String) Optional code for use with policies
 - `description` (String) The description of the plan
-- `id` (String) The ID of this resource.
+- `id` (Number) The ID of this resource.

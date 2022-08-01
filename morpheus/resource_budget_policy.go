@@ -12,28 +12,28 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
-func resourceMaxHostsPolicy() *schema.Resource {
+func resourceBudgetPolicy() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Provides a Morpheus max hosts policy resource",
-		CreateContext: resourceMaxHostsPolicyCreate,
-		ReadContext:   resourceMaxHostsPolicyRead,
-		UpdateContext: resourceMaxHostsPolicyUpdate,
-		DeleteContext: resourceMaxHostsPolicyDelete,
+		Description:   "Provides a Morpheus budget policy resource",
+		CreateContext: resourceBudgetPolicyCreate,
+		ReadContext:   resourceBudgetPolicyRead,
+		UpdateContext: resourceBudgetPolicyUpdate,
+		DeleteContext: resourceBudgetPolicyDelete,
 
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Type:        schema.TypeString,
-				Description: "The ID of the workflow policy",
+				Description: "The ID of the budget policy",
 				Computed:    true,
 			},
 			"name": {
 				Type:        schema.TypeString,
-				Description: "The name of the workflow policy",
+				Description: "The name of the budget policy",
 				Required:    true,
 			},
 			"description": {
 				Type:        schema.TypeString,
-				Description: "The description of the workflow policy",
+				Description: "The description of the budget policy",
 				Optional:    true,
 			},
 			"enabled": {
@@ -42,9 +42,19 @@ func resourceMaxHostsPolicy() *schema.Resource {
 				Optional:    true,
 				Default:     true,
 			},
-			"max_hosts": {
-				Type:        schema.TypeInt,
-				Description: "The maximum hosts defined by the policy",
+			"max_price": {
+				Type:        schema.TypeString,
+				Description: "The max budget price",
+				Required:    true,
+			},
+			"currency": {
+				Type:        schema.TypeString,
+				Description: "The budget currency",
+				Required:    true,
+			},
+			"unit_of_time": {
+				Type:        schema.TypeString,
+				Description: "The unit of time to measure the budget (hour or month)",
 				Required:    true,
 			},
 			"scope": {
@@ -56,7 +66,7 @@ func resourceMaxHostsPolicy() *schema.Resource {
 			},
 			"group_id": {
 				Type:          schema.TypeInt,
-				Description:   "The id of the group associated with the gropu scoped filter",
+				Description:   "The id of the group associated with the group scoped filter",
 				Optional:      true,
 				ForceNew:      true,
 				ConflictsWith: []string{"cloud_id", "user_id", "role_id"},
@@ -95,7 +105,7 @@ func resourceMaxHostsPolicy() *schema.Resource {
 	}
 }
 
-func resourceMaxHostsPolicyCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceBudgetPolicyCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*morpheus.Client)
 
 	// Warning or errors can be collected in a slice type
@@ -107,11 +117,13 @@ func resourceMaxHostsPolicyCreate(ctx context.Context, d *schema.ResourceData, m
 	policy["description"] = d.Get("description").(string)
 	policy["enabled"] = d.Get("enabled").(bool)
 	policy["config"] = map[string]interface{}{
-		"maxHosts": d.Get("max_hosts").(int),
+		"maxPrice":         d.Get("max_price").(string),
+		"maxPriceCurrency": d.Get("currency").(string),
+		"maxPriceUnit":     d.Get("unit_of_time").(string),
 	}
 	policy["policyType"] = map[string]interface{}{
-		"code": "maxHosts",
-		"name": "Max Hosts",
+		"code": "maxPrice",
+		"name": "Budget",
 	}
 
 	switch d.Get("scope") {
@@ -159,11 +171,11 @@ func resourceMaxHostsPolicyCreate(ctx context.Context, d *schema.ResourceData, m
 	// Successfully created resource, now set id
 	d.SetId(int64ToString(policyResult.ID))
 
-	resourceMaxCoresPolicyRead(ctx, d, meta)
+	resourceBudgetPolicyRead(ctx, d, meta)
 	return diags
 }
 
-func resourceMaxHostsPolicyRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceBudgetPolicyRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*morpheus.Client)
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
@@ -194,29 +206,30 @@ func resourceMaxHostsPolicyRead(ctx context.Context, d *schema.ResourceData, met
 	log.Printf("API RESPONSE: %s", resp)
 
 	// store resource data
-	var maxCoresPolicy MaxCoresPolicy
-	json.Unmarshal(resp.Body, &maxCoresPolicy)
+	var budgetCreationPolicy BudgetPolicy
+	json.Unmarshal(resp.Body, &budgetCreationPolicy)
 
-	d.SetId(intToString(maxCoresPolicy.Policy.ID))
-	d.Set("name", maxCoresPolicy.Policy.Name)
-	d.Set("description", maxCoresPolicy.Policy.Description)
-	d.Set("enabled", maxCoresPolicy.Policy.Enabled)
-	d.Set("max_hosts", maxCoresPolicy.Policy.Config.MaxCores)
-
-	switch maxCoresPolicy.Policy.Reftype {
+	d.SetId(intToString(budgetCreationPolicy.Policy.ID))
+	d.Set("name", budgetCreationPolicy.Policy.Name)
+	d.Set("description", budgetCreationPolicy.Policy.Description)
+	d.Set("enabled", budgetCreationPolicy.Policy.Enabled)
+	d.Set("max_price", budgetCreationPolicy.Policy.Config.MaxPrice)
+	d.Set("currency", budgetCreationPolicy.Policy.Config.MaxPriceCurrency)
+	d.Set("unit_of_time", budgetCreationPolicy.Policy.Config.MaxPriceUnit)
+	switch budgetCreationPolicy.Policy.Reftype {
 	case "ComputeSite":
 		d.Set("scope", "group")
-		d.Set("group_id", maxCoresPolicy.Policy.Site.ID)
+		d.Set("group_id", budgetCreationPolicy.Policy.Site.ID)
 	case "ComputeZone":
 		d.Set("scope", "cloud")
-		d.Set("cloud_id", maxCoresPolicy.Policy.Zone.ID)
+		d.Set("cloud_id", budgetCreationPolicy.Policy.Zone.ID)
 	case "User":
 		d.Set("scope", "user")
-		d.Set("user_id", maxCoresPolicy.Policy.User.ID)
+		d.Set("user_id", budgetCreationPolicy.Policy.User.ID)
 	case "Role":
 		d.Set("scope", "role")
-		d.Set("role_id", maxCoresPolicy.Policy.Role.ID)
-		d.Set("apply_to_each_user", maxCoresPolicy.Policy.Eachuser)
+		d.Set("role_id", budgetCreationPolicy.Policy.Role.ID)
+		d.Set("apply_to_each_user", budgetCreationPolicy.Policy.Eachuser)
 	default:
 		d.Set("scope", "global")
 	}
@@ -224,7 +237,7 @@ func resourceMaxHostsPolicyRead(ctx context.Context, d *schema.ResourceData, met
 	return diags
 }
 
-func resourceMaxHostsPolicyUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceBudgetPolicyUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*morpheus.Client)
 	id := d.Id()
 
@@ -233,12 +246,15 @@ func resourceMaxHostsPolicyUpdate(ctx context.Context, d *schema.ResourceData, m
 	policy["name"] = d.Get("name").(string)
 	policy["description"] = d.Get("description").(string)
 	policy["enabled"] = d.Get("enabled").(bool)
+
 	policy["config"] = map[string]interface{}{
-		"maxHosts": d.Get("max_hosts").(int),
+		"maxPrice":         d.Get("max_price").(string),
+		"maxPriceCurrency": d.Get("currency").(string),
+		"maxPriceUnit":     d.Get("unit_of_time").(string),
 	}
 	policy["policyType"] = map[string]interface{}{
-		"code": "maxHosts",
-		"name": "Max Hosts",
+		"code": "maxPrice",
+		"name": "Budget",
 	}
 
 	switch d.Get("scope") {
@@ -287,10 +303,10 @@ func resourceMaxHostsPolicyUpdate(ctx context.Context, d *schema.ResourceData, m
 	// Successfully updated resource, now set id
 	// err, it should not have changed though..
 	d.SetId(int64ToString(policyResult.ID))
-	return resourceWorkflowPolicyRead(ctx, d, meta)
+	return resourceBudgetPolicyRead(ctx, d, meta)
 }
 
-func resourceMaxHostsPolicyDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceBudgetPolicyDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*morpheus.Client)
 
 	// Warning or errors can be collected in a slice type
@@ -313,11 +329,13 @@ func resourceMaxHostsPolicyDelete(ctx context.Context, d *schema.ResourceData, m
 	return diags
 }
 
-type MaxHostsPolicy struct {
+type BudgetPolicy struct {
 	Policy struct {
 		Accounts []interface{} `json:"accounts"`
 		Config   struct {
-			MaxHosts string `json:"maxHosts"`
+			MaxPrice         string `json:"maxPrice"`
+			MaxPriceCurrency string `json:"maxPriceCurrency"`
+			MaxPriceUnit     string `json:"maxPriceUnit"`
 		} `json:"config"`
 		Description string `json:"description"`
 		Eachuser    bool   `json:"eachUser"`

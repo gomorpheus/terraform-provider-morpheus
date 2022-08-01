@@ -27,4 +27,4 @@ data "morpheus_price" "resource_price" {
 ### Read-Only
 
 - `code` (String) The code of the Morpheus price
-- `id` (String) The ID of this resource.
+- `id` (Number) The ID of this resource.

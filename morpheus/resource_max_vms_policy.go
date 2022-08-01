@@ -23,17 +23,17 @@ func resourceMaxVmsPolicy() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Type:        schema.TypeString,
-				Description: "The ID of the workflow policy",
+				Description: "The ID of the max vms policy",
 				Computed:    true,
 			},
 			"name": {
 				Type:        schema.TypeString,
-				Description: "The name of the workflow policy",
+				Description: "The name of the max vms policy",
 				Required:    true,
 			},
 			"description": {
 				Type:        schema.TypeString,
-				Description: "The description of the workflow policy",
+				Description: "The description of the max vms policy",
 				Optional:    true,
 			},
 			"enabled": {
@@ -56,7 +56,7 @@ func resourceMaxVmsPolicy() *schema.Resource {
 			},
 			"group_id": {
 				Type:          schema.TypeInt,
-				Description:   "The id of the group associated with the gropu scoped filter",
+				Description:   "The id of the group associated with the group scoped filter",
 				Optional:      true,
 				ForceNew:      true,
 				ConflictsWith: []string{"cloud_id", "user_id", "role_id"},

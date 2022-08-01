@@ -14,10 +14,16 @@ func dataSourceMorpheusTenant() *schema.Resource {
 		Description: "Provides a Morpheus tenant data source.",
 		ReadContext: dataSourceMorpheusTenantRead,
 		Schema: map[string]*schema.Schema{
+			"id": {
+				Type:          schema.TypeInt,
+				Optional:      true,
+				ConflictsWith: []string{"name"},
+			},
 			"name": {
-				Type:        schema.TypeString,
-				Description: "The name of the Morpheus tenant.",
-				Optional:    true,
+				Type:          schema.TypeString,
+				Description:   "The name of the Morpheus tenant.",
+				Optional:      true,
+				ConflictsWith: []string{"id"},
 			},
 			"account_number": {
 				Type:        schema.TypeString,
@@ -44,16 +50,16 @@ func dataSourceMorpheusTenantRead(ctx context.Context, d *schema.ResourceData, m
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
-	id := d.Id()
 	name := d.Get("name").(string)
+	id := d.Get("id").(int)
 
 	// lookup by name if we do not have an id yet
 	var resp *morpheus.Response
 	var err error
-	if id == "" && name != "" {
+	if id == 0 && name != "" {
 		resp, err = client.FindTenantByName(name)
-	} else if id != "" {
-		resp, err = client.GetTenant(toInt64(id), &morpheus.Request{})
+	} else if id != 0 {
+		resp, err = client.GetTenant(int64(id), &morpheus.Request{})
 	} else {
 		return diag.Errorf("Tenant cannot be read without name or id")
 	}

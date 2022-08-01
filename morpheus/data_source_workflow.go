@@ -14,10 +14,16 @@ func dataSourceMorpheusWorkflow() *schema.Resource {
 		Description: "Provides a Morpheus workflow data source.",
 		ReadContext: dataSourceMorpheusWorkflowRead,
 		Schema: map[string]*schema.Schema{
+			"id": {
+				Type:          schema.TypeInt,
+				Optional:      true,
+				ConflictsWith: []string{"name"},
+			},
 			"name": {
-				Type:        schema.TypeString,
-				Description: "The name of the workflow",
-				Required:    true,
+				Type:          schema.TypeString,
+				Description:   "The name of the workflow",
+				Optional:      true,
+				ConflictsWith: []string{"id"},
 			},
 		},
 	}
@@ -29,16 +35,16 @@ func dataSourceMorpheusWorkflowRead(ctx context.Context, d *schema.ResourceData,
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
-	id := d.Id()
+	id := d.Get("id").(int)
 	name := d.Get("name").(string)
 
 	// lookup by name if we do not have an id yet
 	var resp *morpheus.Response
 	var err error
-	if id == "" && name != "" {
+	if id == 0 && name != "" {
 		resp, err = client.FindTaskSetByName(name)
-	} else if id != "" {
-		resp, err = client.GetTaskSet(toInt64(id), &morpheus.Request{})
+	} else if id != 0 {
+		resp, err = client.GetTaskSet(int64(id), &morpheus.Request{})
 	} else {
 		return diag.Errorf("Workflow cannot be read without name or id")
 	}

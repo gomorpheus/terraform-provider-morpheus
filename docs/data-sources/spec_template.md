@@ -26,4 +26,4 @@ data "morpheus_spec_template" "morpheus_template" {
 
 ### Read-Only
 
-- `id` (String) The ID of this resource.
+- `id` (Number) The ID of this resource.

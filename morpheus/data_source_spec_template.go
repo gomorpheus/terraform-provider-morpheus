@@ -14,10 +14,16 @@ func dataSourceMorpheusSpecTemplate() *schema.Resource {
 		Description: "Provides a Morpheus spec template data source.",
 		ReadContext: dataSourceMorphesSpecTemplateRead,
 		Schema: map[string]*schema.Schema{
+			"id": {
+				Type:          schema.TypeInt,
+				Optional:      true,
+				ConflictsWith: []string{"name"},
+			},
 			"name": {
-				Type:        schema.TypeString,
-				Description: "The name of the spec template",
-				Optional:    true,
+				Type:          schema.TypeString,
+				Description:   "The name of the spec template",
+				Optional:      true,
+				ConflictsWith: []string{"id"},
 			},
 		},
 	}
@@ -29,16 +35,16 @@ func dataSourceMorphesSpecTemplateRead(ctx context.Context, d *schema.ResourceDa
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
-	id := d.Id()
 	name := d.Get("name").(string)
+	id := d.Get("id").(int)
 
 	// lookup by name if we do not have an id yet
 	var resp *morpheus.Response
 	var err error
-	if id == "" && name != "" {
+	if id == 0 && name != "" {
 		resp, err = client.FindSpecTemplateByName(name)
-	} else if id != "" {
-		resp, err = client.GetSpecTemplate(toInt64(id), &morpheus.Request{})
+	} else if id != 0 {
+		resp, err = client.GetSpecTemplate(int64(id), &morpheus.Request{})
 	} else {
 		return diag.Errorf("Spec template cannot be read without name or id")
 	}
