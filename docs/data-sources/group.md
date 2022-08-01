@@ -27,5 +27,5 @@ data "morpheus_group" "morpheusgroup" {
 ### Read-Only
 
 - `code` (String) Optional code for use with policies
-- `id` (String) The ID of this resource.
+- `id` (Number) The ID of this resource.
 - `location` (String) Optional location argument for your group

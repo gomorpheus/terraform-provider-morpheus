@@ -14,10 +14,16 @@ func dataSourceMorpheusCloud() *schema.Resource {
 		Description: "Provides a Morpheus cloud data source.",
 		ReadContext: dataSourceMorpheusCloudRead,
 		Schema: map[string]*schema.Schema{
+			"id": {
+				Type:          schema.TypeInt,
+				Optional:      true,
+				ConflictsWith: []string{"name"},
+			},
 			"name": {
-				Type:        schema.TypeString,
-				Description: "The name of the Morpheus cloud",
-				Optional:    true,
+				Type:          schema.TypeString,
+				Description:   "The name of the Morpheus cloud",
+				Optional:      true,
+				ConflictsWith: []string{"id"},
 			},
 			"code": {
 				Type:        schema.TypeString,
@@ -39,16 +45,16 @@ func dataSourceMorpheusCloudRead(ctx context.Context, d *schema.ResourceData, me
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
-	id := d.Id()
 	name := d.Get("name").(string)
+	id := d.Get("id").(int)
 
 	// lookup by name if we do not have an id yet
 	var resp *morpheus.Response
 	var err error
-	if id == "" && name != "" {
+	if id == 0 && name != "" {
 		resp, err = client.FindCloudByName(name)
-	} else if id != "" {
-		resp, err = client.GetCloud(toInt64(id), &morpheus.Request{})
+	} else if id != 0 {
+		resp, err = client.GetCloud(int64(id), &morpheus.Request{})
 	} else {
 		return diag.Errorf("Cloud cannot be read without name or id")
 	}

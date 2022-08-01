@@ -36,7 +36,7 @@ resource "morpheus_workflow_policy" "tf_example_workflow_policy_global" {
 - `cloud_id` (Number) The id of the cloud associated with the cloud scoped filter
 - `description` (String) The description of the workflow policy
 - `enabled` (Boolean) Whether the policy is enabled
-- `group_id` (Number) The id of the group associated with the gropu scoped filter
+- `group_id` (Number) The id of the group associated with the group scoped filter
 - `role_id` (Number) The id of the role associated with the role scoped filter
 - `user_id` (Number) The id of the user associated with the user scoped filter
 

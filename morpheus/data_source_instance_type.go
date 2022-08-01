@@ -14,10 +14,16 @@ func dataSourceMorpheusInstanceType() *schema.Resource {
 		Description: "Provides a Morpheus instance type data source.",
 		ReadContext: dataSourceMorpheusInstanceTypeRead,
 		Schema: map[string]*schema.Schema{
+			"id": {
+				Type:          schema.TypeInt,
+				Optional:      true,
+				ConflictsWith: []string{"name"},
+			},
 			"name": {
-				Type:        schema.TypeString,
-				Description: "The name of the Morpheus cloud.",
-				Optional:    true,
+				Type:          schema.TypeString,
+				Description:   "The name of the Morpheus cloud.",
+				Optional:      true,
+				ConflictsWith: []string{"id"},
 			},
 			"code": {
 				Type:        schema.TypeString,
@@ -49,16 +55,16 @@ func dataSourceMorpheusInstanceTypeRead(ctx context.Context, d *schema.ResourceD
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
-	id := d.Id()
 	name := d.Get("name").(string)
+	id := d.Get("id").(int)
 
 	// lookup by name if we do not have an id yet
 	var resp *morpheus.Response
 	var err error
-	if id == "" && name != "" {
+	if id == 0 && name != "" {
 		resp, err = client.FindInstanceTypeByName(name)
-	} else if id != "" {
-		resp, err = client.GetInstanceType(toInt64(id), &morpheus.Request{})
+	} else if id != 0 {
+		resp, err = client.GetInstanceType(int64(id), &morpheus.Request{})
 		// todo: ignore 404 errors...
 	} else {
 		return diag.Errorf("Instance type cannot be read without name or id")

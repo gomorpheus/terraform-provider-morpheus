@@ -28,5 +28,5 @@ data "morpheus_network" "vmnetwork" {
 
 - `active` (Boolean) Optional code for use with policies
 - `description` (String) The description of the network
-- `id` (String) The ID of this resource.
+- `id` (Number) The ID of this resource.
 - `visibility` (String) Whether the network is visible in sub-tenants or not

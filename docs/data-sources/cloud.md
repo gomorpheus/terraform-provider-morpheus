@@ -27,5 +27,5 @@ data "morpheus_cloud" "vspherecloud" {
 ### Read-Only
 
 - `code` (String) Optional code for use with policies
-- `id` (String) The ID of this resource.
+- `id` (Number) The ID of this resource.
 - `location` (String) Optional location for your cloud

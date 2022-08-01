@@ -29,4 +29,4 @@ data "morpheus_tenant" "example_tenant" {
 - `account_name` (String) An optional field that can be used for billing and accounting
 - `account_number` (String) An optional field that can be used for billing and accounting
 - `customer_number` (String) An optional field that can be used for billing and accounting
-- `id` (String) The ID of this resource.
+- `id` (Number) The ID of this resource.

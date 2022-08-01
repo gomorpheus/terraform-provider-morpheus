@@ -56,7 +56,7 @@ func resourceWorkflowPolicy() *schema.Resource {
 			},
 			"group_id": {
 				Type:          schema.TypeInt,
-				Description:   "The id of the group associated with the gropu scoped filter",
+				Description:   "The id of the group associated with the group scoped filter",
 				Optional:      true,
 				ForceNew:      true,
 				ConflictsWith: []string{"cloud_id", "user_id", "role_id"},

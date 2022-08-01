@@ -14,10 +14,16 @@ func dataSourceMorpheusOptionType() *schema.Resource {
 		Description: "Provides a Morpheus option type data source.",
 		ReadContext: dataSourceMorpheusOptionTypeRead,
 		Schema: map[string]*schema.Schema{
+			"id": {
+				Type:          schema.TypeInt,
+				Optional:      true,
+				ConflictsWith: []string{"name"},
+			},
 			"name": {
-				Type:        schema.TypeString,
-				Description: "The name of the option type",
-				Optional:    true,
+				Type:          schema.TypeString,
+				Description:   "The name of the option type",
+				Optional:      true,
+				ConflictsWith: []string{"id"},
 			},
 		},
 	}
@@ -29,16 +35,16 @@ func dataSourceMorpheusOptionTypeRead(ctx context.Context, d *schema.ResourceDat
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
-	id := d.Id()
 	name := d.Get("name").(string)
+	id := d.Get("id").(int)
 
 	// lookup by name if we do not have an id yet
 	var resp *morpheus.Response
 	var err error
-	if id == "" && name != "" {
+	if id == 0 && name != "" {
 		resp, err = client.FindOptionTypeByName(name)
-	} else if id != "" {
-		resp, err = client.GetOptionType(toInt64(id), &morpheus.Request{})
+	} else if id != 0 {
+		resp, err = client.GetOptionType(int64(id), &morpheus.Request{})
 	} else {
 		return diag.Errorf("Option type cannot be read without name or id")
 	}

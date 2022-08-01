@@ -96,6 +96,20 @@ func resourceVsphereInstance() *schema.Resource {
 				Optional:    true,
 				Elem:        &schema.Schema{Type: schema.TypeString},
 			},
+			"workflow_id": {
+				Description:   "The ID of the provisioning workflow to execute",
+				Type:          schema.TypeInt,
+				ForceNew:      true,
+				Optional:      true,
+				ConflictsWith: []string{"workflow_name"},
+			},
+			"workflow_name": {
+				Description:   "The name of the provisioning workflow to execute",
+				Type:          schema.TypeString,
+				ForceNew:      true,
+				Optional:      true,
+				ConflictsWith: []string{"workflow_id"},
+			},
 			"create_user": {
 				Description: "Whether to create a user account on the instance that is associated with the provisioning user account",
 				Type:        schema.TypeBool,
@@ -344,6 +358,16 @@ func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, 
 	// Labels
 	if d.Get("labels") != nil {
 		payload["labels"] = d.Get("labels")
+	}
+
+	// Provisioning Workflow ID
+	if d.Get("workflow_id") != nil {
+		payload["taskSetId"] = d.Get("workflow_id")
+	}
+
+	// Provisioning Workflow Name
+	if d.Get("workflow_name") != nil {
+		payload["taskSetName"] = d.Get("workflow_name")
 	}
 
 	// Environment Variables

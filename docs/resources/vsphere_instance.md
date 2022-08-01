@@ -96,6 +96,8 @@ resource "morpheus_vsphere_instance" "tf_example_vsphere_instance" {
 - `tags` (Map of String) Tags to assign to the instance
 - `timeouts` (Block, Optional) (see [below for nested schema](#nestedblock--timeouts))
 - `volumes` (Block List) The instance volumes to create (see [below for nested schema](#nestedblock--volumes))
+- `workflow_id` (Number) The ID of the provisioning workflow to execute
+- `workflow_name` (String) The name of the provisioning workflow to execute
 
 ### Read-Only
 

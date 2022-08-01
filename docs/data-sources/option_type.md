@@ -26,4 +26,4 @@ data "morpheus_option_type" "versions" {
 
 ### Read-Only
 
-- `id` (String) The ID of this resource.
+- `id` (Number) The ID of this resource.

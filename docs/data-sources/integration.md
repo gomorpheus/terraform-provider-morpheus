@@ -26,4 +26,4 @@ data "morpheus_integration" "tf_example_integration" {
 
 ### Read-Only
 
-- `id` (String) The ID of this resource.
+- `id` (Number) The ID of this resource.

@@ -1,0 +1,1 @@
+terraform import morpheus_cluster_resource_name_policy.tf_example_cluster_resource_name_policy 1

@@ -29,5 +29,5 @@ data "morpheus_instance_type" "apache" {
 - `active` (Boolean) Whether the instance type is enabled or not
 - `code` (String) Optional code for use with policies
 - `description` (String) The description of the instance type
-- `id` (String) The ID of this resource.
+- `id` (Number) The ID of this resource.
 - `visibility` (String) Whether the instance type is visible in sub-tenants or not

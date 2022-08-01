@@ -28,4 +28,4 @@ data "morpheus_instance_layout" "apache" {
 
 - `code` (String) Optional code for use with policies
 - `description` (String) The description of the instance layout
-- `id` (String) The ID of this resource.
+- `id` (Number) The ID of this resource.

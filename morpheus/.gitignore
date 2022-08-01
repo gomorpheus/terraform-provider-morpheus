@@ -19,3 +19,4 @@ website/node_modules
 *.bak
 *~
 log.txt
+.vscode
