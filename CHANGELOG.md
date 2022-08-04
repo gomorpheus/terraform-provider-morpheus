@@ -8,6 +8,8 @@ FEATURES:
 * **New Data Source:** `morpheus_option_list`
 * **New Data Source:** `morpheus_policy`
 * **New Data Source:** `morpheus_power_schedule`
+* **New Resource:** `morpheus_file_template`
+* **New Resource:** `morpheus_script_template`
 
 ## 0.5.0 (July 31, 2022)
 
