@@ -44,6 +44,7 @@ The following list of resources are supported by the Morpheus Terraform provider
 | [morpheus_contact](docs/resources/morpheus_contact.md) | Morpheus contact resource |
 | [morpheus_environment](docs/resources/environment.md) | Morpheus environment resource |
 | [morpheus_execute_schedule](docs/resources/execute_schedule.md) | Morpheus execute schedule resource |
+| [morpheus_file_template](docs/resources/file_template.md) | Morpheus file template resource |
 | [morpheus_groovy_task](docs/resources/groovy_script_task.md) | Morpheus groovy script task resource |
 | [morpheus_group](docs/resources/group.md) | Morpheus group resource |
 | [morpheus_helm_app_blueprint](docs/resources/helm_app_blueprint.md) | Morpheus HELM app blueprint resource |
@@ -74,6 +75,7 @@ The following list of resources are supported by the Morpheus Terraform provider
 | [morpheus_restart_task](docs/resources/restart_task.md) | Morpheus restart task resource |
 | [morpheus_router_quota_policy](docs/resources/router_quota_policy.md) | Morpheus router quota policy resource for configuring router quotas based upon the group, cloud, role, user or globally |
 | [morpheus_ruby_script_task](docs/resources/ruby_script_task.md) | Morpheus ruby script task resource |
+| [morpheus_script_template](docs/resources/script_template.md) | Morpheus script template resource |
 | [morpheus_select_list_option_type](docs/resources/select_list_option_type.md) | Morpheus select list option type resource |
 | [morpheus_service_plan](docs/resources/service_plan.md) | Morpheus service plan resource |
 | [morpheus_shell_script_task](docs/resources/shell_script_task.md) | Morpheus shell script task resource |

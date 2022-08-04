@@ -1,0 +1,22 @@
+---
+page_title: "morpheus_script_template Resource - terraform-provider-morpheus"
+subcategory: ""
+description: |-
+{{ .Description | plainmarkdown | trimspace | prefixlines "  " }}
+---
+
+# morpheus_script_template
+
+{{ .Description | trimspace }}
+
+## Example Usage
+
+{{tffile "examples/resources/morpheus_script_template/resource.tf"}}
+
+{{ .SchemaMarkdown | trimspace }}
+
+## Import
+
+Import is supported using the following syntax:
+
+{{codefile "shell" "examples/resources/morpheus_script_template/import.sh" }}

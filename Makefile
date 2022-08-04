@@ -15,6 +15,15 @@ dev:
 	mkdir -p $(INSTALL_PATH)	
 	go build -o $(INSTALL_PATH)/terraform-provider-morpheus main.go
 
+gen-resource:
+	touch morpheus/resource_$(resource).go
+	mkdir -p examples/resources/morpheus_$(resource)
+	touch examples/resources/morpheus_$(resource)/resource.tf
+	touch examples/resources/morpheus_$(resource)/import.sh
+	cp templates/resources/tenant.md.tmpl templates/resources/$(resource).md.tmpl
+	sed -i '.bak' 's/tenant/$(resource)/g' templates/resources/$(resource).md.tmpl
+	rm templates/resources/$(resource).md.tmpl.bak
+
 gen-data-source:
 	mkdir -p examples/data-sources/morpheus_$(data-source)
 	touch examples/data-sources/morpheus_$(data-source)/data-source.tf

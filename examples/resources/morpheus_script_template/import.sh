@@ -1,0 +1,1 @@
+terraform import morpheus_script_template.tf_example_script_template 1
