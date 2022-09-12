@@ -19,6 +19,7 @@ func dataSourceMorpheusNodeType() *schema.Resource {
 				Description:   "The ID of the node type",
 				Optional:      true,
 				ConflictsWith: []string{"name"},
+				Computed:      true,
 			},
 			"name": {
 				Type:          schema.TypeString,

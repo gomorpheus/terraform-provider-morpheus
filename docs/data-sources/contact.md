@@ -22,8 +22,5 @@ data "morpheus_contact" "example" {
 
 ### Optional
 
-- `name` (String) The name of the Morpheus contact.
-
-### Read-Only
-
-- `id` (Number) The ID of this resource.
+- **id** (Number) The ID of this resource.
+- **name** (String) The name of the Morpheus contact.

@@ -91,25 +91,25 @@ resource "morpheus_instance_name_policy" "tf_example_instance_name_policy_user" 
 
 ### Required
 
-- `auto_resolve_conflicts` (Boolean)
-- `enforcement_type` (String) The policy enforcement type (fixed or user)
-- `name` (String) The name of the instance naming policy
-- `naming_pattern` (String) The instance name naming pattern
-- `scope` (String) The filter or scope that the policy is applied to (global, group, cloud, user, role)
+- **auto_resolve_conflicts** (Boolean)
+- **enforcement_type** (String) The policy enforcement type (fixed or user)
+- **name** (String) The name of the instance naming policy
+- **naming_pattern** (String) The instance name naming pattern
+- **scope** (String) The filter or scope that the policy is applied to (global, group, cloud, user, role)
 
 ### Optional
 
-- `apply_to_each_user` (Boolean) Whether to assign the policy at the individual user level to all users assigned the associated role
-- `cloud_id` (Number) The id of the cloud associated with the cloud scoped filter
-- `description` (String) The description of the instance naming policy
-- `enabled` (Boolean) Whether the policy is enabled
-- `group_id` (Number) The id of the group associated with the group scoped filter
-- `role_id` (Number) The id of the role associated with the role scoped filter
-- `user_id` (Number) The id of the user associated with the user scoped filter
+- **apply_to_each_user** (Boolean) Whether to assign the policy at the individual user level to all users assigned the associated role
+- **cloud_id** (Number) The id of the cloud associated with the cloud scoped filter
+- **description** (String) The description of the instance naming policy
+- **enabled** (Boolean) Whether the policy is enabled
+- **group_id** (Number) The id of the group associated with the group scoped filter
+- **role_id** (Number) The id of the role associated with the role scoped filter
+- **user_id** (Number) The id of the user associated with the user scoped filter
 
 ### Read-Only
 
-- `id` (String) The ID of the instance naming policy
+- **id** (String) The ID of the instance naming policy
 
 ## Import
 

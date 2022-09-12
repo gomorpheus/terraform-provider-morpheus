@@ -18,10 +18,11 @@ func dataSourceMorpheusPrice() *schema.Resource {
 				Type:          schema.TypeInt,
 				Optional:      true,
 				ConflictsWith: []string{"name"},
+				Computed:      true,
 			},
 			"name": {
 				Type:          schema.TypeString,
-				Description:   "The name of the Morpheus price.",
+				Description:   "The name of the Morpheus price",
 				Optional:      true,
 				ConflictsWith: []string{"id"},
 			},

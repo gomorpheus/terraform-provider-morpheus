@@ -29,30 +29,30 @@ resource "morpheus_price" "tf_example_price" {
 
 ### Required
 
-- `code` (String) The code of the price
-- `cost` (Number) The cost of the price
-- `currency` (String) The currency of the price
-- `incur_charges` (String) When charges will be incurred (running, stopped, always)
-- `name` (String) The name of the price
-- `price_type` (String) The price type (fixed, compute, memory, cores, storage, datastore, platform, software, load_balancer, load_balancer_virtual_server)
-- `price_unit` (String) The price unit (minute, hour, day, month, year, two year, three year, four year, five year)
+- **code** (String) The code of the price
+- **cost** (Number) The cost of the price
+- **currency** (String) The currency of the price
+- **incur_charges** (String) When charges will be incurred (running, stopped, always)
+- **name** (String) The name of the price
+- **price_type** (String) The price type (fixed, compute, memory, cores, storage, datastore, platform, software, load_balancer, load_balancer_virtual_server)
+- **price_unit** (String) The price unit (minute, hour, day, month, year, two year, three year, four year, five year)
 
 ### Optional
 
-- `apply_price_accross_clouds` (Boolean) Whether to apply the datastore price across clouds
-- `custom_price` (Number) The custom price
-- `datastore_id` (Number) The id of the datastore to associate the price with
-- `markup_cost` (Number) The fixed cost at which the base cost is marked up
-- `markup_percent` (Number) The percentage at which the base cost is marked up
-- `markup_type` (String) The type of markup applied to the cost (fixed, percent, custom)
-- `platform` (String) The name of the platform (canonical, centos, debian, fedora, opensuse, redhat, suse, xen, linux, windows)
-- `software` (String) The name of the software
-- `tenant_id` (Number) The id of the tenant to assign the price to
-- `volume_type_id` (Number) The id of the volume type
+- **apply_price_accross_clouds** (Boolean) Whether to apply the datastore price across clouds
+- **custom_price** (Number) The custom price
+- **datastore_id** (Number) The id of the datastore to associate the price with
+- **markup_cost** (Number) The fixed cost at which the base cost is marked up
+- **markup_percent** (Number) The percentage at which the base cost is marked up
+- **markup_type** (String) The type of markup applied to the cost (fixed, percent, custom)
+- **platform** (String) The name of the platform (canonical, centos, debian, fedora, opensuse, redhat, suse, xen, linux, windows)
+- **software** (String) The name of the software
+- **tenant_id** (Number) The id of the tenant to assign the price to
+- **volume_type_id** (Number) The id of the volume type
 
 ### Read-Only
 
-- `id` (String) The ID of the price
+- **id** (String) The ID of the price
 
 ## Import
 

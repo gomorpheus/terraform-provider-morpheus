@@ -128,19 +128,19 @@ resource "morpheus_arm_spec_template" "tfexample_arm_spec_template_git" {
 
 ### Required
 
-- `name` (String) The name of the arm spec template
-- `source_type` (String) The source of the arm spec template (local, url or repository)
+- **name** (String) The name of the arm spec template
+- **source_type** (String) The source of the arm spec template (local, url or repository)
 
 ### Optional
 
-- `repository_id` (Number) The ID of the git repository integration
-- `spec_content` (String) The content of the arm spec template. Used when the local source type is specified
-- `spec_path` (String) The path of the arm spec template, either the url or the path in the repository
-- `version_ref` (String) The git reference of the repository to pull (main, master, etc.)
+- **repository_id** (Number) The ID of the git repository integration
+- **spec_content** (String) The content of the arm spec template. Used when the local source type is specified
+- **spec_path** (String) The path of the arm spec template, either the url or the path in the repository
+- **version_ref** (String) The git reference of the repository to pull (main, master, etc.)
 
 ### Read-Only
 
-- `id` (String) The ID of the arm spec template
+- **id** (String) The ID of the arm spec template
 
 ## Import
 

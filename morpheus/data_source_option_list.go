@@ -19,6 +19,7 @@ func dataSourceMorpheusOptionList() *schema.Resource {
 				Description:   "The ID of the option list",
 				Optional:      true,
 				ConflictsWith: []string{"name"},
+				Computed:      true,
 			},
 			"name": {
 				Type:          schema.TypeString,

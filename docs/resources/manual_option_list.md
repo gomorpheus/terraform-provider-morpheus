@@ -30,19 +30,19 @@ POLICY
 
 ### Required
 
-- `name` (String) The name of the option list
+- **name** (String) The name of the option list
 
 ### Optional
 
-- `dataset` (String) The dataset for the manual option list
-- `description` (String) The description of the option list
-- `real_time` (Boolean) Whether the list is refreshed every time an associated option type is requested
-- `translation_script` (String) A js script to translate the result data object into an Array containing objects with properties 'name’ and 'value’.
-- `visibility` (String) Whether the option list is visible in sub-tenants or not
+- **dataset** (String) The dataset for the manual option list
+- **description** (String) The description of the option list
+- **real_time** (Boolean) Whether the list is refreshed every time an associated option type is requested
+- **translation_script** (String) A js script to translate the result data object into an Array containing objects with properties 'name’ and 'value’.
+- **visibility** (String) Whether the option list is visible in sub-tenants or not
 
 ### Read-Only
 
-- `id` (String) The ID of the manual option list
+- **id** (String) The ID of the manual option list
 
 ## Import
 

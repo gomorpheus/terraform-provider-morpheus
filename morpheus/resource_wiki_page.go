@@ -2,6 +2,7 @@ package morpheus
 
 import (
 	"context"
+	"strings"
 
 	"log"
 
@@ -33,11 +34,16 @@ func resourceWikiPage() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The category of the wiki page",
 				Optional:    true,
+				Computed:    true,
 			},
 			"content": {
 				Type:        schema.TypeString,
 				Description: "The content of the wiki page",
 				Optional:    true,
+				StateFunc: func(v interface{}) string {
+					payload := strings.TrimSuffix(v.(string), "\n")
+					return payload
+				},
 			},
 		},
 		Importer: &schema.ResourceImporter{

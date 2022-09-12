@@ -20,6 +20,7 @@ func dataSourceMorpheusPolicy() *schema.Resource {
 				Description:   "The ID of the Morpheus policy.",
 				Optional:      true,
 				ConflictsWith: []string{"name"},
+				Computed:      true,
 			},
 			"name": {
 				Type:          schema.TypeString,

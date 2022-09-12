@@ -558,7 +558,7 @@ func FindProvisionTypeByCode(client *morpheus.Client, code string) (*morpheus.Re
 	if err != nil {
 		return resp, err
 	}
-	listResult := resp.Result.(*morpheus.ListProvisionTypeResult)
+	listResult := resp.Result.(*morpheus.ListProvisionTypesResult)
 	provisionTypeCount := len(*listResult.ProvisionTypes)
 	if provisionTypeCount != 1 {
 		return resp, fmt.Errorf("found %d Provision Types for %v", provisionTypeCount, code)

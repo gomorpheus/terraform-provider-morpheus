@@ -34,26 +34,26 @@ resource "morpheus_ansible_playbook_task" "ansplaybook" {
 
 ### Required
 
-- `name` (String) The name of the ansible playbook task
-- `playbook` (String) The name of the ansible playbook to execute
+- **name** (String) The name of the ansible playbook task
+- **playbook** (String) The name of the ansible playbook to execute
 
 ### Optional
 
-- `allow_custom_config` (Boolean) Custom configuration data to pass during the execution of the ansible playbook
-- `ansible_repo_id` (String) The id of the ansible repo
-- `code` (String) The code of the ansible playbook task
-- `command_options` (String) Additional commands options to pass during the execution of the ansible playbook
-- `execute_target` (String) The target that the ansible playbook will be executed on
-- `git_ref` (String) The git reference of the ansible repo to pull (main, master, etc.)
-- `retry_count` (Number) The number of times to retry the task if there is a failure
-- `retry_delay_seconds` (Number) The number of seconds to wait between retry attempts
-- `retryable` (Boolean) Whether to retry the task if there is a failure
-- `skip_tags` (String) The tags to skip during execution of the ansible playbook
-- `tags` (String) The tags to specify during execution of the ansible playbook
+- **allow_custom_config** (Boolean) Custom configuration data to pass during the execution of the ansible playbook
+- **ansible_repo_id** (String) The id of the ansible repo
+- **code** (String) The code of the ansible playbook task
+- **command_options** (String) Additional commands options to pass during the execution of the ansible playbook
+- **execute_target** (String) The target that the ansible playbook will be executed on
+- **git_ref** (String) The git reference of the ansible repo to pull (main, master, etc.)
+- **retry_count** (Number) The number of times to retry the task if there is a failure
+- **retry_delay_seconds** (Number) The number of seconds to wait between retry attempts
+- **retryable** (Boolean) Whether to retry the task if there is a failure
+- **skip_tags** (String) The tags to skip during execution of the ansible playbook
+- **tags** (String) The tags to specify during execution of the ansible playbook
 
 ### Read-Only
 
-- `id` (String) The ID of the ansible playbook task
+- **id** (String) The ID of the ansible playbook task
 
 ## Import
 

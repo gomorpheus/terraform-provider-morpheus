@@ -22,5 +22,5 @@ data "morpheus_job" "example_job" {
 
 ### Optional
 
-- `id` (Number) The ID of the job
-- `name` (String) The name of the job
+- **id** (Number) The ID of the job
+- **name** (String) The name of the job

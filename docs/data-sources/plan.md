@@ -22,10 +22,10 @@ data "morpheus_plan" "vmware" {
 
 ### Optional
 
-- `name` (String) The name of the Morpheus plan.
+- **id** (Number) The ID of this resource.
+- **name** (String) The name of the Morpheus plan.
 
 ### Read-Only
 
-- `code` (String) Optional code for use with policies
-- `description` (String) The description of the plan
-- `id` (Number) The ID of this resource.
+- **code** (String) Optional code for use with policies
+- **description** (String) The description of the plan

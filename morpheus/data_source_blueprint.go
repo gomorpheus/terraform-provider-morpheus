@@ -19,6 +19,7 @@ func dataSourceMorpheusBlueprint() *schema.Resource {
 				Description:   "The ID of the blueprint",
 				Optional:      true,
 				ConflictsWith: []string{"name"},
+				Computed:      true,
 			},
 			"name": {
 				Type:          schema.TypeString,

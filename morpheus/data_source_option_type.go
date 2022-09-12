@@ -17,6 +17,7 @@ func dataSourceMorpheusOptionType() *schema.Resource {
 			"id": {
 				Type:          schema.TypeInt,
 				Optional:      true,
+				Computed:      true,
 				ConflictsWith: []string{"name"},
 			},
 			"name": {

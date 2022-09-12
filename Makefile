@@ -23,6 +23,8 @@ gen-resource:
 	cp templates/resources/tenant.md.tmpl templates/resources/$(resource).md.tmpl
 	sed -i '.bak' 's/tenant/$(resource)/g' templates/resources/$(resource).md.tmpl
 	rm templates/resources/$(resource).md.tmpl.bak
+	echo "[morpheus_$(resource)](docs/resources/$(resource).md) | Morpheus $(resource) resource |"
+	echo "* **New Resource:** `morpheus_$(resource)`"
 
 gen-data-source:
 	mkdir -p examples/data-sources/morpheus_$(data-source)

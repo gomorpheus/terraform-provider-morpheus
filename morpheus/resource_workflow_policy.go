@@ -35,6 +35,7 @@ func resourceWorkflowPolicy() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The description of the workflow policy",
 				Optional:    true,
+				Computed:    true,
 			},
 			"enabled": {
 				Type:        schema.TypeBool,

@@ -15,104 +15,6 @@ This guide walks you through getting started with using the Morpheus Terraform p
 and read the Terraform getting started guide that follows. This guide will
 assume basic proficiency with Terraform.
 
-## Install the Terraform provider
-___
-
-In order to use the Morpheus Terraform provider it must be installed on your local system first. Follow the instructions below that apply to your operating system.
-
-<details><summary>Mac OS X</summary>
-<p>
-
-Download the Morpheus Terraform provider
-
-```
-curl -LO https://github.com/gomorpheus/terraform-provider-morpheus/releases/download/v0.5.0/terraform-provider-morpheus_0.5.0_darwin_amd64.zip
-```
-
-Create the appropriate subdirectory within the user plugins directory for the Morpheus provider.
-
-```
-mkdir -p ~/.terraform.d/plugins/morpheusdata.com/gomorpheus/morpheus/0.5.0/darwin_amd64
-```
-
-Then, unzip the downloaded binary into the appropriate user plugins directory.
-
-```
-unzip terraform-provider-morpheus_0.5.0_darwin_amd64.zip -d ~/.terraform.d/plugins/morpheusdata.com/gomorpheus/morpheus/0.5.0/darwin_amd64
-```
-
-Finally, make the binary executable
-
-```
-chmod +x ~/.terraform.d/plugins/morpheusdata.com/gomorpheus/morpheus/0.5.0/darwin_amd64/terraform-provider-morpheus_v0.5.0
-```
-
-Now that the provider is in your user plugins directory, you can use the provider in your Terraform configuration.
-
-</p>
-</details>
-
-
-<details><summary>Windows</summary>
-<p>
-
-Download the Morpheus Terraform provider
-
-```
-curl -LO https://github.com/gomorpheus/terraform-provider-morpheus/releases/download/v0.5.0/terraform-provider-morpheus_0.5.0_windows_amd64.zip
-```
-
-Create the appropriate subdirectory within the user plugins directory for the Morpheus provider.
-
-```
-mkdir %APPDATA%\terraform.d\plugins\morpheusdata.com\gomorpheus\morpheus\0.5.0\windows_amd64
-```
-
-Then, unzip the downloaded binary into the appropriate user plugins directory.
-
-```
-powershell -command "Expand-Archive terraform-provider-morpheus_0.5.0_windows_amd64.zip -DestinationPath $env:appdata\terraform.d\plugins\morpheusdata.com\gomorpheus\morpheus\0.5.0\windows_amd64"
-```
-
-Now that the provider is in your user plugins directory, you can use the provider in your Terraform configuration.
-
-
-</p>
-</details>
-
-<details><summary>Linux</summary>
-<p>
-
-
-Download the Morpheus Terraform provider
-
-```
-curl -LO https://github.com/gomorpheus/terraform-provider-morpheus/releases/download/v0.5.0/terraform-provider-morpheus_0.5.0_linux_amd64.zip
-```
-
-Create the appropriate subdirectory within the user plugins directory for the Morpheus provider.
-
-```
-mkdir -p ~/.terraform.d/plugins/morpheusdata.com/gomorpheus/morpheus/0.5.0/linux_amd64
-```
-
-Then, unzip the downloaded binary into the appropriate user plugins directory.
-
-```
-unzip terraform-provider-morpheus_0.5.0_linux_amd64.zip -d ~/.terraform.d/plugins/morpheusdata.com/gomorpheus/morpheus/0.5.0/linux_amd64
-```
-
-Finally, make the binary executable
-
-```
-chmod +x ~/.terraform.d/plugins/morpheusdata.com/gomorpheus/morpheus/0.5.0/linux_amd64/terraform-provider-morpheus_v0.5.0
-```
-
-Now that the provider is in your user plugins directory, you can use the provider in your Terraform configuration.
-
-</p>
-</details>
-
 ## Configuring the provider
 
 Configure the Terraform provider by specifying the provider information according the [Terraform 0.13-compliant](https://www.terraform.io/upgrade-guides/0-13.html#in-house-providers) provider installation standard.
@@ -135,9 +37,9 @@ $ terraform init
 Initializing the backend...
 
 Initializing provider plugins...
-- Finding morpheusdata.com/gomorpheus/morpheus versions matching "0.5.0"...
-- Installing morpheusdata.com/gomorpheus/morpheus v0.5.0...
-- Installed morpheusdata.com/gomorpheus/morpheus v0.5.0 (unauthenticated)
+- Finding morpheusdata.com/gomorpheus/morpheus versions matching "0.6.0"...
+- Installing morpheusdata.com/gomorpheus/morpheus v0.6.0...
+- Installed morpheusdata.com/gomorpheus/morpheus v0.6.0 (unauthenticated)
 
 Terraform has created a lock file .terraform.lock.hcl to record the provider
 selections it made above. Include this file in your version control repository

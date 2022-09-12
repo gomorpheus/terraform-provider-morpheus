@@ -1,0 +1,1 @@
+terraform import morpheus_node_type.tf_example_node_type 1

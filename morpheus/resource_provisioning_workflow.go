@@ -35,12 +35,13 @@ func resourceProvisioningWorkflow() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The description of the provisioning workflow",
 				Optional:    true,
+				Computed:    true,
 			},
 			"platform": {
 				Type:         schema.TypeString,
-				Description:  "The operating system platforms the provisioning workflow is supported on",
+				Description:  "The operating system platforms the provisioning workflow is supported on (linux, macos, windows)",
 				Optional:     true,
-				ValidateFunc: validation.StringInSlice([]string{"all", "linux", "macos", "windows", ""}, false),
+				ValidateFunc: validation.StringInSlice([]string{"linux", "macos", "windows"}, false),
 			},
 			"visibility": {
 				Type:         schema.TypeString,
@@ -162,17 +163,6 @@ func resourceProvisioningWorkflowRead(ctx context.Context, d *schema.ResourceDat
 		d.SetId(int64ToString(workflow.ID))
 		d.Set("name", workflow.Name)
 		d.Set("description", workflow.Description)
-		// option types
-		var optionTypes []int64
-		if workflow.OptionTypes != nil {
-			// iterate over the array of tasks
-			for i := 0; i < len(workflow.OptionTypes); i++ {
-				option := workflow.OptionTypes[i].(map[string]interface{})
-				optionID := int64(option["id"].(float64))
-				optionTypes = append(optionTypes, optionID)
-			}
-		}
-		d.Set("option_types", optionTypes)
 		d.Set("visibility", workflow.Visibility)
 		d.Set("platform", workflow.Platform)
 	} else {
@@ -188,6 +178,19 @@ func resourceProvisioningWorkflowUpdate(ctx context.Context, d *schema.ResourceD
 	id := d.Id()
 	name := d.Get("name").(string)
 	description := d.Get("description").(string)
+	// tasks
+	var tasks []map[string]interface{}
+	if d.Get("task") != nil {
+		taskList := d.Get("task").([]interface{})
+		// iterate over the array of tasks
+		for i := 0; i < len(taskList); i++ {
+			row := make(map[string]interface{})
+			taskconfig := taskList[i].(map[string]interface{})
+			row["taskId"] = taskconfig["task_id"]
+			row["taskPhase"] = taskconfig["task_phase"]
+			tasks = append(tasks, row)
+		}
+	}
 
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
@@ -196,6 +199,7 @@ func resourceProvisioningWorkflowUpdate(ctx context.Context, d *schema.ResourceD
 				"description": description,
 				"visibility":  d.Get("visibility"),
 				"platform":    d.Get("platform"),
+				"tasks":       tasks,
 			},
 		},
 	}
@@ -206,10 +210,10 @@ func resourceProvisioningWorkflowUpdate(ctx context.Context, d *schema.ResourceD
 	}
 	log.Printf("API RESPONSE: %s", resp)
 	result := resp.Result.(*morpheus.UpdateTaskSetResult)
-	account := result.TaskSet
+	workflow := result.TaskSet
 	// Successfully updated resource, now set id
 	// err, it should not have changed though..
-	d.SetId(int64ToString(account.ID))
+	d.SetId(int64ToString(workflow.ID))
 	return resourceProvisioningWorkflowRead(ctx, d, meta)
 }
 

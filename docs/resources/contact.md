@@ -24,16 +24,16 @@ resource "morpheus_contact" "tf_example_contact" {
 
 ### Required
 
-- `name` (String) The name of the contact
+- **name** (String) The name of the contact
 
 ### Optional
 
-- `email_address` (String) The email address associated with the contact
-- `mobile_number` (String) The mobile phone number associated with the contact
+- **email_address** (String) The email address associated with the contact
+- **mobile_number** (String) The mobile phone number associated with the contact
 
 ### Read-Only
 
-- `id` (String) The ID of the contact
+- **id** (String) The ID of the contact
 
 ## Import
 

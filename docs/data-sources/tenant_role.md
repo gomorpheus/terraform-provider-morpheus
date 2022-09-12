@@ -22,8 +22,5 @@ data "morpheus_tenant_role" "example_tenant_role" {
 
 ### Optional
 
-- `name` (String) The name of the Morpheus tenant role.
-
-### Read-Only
-
-- `id` (Number) The ID of this resource.
+- **id** (Number) The ID of this resource.
+- **name** (String) The name of the Morpheus tenant role.

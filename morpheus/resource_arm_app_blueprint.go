@@ -35,11 +35,13 @@ func resourceArmAppBlueprint() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The description of the arm app blueprint",
 				Optional:    true,
+				Computed:    true,
 			},
 			"category": {
 				Type:        schema.TypeString,
 				Description: "The category of the arm app blueprint",
 				Optional:    true,
+				Computed:    true,
 			},
 			"install_agent": {
 				Type:        schema.TypeBool,

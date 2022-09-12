@@ -22,8 +22,5 @@ data "morpheus_option_type" "versions" {
 
 ### Optional
 
-- `name` (String) The name of the option type
-
-### Read-Only
-
-- `id` (Number) The ID of this resource.
+- **id** (Number) The ID of this resource.
+- **name** (String) The name of the option type
