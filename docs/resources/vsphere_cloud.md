@@ -54,43 +54,43 @@ resource "morpheus_vsphere_cloud" "tf_example_vsphere_cloud" {
 
 ### Required
 
-- `api_url` (String) The SDK URL of the vCenter server (https://vcenter.morpheus.local/sdk)
-- `api_version` (String) The SDK URL of the vCenter server (https://vcenter.morpheus.local/sdk)
-- `datacenter` (String) The vSphere datacenter to add
-- `name` (String) A unique name scoped to your account for the cloud
-- `password` (String) The password of the VMware vSphere account
-- `username` (String) The username of the VMware vSphere account
+- **api_url** (String) The SDK URL of the vCenter server (https://vcenter.morpheus.local/sdk)
+- **api_version** (String) The SDK URL of the vCenter server (https://vcenter.morpheus.local/sdk)
+- **datacenter** (String) The vSphere datacenter to add
+- **name** (String) A unique name scoped to your account for the cloud
+- **password** (String) The password of the VMware vSphere account
+- **username** (String) The username of the VMware vSphere account
 
 ### Optional
 
-- `agent_install_mode` (String) The method used to install the Morpheus agent on virtual machines provisioned in the cloud (ssh, cloudInit)
-- `appliance_url` (String) The URL used by workloads provisioned in the cloud for interacting with the Morpheus appliance
-- `automatically_power_on_vms` (Boolean) Determines whether to automatically power on cloud virtual machines
-- `cluster` (String) The name of the vSphere cluster
-- `code` (String) Optional code for use with policies
-- `costing` (String) Whether to enable costing on the cloud (off, costing)
-- `datacenter_id` (String) An arbitrary id used to reference the datacenter for the cloud
-- `description` (String) The user friendly description of the cloud
-- `enable_disk_type_selection` (Boolean) Whether to enable the user to select the disk type during provisioning
-- `enable_hypervisor_console` (Boolean) Whether to enable VNC access
-- `enable_network_interface_type_selection` (Boolean) Whether to enable the user to select the network interface type during provisioning
-- `enable_storage_type_selection` (Boolean) Whether to enable the user to select the storage type during provisioning
-- `enabled` (Boolean) Determines whether the cloud is active or not
-- `guidance` (String) Whether to enable guidance recommendations on the cloud (manual, off)
-- `hide_host_selection` (Boolean) Whether to hide the ability to select the vSphere host from the user during provisioning
-- `import_existing_vms` (Boolean) Whether to import existing virtual machines
-- `keyboard_layout` (String) The keyboard layout
-- `location` (String) Optional location for your cloud
-- `resource_pool` (String) The name of the vSphere resource pool
-- `rpc_mode` (String)
-- `storage_type` (String) The default vSphere VMDK type for virtual machines (thin, thick, thickEager)
-- `tenant_id` (String) The id of the morpheus tenant the cloud is assigned to
-- `time_zone` (String) The time zone for the cloud
-- `visibility` (String) Determines whether the cloud is visible in sub-tenants or not
+- **agent_install_mode** (String) The method used to install the Morpheus agent on virtual machines provisioned in the cloud (ssh, cloudInit)
+- **appliance_url** (String) The URL used by workloads provisioned in the cloud for interacting with the Morpheus appliance
+- **automatically_power_on_vms** (Boolean) Determines whether to automatically power on cloud virtual machines
+- **cluster** (String) The name of the vSphere cluster
+- **code** (String) Optional code for use with policies
+- **costing** (String) Whether to enable costing on the cloud (off, costing)
+- **datacenter_id** (String) An arbitrary id used to reference the datacenter for the cloud
+- **description** (String) The user friendly description of the cloud
+- **enable_disk_type_selection** (Boolean) Whether to enable the user to select the disk type during provisioning
+- **enable_hypervisor_console** (Boolean) Whether to enable VNC access
+- **enable_network_interface_type_selection** (Boolean) Whether to enable the user to select the network interface type during provisioning
+- **enable_storage_type_selection** (Boolean) Whether to enable the user to select the storage type during provisioning
+- **enabled** (Boolean) Determines whether the cloud is active or not
+- **guidance** (String) Whether to enable guidance recommendations on the cloud (manual, off)
+- **hide_host_selection** (Boolean) Whether to hide the ability to select the vSphere host from the user during provisioning
+- **import_existing_vms** (Boolean) Whether to import existing virtual machines
+- **keyboard_layout** (String) The keyboard layout
+- **location** (String) Optional location for your cloud
+- **resource_pool** (String) The name of the vSphere resource pool
+- **rpc_mode** (String)
+- **storage_type** (String) The default vSphere VMDK type for virtual machines (thin, thick, thickEager)
+- **tenant_id** (String) The id of the morpheus tenant the cloud is assigned to
+- **time_zone** (String) The time zone for the cloud
+- **visibility** (String) Determines whether the cloud is visible in sub-tenants or not
 
 ### Read-Only
 
-- `id` (String) The ID of the cloud
+- **id** (String) The ID of the cloud
 
 ## Import
 

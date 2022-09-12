@@ -1,14 +1,33 @@
 ## Unreleased
 
+## 0.6.0 (September 11, 2022)
+
+NOTES:
+
+* The `morpheus-sdk` dependcy has been upgraded to version 0.1.7.
+* Fix retry default settings for automation task resources.
+
 FEATURES:
 
 * **New Data Source:** `morpheus_blueprint`
+* **New Data Source:** `morpheus_budget`
+* **New Data Source:** `morpheus_cluster_type`
+* **New Data Source:** `morpheus_credential`
+* **New Data Source:** `morpheus_file_template`
 * **New Data Source:** `morpheus_job`
 * **New Data Source:** `morpheus_node_type`
 * **New Data Source:** `morpheus_option_list`
 * **New Data Source:** `morpheus_policy`
 * **New Data Source:** `morpheus_power_schedule`
+* **New Data Source:** `morpheus_provision_type`
+* **New Data Source:** `morpheus_script_template`
+* **New Data Source:** `morpheus_virtual_image`
+* **New Resource:** `morpheus_cluster_layout`
 * **New Resource:** `morpheus_file_template`
+* **New Resource:** `morpheus_instance_layout`
+* **New Resource:** `morpheus_instance_type`
+* **New Resource:** `morpheus_node_type`
+* **New Resource:** `morpheus_scale_threshold`
 * **New Resource:** `morpheus_script_template`
 
 ## 0.5.0 (July 31, 2022)

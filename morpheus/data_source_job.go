@@ -19,6 +19,7 @@ func dataSourceMorpheusJob() *schema.Resource {
 				Description:   "The ID of the job",
 				Optional:      true,
 				ConflictsWith: []string{"name"},
+				Computed:      true,
 			},
 			"name": {
 				Type:          schema.TypeString,

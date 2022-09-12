@@ -27,23 +27,23 @@ resource "morpheus_network_domain" "tf_example_network_domain" {
 
 ### Required
 
-- `name` (String) The name of the network domain
+- **name** (String) The name of the network domain
 
 ### Optional
 
-- `active` (Boolean) The state of the network domain
-- `auto_join_domain` (Boolean) Whether to automatically join machines to the domain
-- `description` (String) The user friendly description of the network domain
-- `domain_controller` (Boolean) The domain controller used to facilitate an automated domain join operation
-- `domain_password` (String, Sensitive) The password of the account used to facilitate an automated domain join operation
-- `domain_username` (String) The username of the account used to facilitate an automated domain join operation
-- `public_zone` (Boolean) Whether the domain will be public or private
-- `tenant_id` (Number) The tenant to assign the network domain
-- `visibility` (String) Determines whether the resource is visible in sub-tenants or not
+- **active** (Boolean) The state of the network domain
+- **auto_join_domain** (Boolean) Whether to automatically join machines to the domain
+- **description** (String) The user friendly description of the network domain
+- **domain_controller** (Boolean) The domain controller used to facilitate an automated domain join operation
+- **domain_password** (String, Sensitive) The password of the account used to facilitate an automated domain join operation
+- **domain_username** (String) The username of the account used to facilitate an automated domain join operation
+- **public_zone** (Boolean) Whether the domain will be public or private
+- **tenant_id** (Number) The tenant to assign the network domain
+- **visibility** (String) Determines whether the resource is visible in sub-tenants or not
 
 ### Read-Only
 
-- `id` (String) The ID of the network domain
+- **id** (String) The ID of the network domain
 
 ## Import
 

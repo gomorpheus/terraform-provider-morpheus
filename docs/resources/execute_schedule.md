@@ -26,18 +26,18 @@ resource "morpheus_execute_schedule" "tf_example_execute_schedule" {
 
 ### Required
 
-- `name` (String) The name of the execute schedule
-- `schedule` (String) The cron style syntax for the scheduled execution
-- `time_zone` (String) The time zone used for scheduling
+- **name** (String) The name of the execute schedule
+- **schedule** (String) The cron style syntax for the scheduled execution
+- **time_zone** (String) The time zone used for scheduling
 
 ### Optional
 
-- `description` (String) The description of the execute schedule
-- `enabled` (Boolean) Whether the execute schedule is enabled
+- **description** (String) The description of the execute schedule
+- **enabled** (Boolean) Whether the execute schedule is enabled
 
 ### Read-Only
 
-- `id` (String) The ID of the execute schedule
+- **id** (String) The ID of the execute schedule
 
 ## Import
 

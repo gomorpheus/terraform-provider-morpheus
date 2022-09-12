@@ -19,6 +19,7 @@ func dataSourceMorpheusPowerSchedule() *schema.Resource {
 				Description:   "The ID of the power schedule",
 				Optional:      true,
 				ConflictsWith: []string{"name"},
+				Computed:      true,
 			},
 			"name": {
 				Type:          schema.TypeString,

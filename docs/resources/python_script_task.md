@@ -77,28 +77,28 @@ resource "morpheus_python_script_task" "tfexample_python_git" {
 
 ### Required
 
-- `name` (String) The name of the python script task
-- `source_type` (String) The source of the python script (local, url or repository)
+- **name** (String) The name of the python script task
+- **source_type** (String) The source of the python script (local, url or repository)
 
 ### Optional
 
-- `additional_packages` (String) Additional python packages to install prior to the execution of the python script
-- `allow_custom_config` (Boolean) Custom configuration data to pass during the execution of the python script
-- `code` (String) The code of the python script task
-- `command_arguments` (String) Arguments to pass to the python script
-- `python_binary` (String) The system path of the python binary to execute
-- `repository_id` (Number) The ID of the git repository integration
-- `result_type` (String) The expected result type (single value, key pairs, json)
-- `retry_count` (Number) The number of times to retry the task if there is a failure
-- `retry_delay_seconds` (Number) The number of seconds to wait between retry attempts
-- `retryable` (Boolean) Whether to retry the task if there is a failure
-- `script_content` (String) The content of the python script. Used when the local source type is specified
-- `script_path` (String) The path of the python script, either the url or the path in the repository
-- `version_ref` (String) The git reference of the repository to pull (main, master, etc.)
+- **additional_packages** (String) Additional python packages to install prior to the execution of the python script
+- **allow_custom_config** (Boolean) Custom configuration data to pass during the execution of the python script
+- **code** (String) The code of the python script task
+- **command_arguments** (String) Arguments to pass to the python script
+- **python_binary** (String) The system path of the python binary to execute
+- **repository_id** (Number) The ID of the git repository integration
+- **result_type** (String) The expected result type (single value, key pairs, json)
+- **retry_count** (Number) The number of times to retry the task if there is a failure
+- **retry_delay_seconds** (Number) The number of seconds to wait between retry attempts
+- **retryable** (Boolean) Whether to retry the task if there is a failure
+- **script_content** (String) The content of the python script. Used when the local source type is specified
+- **script_path** (String) The path of the python script, either the url or the path in the repository
+- **version_ref** (String) The git reference of the repository to pull (main, master, etc.)
 
 ### Read-Only
 
-- `id` (String) The ID of the python script task
+- **id** (String) The ID of the python script task
 
 ## Import
 

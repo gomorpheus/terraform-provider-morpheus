@@ -40,6 +40,7 @@ The following list of resources are supported by the Morpheus Terraform provider
 | [morpheus_checkbox_option_type](docs/resources/checkbox_option_type.md) | Morpheus checkbox option type resource |
 | [morpheus_cloud_formation_app_blueprint](docs/resources/cloud_formation_app_blueprint.md) | Morpheus Cloud Formation app blueprint resource |
 | [morpheus_cloud_formation_spec_template](docs/resources/cloud_formation_spec_template.md) | Morpheus Cloud Formation spec template resource |
+[morpheus_cluster_layout](docs/resources/cluster_layout.md) | Morpheus cluster layout resource |
 | [morpheus_cluster_resource_name_policy](docs/resources/cluster_resource_name_policy.md) | Morpheus cluster resource name policy resource |
 | [morpheus_contact](docs/resources/morpheus_contact.md) | Morpheus contact resource |
 | [morpheus_environment](docs/resources/environment.md) | Morpheus environment resource |
@@ -51,6 +52,8 @@ The following list of resources are supported by the Morpheus Terraform provider
 | [morpheus_helm_spec_template](docs/resources/helm_spec_template.md) | Morpheus HELM spec template resource |
 | [morpheus_hidden_option_type](docs/resources/hidden_option_type.md) | Morpheus hidden option type resource |
 | [morpheus_hostname_policy](docs/resources/hostname_policy.md) | Morpheus hostname policy resource |
+| [morpheus_instance_layout](docs/resources/instance_layout.md) | Morpheus instance_layout resource |
+| [morpheus_instance_type](docs/resources/instance_type.md) | Morpheus instance_type resource |
 | [morpheus_kubernetes_app_blueprint](docs/resources/kubernetes_app_blueprint.md) | Morpheus Kubernetes app blueprint resource |
 | [morpheus_kubernetes_spec_template](docs/resources/kubernetes_spec_template.md) | Morpheus Kubernetes spec template resource |
 | [morpheus_javascript_task](docs/resources/javascript_task.md) | Morpheus javascript task resource |
@@ -63,6 +66,7 @@ The following list of resources are supported by the Morpheus Terraform provider
 | [morpheus_max_vms_policy](docs/resources/max_vms_policy.md) | Morpheus max vms policy resource |
 | [morpheus_network_domain](docs/resources/network_domain.md) | Morpheus network domain resource |
 | [morpheus_network_quota_policy](docs/resources/network_quota_policy.md) | Morpheus network quota policy resource |
+| [morpheus_node_type](docs/resources/node_type.md) | Morpheus node_type resource |
 | [morpheus_number_option_type](docs/resources/number_option_type.md) | Morpheus number option type resource |
 | [morpheus_operational_workflow](docs/resources/operational_workflow.md) | Morpheus operational automation workflow resource |
 | [morpheus_password_option_type](docs/resources/password_option_type.md) | Morpheus password option type resource |
@@ -75,6 +79,7 @@ The following list of resources are supported by the Morpheus Terraform provider
 | [morpheus_restart_task](docs/resources/restart_task.md) | Morpheus restart task resource |
 | [morpheus_router_quota_policy](docs/resources/router_quota_policy.md) | Morpheus router quota policy resource for configuring router quotas based upon the group, cloud, role, user or globally |
 | [morpheus_ruby_script_task](docs/resources/ruby_script_task.md) | Morpheus ruby script task resource |
+| [morpheus_scale_threshold](docs/resources/scale_threshold.md) | Morpheus scale threshold resource |
 | [morpheus_script_template](docs/resources/script_template.md) | Morpheus script template resource |
 | [morpheus_select_list_option_type](docs/resources/select_list_option_type.md) | Morpheus select list option type resource |
 | [morpheus_service_plan](docs/resources/service_plan.md) | Morpheus service plan resource |
@@ -91,7 +96,7 @@ The following list of resources are supported by the Morpheus Terraform provider
 | [morpheus_wiki_page](docs/resources/wiki_page.md) | Morpheus wiki page resource for creating and managing wiki pages |
 | [morpheus_workflow_catalog_item](docs/resources/workflow_catalog_item.md) | Morpheus workflow catalog item resource for creating and managing operational workflow catalog items |
 | [morpheus_workflow_policy](docs/resources/workflow_policy.md) | Morpheus workflow policy resource for assigning a workflow to a group, cloud, role, user or globally |
-| [morpheus_write_attributes](docs/resources/write_attributes.md) | Morpheus write attributes task resource for storing values from XaaS instance phases |
+| [morpheus_write_attributes_task](docs/resources/write_attributes_task.md) | Morpheus write attributes task resource for storing values from XaaS instance phases |
 
 ## Supported Data Sources
 ----------------------
@@ -101,10 +106,13 @@ The following list of data sources are supported by the Morpheus Terraform provi
 | Data Source Name | Description |
 |------------------|-------------|
 | [morpheus_blueprint](docs/data-sources/blueprint.md) | Morpheus blueprint data source |
+| [morpheus_budget](docs/data-sources/budget.md) | Morpheus budget data source |
 | [morpheus_cloud](docs/data-sources/cloud.md) | Morpheus cloud data source |
 | [morpheus_contact](docs/data-sources/contact.md) | Morpheus contact data source |
+| [morpheus_credential](docs/data-sources/credential.md) | Morpheus credential data source |
 | [morpheus_environment](docs/data-sources/environment.md) | Morpheus environment data source|
 | [morpheus_execute_schedule](docs/data-sources/execute_schedule.md) | Morpheus execute schedule data source |
+| [morpheus_file_template](docs/data-sources/file_template.md) | Morpheus file template data source |
 | [morpheus_group](docs/data-sources/group.md) | Morpheus group data source |
 | [morpheus_instance_layout](docs/data-sources/instance_layout.md) | Morpheus isntance layout data source |
 | [morpheus_instance_type](docs/data-sources/instance_type.md) | Morpheus instance type data source |
@@ -120,10 +128,12 @@ The following list of data sources are supported by the Morpheus Terraform provi
 | [morpheus_price](docs/data-sources/price.md) | Morpheus price data source |
 | [morpheus_price_set](docs/data-sources/price_set.md) | Morpheus price set data source |
 | [morpheus_resource_pool](docs/data-sources/resource_pool.md) | Morpheus resources pool data source |
+| [morpheus_script_template](docs/data-sources/script_template.md) | Morpheus script template data source |
 | [morpheus_spec_template](docs/data-sources/spec_template.md) | Morpheus spec template data source |
 | [morpheus_task](docs/data-sources/task.md) | Morpheus automation task data source |
 | [morpheus_tenant_role](docs/data-sources/tenant_role.md) | Morpheus automation tenant role data source |
 | [morpheus_tenant](docs/data-sources/tenant.md) | Morpheus automation tenant data source |
+| [morpheus_virtual_image](docs/data-sources/virtual_image.md) | Morpheus virtual image data source |
 | [morpheus_workflow](docs/data-sources/workflow.md) | Morpheus workflow data source |
 
 ## Building the provider

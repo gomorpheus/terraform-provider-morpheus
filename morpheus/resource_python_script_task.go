@@ -88,22 +88,25 @@ func resourcePythonScriptTask() *schema.Resource {
 				Type:        schema.TypeBool,
 				Description: "Whether to retry the task if there is a failure",
 				Optional:    true,
+				Default:     false,
 			},
 			"retry_count": {
 				Type:        schema.TypeInt,
 				Description: "The number of times to retry the task if there is a failure",
 				Optional:    true,
-				Default:     false,
+				Default:     5,
 			},
 			"retry_delay_seconds": {
 				Type:        schema.TypeInt,
 				Description: "The number of seconds to wait between retry attempts",
 				Optional:    true,
+				Default:     10,
 			},
 			"allow_custom_config": {
 				Type:        schema.TypeBool,
 				Description: "Custom configuration data to pass during the execution of the python script",
 				Optional:    true,
+				Default:     false,
 			},
 		},
 		Importer: &schema.ResourceImporter{

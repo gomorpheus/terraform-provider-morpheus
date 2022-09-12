@@ -23,15 +23,15 @@ data "morpheus_resource_pool" "morpheus_pool" {
 
 ### Required
 
-- `cloud_id` (Number) The id of the Morpheus cloud to search for the resource pool.
+- **cloud_id** (Number) The id of the Morpheus cloud to search for the resource pool.
 
 ### Optional
 
-- `name` (String) The name of the Morpheus resource pool.
+- **id** (String) The ID of this resource.
+- **name** (String) The name of the Morpheus resource pool.
 
 ### Read-Only
 
-- `active` (Boolean) Whether the resource pool is enabled or not
-- `description` (String) The description of the resource pool
-- `id` (String) The ID of this resource.
-- `type` (String) Optional code for use with policies
+- **active** (Boolean) Whether the resource pool is enabled or not
+- **description** (String) The description of the resource pool
+- **type** (String) Optional code for use with policies

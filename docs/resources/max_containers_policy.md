@@ -81,23 +81,23 @@ resource "morpheus_max_containers_policy" "tf_example_max_containers_policy_user
 
 ### Required
 
-- `max_containers` (Number) The maximum containers defined by the policy
-- `name` (String) The name of the max containers policy
-- `scope` (String) The filter or scope that the policy is applied to (global, group, cloud, user, role)
+- **max_containers** (Number) The maximum containers defined by the policy
+- **name** (String) The name of the max containers policy
+- **scope** (String) The filter or scope that the policy is applied to (global, group, cloud, user, role)
 
 ### Optional
 
-- `apply_to_each_user` (Boolean) Whether to assign the policy at the individual user level to all users assigned the associated role
-- `cloud_id` (Number) The id of the cloud associated with the cloud scoped filter
-- `description` (String) The description of the max containers policy
-- `enabled` (Boolean) Whether the policy is enabled
-- `group_id` (Number) The id of the group associated with the group scoped filter
-- `role_id` (Number) The id of the role associated with the role scoped filter
-- `user_id` (Number) The id of the user associated with the user scoped filter
+- **apply_to_each_user** (Boolean) Whether to assign the policy at the individual user level to all users assigned the associated role
+- **cloud_id** (Number) The id of the cloud associated with the cloud scoped filter
+- **description** (String) The description of the max containers policy
+- **enabled** (Boolean) Whether the policy is enabled
+- **group_id** (Number) The id of the group associated with the group scoped filter
+- **role_id** (Number) The id of the role associated with the role scoped filter
+- **user_id** (Number) The id of the user associated with the user scoped filter
 
 ### Read-Only
 
-- `id` (String) The ID of the max containers policy
+- **id** (String) The ID of the max containers policy
 
 ## Import
 

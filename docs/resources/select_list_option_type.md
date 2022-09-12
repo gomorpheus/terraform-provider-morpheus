@@ -33,25 +33,25 @@ resource "morpheus_select_list_option_type" "tf_example_select_list_option_type"
 
 ### Required
 
-- `name` (String) The name of the select list option type
+- **name** (String) The name of the select list option type
 
 ### Optional
 
-- `default_value` (String) The default value of the option type
-- `dependent_field` (String) The field or code used to trigger the reloading of the field
-- `description` (String) The description of the select list option type
-- `display_value_on_details` (Boolean) Display the selected value of the text option type on the associated resource's details page
-- `export_meta` (Boolean) Whether to export the select list option type as a tag
-- `field_label` (String) The label associated with the field in the UI
-- `field_name` (String) The field name of the select list option type
-- `help_block` (String) Text that provides additional details about the use of the option type
-- `option_list_id` (Number) The ID of the associated option list
-- `required` (Boolean) Whether the option type is required
-- `visibility_field` (String) The field or code used to trigger the visibility of the field
+- **default_value** (String) The default value of the option type
+- **dependent_field** (String) The field or code used to trigger the reloading of the field
+- **description** (String) The description of the select list option type
+- **display_value_on_details** (Boolean) Display the selected value of the text option type on the associated resource's details page
+- **export_meta** (Boolean) Whether to export the select list option type as a tag
+- **field_label** (String) The label associated with the field in the UI
+- **field_name** (String) The field name of the select list option type
+- **help_block** (String) Text that provides additional details about the use of the option type
+- **option_list_id** (Number) The ID of the associated option list
+- **required** (Boolean) Whether the option type is required
+- **visibility_field** (String) The field or code used to trigger the visibility of the field
 
 ### Read-Only
 
-- `id` (String) The ID of the select list option type
+- **id** (String) The ID of the select list option type
 
 ## Import
 

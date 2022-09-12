@@ -18,6 +18,7 @@ func dataSourceMorpheusIntegration() *schema.Resource {
 				Type:          schema.TypeInt,
 				Optional:      true,
 				ConflictsWith: []string{"name"},
+				Computed:      true,
 			},
 			"name": {
 				Type:          schema.TypeString,

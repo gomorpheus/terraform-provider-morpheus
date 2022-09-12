@@ -35,6 +35,7 @@ func resourceAnsiblePlaybookTask() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The code of the ansible playbook task",
 				Optional:    true,
+				Computed:    true,
 			},
 			"ansible_repo_id": {
 				Type:        schema.TypeString,
@@ -55,16 +56,19 @@ func resourceAnsiblePlaybookTask() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The tags to specify during execution of the ansible playbook",
 				Optional:    true,
+				Computed:    true,
 			},
 			"skip_tags": {
 				Type:        schema.TypeString,
 				Description: "The tags to skip during execution of the ansible playbook",
 				Optional:    true,
+				Computed:    true,
 			},
 			"command_options": {
 				Type:        schema.TypeString,
 				Description: "Additional commands options to pass during the execution of the ansible playbook",
 				Optional:    true,
+				Computed:    true,
 			},
 			"execute_target": {
 				Type:        schema.TypeString,
@@ -75,22 +79,25 @@ func resourceAnsiblePlaybookTask() *schema.Resource {
 				Type:        schema.TypeBool,
 				Description: "Whether to retry the task if there is a failure",
 				Optional:    true,
+				Default:     false,
 			},
 			"retry_count": {
 				Type:        schema.TypeInt,
 				Description: "The number of times to retry the task if there is a failure",
 				Optional:    true,
-				Default:     false,
+				Default:     5,
 			},
 			"retry_delay_seconds": {
 				Type:        schema.TypeInt,
 				Description: "The number of seconds to wait between retry attempts",
 				Optional:    true,
+				Default:     10,
 			},
 			"allow_custom_config": {
 				Type:        schema.TypeBool,
 				Description: "Custom configuration data to pass during the execution of the ansible playbook",
 				Optional:    true,
+				Default:     false,
 			},
 		},
 		Importer: &schema.ResourceImporter{
@@ -144,7 +151,6 @@ func resourceAnsiblePlaybookTaskCreate(ctx context.Context, d *schema.ResourceDa
 	task := result.Task
 	// Successfully created resource, now set id
 	d.SetId(int64ToString(task.ID))
-	log.Printf("Task ID: %s", int64ToString(task.ID))
 
 	resourceAnsiblePlaybookTaskRead(ctx, d, meta)
 	return diags
@@ -233,7 +239,6 @@ func resourceAnsiblePlaybookTaskUpdate(ctx context.Context, d *schema.ResourceDa
 			},
 		},
 	}
-	log.Printf("API REQUEST: %s", req)
 	resp, err := client.UpdateTask(toInt64(id), req)
 	if err != nil {
 		log.Printf("API FAILURE: %s - %s", resp, err)

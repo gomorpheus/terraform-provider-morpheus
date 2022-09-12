@@ -141,7 +141,7 @@ func resourceScriptTemplateRead(ctx context.Context, d *schema.ResourceData, met
 	scriptTemplate := result.ScriptTemplate
 	d.SetId(int64ToString(scriptTemplate.ID))
 	d.Set("name", scriptTemplate.Name)
-	d.Set("phase", scriptTemplate.ScriptPhase)
+	d.Set("script_phase", scriptTemplate.ScriptPhase)
 	d.Set("script_type", scriptTemplate.ScriptType)
 	d.Set("script_content", scriptTemplate.Script)
 	d.Set("run_as_user", scriptTemplate.RunAsUser)

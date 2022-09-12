@@ -18,6 +18,7 @@ func dataSourceMorpheusEnvironment() *schema.Resource {
 				Type:          schema.TypeInt,
 				Optional:      true,
 				ConflictsWith: []string{"name"},
+				Computed:      true,
 			},
 			"active": {
 				Type:        schema.TypeBool,

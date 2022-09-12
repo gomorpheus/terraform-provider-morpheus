@@ -1,0 +1,1 @@
+terraform import morpheus_scale_threshold.tf_example_scale_threshold 1

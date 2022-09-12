@@ -30,20 +30,20 @@ resource "morpheus_helm_app_blueprint" "tf_example_helm_app_blueprint" {
 
 ### Required
 
-- `integration_id` (Number) The ID of the git integration
-- `name` (String) The name of the helm app blueprint
-- `repository_id` (Number) The ID of the git repository
+- **integration_id** (Number) The ID of the git integration
+- **name** (String) The name of the helm app blueprint
+- **repository_id** (Number) The ID of the git repository
 
 ### Optional
 
-- `category` (String) The category of the helm app blueprint
-- `description` (String) The description of the helm app blueprint
-- `version_ref` (String) The git reference of the repository to pull (main, master, etc.)
-- `working_path` (String) The path of the helm chart in the git repository
+- **category** (String) The category of the helm app blueprint
+- **description** (String) The description of the helm app blueprint
+- **version_ref** (String) The git reference of the repository to pull (main, master, etc.)
+- **working_path** (String) The path of the helm chart in the git repository
 
 ### Read-Only
 
-- `id` (String) The ID of the helm app blueprint
+- **id** (String) The ID of the helm app blueprint
 
 ## Import
 

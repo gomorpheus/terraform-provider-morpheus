@@ -23,39 +23,42 @@ func resourceRestartTask() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Type:        schema.TypeString,
-				Description: "The ID of the python script task",
+				Description: "The ID of the restart task",
 				Computed:    true,
 			},
 			"name": {
 				Type:        schema.TypeString,
-				Description: "The name of the python script task",
+				Description: "The name of the restart task",
 				Required:    true,
 			},
 			"code": {
 				Type:        schema.TypeString,
-				Description: "The code of the python script task",
+				Description: "The code of the restart task",
 				Optional:    true,
 			},
 			"retryable": {
 				Type:        schema.TypeBool,
 				Description: "Whether to retry the task if there is a failure",
 				Optional:    true,
+				Default:     false,
 			},
 			"retry_count": {
 				Type:        schema.TypeInt,
 				Description: "The number of times to retry the task if there is a failure",
 				Optional:    true,
-				Default:     false,
+				Default:     5,
 			},
 			"retry_delay_seconds": {
 				Type:        schema.TypeInt,
 				Description: "The number of seconds to wait between retry attempts",
 				Optional:    true,
+				Default:     10,
 			},
 			"allow_custom_config": {
 				Type:        schema.TypeBool,
-				Description: "Custom configuration data to pass during the execution of the python script",
+				Description: "Custom configuration data to pass during the execution of the restart task",
 				Optional:    true,
+				Default:     false,
 			},
 		},
 		Importer: &schema.ResourceImporter{

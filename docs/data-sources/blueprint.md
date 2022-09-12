@@ -22,5 +22,5 @@ data "morpheus_blueprint" "example_blueprint" {
 
 ### Optional
 
-- `id` (Number) The ID of the blueprint
-- `name` (String) The name of the blueprint
+- **id** (Number) The ID of the blueprint
+- **name** (String) The name of the blueprint

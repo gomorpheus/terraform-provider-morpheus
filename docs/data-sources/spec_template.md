@@ -22,8 +22,5 @@ data "morpheus_spec_template" "morpheus_template" {
 
 ### Optional
 
-- `name` (String) The name of the spec template
-
-### Read-Only
-
-- `id` (Number) The ID of this resource.
+- **id** (Number) The ID of this resource.
+- **name** (String) The name of the spec template
