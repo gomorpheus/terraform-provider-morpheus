@@ -22,5 +22,5 @@ data "morpheus_node_type" "example_node_type" {
 
 ### Optional
 
-- **id** (Number) The ID of the node type
-- **name** (String) The name of the node type
+- `id` (Number) The ID of the node type
+- `name` (String) The name of the node type

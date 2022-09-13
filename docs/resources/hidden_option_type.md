@@ -29,21 +29,21 @@ resource "morpheus_hidden_option_type" "tf_example_hidden_option_type" {
 
 ### Required
 
-- **name** (String) The name of the hidden option type
+- `name` (String) The name of the hidden option type
 
 ### Optional
 
-- **default_value** (String) The default value of the option type
-- **dependent_field** (String) The field or code used to trigger the reloading of the field
-- **description** (String) The description of the hidden option type
-- **display_value_on_details** (Boolean) Display the selected value of the number option type on the associated resource's details page
-- **export_meta** (Boolean) Whether to export the hidden option type as a tag
-- **field_name** (String) The field name of the hidden option type
-- **visibility_field** (String) The field or code used to trigger the visibility of the field
+- `default_value` (String) The default value of the option type
+- `dependent_field` (String) The field or code used to trigger the reloading of the field
+- `description` (String) The description of the hidden option type
+- `display_value_on_details` (Boolean) Display the selected value of the number option type on the associated resource's details page
+- `export_meta` (Boolean) Whether to export the hidden option type as a tag
+- `field_name` (String) The field name of the hidden option type
+- `visibility_field` (String) The field or code used to trigger the visibility of the field
 
 ### Read-Only
 
-- **id** (String) The ID of the hidden option type
+- `id` (String) The ID of the hidden option type
 
 ## Import
 

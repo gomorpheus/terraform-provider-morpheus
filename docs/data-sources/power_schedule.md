@@ -22,5 +22,5 @@ data "morpheus_power_schedule" "example_power_schedule" {
 
 ### Optional
 
-- **id** (Number) The ID of the power schedule
-- **name** (String) The name of the power schedule
+- `id` (Number) The ID of the power schedule
+- `name` (String) The name of the power schedule

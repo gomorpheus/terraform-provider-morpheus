@@ -18,7 +18,7 @@ resource "morpheus_instance_layout" "tf_example_instance_layout" {
   version          = "1.0"
   technology       = "vmware"
   node_type_ids = [
-     morpheus_node_type.ubuntu_base.id
+    morpheus_node_type.ubuntu_base.id
   ]
   workflow_id = morpheus_provisioning_workflow.tfexample_workflow.id
 }
@@ -29,36 +29,36 @@ resource "morpheus_instance_layout" "tf_example_instance_layout" {
 
 ### Required
 
-- **instance_type_id** (Number) The ID of the associated instance type
-- **name** (String) The name of the instance layout
-- **technology** (String) The technology of the instance layout (alibaba, amazon, arm, azure, maas, cloudFormation, docker, esxi, fusion, google, huawei, hyperv, kubernetes, kvm, nutanix, opentelekom, openstack, oraclecloud, oraclevm, scvmm, terraform, upcloud, vcd.vapp, vcd, vmware, workflow, xen)
-- **version** (String) The version of the instance layout
+- `instance_type_id` (Number) The ID of the associated instance type
+- `name` (String) The name of the instance layout
+- `technology` (String) The technology of the instance layout (alibaba, amazon, arm, azure, maas, cloudFormation, docker, esxi, fusion, google, huawei, hyperv, kubernetes, kvm, nutanix, opentelekom, openstack, oraclecloud, oraclevm, scvmm, terraform, upcloud, vcd.vapp, vcd, vmware, workflow, xen)
+- `version` (String) The version of the instance layout
 
 ### Optional
 
-- **creatable** (Boolean) Whether the instance layout can be used to create an instance
-- **description** (String) The instance layout category
-- **evar** (Block List) The environment variables to create (see [below for nested schema](#nestedblock--evar))
-- **minimum_memory** (Number) The memory requirement in megabytes
-- **node_type_ids** (List of Number) A list of node type ids associated with the instance layout
-- **option_type_ids** (List of Number) A list of option type ids associated with the instance layout
-- **spec_template_ids** (List of Number) A list of spec template ids associated with the instance layout
-- **support_convert_to_managed** (Boolean) Whether the instance layout supports deployed instances to be converted to managed
-- **workflow_id** (Number) The id of the provisioning workflow associated with the instance layout
+- `creatable` (Boolean) Whether the instance layout can be used to create an instance
+- `description` (String) The instance layout category
+- `evar` (Block List) The environment variables to create (see [below for nested schema](#nestedblock--evar))
+- `minimum_memory` (Number) The memory requirement in megabytes
+- `node_type_ids` (List of Number) A list of node type ids associated with the instance layout
+- `option_type_ids` (List of Number) A list of option type ids associated with the instance layout
+- `spec_template_ids` (List of Number) A list of spec template ids associated with the instance layout
+- `support_convert_to_managed` (Boolean) Whether the instance layout supports deployed instances to be converted to managed
+- `workflow_id` (Number) The id of the provisioning workflow associated with the instance layout
 
 ### Read-Only
 
-- **id** (String) The ID of the instance layout
+- `id` (String) The ID of the instance layout
 
 <a id="nestedblock--evar"></a>
 ### Nested Schema for `evar`
 
 Optional:
 
-- **export** (Boolean) Whether the environment variable is exported as an instance tag
-- **masked_value** (String, Sensitive) The environment variable value when the value needs to be masked
-- **name** (String) The name of the environment variable
-- **value** (String) The environment variable value when the value can be in plaintext
+- `export` (Boolean) Whether the environment variable is exported as an instance tag
+- `masked_value` (String, Sensitive) The environment variable value when the value needs to be masked
+- `name` (String) The name of the environment variable
+- `value` (String) The environment variable value when the value can be in plaintext
 
 ## Import
 

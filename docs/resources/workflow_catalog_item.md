@@ -30,21 +30,21 @@ TFEOF
 
 ### Required
 
-- **name** (String) The name of the workflow catalog item
-- **workflow_id** (Number) The id of the workflow associated with the workflow catalog item
+- `name` (String) The name of the workflow catalog item
+- `workflow_id` (Number) The id of the workflow associated with the workflow catalog item
 
 ### Optional
 
-- **content** (String) The markdown content associated with the workflow catalog item
-- **context_type** (String) The Morpheus context type of the operational workflow
-- **description** (String) The description of the workflow catalog item
-- **enabled** (Boolean) Whether the workflow catalog item is enabled
-- **featured** (Boolean) Whether the workflow catalog item is featured
-- **option_type_ids** (List of Number) The list of option type ids associated with the workflow catalog item
+- `content` (String) The markdown content associated with the workflow catalog item
+- `context_type` (String) The Morpheus context type of the operational workflow
+- `description` (String) The description of the workflow catalog item
+- `enabled` (Boolean) Whether the workflow catalog item is enabled
+- `featured` (Boolean) Whether the workflow catalog item is featured
+- `option_type_ids` (List of Number) The list of option type ids associated with the workflow catalog item
 
 ### Read-Only
 
-- **id** (String) The ID of the workflow catalog item
+- `id` (String) The ID of the workflow catalog item
 
 ## Import
 

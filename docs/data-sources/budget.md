@@ -22,5 +22,8 @@ data "morpheus_budget" "example" {
 
 ### Optional
 
-- **id** (Number) The ID of this resource.
-- **name** (String) The name of the Morpheus budget.
+- `name` (String) The name of the Morpheus budget.
+
+### Read-Only
+
+- `id` (Number) The ID of this resource.
