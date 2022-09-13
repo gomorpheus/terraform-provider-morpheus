@@ -32,6 +32,7 @@ The following list of resources are supported by the Morpheus Terraform provider
 
 | Resource Name | Description |
 |------|---------------|
+| [morpheus_ansible_integration](docs/resources/ansible_integration.md) | Morpheus ansible_integration resource |
 | [morpheus_ansible_playbook_task](docs/resources/ansible_playbook_task.md) | Morpheus ansible playbook automation task resource |
 | [morpheus_arm_app_blueprint](docs/resources/arm_app_blueprint.md) | Morpheus ARM app blueprint resource |
 | [morpheus_arm_spec_template](docs/resources/arm_spec_template.md) | Morpheus ARM spec template resource |
@@ -40,12 +41,14 @@ The following list of resources are supported by the Morpheus Terraform provider
 | [morpheus_checkbox_option_type](docs/resources/checkbox_option_type.md) | Morpheus checkbox option type resource |
 | [morpheus_cloud_formation_app_blueprint](docs/resources/cloud_formation_app_blueprint.md) | Morpheus Cloud Formation app blueprint resource |
 | [morpheus_cloud_formation_spec_template](docs/resources/cloud_formation_spec_template.md) | Morpheus Cloud Formation spec template resource |
-[morpheus_cluster_layout](docs/resources/cluster_layout.md) | Morpheus cluster layout resource |
+| [morpheus_cluster_layout](docs/resources/cluster_layout.md) | Morpheus cluster layout resource |
 | [morpheus_cluster_resource_name_policy](docs/resources/cluster_resource_name_policy.md) | Morpheus cluster resource name policy resource |
 | [morpheus_contact](docs/resources/morpheus_contact.md) | Morpheus contact resource |
+| [morpheus_docker_registry_integration](docs/resources/docker_registry_integration.md) | Morpheus docker_registry_integration resource |
 | [morpheus_environment](docs/resources/environment.md) | Morpheus environment resource |
 | [morpheus_execute_schedule](docs/resources/execute_schedule.md) | Morpheus execute schedule resource |
 | [morpheus_file_template](docs/resources/file_template.md) | Morpheus file template resource |
+| [morpheus_git_integration](docs/resources/git_integration.md) | Morpheus git_integration resource |
 | [morpheus_groovy_task](docs/resources/groovy_script_task.md) | Morpheus groovy script task resource |
 | [morpheus_group](docs/resources/group.md) | Morpheus group resource |
 | [morpheus_helm_app_blueprint](docs/resources/helm_app_blueprint.md) | Morpheus HELM app blueprint resource |

@@ -17,11 +17,11 @@ data "morpheus_virtual_image" "example_virtual_image" {
 }
 
 resource "morpheus_node_type" "tf_example_node" {
-  name       = "tf_example_node_type"
-  short_name = "tfexamplenodetype"
-  technology = "vmware"
-  version    = "2.0"
-  category   = "tfexample"
+  name             = "tf_example_node_type"
+  short_name       = "tfexamplenodetype"
+  technology       = "vmware"
+  version          = "2.0"
+  category         = "tfexample"
   virtual_image_id = data.morpheus_virtual_image.example_virtual_image.id
 
   file_template_ids = [

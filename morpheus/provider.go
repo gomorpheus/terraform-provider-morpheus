@@ -45,6 +45,7 @@ func Provider() *schema.Provider {
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
+			"morpheus_ansible_integration":           resourceAnsibleIntegration(),
 			"morpheus_ansible_playbook_task":         resourceAnsiblePlaybookTask(),
 			"morpheus_arm_app_blueprint":             resourceArmAppBlueprint(),
 			"morpheus_arm_spec_template":             resourceArmSpecTemplate(),
@@ -56,9 +57,11 @@ func Provider() *schema.Provider {
 			"morpheus_cluster_layout":                resourceClusterLayout(),
 			"morpheus_cluster_resource_name_policy":  resourceClusterResourceNamePolicy(),
 			"morpheus_contact":                       resourceContact(),
+			"morpheus_docker_registry_integration":   resourceDockerRegistryIntegration(),
 			"morpheus_environment":                   resourceEnvironment(),
 			"morpheus_execute_schedule":              resourceExecuteSchedule(),
 			"morpheus_file_template":                 resourceFileTemplate(),
+			"morpheus_git_integration":               resourceGitIntegration(),
 			"morpheus_groovy_script_task":            resourceGroovyScriptTask(),
 			"morpheus_group":                         resourceMorpheusGroup(),
 			"morpheus_helm_app_blueprint":            resourceHelmAppBlueprint(),
@@ -127,6 +130,7 @@ func Provider() *schema.Provider {
 			"morpheus_instance_type":    dataSourceMorpheusInstanceType(),
 			"morpheus_integration":      dataSourceMorpheusIntegration(),
 			"morpheus_job":              dataSourceMorpheusJob(),
+			"morpheus_key_pair":         dataSourceMorpheusKeyPair(),
 			"morpheus_network":          dataSourceMorpheusNetwork(),
 			"morpheus_node_type":        dataSourceMorpheusNodeType(),
 			"morpheus_option_list":      dataSourceMorpheusOptionList(),
