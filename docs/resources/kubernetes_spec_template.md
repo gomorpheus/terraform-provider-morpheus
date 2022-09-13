@@ -71,19 +71,19 @@ resource "morpheus_kubernetes_spec_template" "tfexample_kubernetes_spec_template
 
 ### Required
 
-- `name` (String) The name of the kubernetes spec template
-- `source_type` (String) The source of the kubernetes spec template (local, url or repository)
+- **name** (String) The name of the kubernetes spec template
+- **source_type** (String) The source of the kubernetes spec template (local, url or repository)
 
 ### Optional
 
-- `repository_id` (Number) The ID of the git repository integration
-- `spec_content` (String) The content of the kubernetes spec template. Used when the local source type is specified
-- `spec_path` (String) The path of the kubernetes spec template, either the url or the path in the repository
-- `version_ref` (String) The git reference of the repository to pull (main, master, etc.)
+- **repository_id** (Number) The ID of the git repository integration
+- **spec_content** (String) The content of the kubernetes spec template. Used when the local source type is specified
+- **spec_path** (String) The path of the kubernetes spec template, either the url or the path in the repository
+- **version_ref** (String) The git reference of the repository to pull (main, master, etc.)
 
 ### Read-Only
 
-- `id` (String) The ID of the kubernetes spec template
+- **id** (String) The ID of the kubernetes spec template
 
 ## Import
 

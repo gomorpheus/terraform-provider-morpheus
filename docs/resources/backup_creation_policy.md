@@ -86,24 +86,24 @@ resource "morpheus_backup_creation_policy" "tf_example_backup_creation_policy_us
 
 ### Required
 
-- `create_backup` (Boolean) Whether to create a backup
-- `enforcement_type` (String) The policy enforcement type (fixed or user)
-- `name` (String) The name of the backup creation policy
-- `scope` (String) The filter or scope that the policy is applied to (global, group, cloud, user, role)
+- **create_backup** (Boolean) Whether to create a backup
+- **enforcement_type** (String) The policy enforcement type (fixed or user)
+- **name** (String) The name of the backup creation policy
+- **scope** (String) The filter or scope that the policy is applied to (global, group, cloud, user, role)
 
 ### Optional
 
-- `apply_to_each_user` (Boolean) Whether to assign the policy at the individual user level to all users assigned the associated role
-- `cloud_id` (Number) The id of the cloud associated with the cloud scoped filter
-- `description` (String) The description of the backup creation policy
-- `enabled` (Boolean) Whether the policy is enabled
-- `group_id` (Number) The id of the group associated with the group scoped filter
-- `role_id` (Number) The id of the role associated with the role scoped filter
-- `user_id` (Number) The id of the user associated with the user scoped filter
+- **apply_to_each_user** (Boolean) Whether to assign the policy at the individual user level to all users assigned the associated role
+- **cloud_id** (Number) The id of the cloud associated with the cloud scoped filter
+- **description** (String) The description of the backup creation policy
+- **enabled** (Boolean) Whether the policy is enabled
+- **group_id** (Number) The id of the group associated with the group scoped filter
+- **role_id** (Number) The id of the role associated with the role scoped filter
+- **user_id** (Number) The id of the user associated with the user scoped filter
 
 ### Read-Only
 
-- `id` (String) The ID of the backup creation policy
+- **id** (String) The ID of the backup creation policy
 
 ## Import
 

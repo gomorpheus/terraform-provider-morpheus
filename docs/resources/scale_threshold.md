@@ -35,27 +35,27 @@ resource "morpheus_scale_threshold" "tf_example_scale_threshold" {
 
 ### Required
 
-- `auto_downscale` (Boolean) Whether to scale down the number of instances
-- `auto_upscale` (Boolean) Whether to scale up the number of instances
-- `max_count` (Number) The maximum number of instances to scale up to
-- `min_count` (Number) The minimum number of instances to scale down to
-- `name` (String) The name of the scale threshold
+- **auto_downscale** (Boolean) Whether to scale down the number of instances
+- **auto_upscale** (Boolean) Whether to scale up the number of instances
+- **max_count** (Number) The maximum number of instances to scale up to
+- **min_count** (Number) The minimum number of instances to scale down to
+- **name** (String) The name of the scale threshold
 
 ### Optional
 
-- `enable_cpu_threshold` (Boolean) Whether scaling operations based upon cpu usage is enabled or not
-- `enable_disk_threshold` (Boolean) Whether scaling operations based upon disk usage is enabled or not
-- `enable_memory_threshold` (Boolean) Whether scaling operations based upon memory usage is enabled or not
-- `max_cpu_percentage` (Number) The maximum memory percentage for scaling
-- `max_disk_percentage` (Number) The maximum disk percentage for scaling
-- `max_memory_percentage` (Number) The maximum memory percentage for scaling
-- `min_cpu_percentage` (Number) The minimum cpu percentage for scaling
-- `min_disk_percentage` (Number) The minimum disk percentage for scaling
-- `min_memory_percentage` (Number) The minimum memory percentage for scaling
+- **enable_cpu_threshold** (Boolean) Whether scaling operations based upon cpu usage is enabled or not
+- **enable_disk_threshold** (Boolean) Whether scaling operations based upon disk usage is enabled or not
+- **enable_memory_threshold** (Boolean) Whether scaling operations based upon memory usage is enabled or not
+- **max_cpu_percentage** (Number) The maximum memory percentage for scaling
+- **max_disk_percentage** (Number) The maximum disk percentage for scaling
+- **max_memory_percentage** (Number) The maximum memory percentage for scaling
+- **min_cpu_percentage** (Number) The minimum cpu percentage for scaling
+- **min_disk_percentage** (Number) The minimum disk percentage for scaling
+- **min_memory_percentage** (Number) The minimum memory percentage for scaling
 
 ### Read-Only
 
-- `id` (String) The ID of the scale threshold
+- **id** (String) The ID of the scale threshold
 
 ## Import
 

@@ -66,37 +66,37 @@ resource "morpheus_cluster_layout" "example_kubernetes_layout" {
 
 ### Required
 
-- `cluster_type_id` (Number) The cluster type ID of the cluster layout
-- `name` (String) The name of the cluster layout
-- `provision_type_id` (Number) The provision type ID of the cluster layout
-- `version` (String) The version of the cluster layout
+- **cluster_type_id** (Number) The cluster type ID of the cluster layout
+- **name** (String) The name of the cluster layout
+- **provision_type_id** (Number) The provision type ID of the cluster layout
+- **version** (String) The version of the cluster layout
 
 ### Optional
 
-- `creatable` (Boolean) Whether the cluster layout can be used to create clusters or not
-- `description` (String) The description of the cluster layout
-- `enable_scaling` (Boolean) Whether to enable or disable horizontal scaling
-- `evar` (Block List) The environment variables to create (see [below for nested schema](#nestedblock--evar))
-- `install_docker` (Boolean) Whether to automatically install Docker or not
-- `master_node_pool` (Block List) Master node configuration (see [below for nested schema](#nestedblock--master_node_pool))
-- `minimum_memory` (Number) The minimum amount of memory in bytes
-- `option_type_ids` (List of Number) A list of option type ids associated with the cluster layout
-- `worker_node_pool` (Block List) Worker node configuration (see [below for nested schema](#nestedblock--worker_node_pool))
-- `workflow_id` (Number) Workflow ID to associate with the cluster layout
+- **creatable** (Boolean) Whether the cluster layout can be used to create clusters or not
+- **description** (String) The description of the cluster layout
+- **enable_scaling** (Boolean) Whether to enable or disable horizontal scaling
+- **evar** (Block List) The environment variables to create (see [below for nested schema](#nestedblock--evar))
+- **install_docker** (Boolean) Whether to automatically install Docker or not
+- **master_node_pool** (Block List) Master node configuration (see [below for nested schema](#nestedblock--master_node_pool))
+- **minimum_memory** (Number) The minimum amount of memory in bytes
+- **option_type_ids** (List of Number) A list of option type ids associated with the cluster layout
+- **worker_node_pool** (Block List) Worker node configuration (see [below for nested schema](#nestedblock--worker_node_pool))
+- **workflow_id** (Number) Workflow ID to associate with the cluster layout
 
 ### Read-Only
 
-- `id` (String) The ID of the cluster layout
+- **id** (String) The ID of the cluster layout
 
 <a id="nestedblock--evar"></a>
 ### Nested Schema for `evar`
 
 Optional:
 
-- `export` (Boolean) Whether the environment variable is exported as an instance tag
-- `masked_value` (String, Sensitive) The environment variable value when the value needs to be masked
-- `name` (String) The name of the environment variable
-- `value` (String) The environment variable value when the value can be in plaintext
+- **export** (Boolean) Whether the environment variable is exported as an instance tag
+- **masked_value** (String, Sensitive) The environment variable value when the value needs to be masked
+- **name** (String) The name of the environment variable
+- **value** (String) The environment variable value when the value can be in plaintext
 
 
 <a id="nestedblock--master_node_pool"></a>
@@ -104,9 +104,9 @@ Optional:
 
 Required:
 
-- `count` (Number) The number of nodes
-- `node_type_id` (Number) The id of the node type
-- `priority_order` (Number) The priority order of the node type
+- **count** (Number) The number of nodes
+- **node_type_id** (Number) The id of the node type
+- **priority_order** (Number) The priority order of the node type
 
 
 <a id="nestedblock--worker_node_pool"></a>
@@ -114,9 +114,9 @@ Required:
 
 Required:
 
-- `count` (Number) The number of nodes
-- `node_type_id` (Number) The id of the node type
-- `priority_order` (Number) The priority order of the node type
+- **count** (Number) The number of nodes
+- **node_type_id** (Number) The id of the node type
+- **priority_order** (Number) The priority order of the node type
 
 ## Import
 

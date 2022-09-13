@@ -22,14 +22,14 @@ data "morpheus_policy" "example_policy" {
 
 ### Optional
 
-- `id` (Number) The ID of the Morpheus policy.
-- `name` (String) The name of the Morpheus policy.
+- **id** (Number) The ID of the Morpheus policy.
+- **name** (String) The name of the Morpheus policy.
 
 ### Read-Only
 
-- `description` (String) The description of the policy
-- `enabled` (Boolean) Whether the policy is enabled
-- `policy_type_code` (String) The code of the policy type
-- `policy_type_name` (String) The name of the policy type
-- `scope` (String) The filter scope of the policy
-- `tenant_ids` (List of Number) Tenants the policy is assigned to
+- **description** (String) The description of the policy
+- **enabled** (Boolean) Whether the policy is enabled
+- **policy_type_code** (String) The code of the policy type
+- **policy_type_name** (String) The name of the policy type
+- **scope** (String) The filter scope of the policy
+- **tenant_ids** (List of Number) Tenants the policy is assigned to

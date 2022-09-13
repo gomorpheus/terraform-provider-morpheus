@@ -30,21 +30,21 @@ EOF
 
 ### Required
 
-- `name` (String) The name of the javascript script task
+- **name** (String) The name of the javascript script task
 
 ### Optional
 
-- `allow_custom_config` (Boolean) Custom configuration data to pass during the execution of the javascript script
-- `code` (String) The code of the javascript script task
-- `result_type` (String) The expected result type (single value, key pairs, json)
-- `retry_count` (Number) The number of times to retry the task if there is a failure
-- `retry_delay_seconds` (Number) The number of seconds to wait between retry attempts
-- `retryable` (Boolean) Whether to retry the task if there is a failure
-- `script_content` (String) The content of the javascript script
+- **allow_custom_config** (Boolean) Custom configuration data to pass during the execution of the javascript script
+- **code** (String) The code of the javascript script task
+- **result_type** (String) The expected result type (single value, key pairs, json)
+- **retry_count** (Number) The number of times to retry the task if there is a failure
+- **retry_delay_seconds** (Number) The number of seconds to wait between retry attempts
+- **retryable** (Boolean) Whether to retry the task if there is a failure
+- **script_content** (String) The content of the javascript script
 
 ### Read-Only
 
-- `id` (String) The ID of the javascript script task
+- **id** (String) The ID of the javascript script task
 
 ## Import
 

@@ -29,19 +29,19 @@ EOF
 
 ### Required
 
-- `name` (String) The name of the script template
-- `script_phase` (String) The phase that the script should be run during (start, stop, preProvision, provision, postProvision, preDeploy, deploy, reconfigure, teardown)
-- `script_type` (String) The type of the script template (powershell, bash)
+- **name** (String) The name of the script template
+- **script_phase** (String) The phase that the script should be run during (start, stop, preProvision, provision, postProvision, preDeploy, deploy, reconfigure, teardown)
+- **script_type** (String) The type of the script template (powershell, bash)
 
 ### Optional
 
-- `run_as_user` (String) The name of the user account the script should run as
-- `script_content` (String) The content of the script template
-- `sudo` (Boolean) Whether the script should run with sudo privileges
+- **run_as_user** (String) The name of the user account the script should run as
+- **script_content** (String) The content of the script template
+- **sudo** (Boolean) Whether the script should run with sudo privileges
 
 ### Read-Only
 
-- `id` (String) The ID of the script template
+- **id** (String) The ID of the script template
 
 ## Import
 

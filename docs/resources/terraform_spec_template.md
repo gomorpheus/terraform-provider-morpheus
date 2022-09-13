@@ -53,19 +53,19 @@ resource "morpheus_terraform_spec_template" "tfexample_terraform_spec_template_g
 
 ### Required
 
-- `name` (String) The name of the terraform spec template
-- `source_type` (String) The source of the terraform spec template (local, url or repository)
+- **name** (String) The name of the terraform spec template
+- **source_type** (String) The source of the terraform spec template (local, url or repository)
 
 ### Optional
 
-- `repository_id` (Number) The ID of the git repository integration
-- `spec_content` (String) The content of the terraform spec template. Used when the local source type is specified
-- `spec_path` (String) The path of the terraform spec template, either the url or the path in the repository
-- `version_ref` (String) The git reference of the repository to pull (main, master, etc.)
+- **repository_id** (Number) The ID of the git repository integration
+- **spec_content** (String) The content of the terraform spec template. Used when the local source type is specified
+- **spec_path** (String) The path of the terraform spec template, either the url or the path in the repository
+- **version_ref** (String) The git reference of the repository to pull (main, master, etc.)
 
 ### Read-Only
 
-- `id` (String) The ID of the terraform spec template
+- **id** (String) The ID of the terraform spec template
 
 ## Import
 

@@ -91,25 +91,25 @@ resource "morpheus_budget_policy" "tf_example_budget_policy_user" {
 
 ### Required
 
-- `currency` (String) The budget currency
-- `max_price` (String) The max budget price
-- `name` (String) The name of the budget policy
-- `scope` (String) The filter or scope that the policy is applied to (global, group, cloud, user, role)
-- `unit_of_time` (String) The unit of time to measure the budget (hour or month)
+- **currency** (String) The budget currency
+- **max_price** (String) The max budget price
+- **name** (String) The name of the budget policy
+- **scope** (String) The filter or scope that the policy is applied to (global, group, cloud, user, role)
+- **unit_of_time** (String) The unit of time to measure the budget (hour or month)
 
 ### Optional
 
-- `apply_to_each_user` (Boolean) Whether to assign the policy at the individual user level to all users assigned the associated role
-- `cloud_id` (Number) The id of the cloud associated with the cloud scoped filter
-- `description` (String) The description of the budget policy
-- `enabled` (Boolean) Whether the policy is enabled
-- `group_id` (Number) The id of the group associated with the group scoped filter
-- `role_id` (Number) The id of the role associated with the role scoped filter
-- `user_id` (Number) The id of the user associated with the user scoped filter
+- **apply_to_each_user** (Boolean) Whether to assign the policy at the individual user level to all users assigned the associated role
+- **cloud_id** (Number) The id of the cloud associated with the cloud scoped filter
+- **description** (String) The description of the budget policy
+- **enabled** (Boolean) Whether the policy is enabled
+- **group_id** (Number) The id of the group associated with the group scoped filter
+- **role_id** (Number) The id of the role associated with the role scoped filter
+- **user_id** (Number) The id of the user associated with the user scoped filter
 
 ### Read-Only
 
-- `id` (String) The ID of the budget policy
+- **id** (String) The ID of the budget policy
 
 ## Import
 

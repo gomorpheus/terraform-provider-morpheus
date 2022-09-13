@@ -104,26 +104,26 @@ resource "morpheus_terraform_app_blueprint" "tfapp_blueprint_git" {
 
 ### Required
 
-- `name` (String) The name of the terraform app blueprint
-- `source_type` (String) The source of the terraform app blueprint (hcl, json, spec or repository)
+- **name** (String) The name of the terraform app blueprint
+- **source_type** (String) The source of the terraform app blueprint (hcl, json, spec or repository)
 
 ### Optional
 
-- `blueprint_content` (String) The content of the terraform app blueprint. Used when the hcl or json source types are specified
-- `category` (String) The category of the terraform app blueprint
-- `description` (String) The description of the terraform app blueprint
-- `integration_id` (Number) The ID of the git integration
-- `repository_id` (Number) The ID of the git repository
-- `spec_template_ids` (List of Number) A list of terraform spec template ids associated with the app blueprint
-- `terraform_options` (String) The additional terraform options to add to the app blueprint
-- `terraform_version` (String) The terraform version associated with the app blueprint
-- `tfvar_secret` (String) The name of the tfvar cypher secret to associate with the app blueprint
-- `version_ref` (String) The git reference of the repository to pull (main, master, etc.)
-- `working_path` (String) The path of the terraform code in the git repository
+- **blueprint_content** (String) The content of the terraform app blueprint. Used when the hcl or json source types are specified
+- **category** (String) The category of the terraform app blueprint
+- **description** (String) The description of the terraform app blueprint
+- **integration_id** (Number) The ID of the git integration
+- **repository_id** (Number) The ID of the git repository
+- **spec_template_ids** (List of Number) A list of terraform spec template ids associated with the app blueprint
+- **terraform_options** (String) The additional terraform options to add to the app blueprint
+- **terraform_version** (String) The terraform version associated with the app blueprint
+- **tfvar_secret** (String) The name of the tfvar cypher secret to associate with the app blueprint
+- **version_ref** (String) The git reference of the repository to pull (main, master, etc.)
+- **working_path** (String) The path of the terraform code in the git repository
 
 ### Read-Only
 
-- `id` (String) The ID of the terraform app blueprint
+- **id** (String) The ID of the terraform app blueprint
 
 ## Import
 

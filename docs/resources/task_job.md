@@ -76,23 +76,23 @@ resource "morpheus_task_job" "tf_example_task_job_schedule" {
 
 ### Required
 
-- `context_type` (String) The context that the job should run as (appliance, server, instance)
-- `name` (String) The name of the task job
-- `schedule_mode` (String) The job scheduling type (manual, date_and_time, scheduled)
+- **context_type** (String) The context that the job should run as (appliance, server, instance)
+- **name** (String) The name of the task job
+- **schedule_mode** (String) The job scheduling type (manual, date_and_time, scheduled)
 
 ### Optional
 
-- `custom_config` (String) The task custom configuration
-- `enabled` (Boolean) Whether the task job is enabled
-- `execution_schedule_id` (Number) The id of the execution schedule associated with the job
-- `instance_ids` (List of Number) A list of instance ids to associate with the job
-- `scheduled_date_and_time` (String) The date and time the job will be executed if schedule mode date_and_time is used
-- `server_ids` (List of Number) A list of server ids to associate with the job
-- `task_id` (Number) The id of the task associated with the job
+- **custom_config** (String) The task custom configuration
+- **enabled** (Boolean) Whether the task job is enabled
+- **execution_schedule_id** (Number) The id of the execution schedule associated with the job
+- **instance_ids** (List of Number) A list of instance ids to associate with the job
+- **scheduled_date_and_time** (String) The date and time the job will be executed if schedule mode date_and_time is used
+- **server_ids** (List of Number) A list of server ids to associate with the job
+- **task_id** (Number) The id of the task associated with the job
 
 ### Read-Only
 
-- `id` (String) The ID of the task job
+- **id** (String) The ID of the task job
 
 ## Import
 

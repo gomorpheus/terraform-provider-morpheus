@@ -41,7 +41,7 @@ The following list of resources are supported by the Morpheus Terraform provider
 | [morpheus_checkbox_option_type](docs/resources/checkbox_option_type.md) | Morpheus checkbox option type resource |
 | [morpheus_cloud_formation_app_blueprint](docs/resources/cloud_formation_app_blueprint.md) | Morpheus Cloud Formation app blueprint resource |
 | [morpheus_cloud_formation_spec_template](docs/resources/cloud_formation_spec_template.md) | Morpheus Cloud Formation spec template resource |
-[morpheus_cluster_layout](docs/resources/cluster_layout.md) | Morpheus cluster layout resource |
+| [morpheus_cluster_layout](docs/resources/cluster_layout.md) | Morpheus cluster layout resource |
 | [morpheus_cluster_resource_name_policy](docs/resources/cluster_resource_name_policy.md) | Morpheus cluster resource name policy resource |
 | [morpheus_contact](docs/resources/morpheus_contact.md) | Morpheus contact resource |
 | [morpheus_docker_registry_integration](docs/resources/docker_registry_integration.md) | Morpheus docker_registry_integration resource |

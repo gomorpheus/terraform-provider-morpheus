@@ -26,18 +26,18 @@ resource "morpheus_docker_registry_integration" "tf_example_docker_registry_inte
 
 ### Required
 
-- `name` (String) The name of the docker registry integration
-- `url` (String) The url of the docker registry
+- **name** (String) The name of the docker registry integration
+- **url** (String) The url of the docker registry
 
 ### Optional
 
-- `enabled` (Boolean) Whether the docker registry integration is enabled
-- `password` (String, Sensitive) The password of the account used to authenticate to the docker registry
-- `username` (String) The username of the account used to authenticate to the docker registry
+- **enabled** (Boolean) Whether the docker registry integration is enabled
+- **password** (String, Sensitive) The password of the account used to authenticate to the docker registry
+- **username** (String) The username of the account used to authenticate to the docker registry
 
 ### Read-Only
 
-- `id` (String) The ID of the docker registry integration
+- **id** (String) The ID of the docker registry integration
 
 ## Import
 

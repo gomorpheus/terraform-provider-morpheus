@@ -134,27 +134,27 @@ resource "morpheus_cloud_formation_app_blueprint" "tf_example_cloud_formation_ap
 
 ### Required
 
-- `name` (String) The name of the cloud formation app blueprint
-- `source_type` (String) The source of the cloud formation app blueprint (yaml, json, repository)
+- **name** (String) The name of the cloud formation app blueprint
+- **source_type** (String) The source of the cloud formation app blueprint (yaml, json, repository)
 
 ### Optional
 
-- `blueprint_content` (String) The content of the cloud formation app blueprint. Used when the yaml or json source types are specified
-- `capability_auto_expand` (Boolean) Whether the auto expand capability is added to the cloud formation
-- `capability_iam` (Boolean) Whether the iam capability is added to the cloud formation
-- `capability_named_iam` (Boolean) Whether the named iam capability is added to the cloud formation
-- `category` (String) The category of the cloud formation app blueprint
-- `cloud_init_enabled` (Boolean) Whether cloud init is enabled
-- `description` (String) The description of the cloud formation app blueprint
-- `install_agent` (Boolean) Whether to install the Morpheus agent
-- `integration_id` (Number) The ID of the git integration
-- `repository_id` (Number) The ID of the git repository
-- `version_ref` (String) The git reference of the repository to pull (main, master, etc.)
-- `working_path` (String) The path of the cloud formation chart in the git repository
+- **blueprint_content** (String) The content of the cloud formation app blueprint. Used when the yaml or json source types are specified
+- **capability_auto_expand** (Boolean) Whether the auto expand capability is added to the cloud formation
+- **capability_iam** (Boolean) Whether the iam capability is added to the cloud formation
+- **capability_named_iam** (Boolean) Whether the named iam capability is added to the cloud formation
+- **category** (String) The category of the cloud formation app blueprint
+- **cloud_init_enabled** (Boolean) Whether cloud init is enabled
+- **description** (String) The description of the cloud formation app blueprint
+- **install_agent** (Boolean) Whether to install the Morpheus agent
+- **integration_id** (Number) The ID of the git integration
+- **repository_id** (Number) The ID of the git repository
+- **version_ref** (String) The git reference of the repository to pull (main, master, etc.)
+- **working_path** (String) The path of the cloud formation chart in the git repository
 
 ### Read-Only
 
-- `id` (String) The ID of the cloud formation app blueprint
+- **id** (String) The ID of the cloud formation app blueprint
 
 ## Import
 
