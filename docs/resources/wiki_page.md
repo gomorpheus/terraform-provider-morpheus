@@ -24,16 +24,16 @@ resource "morpheus_wiki_page" "tfexample_wiki_page" {
 
 ### Required
 
-- **name** (String) The name of the wiki page
+- `name` (String) The name of the wiki page
 
 ### Optional
 
-- **category** (String) The category of the wiki page
-- **content** (String) The content of the wiki page
+- `category` (String) The category of the wiki page
+- `content` (String) The content of the wiki page
 
 ### Read-Only
 
-- **id** (String) The ID of the wiki page
+- `id` (String) The ID of the wiki page
 
 ## Import
 

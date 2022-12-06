@@ -58,6 +58,7 @@ func Provider() *schema.Provider {
 			"morpheus_cluster_resource_name_policy":  resourceClusterResourceNamePolicy(),
 			"morpheus_contact":                       resourceContact(),
 			"morpheus_docker_registry_integration":   resourceDockerRegistryIntegration(),
+			"morpheus_email_task":                    resourceEmailTask(),
 			"morpheus_environment":                   resourceEnvironment(),
 			"morpheus_execute_schedule":              resourceExecuteSchedule(),
 			"morpheus_file_template":                 resourceFileTemplate(),

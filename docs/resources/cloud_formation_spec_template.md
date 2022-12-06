@@ -86,22 +86,22 @@ resource "morpheus_cloud_formation_spec_template" "tfexample_cloud_formation_spe
 
 ### Required
 
-- **name** (String) The name of the cloud formation spec template
-- **source_type** (String) The source of the cloud formation spec template (local, url or repository)
+- `name` (String) The name of the cloud formation spec template
+- `source_type` (String) The source of the cloud formation spec template (local, url or repository)
 
 ### Optional
 
-- **capability_auto_expand** (Boolean) Whether the auto expand capability is added to the cloud formation
-- **capability_iam** (Boolean) Whether the iam capability is added to the cloud formation
-- **capability_named_iam** (Boolean) Whether the named iam capability is added to the cloud formation
-- **repository_id** (Number) The ID of the git repository integration
-- **spec_content** (String) The content of the cloud formation spec template. Used when the local source type is specified
-- **spec_path** (String) The path of the cloud formation spec template, either the url or the path in the repository
-- **version_ref** (String) The git reference of the repository to pull (main, master, etc.)
+- `capability_auto_expand` (Boolean) Whether the auto expand capability is added to the cloud formation
+- `capability_iam` (Boolean) Whether the iam capability is added to the cloud formation
+- `capability_named_iam` (Boolean) Whether the named iam capability is added to the cloud formation
+- `repository_id` (Number) The ID of the git repository integration
+- `spec_content` (String) The content of the cloud formation spec template. Used when the local source type is specified
+- `spec_path` (String) The path of the cloud formation spec template, either the url or the path in the repository
+- `version_ref` (String) The git reference of the repository to pull (main, master, etc.)
 
 ### Read-Only
 
-- **id** (String) The ID of the cloud formation spec template
+- `id` (String) The ID of the cloud formation spec template
 
 ## Import
 

@@ -46,37 +46,37 @@ resource "morpheus_instance_type" "tf_example_instance_type" {
 
 ### Required
 
-- **category** (String) The instance type category (web, sql, nosql, apps, network, messaging, cache, os, cloud, utility)
-- **code** (String) The instance type code
-- **name** (String) The name of the instance type
-- **visibility** (String) The visibility of the instance type (public or private)
+- `category` (String) The instance type category (web, sql, nosql, apps, network, messaging, cache, os, cloud, utility)
+- `code` (String) The instance type code
+- `name` (String) The name of the instance type
+- `visibility` (String) The visibility of the instance type (public or private)
 
 ### Optional
 
-- **description** (String) The description of the instance type
-- **enable_deployments** (Boolean) Whether to enable deployments for the instance type
-- **enable_scaling** (Boolean) Whether to enable scaling for the instance type
-- **enable_settings** (Boolean) Whether to enable settings for the instance type
-- **environment_prefix** (String) The prefix used for instance environment variables
-- **evar** (Block List) The environment variables to create (see [below for nested schema](#nestedblock--evar))
-- **featured** (Boolean) Whether the instance type is marked as featured
-- **image_name** (String) The file name of the instance type logo image
-- **image_path** (String) The file path of the instance type logo image including the file name
-- **option_type_ids** (List of Number) The IDs of the inputs to associate with the instance type
+- `description` (String) The description of the instance type
+- `enable_deployments` (Boolean) Whether to enable deployments for the instance type
+- `enable_scaling` (Boolean) Whether to enable scaling for the instance type
+- `enable_settings` (Boolean) Whether to enable settings for the instance type
+- `environment_prefix` (String) The prefix used for instance environment variables
+- `evar` (Block List) The environment variables to create (see [below for nested schema](#nestedblock--evar))
+- `featured` (Boolean) Whether the instance type is marked as featured
+- `image_name` (String) The file name of the instance type logo image
+- `image_path` (String) The file path of the instance type logo image including the file name
+- `option_type_ids` (List of Number) The IDs of the inputs to associate with the instance type
 
 ### Read-Only
 
-- **id** (String) The ID of the instance type
+- `id` (String) The ID of the instance type
 
 <a id="nestedblock--evar"></a>
 ### Nested Schema for `evar`
 
 Optional:
 
-- **export** (Boolean) Whether the environment variable is exported as an instance tag
-- **masked_value** (String, Sensitive) The environment variable value when the value needs to be masked
-- **name** (String) The name of the environment variable
-- **value** (String) The environment variable value when the value can be in plaintext
+- `export` (Boolean) Whether the environment variable is exported as an instance tag
+- `masked_value` (String, Sensitive) The environment variable value when the value needs to be masked
+- `name` (String) The name of the environment variable
+- `value` (String) The environment variable value when the value can be in plaintext
 
 ## Import
 

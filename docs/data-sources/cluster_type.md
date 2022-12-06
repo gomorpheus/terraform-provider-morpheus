@@ -22,8 +22,8 @@ data "morpheus_cluster_type" "kubernetes_layout" {
 
 ### Required
 
-- **name** (String) The name of the Morpheus cluster type.
+- `name` (String) The name of the Morpheus cluster type.
 
 ### Read-Only
 
-- **id** (Number) The ID of this resource.
+- `id` (Number) The ID of this resource.

@@ -27,19 +27,19 @@ resource "morpheus_restart_task" "tfexample_restart" {
 
 ### Required
 
-- **name** (String) The name of the restart task
+- `name` (String) The name of the restart task
 
 ### Optional
 
-- **allow_custom_config** (Boolean) Custom configuration data to pass during the execution of the restart task
-- **code** (String) The code of the restart task
-- **retry_count** (Number) The number of times to retry the task if there is a failure
-- **retry_delay_seconds** (Number) The number of seconds to wait between retry attempts
-- **retryable** (Boolean) Whether to retry the task if there is a failure
+- `allow_custom_config` (Boolean) Custom configuration data to pass during the execution of the restart task
+- `code` (String) The code of the restart task
+- `retry_count` (Number) The number of times to retry the task if there is a failure
+- `retry_delay_seconds` (Number) The number of seconds to wait between retry attempts
+- `retryable` (Boolean) Whether to retry the task if there is a failure
 
 ### Read-Only
 
-- **id** (String) The ID of the restart task
+- `id` (String) The ID of the restart task
 
 ## Import
 

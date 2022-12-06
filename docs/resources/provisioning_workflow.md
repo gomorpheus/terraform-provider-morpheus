@@ -29,26 +29,26 @@ resource "morpheus_provisioning_workflow" "tf_example_provisioning_workflow" {
 
 ### Required
 
-- **name** (String) The name of the provisioning workflow
+- `name` (String) The name of the provisioning workflow
 
 ### Optional
 
-- **description** (String) The description of the provisioning workflow
-- **platform** (String) The operating system platforms the provisioning workflow is supported on (linux, macos, windows)
-- **task** (Block List) A list of tasks associated with the provisioning workflow (see [below for nested schema](#nestedblock--task))
-- **visibility** (String) Whether the provisioning workflow is visible in sub-tenants or not
+- `description` (String) The description of the provisioning workflow
+- `platform` (String) The operating system platforms the provisioning workflow is supported on (linux, macos, windows)
+- `task` (Block List) A list of tasks associated with the provisioning workflow (see [below for nested schema](#nestedblock--task))
+- `visibility` (String) Whether the provisioning workflow is visible in sub-tenants or not
 
 ### Read-Only
 
-- **id** (String) The ID of the provisioning workflow
+- `id` (String) The ID of the provisioning workflow
 
 <a id="nestedblock--task"></a>
 ### Nested Schema for `task`
 
 Required:
 
-- **task_id** (Number) The ID of the task to associate with the provisioning workflow
-- **task_phase** (String) The phase that the task is executed
+- `task_id` (Number) The ID of the task to associate with the provisioning workflow
+- `task_phase` (String) The phase that the task is executed
 
 ## Import
 

@@ -22,5 +22,8 @@ data "morpheus_integration" "tf_example_integration" {
 
 ### Optional
 
-- **id** (Number) The ID of this resource.
-- **name** (String) The name of the integration
+- `name` (String) The name of the integration
+
+### Read-Only
+
+- `id` (Number) The ID of this resource.

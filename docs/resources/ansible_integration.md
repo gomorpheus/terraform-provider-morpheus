@@ -38,29 +38,29 @@ resource "morpheus_ansible_integration" "tf_example_ansible_integration" {
 
 ### Required
 
-- **name** (String) The name of the ansible integration
-- **url** (String) The url of the ansible repository
+- `name` (String) The name of the ansible integration
+- `url` (String) The url of the ansible repository
 
 ### Optional
 
-- **access_token** (String, Sensitive) The access token of the account used to authenticate to the ansible repository
-- **default_branch** (String) The default branch of the ansible repository
-- **enable_agent_command_bus** (Boolean) Whether the agent command bus is used to execute the ansible playbook
-- **enable_ansible_galaxy_install** (Boolean) Whether to install the Ansible roles defined in the requirements.yml
-- **enable_git_caching** (Boolean) Whether the git repository is cached
-- **enable_verbose_logging** (Boolean) Whether verbose logging is used during the execution of the ansible playbook
-- **enabled** (Boolean) Whether the ansible integration is enabled
-- **group_variables_path** (String) The path in the repository of the Ansible group variables relative to the Git url
-- **host_variables_path** (String) The path in the repository of the Ansible host variables relative to the Git url
-- **key_pair_id** (Number) The ID of the key pair used to authenticate to the ansible repository
-- **password** (String, Sensitive) The password of the account used to authenticate to the ansible repository
-- **playbooks_path** (String) The path in the repository of the Ansible playbooks relative to the Git url
-- **roles_path** (String) The path in the repository of the Ansible roles relative to the Git url
-- **username** (String) The username of the account used to authenticate to the ansible repository
+- `access_token` (String, Sensitive) The access token of the account used to authenticate to the ansible repository
+- `default_branch` (String) The default branch of the ansible repository
+- `enable_agent_command_bus` (Boolean) Whether the agent command bus is used to execute the ansible playbook
+- `enable_ansible_galaxy_install` (Boolean) Whether to install the Ansible roles defined in the requirements.yml
+- `enable_git_caching` (Boolean) Whether the git repository is cached
+- `enable_verbose_logging` (Boolean) Whether verbose logging is used during the execution of the ansible playbook
+- `enabled` (Boolean) Whether the ansible integration is enabled
+- `group_variables_path` (String) The path in the repository of the Ansible group variables relative to the Git url
+- `host_variables_path` (String) The path in the repository of the Ansible host variables relative to the Git url
+- `key_pair_id` (Number) The ID of the key pair used to authenticate to the ansible repository
+- `password` (String, Sensitive) The password of the account used to authenticate to the ansible repository
+- `playbooks_path` (String) The path in the repository of the Ansible playbooks relative to the Git url
+- `roles_path` (String) The path in the repository of the Ansible roles relative to the Git url
+- `username` (String) The username of the account used to authenticate to the ansible repository
 
 ### Read-Only
 
-- **id** (String) The ID of the ansible integration
+- `id` (String) The ID of the ansible integration
 
 ## Import
 

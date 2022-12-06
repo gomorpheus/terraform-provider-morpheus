@@ -30,20 +30,20 @@ EOF
 
 ### Required
 
-- **name** (String) The name of the write attributes task
+- `name` (String) The name of the write attributes task
 
 ### Optional
 
-- **allow_custom_config** (Boolean) Custom configuration data to pass during the execution of the write attributes task
-- **attributes** (String) The attributes payload
-- **code** (String) The code of the write attributes task
-- **retry_count** (Number) The number of times to retry the task if there is a failure
-- **retry_delay_seconds** (Number) The number of seconds to wait between retry attempts
-- **retryable** (Boolean) Whether to retry the task if there is a failure
+- `allow_custom_config` (Boolean) Custom configuration data to pass during the execution of the write attributes task
+- `attributes` (String) The attributes payload
+- `code` (String) The code of the write attributes task
+- `retry_count` (Number) The number of times to retry the task if there is a failure
+- `retry_delay_seconds` (Number) The number of seconds to wait between retry attempts
+- `retryable` (Boolean) Whether to retry the task if there is a failure
 
 ### Read-Only
 
-- **id** (String) The ID of the write attributes task
+- `id` (String) The ID of the write attributes task
 
 ## Import
 
