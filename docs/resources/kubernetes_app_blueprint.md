@@ -78,23 +78,23 @@ resource "morpheus_kubernetes_app_blueprint" "tfexample_kubernetes_app_blueprint
 
 ### Required
 
-- **name** (String) The name of the kubernetes app blueprint
-- **source_type** (String) The source of the kubernetes app blueprint (yaml, spec or repository)
+- `name` (String) The name of the kubernetes app blueprint
+- `source_type` (String) The source of the kubernetes app blueprint (yaml, spec or repository)
 
 ### Optional
 
-- **blueprint_content** (String) The content of the kubernetes app blueprint. Used when the yaml source type is specified
-- **category** (String) The category of the kubernetes app blueprint
-- **description** (String) The description of the kubernetes app blueprint
-- **integration_id** (Number) The ID of the git integration
-- **repository_id** (Number) The ID of the git repository
-- **spec_template_ids** (List of Number) A list of kubernetes spec template ids associated with the app blueprint
-- **version_ref** (String) The git reference of the repository to pull (main, master, etc.)
-- **working_path** (String) The path of the kubernetes app blueprint in the git repository
+- `blueprint_content` (String) The content of the kubernetes app blueprint. Used when the yaml source type is specified
+- `category` (String) The category of the kubernetes app blueprint
+- `description` (String) The description of the kubernetes app blueprint
+- `integration_id` (Number) The ID of the git integration
+- `repository_id` (Number) The ID of the git repository
+- `spec_template_ids` (List of Number) A list of kubernetes spec template ids associated with the app blueprint
+- `version_ref` (String) The git reference of the repository to pull (main, master, etc.)
+- `working_path` (String) The path of the kubernetes app blueprint in the git repository
 
 ### Read-Only
 
-- **id** (String) The ID of the kubernetes app blueprint
+- `id` (String) The ID of the kubernetes app blueprint
 
 ## Import
 

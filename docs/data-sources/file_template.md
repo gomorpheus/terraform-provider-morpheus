@@ -22,5 +22,8 @@ data "morpheus_file_template" "example_file_template" {
 
 ### Optional
 
-- **id** (Number) The ID of this resource.
-- **name** (String) The name of the Morpheus file template.
+- `name` (String) The name of the Morpheus file template.
+
+### Read-Only
+
+- `id` (Number) The ID of this resource.

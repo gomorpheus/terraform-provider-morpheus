@@ -22,5 +22,5 @@ data "morpheus_option_list" "example_option_list" {
 
 ### Optional
 
-- **id** (Number) The ID of the option list
-- **name** (String) The name of the option list
+- `id` (Number) The ID of the option list
+- `name` (String) The name of the option list

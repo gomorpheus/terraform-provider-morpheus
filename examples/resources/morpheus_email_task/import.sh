@@ -1,0 +1,1 @@
+terraform import morpheus_email_task.tf_example_email_task 1
