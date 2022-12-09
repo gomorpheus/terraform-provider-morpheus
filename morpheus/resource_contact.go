@@ -33,11 +33,13 @@ func resourceContact() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The email address associated with the contact",
 				Optional:    true,
+				Computed:    true,
 			},
 			"mobile_number": {
 				Type:        schema.TypeString,
 				Description: "The mobile phone number associated with the contact",
 				Optional:    true,
+				Computed:    true,
 			},
 		},
 		Importer: &schema.ResourceImporter{
@@ -149,7 +151,7 @@ func resourceContactUpdate(ctx context.Context, d *schema.ResourceData, meta int
 	// Successfully updated resource, now set id
 	// err, it should not have changed though..
 	d.SetId(int64ToString(contact.ID))
-	return resourceTenantRead(ctx, d, meta)
+	return resourceContactRead(ctx, d, meta)
 }
 
 func resourceContactDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {

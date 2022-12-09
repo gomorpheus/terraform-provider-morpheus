@@ -22,5 +22,8 @@ data "morpheus_credential" "example" {
 
 ### Optional
 
-- **id** (Number) The ID of this resource.
-- **name** (String) The name of the Morpheus credential.
+- `name` (String) The name of the Morpheus credential.
+
+### Read-Only
+
+- `id` (Number) The ID of this resource.

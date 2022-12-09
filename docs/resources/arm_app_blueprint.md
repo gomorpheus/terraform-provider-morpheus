@@ -129,25 +129,25 @@ resource "morpheus_arm_app_blueprint" "tf_example_arm_app_blueprint_git" {
 
 ### Required
 
-- **name** (String) The name of the arm app blueprint
-- **source_type** (String) The source of the arm app blueprint (json, repository)
+- `name` (String) The name of the arm app blueprint
+- `source_type` (String) The source of the arm app blueprint (json, repository)
 
 ### Optional
 
-- **blueprint_content** (String) The content of the arm app blueprint. Used when the json source type is specified
-- **category** (String) The category of the arm app blueprint
-- **cloud_init_enabled** (Boolean) Whether cloud init is enabled
-- **description** (String) The description of the arm app blueprint
-- **install_agent** (Boolean) Whether to install the Morpheus agent
-- **integration_id** (Number) The ID of the git integration
-- **os_type** (String) The workload operating system type (linux, windows)
-- **repository_id** (Number) The ID of the git repository
-- **version_ref** (String) The git reference of the repository to pull (main, master, etc.)
-- **working_path** (String) The path of the arm app blueprint in the git repository
+- `blueprint_content` (String) The content of the arm app blueprint. Used when the json source type is specified
+- `category` (String) The category of the arm app blueprint
+- `cloud_init_enabled` (Boolean) Whether cloud init is enabled
+- `description` (String) The description of the arm app blueprint
+- `install_agent` (Boolean) Whether to install the Morpheus agent
+- `integration_id` (Number) The ID of the git integration
+- `os_type` (String) The workload operating system type (linux, windows)
+- `repository_id` (Number) The ID of the git repository
+- `version_ref` (String) The git reference of the repository to pull (main, master, etc.)
+- `working_path` (String) The path of the arm app blueprint in the git repository
 
 ### Read-Only
 
-- **id** (String) The ID of the arm app blueprint
+- `id` (String) The ID of the arm app blueprint
 
 ## Import
 

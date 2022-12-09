@@ -30,22 +30,22 @@ resource "morpheus_checkbox_option_type" "tf_example_checkbox_option_type" {
 
 ### Required
 
-- **field_label** (String) The label associated with the field in the UI
-- **field_name** (String) The field name of the checkbox option type
-- **name** (String) The name of the checkbox option type
+- `field_label` (String) The label associated with the field in the UI
+- `field_name` (String) The field name of the checkbox option type
+- `name` (String) The name of the checkbox option type
 
 ### Optional
 
-- **default_checked** (String) Whether the checkbox option type is checked by default (on or off)
-- **dependent_field** (String) The field or code used to trigger the reloading of the field
-- **description** (String) The description of the checkbox option type
-- **display_value_on_details** (Boolean) Display the selected value of the checkbox option type on the associated resource's details page
-- **export_meta** (Boolean) Whether to export the checkbox option type as a tag
-- **visibility_field** (String) The field or code used to trigger the visibility of the field
+- `default_checked` (String) Whether the checkbox option type is checked by default (on or off)
+- `dependent_field` (String) The field or code used to trigger the reloading of the field
+- `description` (String) The description of the checkbox option type
+- `display_value_on_details` (Boolean) Display the selected value of the checkbox option type on the associated resource's details page
+- `export_meta` (Boolean) Whether to export the checkbox option type as a tag
+- `visibility_field` (String) The field or code used to trigger the visibility of the field
 
 ### Read-Only
 
-- **id** (String) The ID of the checkbox option type
+- `id` (String) The ID of the checkbox option type
 
 ## Import
 

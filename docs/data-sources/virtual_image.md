@@ -22,5 +22,8 @@ data "morpheus_virtual_image" "example_virtual_image" {
 
 ### Optional
 
-- **id** (Number) The ID of this resource.
-- **name** (String) The name of the Morpheus virtual image.
+- `name` (String) The name of the Morpheus virtual image.
+
+### Read-Only
+
+- `id` (Number) The ID of this resource.

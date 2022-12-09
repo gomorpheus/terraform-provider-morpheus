@@ -22,5 +22,5 @@ data "morpheus_key_pair" "tf_example_key_pair" {
 
 ### Optional
 
-- **id** (Number) The ID of the key pair
-- **name** (String) The name of the integration
+- `id` (Number) The ID of the key pair
+- `name` (String) The name of the integration

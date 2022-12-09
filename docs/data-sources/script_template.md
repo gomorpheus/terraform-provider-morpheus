@@ -22,5 +22,8 @@ data "morpheus_script_template" "example_script_template" {
 
 ### Optional
 
-- **id** (Number) The ID of this resource.
-- **name** (String) The name of the Morpheus script template.
+- `name` (String) The name of the Morpheus script template.
+
+### Read-Only
+
+- `id` (Number) The ID of this resource.

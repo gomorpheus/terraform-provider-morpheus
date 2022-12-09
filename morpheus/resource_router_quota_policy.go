@@ -2,7 +2,6 @@ package morpheus
 
 import (
 	"context"
-	"encoding/json"
 
 	"log"
 
@@ -35,6 +34,7 @@ func resourceRouterQuotaPolicy() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The description of the router quota policy",
 				Optional:    true,
+				Computed:    true,
 			},
 			"enabled": {
 				Type:        schema.TypeBool,
@@ -88,6 +88,13 @@ func resourceRouterQuotaPolicy() *schema.Resource {
 				Optional:      true,
 				ConflictsWith: []string{"cloud_id", "user_id", "group_id"},
 			},
+			"tenant_ids": {
+				Type:        schema.TypeList,
+				Description: "A list of tenant IDs to assign the policy to",
+				Optional:    true,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeInt},
+			},
 		},
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
@@ -113,6 +120,7 @@ func resourceRouterQuotaPolicyCreate(ctx context.Context, d *schema.ResourceData
 		"code": "maxRouters",
 		"name": "Router Quota",
 	}
+	policy["accounts"] = d.Get("tenant_ids")
 
 	switch d.Get("scope") {
 	case "group":
@@ -194,32 +202,41 @@ func resourceRouterQuotaPolicyRead(ctx context.Context, d *schema.ResourceData, 
 	log.Printf("API RESPONSE: %s", resp)
 
 	// store resource data
-	var maxRoutersPolicy RouterQuotaPolicy
-	json.Unmarshal(resp.Body, &maxRoutersPolicy)
+	result := resp.Result.(*morpheus.GetPolicyResult)
+	maxRoutersPolicy := result.Policy
 
-	d.SetId(intToString(maxRoutersPolicy.Policy.ID))
-	d.Set("name", maxRoutersPolicy.Policy.Name)
-	d.Set("description", maxRoutersPolicy.Policy.Description)
-	d.Set("enabled", maxRoutersPolicy.Policy.Enabled)
-	d.Set("max_routers", maxRoutersPolicy.Policy.Config.MaxRouters)
+	d.SetId(int64ToString(maxRoutersPolicy.ID))
+	d.Set("name", maxRoutersPolicy.Name)
+	d.Set("description", maxRoutersPolicy.Description)
+	d.Set("enabled", maxRoutersPolicy.Enabled)
+	d.Set("max_routers", maxRoutersPolicy.Config.MaxRouters)
 
-	switch maxRoutersPolicy.Policy.Reftype {
+	switch maxRoutersPolicy.RefType {
 	case "ComputeSite":
 		d.Set("scope", "group")
-		d.Set("group_id", maxRoutersPolicy.Policy.Site.ID)
+		d.Set("group_id", maxRoutersPolicy.Site.ID)
 	case "ComputeZone":
 		d.Set("scope", "cloud")
-		d.Set("cloud_id", maxRoutersPolicy.Policy.Zone.ID)
+		d.Set("cloud_id", maxRoutersPolicy.Zone.ID)
 	case "User":
 		d.Set("scope", "user")
-		d.Set("user_id", maxRoutersPolicy.Policy.User.ID)
+		d.Set("user_id", maxRoutersPolicy.User.ID)
 	case "Role":
 		d.Set("scope", "role")
-		d.Set("role_id", maxRoutersPolicy.Policy.Role.ID)
-		d.Set("apply_to_each_user", maxRoutersPolicy.Policy.Eachuser)
+		d.Set("role_id", maxRoutersPolicy.Role.ID)
+		d.Set("apply_to_each_user", maxRoutersPolicy.EachUser)
 	default:
 		d.Set("scope", "global")
 	}
+
+	var tenantIds []int64
+	if maxRoutersPolicy.Accounts != nil {
+		// iterate over the array of accounts
+		for _, account := range maxRoutersPolicy.Accounts {
+			tenantIds = append(tenantIds, account.ID)
+		}
+	}
+	d.Set("tenant_ids", tenantIds)
 
 	return diags
 }
@@ -240,6 +257,7 @@ func resourceRouterQuotaPolicyUpdate(ctx context.Context, d *schema.ResourceData
 		"code": "maxRouters",
 		"name": "Router Quota",
 	}
+	policy["accounts"] = d.Get("tenant_ids")
 
 	switch d.Get("scope") {
 	case "group":
@@ -311,45 +329,4 @@ func resourceRouterQuotaPolicyDelete(ctx context.Context, d *schema.ResourceData
 	log.Printf("API RESPONSE: %s", resp)
 	d.SetId("")
 	return diags
-}
-
-type RouterQuotaPolicy struct {
-	Policy struct {
-		Accounts []interface{} `json:"accounts"`
-		Config   struct {
-			MaxRouters string `json:"maxRouters"`
-		} `json:"config"`
-		Description string `json:"description"`
-		Eachuser    bool   `json:"eachUser"`
-		Enabled     bool   `json:"enabled"`
-		ID          int    `json:"id"`
-		Name        string `json:"name"`
-		Owner       struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"owner"`
-		Policytype struct {
-			Code string `json:"code"`
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"policyType"`
-		Refid   int    `json:"refId"`
-		Reftype string `json:"refType"`
-		Role    struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"role"`
-		Site struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"site"`
-		User struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"user"`
-		Zone struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"zone"`
-	}
 }

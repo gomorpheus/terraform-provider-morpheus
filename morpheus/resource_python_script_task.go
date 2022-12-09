@@ -36,12 +36,14 @@ func resourcePythonScriptTask() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The code of the python script task",
 				Optional:    true,
+				Computed:    true,
 			},
 			"result_type": {
 				Type:         schema.TypeString,
 				Description:  "The expected result type (single value, key pairs, json)",
 				ValidateFunc: validation.StringInSlice([]string{"value", "keyValue", "json"}, false),
 				Optional:     true,
+				Computed:     true,
 			},
 			"source_type": {
 				Type:         schema.TypeString,
@@ -53,36 +55,43 @@ func resourcePythonScriptTask() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The content of the python script. Used when the local source type is specified",
 				Optional:    true,
+				Computed:    true,
 			},
 			"script_path": {
 				Type:        schema.TypeString,
 				Description: "The path of the python script, either the url or the path in the repository",
 				Optional:    true,
+				Computed:    true,
 			},
 			"repository_id": {
 				Type:        schema.TypeInt,
 				Description: "The ID of the git repository integration",
 				Optional:    true,
+				Computed:    true,
 			},
 			"version_ref": {
 				Type:        schema.TypeString,
 				Description: "The git reference of the repository to pull (main, master, etc.)",
 				Optional:    true,
+				Computed:    true,
 			},
 			"command_arguments": {
 				Type:        schema.TypeString,
 				Description: "Arguments to pass to the python script",
 				Optional:    true,
+				Computed:    true,
 			},
 			"additional_packages": {
 				Type:        schema.TypeString,
 				Description: "Additional python packages to install prior to the execution of the python script",
 				Optional:    true,
+				Computed:    true,
 			},
 			"python_binary": {
 				Type:        schema.TypeString,
 				Description: "The system path of the python binary to execute",
 				Optional:    true,
+				Computed:    true,
 			},
 			"retryable": {
 				Type:        schema.TypeBool,

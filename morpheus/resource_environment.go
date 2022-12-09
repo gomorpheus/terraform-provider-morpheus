@@ -39,11 +39,13 @@ func resourceEnvironment() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The description of the environment",
 				Optional:    true,
+				Computed:    true,
 			},
 			"code": {
 				Type:        schema.TypeString,
 				Description: "The code of the environment",
 				Optional:    true,
+				Computed:    true,
 			},
 			"visibility": {
 				Type:        schema.TypeString,
@@ -64,16 +66,13 @@ func resourceEnvironmentCreate(ctx context.Context, d *schema.ResourceData, meta
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
-	name := d.Get("name").(string)
-	description := d.Get("description").(string)
-	code := d.Get("code").(string)
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"environment": map[string]interface{}{
 				"active":      d.Get("active").(bool),
-				"name":        name,
-				"description": description,
-				"code":        code,
+				"name":        d.Get("name").(string),
+				"description": d.Get("description").(string),
+				"code":        d.Get("code").(string),
 				"visibility":  d.Get("visibility").(string),
 			},
 		},
@@ -149,17 +148,14 @@ func resourceEnvironmentUpdate(ctx context.Context, d *schema.ResourceData, meta
 	client := meta.(*morpheus.Client)
 
 	id := d.Id()
-	name := d.Get("name").(string)
-	description := d.Get("description").(string)
-	code := d.Get("code").(string)
 
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"environment": map[string]interface{}{
 				"active":      d.Get("active").(bool),
-				"name":        name,
-				"description": description,
-				"code":        code,
+				"name":        d.Get("name").(string),
+				"description": d.Get("description").(string),
+				"code":        d.Get("code").(string),
 				"visibility":  d.Get("visibility").(string),
 			},
 		},
@@ -171,10 +167,10 @@ func resourceEnvironmentUpdate(ctx context.Context, d *schema.ResourceData, meta
 	}
 	log.Printf("API RESPONSE: %s", resp)
 	result := resp.Result.(*morpheus.UpdateEnvironmentResult)
-	account := result.Environment
+	environment := result.Environment
 	// Successfully updated resource, now set id
 	// err, it should not have changed though..
-	d.SetId(int64ToString(account.ID))
+	d.SetId(int64ToString(environment.ID))
 	return resourceEnvironmentRead(ctx, d, meta)
 }
 

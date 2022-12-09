@@ -22,5 +22,8 @@ data "morpheus_provision_type" "provision_layout" {
 
 ### Optional
 
-- **id** (Number) The ID of this resource.
-- **name** (String) The name of the Morpheus provision type
+- `name` (String) The name of the Morpheus provision type
+
+### Read-Only
+
+- `id` (Number) The ID of this resource.

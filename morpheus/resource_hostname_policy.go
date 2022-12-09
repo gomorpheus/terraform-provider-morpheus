@@ -2,7 +2,6 @@ package morpheus
 
 import (
 	"context"
-	"encoding/json"
 
 	"log"
 
@@ -93,6 +92,13 @@ func resourceHostNamePolicy() *schema.Resource {
 				Optional:      true,
 				ConflictsWith: []string{"cloud_id", "user_id", "group_id"},
 			},
+			"tenant_ids": {
+				Type:        schema.TypeList,
+				Description: "A list of tenant IDs to assign the policy to",
+				Optional:    true,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeInt},
+			},
 		},
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
@@ -119,6 +125,8 @@ func resourceHostNamePolicyCreate(ctx context.Context, d *schema.ResourceData, m
 		"code": "hostNaming",
 		"name": "Hostname",
 	}
+
+	policy["accounts"] = d.Get("tenant_ids")
 
 	switch d.Get("scope") {
 	case "group":
@@ -200,32 +208,41 @@ func resourceHostNamePolicyRead(ctx context.Context, d *schema.ResourceData, met
 	log.Printf("API RESPONSE: %s", resp)
 
 	// store resource data
-	var hostNamePolicy HostNamePolicy
-	json.Unmarshal(resp.Body, &hostNamePolicy)
+	result := resp.Result.(*morpheus.GetPolicyResult)
+	hostNamePolicy := result.Policy
 
-	d.SetId(intToString(hostNamePolicy.Policy.ID))
-	d.Set("name", hostNamePolicy.Policy.Name)
-	d.Set("description", hostNamePolicy.Policy.Description)
-	d.Set("enabled", hostNamePolicy.Policy.Enabled)
-	d.Set("enforcement_type", hostNamePolicy.Policy.Config.HostNamingType)
-	d.Set("naming_pattern", hostNamePolicy.Policy.Config.HostNamingPattern)
-	switch hostNamePolicy.Policy.Reftype {
+	d.SetId(int64ToString(hostNamePolicy.ID))
+	d.Set("name", hostNamePolicy.Name)
+	d.Set("description", hostNamePolicy.Description)
+	d.Set("enabled", hostNamePolicy.Enabled)
+	d.Set("enforcement_type", hostNamePolicy.Config.HostNamingType)
+	d.Set("naming_pattern", hostNamePolicy.Config.HostNamingPattern)
+	switch hostNamePolicy.RefType {
 	case "ComputeSite":
 		d.Set("scope", "group")
-		d.Set("group_id", hostNamePolicy.Policy.Site.ID)
+		d.Set("group_id", hostNamePolicy.Site.ID)
 	case "ComputeZone":
 		d.Set("scope", "cloud")
-		d.Set("cloud_id", hostNamePolicy.Policy.Zone.ID)
+		d.Set("cloud_id", hostNamePolicy.Zone.ID)
 	case "User":
 		d.Set("scope", "user")
-		d.Set("user_id", hostNamePolicy.Policy.User.ID)
+		d.Set("user_id", hostNamePolicy.User.ID)
 	case "Role":
 		d.Set("scope", "role")
-		d.Set("role_id", hostNamePolicy.Policy.Role.ID)
-		d.Set("apply_to_each_user", hostNamePolicy.Policy.Eachuser)
+		d.Set("role_id", hostNamePolicy.Role.ID)
+		d.Set("apply_to_each_user", hostNamePolicy.EachUser)
 	default:
 		d.Set("scope", "global")
 	}
+
+	var tenantIds []int64
+	if hostNamePolicy.Accounts != nil {
+		// iterate over the array of accounts
+		for _, account := range hostNamePolicy.Accounts {
+			tenantIds = append(tenantIds, account.ID)
+		}
+	}
+	d.Set("tenant_ids", tenantIds)
 
 	return diags
 }
@@ -247,6 +264,8 @@ func resourceHostNamePolicyUpdate(ctx context.Context, d *schema.ResourceData, m
 		"code": "hostNaming",
 		"name": "Hostname",
 	}
+
+	policy["accounts"] = d.Get("tenant_ids")
 
 	switch d.Get("scope") {
 	case "group":
@@ -318,46 +337,4 @@ func resourceHostNamePolicyDelete(ctx context.Context, d *schema.ResourceData, m
 	log.Printf("API RESPONSE: %s", resp)
 	d.SetId("")
 	return diags
-}
-
-type HostNamePolicy struct {
-	Policy struct {
-		Accounts []interface{} `json:"accounts"`
-		Config   struct {
-			HostNamingType    string `json:"hostNamingType"`
-			HostNamingPattern string `json:"hostNamingPattern"`
-		} `json:"config"`
-		Description string `json:"description"`
-		Eachuser    bool   `json:"eachUser"`
-		Enabled     bool   `json:"enabled"`
-		ID          int    `json:"id"`
-		Name        string `json:"name"`
-		Owner       struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"owner"`
-		Policytype struct {
-			Code string `json:"code"`
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"policyType"`
-		Refid   int    `json:"refId"`
-		Reftype string `json:"refType"`
-		Role    struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"role"`
-		Site struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"site"`
-		User struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"user"`
-		Zone struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"zone"`
-	}
 }

@@ -208,7 +208,7 @@ func resourceNodeTypeCreate(ctx context.Context, d *schema.ResourceData, meta in
 	}
 	containerType["config"] = config
 	containerType["containerPorts"] = parseNodeTypeServicePorts(d.Get("service_port").([]interface{}))
-	containerType["containerScripts"] = d.Get("script_template_ids")
+	containerType["scripts"] = d.Get("script_template_ids")
 	containerType["containerTemplates"] = d.Get("file_template_ids")
 	containerType["category"] = d.Get("category").(string)
 

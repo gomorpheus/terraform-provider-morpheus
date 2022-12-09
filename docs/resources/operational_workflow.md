@@ -30,20 +30,20 @@ resource "morpheus_operational_workflow" "tf_example_operational_workflow" {
 
 ### Required
 
-- **name** (String) The name of the operational workflow
+- `name` (String) The name of the operational workflow
 
 ### Optional
 
-- **allow_custom_config** (Boolean) Allow a custom configuration to be supplied
-- **description** (String) The description of the operational workflow
-- **option_types** (List of Number) The option types associated with the operational workflow
-- **platform** (String) The operating system platforms the operational workflow is supported to run on
-- **task_ids** (List of Number) A list of tasks ids associated with the operational workflow
-- **visibility** (String) Whether the operational workflow is visible in sub-tenants or not
+- `allow_custom_config` (Boolean) Allow a custom configuration to be supplied
+- `description` (String) The description of the operational workflow
+- `option_types` (List of Number) The option types associated with the operational workflow
+- `platform` (String) The operating system platforms the operational workflow is supported to run on
+- `task_ids` (List of Number) A list of tasks ids associated with the operational workflow
+- `visibility` (String) Whether the operational workflow is visible in sub-tenants or not
 
 ### Read-Only
 
-- **id** (String) The ID of the operational workflow
+- `id` (String) The ID of the operational workflow
 
 ## Import
 

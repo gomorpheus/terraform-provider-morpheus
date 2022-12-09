@@ -2,7 +2,6 @@ package morpheus
 
 import (
 	"context"
-	"encoding/json"
 
 	"log"
 
@@ -88,6 +87,13 @@ func resourceMaxContainersPolicy() *schema.Resource {
 				Optional:      true,
 				ConflictsWith: []string{"cloud_id", "user_id", "group_id"},
 			},
+			"tenant_ids": {
+				Type:        schema.TypeList,
+				Description: "A list of tenant IDs to assign the policy to",
+				Optional:    true,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeInt},
+			},
 		},
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
@@ -113,6 +119,8 @@ func resourceMaxContainersPolicyCreate(ctx context.Context, d *schema.ResourceDa
 		"code": "maxContainers",
 		"name": "Max Containers",
 	}
+
+	policy["accounts"] = d.Get("tenant_ids")
 
 	switch d.Get("scope") {
 	case "group":
@@ -159,7 +167,7 @@ func resourceMaxContainersPolicyCreate(ctx context.Context, d *schema.ResourceDa
 	// Successfully created resource, now set id
 	d.SetId(int64ToString(policyResult.ID))
 
-	resourceMaxCoresPolicyRead(ctx, d, meta)
+	resourceMaxContainersPolicyRead(ctx, d, meta)
 	return diags
 }
 
@@ -194,32 +202,41 @@ func resourceMaxContainersPolicyRead(ctx context.Context, d *schema.ResourceData
 	log.Printf("API RESPONSE: %s", resp)
 
 	// store resource data
-	var maxCoresPolicy MaxCoresPolicy
-	json.Unmarshal(resp.Body, &maxCoresPolicy)
+	result := resp.Result.(*morpheus.GetPolicyResult)
+	maxContainersPolicy := result.Policy
 
-	d.SetId(intToString(maxCoresPolicy.Policy.ID))
-	d.Set("name", maxCoresPolicy.Policy.Name)
-	d.Set("description", maxCoresPolicy.Policy.Description)
-	d.Set("enabled", maxCoresPolicy.Policy.Enabled)
-	d.Set("max_containers", maxCoresPolicy.Policy.Config.MaxCores)
+	d.SetId(int64ToString(maxContainersPolicy.ID))
+	d.Set("name", maxContainersPolicy.Name)
+	d.Set("description", maxContainersPolicy.Description)
+	d.Set("enabled", maxContainersPolicy.Enabled)
+	d.Set("max_containers", maxContainersPolicy.Config.MaxContainers)
 
-	switch maxCoresPolicy.Policy.Reftype {
+	switch maxContainersPolicy.RefType {
 	case "ComputeSite":
 		d.Set("scope", "group")
-		d.Set("group_id", maxCoresPolicy.Policy.Site.ID)
+		d.Set("group_id", maxContainersPolicy.Site.ID)
 	case "ComputeZone":
 		d.Set("scope", "cloud")
-		d.Set("cloud_id", maxCoresPolicy.Policy.Zone.ID)
+		d.Set("cloud_id", maxContainersPolicy.Zone.ID)
 	case "User":
 		d.Set("scope", "user")
-		d.Set("user_id", maxCoresPolicy.Policy.User.ID)
+		d.Set("user_id", maxContainersPolicy.User.ID)
 	case "Role":
 		d.Set("scope", "role")
-		d.Set("role_id", maxCoresPolicy.Policy.Role.ID)
-		d.Set("apply_to_each_user", maxCoresPolicy.Policy.Eachuser)
+		d.Set("role_id", maxContainersPolicy.Role.ID)
+		d.Set("apply_to_each_user", maxContainersPolicy.EachUser)
 	default:
 		d.Set("scope", "global")
 	}
+
+	var tenantIds []int64
+	if maxContainersPolicy.Accounts != nil {
+		// iterate over the array of accounts
+		for _, account := range maxContainersPolicy.Accounts {
+			tenantIds = append(tenantIds, account.ID)
+		}
+	}
+	d.Set("tenant_ids", tenantIds)
 
 	return diags
 }
@@ -240,6 +257,8 @@ func resourceMaxContainersPolicyUpdate(ctx context.Context, d *schema.ResourceDa
 		"code": "maxContainers",
 		"name": "Max Containers",
 	}
+
+	policy["accounts"] = d.Get("tenant_ids")
 
 	switch d.Get("scope") {
 	case "group":
@@ -311,45 +330,4 @@ func resourceMaxContainersPolicyDelete(ctx context.Context, d *schema.ResourceDa
 	log.Printf("API RESPONSE: %s", resp)
 	d.SetId("")
 	return diags
-}
-
-type MaxContainersPolicy struct {
-	Policy struct {
-		Accounts []interface{} `json:"accounts"`
-		Config   struct {
-			MaxContainers string `json:"maxContainers"`
-		} `json:"config"`
-		Description string `json:"description"`
-		Eachuser    bool   `json:"eachUser"`
-		Enabled     bool   `json:"enabled"`
-		ID          int    `json:"id"`
-		Name        string `json:"name"`
-		Owner       struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"owner"`
-		Policytype struct {
-			Code string `json:"code"`
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"policyType"`
-		Refid   int    `json:"refId"`
-		Reftype string `json:"refType"`
-		Role    struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"role"`
-		Site struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"site"`
-		User struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"user"`
-		Zone struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"zone"`
-	}
 }

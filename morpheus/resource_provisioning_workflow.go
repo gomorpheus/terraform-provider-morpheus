@@ -2,7 +2,6 @@ package morpheus
 
 import (
 	"context"
-	"encoding/json"
 
 	"log"
 
@@ -40,8 +39,9 @@ func resourceProvisioningWorkflow() *schema.Resource {
 			"platform": {
 				Type:         schema.TypeString,
 				Description:  "The operating system platforms the provisioning workflow is supported on (linux, macos, windows)",
-				Optional:     true,
 				ValidateFunc: validation.StringInSlice([]string{"linux", "macos", "windows"}, false),
+				Optional:     true,
+				Computed:     true,
 			},
 			"visibility": {
 				Type:         schema.TypeString,
@@ -107,8 +107,7 @@ func resourceProvisioningWorkflowCreate(ctx context.Context, d *schema.ResourceD
 			},
 		},
 	}
-	slcB, _ := json.Marshal(req.Body)
-	log.Printf("API JSON REQUEST: %s", string(slcB))
+
 	resp, err := client.CreateTaskSet(req)
 	if err != nil {
 		log.Printf("API FAILURE: %s - %s", resp, err)

@@ -29,21 +29,21 @@ resource "morpheus_file_template" "tfexample_file_template" {
 
 ### Required
 
-- **file_name** (String) The name of the file deployed by the file template
-- **name** (String) The name of the file template
-- **phase** (String) The phase that the file template should be run during (preProvision, provision, postProvision, preDeploy, deploy)
+- `file_name` (String) The name of the file deployed by the file template
+- `name` (String) The name of the file template
+- `phase` (String) The phase that the file template should be run during (preProvision, provision, postProvision, preDeploy, deploy)
 
 ### Optional
 
-- **file_content** (String) The content of the file template
-- **file_owner** (String) The file template file owner
-- **file_path** (String) The system path of the file deployed by the file template
-- **setting_category** (String) The file template setting category
-- **setting_name** (String) The file template setting name
+- `file_content` (String) The content of the file template
+- `file_owner` (String) The file template file owner
+- `file_path` (String) The system path of the file deployed by the file template
+- `setting_category` (String) The file template setting category
+- `setting_name` (String) The file template setting name
 
 ### Read-Only
 
-- **id** (String) The ID of the file template
+- `id` (String) The ID of the file template
 
 ## Import
 

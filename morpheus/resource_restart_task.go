@@ -35,6 +35,7 @@ func resourceRestartTask() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The code of the restart task",
 				Optional:    true,
+				Computed:    true,
 			},
 			"retryable": {
 				Type:        schema.TypeBool,
@@ -58,7 +59,7 @@ func resourceRestartTask() *schema.Resource {
 				Type:        schema.TypeBool,
 				Description: "Custom configuration data to pass during the execution of the restart task",
 				Optional:    true,
-				Default:     false,
+				Computed:    true,
 			},
 		},
 		Importer: &schema.ResourceImporter{

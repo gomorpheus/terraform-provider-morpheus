@@ -2,7 +2,6 @@ package morpheus
 
 import (
 	"context"
-	"encoding/json"
 
 	"log"
 
@@ -89,6 +88,13 @@ func resourceWorkflowPolicy() *schema.Resource {
 				Optional:      true,
 				ConflictsWith: []string{"cloud_id", "user_id", "group_id"},
 			},
+			"tenant_ids": {
+				Type:        schema.TypeList,
+				Description: "A list of tenant IDs to assign the policy to",
+				Optional:    true,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeInt},
+			},
 		},
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
@@ -114,6 +120,7 @@ func resourceWorkflowPolicyCreate(ctx context.Context, d *schema.ResourceData, m
 		"code": "workflow",
 		"name": "Workflow",
 	}
+	policy["accounts"] = d.Get("tenant_ids")
 
 	switch d.Get("scope") {
 	case "global":
@@ -197,13 +204,40 @@ func resourceWorkflowPolicyRead(ctx context.Context, d *schema.ResourceData, met
 	log.Printf("API RESPONSE: %s", resp)
 
 	// store resource data
-	var workflowPolicy WorkflowPolicy
-	json.Unmarshal(resp.Body, &workflowPolicy)
+	result := resp.Result.(*morpheus.GetPolicyResult)
+	workflowPolicy := result.Policy
 
-	d.SetId(intToString(workflowPolicy.Policy.ID))
-	d.Set("name", workflowPolicy.Policy.Name)
-	d.Set("description", workflowPolicy.Policy.Description)
-	d.Set("enabled", workflowPolicy.Policy.Enabled)
+	d.SetId(int64ToString(workflowPolicy.ID))
+	d.Set("name", workflowPolicy.Name)
+	d.Set("description", workflowPolicy.Description)
+	d.Set("enabled", workflowPolicy.Enabled)
+	d.Set("workflow_id", workflowPolicy.Config.WorkflowID)
+	switch workflowPolicy.RefType {
+	case "ComputeSite":
+		d.Set("scope", "group")
+		d.Set("group_id", workflowPolicy.Site.ID)
+	case "ComputeZone":
+		d.Set("scope", "cloud")
+		d.Set("cloud_id", workflowPolicy.Zone.ID)
+	case "User":
+		d.Set("scope", "user")
+		d.Set("user_id", workflowPolicy.User.ID)
+	case "Role":
+		d.Set("scope", "role")
+		d.Set("role_id", workflowPolicy.Role.ID)
+		d.Set("apply_to_each_user", workflowPolicy.EachUser)
+	default:
+		d.Set("scope", "global")
+	}
+
+	var tenantIds []int64
+	if workflowPolicy.Accounts != nil {
+		// iterate over the array of accounts
+		for _, account := range workflowPolicy.Accounts {
+			tenantIds = append(tenantIds, account.ID)
+		}
+	}
+	d.Set("tenant_ids", tenantIds)
 
 	return diags
 }
@@ -224,6 +258,8 @@ func resourceWorkflowPolicyUpdate(ctx context.Context, d *schema.ResourceData, m
 		"code": "workflow",
 		"name": "Workflow",
 	}
+
+	policy["accounts"] = d.Get("tenant_ids")
 
 	switch d.Get("scope") {
 	case "global":
@@ -298,45 +334,4 @@ func resourceWorkflowPolicyDelete(ctx context.Context, d *schema.ResourceData, m
 	log.Printf("API RESPONSE: %s", resp)
 	d.SetId("")
 	return diags
-}
-
-type WorkflowPolicy struct {
-	Policy struct {
-		Accounts []interface{} `json:"accounts"`
-		Config   struct {
-			Workflowid string `json:"workflowId"`
-		} `json:"config"`
-		Description string `json:"description"`
-		Eachuser    bool   `json:"eachUser"`
-		Enabled     bool   `json:"enabled"`
-		ID          int    `json:"id"`
-		Name        string `json:"name"`
-		Owner       struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"owner"`
-		Policytype struct {
-			Code string `json:"code"`
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"policyType"`
-		Refid   int    `json:"refId"`
-		Reftype string `json:"refType"`
-		Role    struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"role"`
-		Site struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"site"`
-		User struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"user"`
-		Zone struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"zone"`
-	}
 }

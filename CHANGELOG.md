@@ -1,5 +1,32 @@
 ## Unreleased
 
+## 0.7.0 (October 13, 2022)
+
+NOTES:
+
+* The `morpheus-sdk` dependcy has been upgraded to version 0.2.4.
+
+FEATURES:
+
+* **New Data Source:** `morpheus_storage_bucket`
+* **New Data Source:** `morpheus_user_group`
+* **New Resource:** `morpheus_ansible_tower_integration`
+* **New Resource:** `morpheus_backup_setting`
+* **New Resource:** `morpheus_boot_script`
+* **New Resource:** `morpheus_cypher_access_policy`
+* **New Resource:** `morpheus_delayed_delete_policy`
+* **New Resource:** `morpheus_instance_catalog_item`
+* **New Resource:** `morpheus_license`
+* **New Resource:** `morpheus_motd_policy`
+* **New Resource:** `morpheus_power_schedule_policy`
+* **New Resource:** `morpheus_preseed_script`
+* **New Resource:** `morpheus_puppet_integration`
+* **New Resource:** `morpheus_user_role`
+* **New Resource:** `morpheus_tag_policy`
+* **New Resource:** `morpheus_user_group_creation_policy`
+* Add `repository_ids` attribute to the `git_integration` resource for using the repository ID for git based integration references such as shell script automation tasks.
+* Add support for defining the assigned tenants for policy resources (i.e. - backup creation, budget, cypher access, etc.)
+
 ## 0.6.0 (September 12, 2022)
 
 NOTES:

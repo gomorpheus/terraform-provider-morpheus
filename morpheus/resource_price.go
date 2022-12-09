@@ -59,21 +59,25 @@ func resourcePrice() *schema.Resource {
 				Type:        schema.TypeInt,
 				Description: "The id of the volume type",
 				Optional:    true,
+				Computed:    true,
 			},
 			"software": {
 				Type:        schema.TypeString,
 				Description: "The name of the software",
 				Optional:    true,
+				Computed:    true,
 			},
 			"datastore_id": {
 				Type:        schema.TypeInt,
 				Description: "The id of the datastore to associate the price with",
 				Optional:    true,
+				Computed:    true,
 			},
 			"apply_price_accross_clouds": {
 				Type:        schema.TypeBool,
 				Description: "Whether to apply the datastore price across clouds",
 				Optional:    true,
+				Computed:    true,
 			},
 			"price_unit": {
 				Type:         schema.TypeString,
@@ -102,6 +106,7 @@ func resourcePrice() *schema.Resource {
 				Description:  "The type of markup applied to the cost (fixed, percent, custom)",
 				ValidateFunc: validation.StringInSlice([]string{"fixed", "percent", "custom"}, false),
 				Optional:     true,
+				Computed:     true,
 			},
 			"markup_cost": {
 				Type:          schema.TypeFloat,

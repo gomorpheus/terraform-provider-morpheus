@@ -64,11 +64,7 @@ func dataSourceMorpheusTenantRoleRead(ctx context.Context, d *schema.ResourceDat
 	// store resource data
 	result := resp.Result.(*morpheus.GetRoleResult)
 	role := result.Role
-	if role != nil {
-		d.SetId(int64ToString(role.ID))
-		d.Set("name", role.Authority)
-	} else {
-		return diag.Errorf("Role not found in response data.") // should not happen
-	}
+	d.SetId(int64ToString(role.ID))
+	d.Set("name", role.Authority)
 	return diags
 }

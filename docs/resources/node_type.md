@@ -53,32 +53,32 @@ resource "morpheus_node_type" "tf_example_node" {
 
 ### Required
 
-- **name** (String) The name of the node type
-- **short_name** (String) The short name of the node type
-- **technology** (String) The technology of the node type (alibaba, amazon, azure, maas, esxi, fusion, google, huawei, hyperv, kvm, nutanix, opentelekom, openstack, oraclecloud, oraclevm, scvmm, upcloud, vcd.vapp, vcd, vmware, xen)
-- **version** (String) The version of the node type
+- `name` (String) The name of the node type
+- `short_name` (String) The short name of the node type
+- `technology` (String) The technology of the node type (alibaba, amazon, azure, maas, esxi, fusion, google, huawei, hyperv, kvm, nutanix, opentelekom, openstack, oraclecloud, oraclevm, scvmm, upcloud, vcd.vapp, vcd, vmware, xen)
+- `version` (String) The version of the node type
 
 ### Optional
 
-- **category** (String) The node type category
-- **extra_options** (Map of String) VMware custom options associated with the node type
-- **file_template_ids** (List of Number) A list of file template ids associated with the node type
-- **script_template_ids** (List of Number) A list of script template ids associated with the node type
-- **service_port** (Block List) Service ports associated with the node type (see [below for nested schema](#nestedblock--service_port))
-- **virtual_image_id** (Number) The ID of the virtual image associated with the node type
+- `category` (String) The node type category
+- `extra_options` (Map of String) VMware custom options associated with the node type
+- `file_template_ids` (List of Number) A list of file template ids associated with the node type
+- `script_template_ids` (List of Number) A list of script template ids associated with the node type
+- `service_port` (Block List) Service ports associated with the node type (see [below for nested schema](#nestedblock--service_port))
+- `virtual_image_id` (Number) The ID of the virtual image associated with the node type
 
 ### Read-Only
 
-- **id** (String) The ID of the node type
+- `id` (String) The ID of the node type
 
 <a id="nestedblock--service_port"></a>
 ### Nested Schema for `service_port`
 
 Optional:
 
-- **name** (String) The name of the service port
-- **port** (String) The port number of the service
-- **protocol** (String) The load balancer protocol (HTTP, HTTPS, TCP)
+- `name` (String) The name of the service port
+- `port` (String) The port number of the service
+- `protocol` (String) The load balancer protocol (HTTP, HTTPS, TCP)
 
 ## Import
 

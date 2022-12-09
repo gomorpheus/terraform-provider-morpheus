@@ -34,6 +34,7 @@ func resourceRestOptionList() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The description of the option list",
 				Optional:    true,
+				Computed:    true,
 			},
 			"visibility": {
 				Type:         schema.TypeString,
@@ -46,11 +47,13 @@ func resourceRestOptionList() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The HTTP URL used for the API request",
 				Optional:    true,
+				Computed:    true,
 			},
 			"source_method": {
 				Type:         schema.TypeString,
 				Description:  "The HTTP method used for the API request",
 				Optional:     true,
+				Computed:     true,
 				ValidateFunc: validation.StringInSlice([]string{"GET", "POST", ""}, false),
 			},
 			"source_headers": {
@@ -95,16 +98,19 @@ func resourceRestOptionList() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The initial dataset used to populate the option list",
 				Optional:    true,
+				Computed:    true,
 			},
 			"translation_script": {
 				Type:        schema.TypeString,
 				Description: "A js script to translate the result data object into an Array containing objects with properties 'name’ and 'value’.",
 				Optional:    true,
+				Computed:    true,
 			},
 			"request_script": {
 				Type:        schema.TypeString,
 				Description: "A js script to prepare the API request",
 				Optional:    true,
+				Computed:    true,
 			},
 		},
 		Importer: &schema.ResourceImporter{

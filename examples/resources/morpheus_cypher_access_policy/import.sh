@@ -1,0 +1,1 @@
+terraform import morpheus_cypher_access_policy.tf_example_cypher_access_policy 1

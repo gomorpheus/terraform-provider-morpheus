@@ -1,0 +1,1 @@
+terraform import morpheus_motd_policy.tf_example_motd_policy 1

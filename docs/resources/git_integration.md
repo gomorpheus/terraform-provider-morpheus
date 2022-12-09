@@ -31,22 +31,30 @@ resource "morpheus_git_integration" "tf_example_git_integration" {
 
 ### Required
 
-- **name** (String) The name of the git integration
-- **url** (String) The url of the git repository
+- `name` (String) The name of the git integration
+- `url` (String) The url of the git repository
 
 ### Optional
 
-- **access_token** (String, Sensitive) The access token of the account used to authenticate to the git repository
-- **default_branch** (String) The default branch of the git repository
-- **enable_git_caching** (Boolean) Whether the git repository is cached
-- **enabled** (Boolean) Whether the git integration is enabled
-- **key_pair_id** (Number) The ID of the key pair used to authenticate to the git repository
-- **password** (String, Sensitive) The password of the account used to authenticate to the git repository
-- **username** (String) The username of the account used to authenticate to the git repository
+- `access_token` (String, Sensitive) The access token of the account used to authenticate to the git repository
+- `default_branch` (String) The default branch of the git repository
+- `enable_git_caching` (Boolean) Whether the git repository is cached
+- `enabled` (Boolean) Whether the git integration is enabled
+- `key_pair_id` (Number) The ID of the key pair used to authenticate to the git repository
+- `password` (String, Sensitive) The password of the account used to authenticate to the git repository
+- `username` (String) The username of the account used to authenticate to the git repository
 
 ### Read-Only
 
-- **id** (String) The ID of the git integration
+- `id` (String) The ID of the git integration
+- `repository_ids` (List of Object) (see [below for nested schema](#nestedatt--repository_ids))
+
+<a id="nestedatt--repository_ids"></a>
+### Nested Schema for `repository_ids`
+
+Read-Only:
+
+- `segments` (Map of String)
 
 ## Import
 

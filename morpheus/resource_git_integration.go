@@ -4,6 +4,8 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
+	"fmt"
 	"strings"
 
 	"log"
@@ -65,7 +67,7 @@ func resourceGitIntegration() *schema.Resource {
 					h := sha256.New()
 					h.Write([]byte(new))
 					sha256_hash := hex.EncodeToString(h.Sum(nil))
-					return strings.ToLower(old) == strings.ToLower(sha256_hash)
+					return strings.EqualFold(old, sha256_hash)
 				},
 				DiffSuppressOnRefresh: true,
 			},
@@ -79,7 +81,7 @@ func resourceGitIntegration() *schema.Resource {
 					h := sha256.New()
 					h.Write([]byte(new))
 					sha256_hash := hex.EncodeToString(h.Sum(nil))
-					return strings.ToLower(old) == strings.ToLower(sha256_hash)
+					return strings.EqualFold(old, sha256_hash)
 				},
 			},
 			"key_pair_id": {
@@ -93,6 +95,11 @@ func resourceGitIntegration() *schema.Resource {
 				Description: "Whether the git repository is cached",
 				Optional:    true,
 				Computed:    true,
+			},
+			"repository_ids": {
+				Computed: true,
+				Type:     schema.TypeMap,
+				Elem:     &schema.Schema{Type: schema.TypeInt},
 			},
 		},
 		Importer: &schema.ResourceImporter{
@@ -190,6 +197,25 @@ func resourceGitIntegrationRead(ctx context.Context, d *schema.ResourceData, met
 	d.Set("default_branch", integration.Config.DefaultBranch)
 	d.Set("enable_git_caching", integration.Config.CacheEnabled)
 
+	resp, err = client.Execute(&morpheus.Request{
+		Method:      "GET",
+		Path:        fmt.Sprintf("/api/options/codeRepositories?integrationId=%d", integration.ID),
+		QueryParams: map[string]string{},
+	})
+	if err != nil {
+		log.Println("API ERROR: ", err)
+	}
+	log.Println("API RESPONSE:", resp)
+	repo_ids := make(map[string]int)
+
+	var itemResponsePayload CodeRepositories
+	json.Unmarshal(resp.Body, &itemResponsePayload)
+	log.Println("Code REPOS:", itemResponsePayload)
+	for _, v := range itemResponsePayload.Data {
+		repo_ids[v.Name] = v.Value
+	}
+	d.Set("repository_ids", repo_ids)
+
 	return diags
 }
 
@@ -256,4 +282,12 @@ func resourceGitIntegrationDelete(ctx context.Context, d *schema.ResourceData, m
 	log.Printf("API RESPONSE: %s", resp)
 	d.SetId("")
 	return diags
+}
+
+type CodeRepositories struct {
+	Success bool `json:"success"`
+	Data    []struct {
+		Name  string `json:"name"`
+		Value int    `json:"value"`
+	} `json:"data"`
 }

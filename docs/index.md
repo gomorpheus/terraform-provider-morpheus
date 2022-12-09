@@ -25,7 +25,7 @@ terraform {
   required_providers {
     morpheus = {
       source  = "gomorpheus/morpheus"
-      version = "0.5.1"
+      version = "0.7.0"
     }
   }
 }
@@ -42,10 +42,10 @@ provider "morpheus" {
 
 ### Required
 
-- **url** (String) The URL of the Morpheus Data Appliance where requests will be directed.
+- `url` (String) The URL of the Morpheus Data Appliance where requests will be directed.
 
 ### Optional
 
-- **access_token** (String, Sensitive) Access Token of Morpheus user. This can be used instead of authenticating with Username and Password.
-- **password** (String, Sensitive) Password of Morpheus user for authentication
-- **username** (String) Username of Morpheus user for authentication
+- `access_token` (String, Sensitive) Access Token of Morpheus user. This can be used instead of authenticating with Username and Password.
+- `password` (String, Sensitive) Password of Morpheus user for authentication
+- `username` (String) Username of Morpheus user for authentication

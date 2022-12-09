@@ -59,7 +59,7 @@ func resourceDockerRegistryIntegration() *schema.Resource {
 					h := sha256.New()
 					h.Write([]byte(new))
 					sha256_hash := hex.EncodeToString(h.Sum(nil))
-					return strings.ToLower(old) == strings.ToLower(sha256_hash)
+					return strings.EqualFold(old, sha256_hash)
 				},
 				DiffSuppressOnRefresh: true,
 			},

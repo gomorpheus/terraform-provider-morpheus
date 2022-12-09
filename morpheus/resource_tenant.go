@@ -33,6 +33,7 @@ func resourceTenant() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The description of the tenant",
 				Optional:    true,
+				Computed:    true,
 			},
 			"enabled": {
 				Type:        schema.TypeBool,
@@ -44,6 +45,7 @@ func resourceTenant() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "Sets the custom login url or login prefix for logging into a sub-tenant user",
 				Optional:    true,
+				Computed:    true,
 			},
 			"base_role_id": {
 				Type:        schema.TypeInt,
@@ -60,16 +62,19 @@ func resourceTenant() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "An optional field that can be used for billing and accounting",
 				Optional:    true,
+				Computed:    true,
 			},
 			"account_name": {
 				Type:        schema.TypeString,
 				Description: "An optional field that can be used for billing and accounting",
 				Optional:    true,
+				Computed:    true,
 			},
 			"customer_number": {
 				Type:        schema.TypeString,
 				Description: "An optional field that can be used for billing and accounting",
 				Optional:    true,
+				Computed:    true,
 			},
 		},
 		Importer: &schema.ResourceImporter{
@@ -159,8 +164,7 @@ func resourceTenantRead(ctx context.Context, d *schema.ResourceData, meta interf
 		d.Set("description", tenant.Description)
 		d.Set("enabled", tenant.Active)
 		d.Set("subdomain", tenant.Subdomain)
-		role := tenant.Role.(map[string]interface{})
-		d.Set("base_role_id", role["id"])
+		d.Set("base_role_id", tenant.Role.ID)
 		d.Set("currency", tenant.Currency)
 		d.Set("account_number", tenant.AccountNumber)
 		d.Set("account_name", tenant.AccountName)

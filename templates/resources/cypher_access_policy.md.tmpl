@@ -1,0 +1,32 @@
+---
+page_title: "morpheus_cypher_access_policy Resource - terraform-provider-morpheus"
+subcategory: ""
+description: |-
+{{ .Description | plainmarkdown | trimspace | prefixlines "  " }}
+---
+
+# morpheus_cypher_access_policy
+
+{{ .Description | trimspace }}
+
+## Example Usage
+
+Creating the policy with a global scope:
+
+{{tffile "examples/resources/morpheus_cypher_access_policy/resource_global.tf"}}
+
+Creating the policy with a role scope:
+
+{{tffile "examples/resources/morpheus_cypher_access_policy/resource_role.tf"}}
+
+Creating the policy with a user scope:
+
+{{tffile "examples/resources/morpheus_cypher_access_policy/resource_user.tf"}}
+
+{{ .SchemaMarkdown | trimspace }}
+
+## Import
+
+Import is supported using the following syntax:
+
+{{codefile "shell" "examples/resources/morpheus_cypher_access_policy/import.sh" }}
