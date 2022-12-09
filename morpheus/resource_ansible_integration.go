@@ -162,6 +162,7 @@ func resourceAnsibleIntegrationCreate(ctx context.Context, d *schema.ResourceDat
 
 	config := make(map[string]interface{})
 	config["defaultBranch"] = d.Get("default_branch").(string)
+        config["ansibleDefaultBranch"] = d.Get("default_branch").(string)
 	config["cacheEnabled"] = d.Get("enable_git_caching").(bool)
 	config["ansiblePlaybooks"] = d.Get("playbooks_path").(string)
 	config["ansibleRoles"] = d.Get("roles_path").(string)
@@ -265,6 +266,7 @@ func resourceAnsibleIntegrationUpdate(ctx context.Context, d *schema.ResourceDat
 
 	config := make(map[string]interface{})
 	config["defaultBranch"] = d.Get("default_branch").(string)
+        config["ansibleDefaultBranch"] = d.Get("default_branch").(string)
 	config["cacheEnabled"] = d.Get("enable_git_caching").(bool)
 	config["ansiblePlaybooks"] = d.Get("playbooks_path").(string)
 	config["ansibleRoles"] = d.Get("roles_path").(string)

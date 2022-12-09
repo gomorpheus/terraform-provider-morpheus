@@ -1,5 +1,12 @@
 ## Unreleased
 
+NOTES:
+
+* Fix the `morpheus_ansible_integration` resource to properly set the default branch for the integration.
+
+FEATURES:
+
+
 ## 0.6.0 (September 12, 2022)
 
 NOTES:
