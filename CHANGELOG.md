@@ -5,6 +5,7 @@
 NOTES:
 
 * The `morpheus-sdk` dependcy has been upgraded to version 0.2.5.
+* Fix the `morpheus_ansible_integration` resource to properly set the default branch for the integration.
 
 FEATURES:
 

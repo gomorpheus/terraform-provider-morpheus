@@ -63,6 +63,7 @@ func Provider() *schema.Provider {
 			"morpheus_cypher_access_policy":          resourceCypherAccessPolicy(),
 			"morpheus_delayed_delete_policy":         resourceDelayedDeletePolicy(),
 			"morpheus_docker_registry_integration":   resourceDockerRegistryIntegration(),
+			"morpheus_email_task":                    resourceEmailTask(),
 			"morpheus_environment":                   resourceEnvironment(),
 			"morpheus_execute_schedule":              resourceExecuteSchedule(),
 			"morpheus_file_template":                 resourceFileTemplate(),

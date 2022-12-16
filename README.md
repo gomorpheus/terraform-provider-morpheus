@@ -50,6 +50,7 @@ The following list of resources are supported by the Morpheus Terraform provider
 | [morpheus_docker_registry_integration](docs/resources/docker_registry_integration.md) | Morpheus docker_registry_integration resource |
 | [morpheus_cypher_access_policy](docs/resources/cypher_access_policy.md) | Morpheus cypher access policy resource |
 | [morpheus_delayed_delete_policy](docs/resources/delayed_delete_policy.md) | Morpheus delayed delete policy resource |
+| [morpheus_email_task](docs/resources/email_task.md) | Morpheus email task resource |
 | [morpheus_environment](docs/resources/environment.md) | Morpheus environment resource |
 | [morpheus_execute_schedule](docs/resources/execute_schedule.md) | Morpheus execute schedule resource |
 | [morpheus_file_template](docs/resources/file_template.md) | Morpheus file template resource |
