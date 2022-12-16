@@ -15,7 +15,7 @@ import (
 
 func resourceAnsibleTowerIntegration() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Provides an ansible tower integration resource",
+		Description:   "Provides an Ansible Tower integration resource",
 		CreateContext: resourceAnsibleTowerIntegrationCreate,
 		ReadContext:   resourceAnsibleTowerIntegrationRead,
 		UpdateContext: resourceAnsibleTowerIntegrationUpdate,
@@ -24,17 +24,17 @@ func resourceAnsibleTowerIntegration() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Type:        schema.TypeString,
-				Description: "The ID of the ansible tower integration",
+				Description: "The ID of the Ansible Tower integration",
 				Computed:    true,
 			},
 			"name": {
 				Type:        schema.TypeString,
-				Description: "The name of the ansible tower integration",
+				Description: "The name of the Ansible Tower integration",
 				Required:    true,
 			},
 			"enabled": {
 				Type:        schema.TypeBool,
-				Description: "Whether the ansible tower integration is enabled",
+				Description: "Whether the Ansible Tower integration is enabled",
 				Optional:    true,
 				Computed:    true,
 			},

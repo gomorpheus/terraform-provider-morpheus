@@ -37,6 +37,7 @@ resource "morpheus_motd_policy" "tf_example_motd_policy" {
 - `description` (String) The description of the message of the day policy
 - `enabled` (Boolean) Whether the policy is enabled
 - `full_page` (String) Whether the message of the day is displayed as a full page or just a notification dialog box
+- `tenant_ids` (List of Number) A list of tenant IDs to assign the policy to
 - `title` (String) The title of the message of the day
 
 ### Read-Only

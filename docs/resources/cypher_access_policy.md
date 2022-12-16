@@ -83,6 +83,7 @@ resource "morpheus_cypher_access_policy" "tf_example_cypher_access_policy_user" 
 - `list_access` (Boolean) Whether the policy grants list access
 - `read_access` (Boolean) Whether the policy grants read access
 - `role_id` (Number) The id of the role associated with the role scoped filter
+- `tenant_ids` (List of Number) A list of tenant IDs to assign the policy to
 - `update_access` (Boolean) Whether the policy grants update access
 - `user_id` (Number) The id of the user associated with the user scoped filter
 - `write_access` (Boolean) Whether the policy grants write access

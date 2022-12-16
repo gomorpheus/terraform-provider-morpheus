@@ -53,6 +53,9 @@ func resourceMorpheusGroup() *schema.Resource {
 				Elem:        &schema.Schema{Type: schema.TypeInt},
 			},
 		},
+		Importer: &schema.ResourceImporter{
+			StateContext: schema.ImportStatePassthroughContext,
+		},
 	}
 }
 

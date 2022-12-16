@@ -91,9 +91,10 @@ resource "morpheus_power_schedule_policy" "tf_example_power_schedule_policy_user
 
 ### Required
 
+- `enforcement_type` (String) The ID of the user group
 - `name` (String) The name of the power schedule policy
+- `power_schedule_id` (String) The ID of the user group
 - `scope` (String) The filter or scope that the policy is applied to (global, group, cloud, user, role)
-- `user_group_id` (Number) The ID of the user group
 
 ### Optional
 
@@ -102,7 +103,9 @@ resource "morpheus_power_schedule_policy" "tf_example_power_schedule_policy_user
 - `description` (String) The description of the power schedule policy
 - `enabled` (Boolean) Whether the policy is enabled
 - `group_id` (Number) The id of the group associated with the group scoped filter
+- `hide_power_schedule_if_fixed` (Boolean) The ID of the user group
 - `role_id` (Number) The id of the role associated with the role scoped filter
+- `tenant_ids` (List of Number) A list of tenant IDs to assign the policy to
 - `user_id` (Number) The id of the user associated with the user scoped filter
 
 ### Read-Only

@@ -48,7 +48,7 @@ resource "morpheus_tag_policy" "tf_example_tag_policy_group" {
   description        = "terraform example group tag policy"
   enabled            = true
   strict_enforcement = true
-  tag_key            = "true"
+  tag_key            = "cost_center"
   tag_value          = "true"
   option_list_id     = 2
   scope              = "group"
@@ -64,8 +64,9 @@ resource "morpheus_tag_policy" "tf_example_tag_policy_user" {
   description        = "terraform example user tag policy"
   enabled            = true
   strict_enforcement = true
-  tag_key            = "true"
+  tag_key            = "cost_center"
   tag_value          = "true"
+  option_list_id     = 2
   scope              = "user"
   user_id            = 1
 }
@@ -89,6 +90,7 @@ resource "morpheus_tag_policy" "tf_example_tag_policy_user" {
 - `option_list_id` (Number) The id of the option list associated with the policy
 - `strict_enforcement` (Boolean) Whether users will be able to provision new workloads if they violate the tag policy
 - `tag_value` (String) The value of the tag to enforce
+- `tenant_ids` (List of Number) A list of tenant IDs to assign the policy to
 - `user_id` (Number) The id of the user associated with the user scoped filter
 
 ### Read-Only

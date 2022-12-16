@@ -15,12 +15,11 @@ Creating the policy with a global scope:
 
 ```terraform
 resource "morpheus_user_group_creation_policy" "tf_example_user_group_creation_policy_global" {
-  name             = "tf_example_user_group_creation_policy_global"
-  description      = "terraform example global user group creation policy"
-  enabled          = true
-  enforcement_type = "fixed"
-  create_user      = true
-  scope            = "global"
+  name          = "tf_example_user_group_creation_policy_global"
+  description   = "terraform example global user group creation policy"
+  enabled       = true
+  user_group_id = 1
+  scope         = "global"
 }
 ```
 
@@ -41,13 +40,12 @@ Creating the policy with a group scope:
 
 ```terraform
 resource "morpheus_user_group_creation_policy" "tf_example_user_group_creation_policy_group" {
-  name             = "tf_example_user_group_creation_policy_group"
-  description      = "terraform example group user group creation policy"
-  enabled          = true
-  enforcement_type = "fixed"
-  create_user      = true
-  scope            = "group"
-  group_id         = 1
+  name          = "tf_example_user_group_creation_policy_group"
+  description   = "terraform example group user group creation policy"
+  enabled       = true
+  user_group_id = 1
+  scope         = "group"
+  group_id      = 1
 }
 ```
 
@@ -55,14 +53,13 @@ Creating the policy with a role scope:
 
 ```terraform
 resource "morpheus_user_group_creation_policy" "tf_example_user_group_creation_policy_role" {
-  name             = "tf_example_user_group_creation_policy_role"
-  description      = "terraform example role user group creation policy"
-  enabled          = true
-  enforcement_type = "fixed"
-  create_user      = true
-  scope            = "role"
-  role_id          = 1
-  apply_each_user  = true
+  name            = "tf_example_user_group_creation_policy_role"
+  description     = "terraform example role user group creation policy"
+  enabled         = true
+  user_group_id   = 1
+  scope           = "role"
+  role_id         = 1
+  apply_each_user = true
 }
 ```
 
@@ -70,13 +67,12 @@ Creating the policy with a user scope:
 
 ```terraform
 resource "morpheus_user_group_creation_policy" "tf_example_user_group_creation_policy_user" {
-  name             = "tf_example_user_group_creation_policy_user"
-  description      = "terraform example user user group creation policy"
-  enabled          = true
-  enforcement_type = "fixed"
-  create_user      = true
-  scope            = "user"
-  user_id          = 1
+  name          = "tf_example_user_group_creation_policy_user"
+  description   = "terraform example user user group creation policy"
+  enabled       = true
+  user_group_id = 1
+  scope         = "user"
+  user_id       = 1
 }
 ```
 
@@ -97,6 +93,7 @@ resource "morpheus_user_group_creation_policy" "tf_example_user_group_creation_p
 - `enabled` (Boolean) Whether the policy is enabled
 - `group_id` (Number) The id of the group associated with the group scoped filter
 - `role_id` (Number) The id of the role associated with the role scoped filter
+- `tenant_ids` (List of Number) A list of tenant IDs to assign the policy to
 - `user_id` (Number) The id of the user associated with the user scoped filter
 
 ### Read-Only

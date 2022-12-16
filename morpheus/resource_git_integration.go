@@ -97,9 +97,10 @@ func resourceGitIntegration() *schema.Resource {
 				Computed:    true,
 			},
 			"repository_ids": {
-				Computed: true,
-				Type:     schema.TypeMap,
-				Elem:     &schema.Schema{Type: schema.TypeInt},
+				Computed:    true,
+				Type:        schema.TypeMap,
+				Description: "A map of git repository ids for use with integrations that reference a git repository",
+				Elem:        &schema.Schema{Type: schema.TypeInt},
 			},
 		},
 		Importer: &schema.ResourceImporter{
@@ -210,7 +211,6 @@ func resourceGitIntegrationRead(ctx context.Context, d *schema.ResourceData, met
 
 	var itemResponsePayload CodeRepositories
 	json.Unmarshal(resp.Body, &itemResponsePayload)
-	log.Println("Code REPOS:", itemResponsePayload)
 	for _, v := range itemResponsePayload.Data {
 		repo_ids[v.Name] = v.Value
 	}

@@ -93,6 +93,7 @@ resource "morpheus_max_containers_policy" "tf_example_max_containers_policy_user
 - `enabled` (Boolean) Whether the policy is enabled
 - `group_id` (Number) The id of the group associated with the group scoped filter
 - `role_id` (Number) The id of the role associated with the role scoped filter
+- `tenant_ids` (List of Number) A list of tenant IDs to assign the policy to
 - `user_id` (Number) The id of the user associated with the user scoped filter
 
 ### Read-Only
