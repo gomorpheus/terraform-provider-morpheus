@@ -36,12 +36,14 @@ func resourceGroovyScriptTask() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The code of the groovy script task",
 				Optional:    true,
+				Computed:    true,
 			},
 			"result_type": {
 				Type:         schema.TypeString,
 				Description:  "The expected result type (single value, key pairs, json)",
 				ValidateFunc: validation.StringInSlice([]string{"value", "keyValue", "json"}, false),
 				Optional:     true,
+				Computed:     true,
 			},
 			"source_type": {
 				Type:         schema.TypeString,
@@ -53,21 +55,25 @@ func resourceGroovyScriptTask() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The content of the groovy script. Used when the local source type is specified",
 				Optional:    true,
+				Computed:    true,
 			},
 			"script_path": {
 				Type:        schema.TypeString,
 				Description: "The path of the groovy script, either the url or the path in the repository",
 				Optional:    true,
+				Computed:    true,
 			},
 			"repository_id": {
 				Type:        schema.TypeInt,
 				Description: "The ID of the git repository integration",
 				Optional:    true,
+				Computed:    true,
 			},
 			"version_ref": {
 				Type:        schema.TypeString,
 				Description: "The git reference of the repository to pull (main, master, etc.)",
 				Optional:    true,
+				Computed:    true,
 			},
 			"retryable": {
 				Type:        schema.TypeBool,

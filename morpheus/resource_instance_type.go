@@ -259,7 +259,6 @@ func resourceInstanceTypeRead(ctx context.Context, d *schema.ResourceData, meta 
 	var instanceTypePayload InstanceTypePayload
 	json.Unmarshal(resp.Body, &instanceTypePayload)
 
-	//log.Printf("RESPONSE_PAYLOAD: %v", instanceTypePayload)
 	d.SetId(int64ToString(int64(instanceTypePayload.InstanceType.ID)))
 	d.Set("name", instanceTypePayload.InstanceType.Name)
 	d.Set("code", instanceTypePayload.InstanceType.Code)

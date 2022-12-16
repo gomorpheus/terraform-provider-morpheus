@@ -2,7 +2,6 @@ package morpheus
 
 import (
 	"context"
-	"encoding/json"
 
 	"log"
 
@@ -35,6 +34,7 @@ func resourceClusterResourceNamePolicy() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The description of the backup creation policy",
 				Optional:    true,
+				Computed:    true,
 			},
 			"enabled": {
 				Type:        schema.TypeBool,
@@ -98,6 +98,13 @@ func resourceClusterResourceNamePolicy() *schema.Resource {
 				Optional:      true,
 				ConflictsWith: []string{"cloud_id", "user_id", "group_id"},
 			},
+			"tenant_ids": {
+				Type:        schema.TypeList,
+				Description: "A list of tenant IDs to assign the policy to",
+				Optional:    true,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeInt},
+			},
 		},
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
@@ -131,6 +138,8 @@ func resourceClusterResourceNamePolicyCreate(ctx context.Context, d *schema.Reso
 		"code": "serverNaming",
 		"name": "Cluster Resource Name",
 	}
+
+	policy["accounts"] = d.Get("tenant_ids")
 
 	switch d.Get("scope") {
 	case "group":
@@ -212,33 +221,42 @@ func resourceClusterResourceNamePolicyRead(ctx context.Context, d *schema.Resour
 	log.Printf("API RESPONSE: %s", resp)
 
 	// store resource data
-	var clusterResourceNamePolicy ClusterResourceNamePolicy
-	json.Unmarshal(resp.Body, &clusterResourceNamePolicy)
+	result := resp.Result.(*morpheus.GetPolicyResult)
+	clusterResourceNamePolicy := result.Policy
 
-	d.SetId(intToString(clusterResourceNamePolicy.Policy.ID))
-	d.Set("name", clusterResourceNamePolicy.Policy.Name)
-	d.Set("description", clusterResourceNamePolicy.Policy.Description)
-	d.Set("enabled", clusterResourceNamePolicy.Policy.Enabled)
-	d.Set("enforcement_type", clusterResourceNamePolicy.Policy.Config.ServerNamingType)
-	d.Set("auto_resolve_conflicts", clusterResourceNamePolicy.Policy.Config.ServerNamingConflict)
-	d.Set("naming_pattern", clusterResourceNamePolicy.Policy.Config.ServerNamingPattern)
-	switch clusterResourceNamePolicy.Policy.Reftype {
+	d.SetId(int64ToString(clusterResourceNamePolicy.ID))
+	d.Set("name", clusterResourceNamePolicy.Name)
+	d.Set("description", clusterResourceNamePolicy.Description)
+	d.Set("enabled", clusterResourceNamePolicy.Enabled)
+	d.Set("enforcement_type", clusterResourceNamePolicy.Config.ServerNamingType)
+	d.Set("auto_resolve_conflicts", clusterResourceNamePolicy.Config.ServerNamingConflict)
+	d.Set("naming_pattern", clusterResourceNamePolicy.Config.ServerNamingPattern)
+	switch clusterResourceNamePolicy.RefType {
 	case "ComputeSite":
 		d.Set("scope", "group")
-		d.Set("group_id", clusterResourceNamePolicy.Policy.Site.ID)
+		d.Set("group_id", clusterResourceNamePolicy.Site.ID)
 	case "ComputeZone":
 		d.Set("scope", "cloud")
-		d.Set("cloud_id", clusterResourceNamePolicy.Policy.Zone.ID)
+		d.Set("cloud_id", clusterResourceNamePolicy.Zone.ID)
 	case "User":
 		d.Set("scope", "user")
-		d.Set("user_id", clusterResourceNamePolicy.Policy.User.ID)
+		d.Set("user_id", clusterResourceNamePolicy.User.ID)
 	case "Role":
 		d.Set("scope", "role")
-		d.Set("role_id", clusterResourceNamePolicy.Policy.Role.ID)
-		d.Set("apply_to_each_user", clusterResourceNamePolicy.Policy.Eachuser)
+		d.Set("role_id", clusterResourceNamePolicy.Role.ID)
+		d.Set("apply_to_each_user", clusterResourceNamePolicy.EachUser)
 	default:
 		d.Set("scope", "global")
 	}
+
+	var tenantIds []int64
+	if clusterResourceNamePolicy.Accounts != nil {
+		// iterate over the array of accounts
+		for _, account := range clusterResourceNamePolicy.Accounts {
+			tenantIds = append(tenantIds, account.ID)
+		}
+	}
+	d.Set("tenant_ids", tenantIds)
 
 	return diags
 }
@@ -267,6 +285,8 @@ func resourceClusterResourceNamePolicyUpdate(ctx context.Context, d *schema.Reso
 		"code": "serverNaming",
 		"name": "Cluster Resource Name",
 	}
+
+	policy["accounts"] = d.Get("tenant_ids")
 
 	switch d.Get("scope") {
 	case "group":
@@ -338,47 +358,4 @@ func resourceClusterResourceNamePolicyDelete(ctx context.Context, d *schema.Reso
 	log.Printf("API RESPONSE: %s", resp)
 	d.SetId("")
 	return diags
-}
-
-type ClusterResourceNamePolicy struct {
-	Policy struct {
-		Accounts []interface{} `json:"accounts"`
-		Config   struct {
-			ServerNamingType     string `json:"serverNamingType"`
-			ServerNamingPattern  string `json:"serverNamingPattern"`
-			ServerNamingConflict string `json:"serverNamingConflict"`
-		} `json:"config"`
-		Description string `json:"description"`
-		Eachuser    bool   `json:"eachUser"`
-		Enabled     bool   `json:"enabled"`
-		ID          int    `json:"id"`
-		Name        string `json:"name"`
-		Owner       struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"owner"`
-		Policytype struct {
-			Code string `json:"code"`
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"policyType"`
-		Refid   int    `json:"refId"`
-		Reftype string `json:"refType"`
-		Role    struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"role"`
-		Site struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"site"`
-		User struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"user"`
-		Zone struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"zone"`
-	}
 }

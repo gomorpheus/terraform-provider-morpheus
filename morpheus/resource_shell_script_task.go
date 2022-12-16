@@ -39,18 +39,20 @@ func resourceShellScriptTask() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The code of the shell script task",
 				Optional:    true,
+				Computed:    true,
 			},
 			"result_type": {
 				Type:         schema.TypeString,
 				Description:  "The expected result type (value, keyValue, json)",
 				ValidateFunc: validation.StringInSlice([]string{"value", "keyValue", "json"}, false),
 				Optional:     true,
+				Computed:     true,
 			},
 			"sudo": {
 				Type:        schema.TypeBool,
-				Description: "",
+				Description: "Whether to run the script as sudo",
 				Optional:    true,
-				Default:     false,
+				Computed:    true,
 			},
 			"source_type": {
 				Type:         schema.TypeString,
@@ -62,43 +64,50 @@ func resourceShellScriptTask() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The content of the shell script. Used when the local source type is specified",
 				Optional:    true,
+				Computed:    true,
 			},
 			"script_path": {
 				Type:        schema.TypeString,
 				Description: "The path of the shell script, either the url or the path in the repository",
 				Optional:    true,
+				Computed:    true,
 			},
 			"repository_id": {
 				Type:        schema.TypeInt,
 				Description: "The ID of the git repository integration",
 				Optional:    true,
+				Computed:    true,
 			},
 			"version_ref": {
 				Type:        schema.TypeString,
 				Description: "The git reference of the repository to pull (main, master, etc.)",
 				Optional:    true,
+				Computed:    true,
 			},
 			"execute_target": {
 				Type:         schema.TypeString,
 				Description:  "The source of the shell script (local, url or repository)",
 				ValidateFunc: validation.StringInSlice([]string{"local", "remote", "resource"}, false),
-				Default:      "local",
 				Optional:     true,
+				Computed:     true,
 			},
 			"remote_target_host": {
 				Type:        schema.TypeString,
 				Description: "The hostname or ip address of the remote target",
 				Optional:    true,
+				Computed:    true,
 			},
 			"remote_target_port": {
 				Type:        schema.TypeString,
 				Description: "The port used to connect to the remote target",
 				Optional:    true,
+				Computed:    true,
 			},
 			"remote_target_username": {
 				Type:        schema.TypeString,
 				Description: "The username of the user account used to authenticate to the remote target",
 				Optional:    true,
+				Computed:    true,
 			},
 			"remote_target_password": {
 				Type:        schema.TypeString,
@@ -111,12 +120,13 @@ func resourceShellScriptTask() *schema.Resource {
 					return strings.EqualFold(old, sha256_hash)
 					//return strings.ToLower(old) == strings.ToLower(sha256_hash)
 				},
+				Computed: true,
 			},
 			"retryable": {
 				Type:        schema.TypeBool,
 				Description: "Whether to retry the task if there is a failure",
 				Optional:    true,
-				Default:     false,
+				Computed:    true,
 			},
 			"retry_count": {
 				Type:        schema.TypeInt,
@@ -134,7 +144,7 @@ func resourceShellScriptTask() *schema.Resource {
 				Type:        schema.TypeBool,
 				Description: "Custom configuration data to pass during the execution of the shell script",
 				Optional:    true,
-				Default:     false,
+				Computed:    true,
 			},
 		},
 		Importer: &schema.ResourceImporter{

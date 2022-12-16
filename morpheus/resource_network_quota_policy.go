@@ -2,7 +2,6 @@ package morpheus
 
 import (
 	"context"
-	"encoding/json"
 
 	"log"
 
@@ -88,6 +87,13 @@ func resourceNetworkQuotaPolicy() *schema.Resource {
 				Optional:      true,
 				ConflictsWith: []string{"cloud_id", "user_id", "group_id"},
 			},
+			"tenant_ids": {
+				Type:        schema.TypeList,
+				Description: "A list of tenant IDs to assign the policy to",
+				Optional:    true,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeInt},
+			},
 		},
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
@@ -113,6 +119,8 @@ func resourceNetworkQuotaPolicyCreate(ctx context.Context, d *schema.ResourceDat
 		"code": "maxNetworks",
 		"name": "Network Quota",
 	}
+
+	policy["accounts"] = d.Get("tenant_ids")
 
 	switch d.Get("scope") {
 	case "group":
@@ -194,32 +202,41 @@ func resourceNetworkQuotaPolicyRead(ctx context.Context, d *schema.ResourceData,
 	log.Printf("API RESPONSE: %s", resp)
 
 	// store resource data
-	var maxNetworksPolicy NetworkQuotaPolicy
-	json.Unmarshal(resp.Body, &maxNetworksPolicy)
+	result := resp.Result.(*morpheus.GetPolicyResult)
+	maxNetworksPolicy := result.Policy
 
-	d.SetId(intToString(maxNetworksPolicy.Policy.ID))
-	d.Set("name", maxNetworksPolicy.Policy.Name)
-	d.Set("description", maxNetworksPolicy.Policy.Description)
-	d.Set("enabled", maxNetworksPolicy.Policy.Enabled)
-	d.Set("max_networks", maxNetworksPolicy.Policy.Config.MaxNetworks)
+	d.SetId(int64ToString(maxNetworksPolicy.ID))
+	d.Set("name", maxNetworksPolicy.Name)
+	d.Set("description", maxNetworksPolicy.Description)
+	d.Set("enabled", maxNetworksPolicy.Enabled)
+	d.Set("max_networks", maxNetworksPolicy.Config.MaxNetworks)
 
-	switch maxNetworksPolicy.Policy.Reftype {
+	switch maxNetworksPolicy.RefType {
 	case "ComputeSite":
 		d.Set("scope", "group")
-		d.Set("group_id", maxNetworksPolicy.Policy.Site.ID)
+		d.Set("group_id", maxNetworksPolicy.Site.ID)
 	case "ComputeZone":
 		d.Set("scope", "cloud")
-		d.Set("cloud_id", maxNetworksPolicy.Policy.Zone.ID)
+		d.Set("cloud_id", maxNetworksPolicy.Zone.ID)
 	case "User":
 		d.Set("scope", "user")
-		d.Set("user_id", maxNetworksPolicy.Policy.User.ID)
+		d.Set("user_id", maxNetworksPolicy.User.ID)
 	case "Role":
 		d.Set("scope", "role")
-		d.Set("role_id", maxNetworksPolicy.Policy.Role.ID)
-		d.Set("apply_to_each_user", maxNetworksPolicy.Policy.Eachuser)
+		d.Set("role_id", maxNetworksPolicy.Role.ID)
+		d.Set("apply_to_each_user", maxNetworksPolicy.EachUser)
 	default:
 		d.Set("scope", "global")
 	}
+
+	var tenantIds []int64
+	if maxNetworksPolicy.Accounts != nil {
+		// iterate over the array of accounts
+		for _, account := range maxNetworksPolicy.Accounts {
+			tenantIds = append(tenantIds, account.ID)
+		}
+	}
+	d.Set("tenant_ids", tenantIds)
 
 	return diags
 }
@@ -240,6 +257,8 @@ func resourceNetworkQuotaPolicyUpdate(ctx context.Context, d *schema.ResourceDat
 		"code": "maxNetworks",
 		"name": "Network Quota",
 	}
+
+	policy["accounts"] = d.Get("tenant_ids")
 
 	switch d.Get("scope") {
 	case "group":
@@ -311,45 +330,4 @@ func resourceNetworkQuotaPolicyDelete(ctx context.Context, d *schema.ResourceDat
 	log.Printf("API RESPONSE: %s", resp)
 	d.SetId("")
 	return diags
-}
-
-type NetworkQuotaPolicy struct {
-	Policy struct {
-		Accounts []interface{} `json:"accounts"`
-		Config   struct {
-			MaxNetworks string `json:"maxNetworks"`
-		} `json:"config"`
-		Description string `json:"description"`
-		Eachuser    bool   `json:"eachUser"`
-		Enabled     bool   `json:"enabled"`
-		ID          int    `json:"id"`
-		Name        string `json:"name"`
-		Owner       struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"owner"`
-		Policytype struct {
-			Code string `json:"code"`
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"policyType"`
-		Refid   int    `json:"refId"`
-		Reftype string `json:"refType"`
-		Role    struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"role"`
-		Site struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"site"`
-		User struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"user"`
-		Zone struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"zone"`
-	}
 }

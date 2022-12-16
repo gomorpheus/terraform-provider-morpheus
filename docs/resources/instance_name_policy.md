@@ -91,7 +91,7 @@ resource "morpheus_instance_name_policy" "tf_example_instance_name_policy_user" 
 
 ### Required
 
-- `auto_resolve_conflicts` (Boolean)
+- `auto_resolve_conflicts` (Boolean) Whether to automatically resolve naming conflicts
 - `enforcement_type` (String) The policy enforcement type (fixed or user)
 - `name` (String) The name of the instance naming policy
 - `naming_pattern` (String) The instance name naming pattern
@@ -105,6 +105,7 @@ resource "morpheus_instance_name_policy" "tf_example_instance_name_policy_user" 
 - `enabled` (Boolean) Whether the policy is enabled
 - `group_id` (Number) The id of the group associated with the group scoped filter
 - `role_id` (Number) The id of the role associated with the role scoped filter
+- `tenant_ids` (List of Number) A list of tenant IDs to assign the policy to
 - `user_id` (Number) The id of the user associated with the user scoped filter
 
 ### Read-Only

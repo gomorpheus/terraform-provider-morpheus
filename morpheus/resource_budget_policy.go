@@ -2,7 +2,6 @@ package morpheus
 
 import (
 	"context"
-	"encoding/json"
 
 	"log"
 
@@ -98,6 +97,13 @@ func resourceBudgetPolicy() *schema.Resource {
 				Optional:      true,
 				ConflictsWith: []string{"cloud_id", "user_id", "group_id"},
 			},
+			"tenant_ids": {
+				Type:        schema.TypeList,
+				Description: "A list of tenant IDs to assign the policy to",
+				Optional:    true,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeInt},
+			},
 		},
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
@@ -125,6 +131,8 @@ func resourceBudgetPolicyCreate(ctx context.Context, d *schema.ResourceData, met
 		"code": "maxPrice",
 		"name": "Budget",
 	}
+
+	policy["accounts"] = d.Get("tenant_ids")
 
 	switch d.Get("scope") {
 	case "group":
@@ -206,33 +214,42 @@ func resourceBudgetPolicyRead(ctx context.Context, d *schema.ResourceData, meta 
 	log.Printf("API RESPONSE: %s", resp)
 
 	// store resource data
-	var budgetCreationPolicy BudgetPolicy
-	json.Unmarshal(resp.Body, &budgetCreationPolicy)
+	result := resp.Result.(*morpheus.GetPolicyResult)
+	budgetPolicy := result.Policy
 
-	d.SetId(intToString(budgetCreationPolicy.Policy.ID))
-	d.Set("name", budgetCreationPolicy.Policy.Name)
-	d.Set("description", budgetCreationPolicy.Policy.Description)
-	d.Set("enabled", budgetCreationPolicy.Policy.Enabled)
-	d.Set("max_price", budgetCreationPolicy.Policy.Config.MaxPrice)
-	d.Set("currency", budgetCreationPolicy.Policy.Config.MaxPriceCurrency)
-	d.Set("unit_of_time", budgetCreationPolicy.Policy.Config.MaxPriceUnit)
-	switch budgetCreationPolicy.Policy.Reftype {
+	d.SetId(int64ToString(budgetPolicy.ID))
+	d.Set("name", budgetPolicy.Name)
+	d.Set("description", budgetPolicy.Description)
+	d.Set("enabled", budgetPolicy.Enabled)
+	d.Set("max_price", budgetPolicy.Config.MaxPrice)
+	d.Set("currency", budgetPolicy.Config.MaxPriceCurrency)
+	d.Set("unit_of_time", budgetPolicy.Config.MaxPriceUnit)
+	switch budgetPolicy.RefType {
 	case "ComputeSite":
 		d.Set("scope", "group")
-		d.Set("group_id", budgetCreationPolicy.Policy.Site.ID)
+		d.Set("group_id", budgetPolicy.Site.ID)
 	case "ComputeZone":
 		d.Set("scope", "cloud")
-		d.Set("cloud_id", budgetCreationPolicy.Policy.Zone.ID)
+		d.Set("cloud_id", budgetPolicy.Zone.ID)
 	case "User":
 		d.Set("scope", "user")
-		d.Set("user_id", budgetCreationPolicy.Policy.User.ID)
+		d.Set("user_id", budgetPolicy.User.ID)
 	case "Role":
 		d.Set("scope", "role")
-		d.Set("role_id", budgetCreationPolicy.Policy.Role.ID)
-		d.Set("apply_to_each_user", budgetCreationPolicy.Policy.Eachuser)
+		d.Set("role_id", budgetPolicy.Role.ID)
+		d.Set("apply_to_each_user", budgetPolicy.EachUser)
 	default:
 		d.Set("scope", "global")
 	}
+
+	var tenantIds []int64
+	if budgetPolicy.Accounts != nil {
+		// iterate over the array of accounts
+		for _, account := range budgetPolicy.Accounts {
+			tenantIds = append(tenantIds, account.ID)
+		}
+	}
+	d.Set("tenant_ids", tenantIds)
 
 	return diags
 }
@@ -256,6 +273,8 @@ func resourceBudgetPolicyUpdate(ctx context.Context, d *schema.ResourceData, met
 		"code": "maxPrice",
 		"name": "Budget",
 	}
+
+	policy["accounts"] = d.Get("tenant_ids")
 
 	switch d.Get("scope") {
 	case "group":
@@ -327,47 +346,4 @@ func resourceBudgetPolicyDelete(ctx context.Context, d *schema.ResourceData, met
 	log.Printf("API RESPONSE: %s", resp)
 	d.SetId("")
 	return diags
-}
-
-type BudgetPolicy struct {
-	Policy struct {
-		Accounts []interface{} `json:"accounts"`
-		Config   struct {
-			MaxPrice         string `json:"maxPrice"`
-			MaxPriceCurrency string `json:"maxPriceCurrency"`
-			MaxPriceUnit     string `json:"maxPriceUnit"`
-		} `json:"config"`
-		Description string `json:"description"`
-		Eachuser    bool   `json:"eachUser"`
-		Enabled     bool   `json:"enabled"`
-		ID          int    `json:"id"`
-		Name        string `json:"name"`
-		Owner       struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"owner"`
-		Policytype struct {
-			Code string `json:"code"`
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"policyType"`
-		Refid   int    `json:"refId"`
-		Reftype string `json:"refType"`
-		Role    struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"role"`
-		Site struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"site"`
-		User struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"user"`
-		Zone struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"zone"`
-	}
 }

@@ -2,8 +2,6 @@ package morpheus
 
 import (
 	"context"
-	"encoding/json"
-	"time"
 
 	"log"
 
@@ -55,7 +53,7 @@ func resourceWriteAttributesTask() *schema.Resource {
 				Type:        schema.TypeBool,
 				Description: "Whether to retry the task if there is a failure",
 				Optional:    true,
-				Default:     false,
+				Computed:    true,
 			},
 			"retry_count": {
 				Type:        schema.TypeInt,
@@ -73,7 +71,7 @@ func resourceWriteAttributesTask() *schema.Resource {
 				Type:        schema.TypeBool,
 				Description: "Custom configuration data to pass during the execution of the write attributes task",
 				Optional:    true,
-				Default:     false,
+				Computed:    true,
 			},
 		},
 		Importer: &schema.ResourceImporter{
@@ -121,7 +119,6 @@ func resourceWriteAttributesTaskCreate(ctx context.Context, d *schema.ResourceDa
 	task := result.Task
 	// Successfully created resource, now set id
 	d.SetId(int64ToString(task.ID))
-	log.Printf("Task ID: %s", int64ToString(task.ID))
 
 	resourceWriteAttributesTaskRead(ctx, d, meta)
 	return diags
@@ -160,16 +157,17 @@ func resourceWriteAttributesTaskRead(ctx context.Context, d *schema.ResourceData
 	log.Printf("API RESPONSE: %s", resp)
 
 	// store resource data
-	var writeAttributesTask WriteAttributes
-	json.Unmarshal(resp.Body, &writeAttributesTask)
-	d.SetId(intToString(writeAttributesTask.Task.ID))
-	d.Set("name", writeAttributesTask.Task.Name)
-	d.Set("code", writeAttributesTask.Task.Code)
-	d.Set("attributes", writeAttributesTask.Task.Taskoptions.WriteattributesAttributes)
-	d.Set("retryable", writeAttributesTask.Task.Retryable)
-	d.Set("retry_count", writeAttributesTask.Task.Retrycount)
-	d.Set("retry_delay_seconds", writeAttributesTask.Task.Retrydelayseconds)
-	d.Set("allow_custom_config", writeAttributesTask.Task.Allowcustomconfig)
+	result := resp.Result.(*morpheus.GetTaskResult)
+	writeAttributesTask := result.Task
+
+	d.SetId(int64ToString(writeAttributesTask.ID))
+	d.Set("name", writeAttributesTask.Name)
+	d.Set("code", writeAttributesTask.Code)
+	d.Set("attributes", writeAttributesTask.TaskOptions.WriteAttributesAttributes)
+	d.Set("retryable", writeAttributesTask.Retryable)
+	d.Set("retry_count", writeAttributesTask.RetryCount)
+	d.Set("retry_delay_seconds", writeAttributesTask.RetryDelaySeconds)
+	d.Set("allow_custom_config", writeAttributesTask.AllowCustomConfig)
 	return diags
 }
 
@@ -235,39 +233,4 @@ func resourceWriteAttributesTaskDelete(ctx context.Context, d *schema.ResourceDa
 	log.Printf("API RESPONSE: %s", resp)
 	d.SetId("")
 	return diags
-}
-
-type WriteAttributes struct {
-	Task struct {
-		ID        int    `json:"id"`
-		Accountid int    `json:"accountId"`
-		Name      string `json:"name"`
-		Code      string `json:"code"`
-		Tasktype  struct {
-			ID   int    `json:"id"`
-			Code string `json:"code"`
-			Name string `json:"name"`
-		} `json:"taskType"`
-		Taskoptions struct {
-			Username                  interface{} `json:"username"`
-			Host                      interface{} `json:"host"`
-			Localscriptgitref         interface{} `json:"localScriptGitRef"`
-			Password                  interface{} `json:"password"`
-			Passwordhash              interface{} `json:"passwordHash"`
-			WriteattributesAttributes string      `json:"writeAttributes.attributes"`
-			Port                      interface{} `json:"port"`
-		} `json:"taskOptions"`
-		File              interface{} `json:"file"`
-		Resulttype        interface{} `json:"resultType"`
-		Executetarget     string      `json:"executeTarget"`
-		Retryable         bool        `json:"retryable"`
-		Retrycount        int         `json:"retryCount"`
-		Retrydelayseconds int         `json:"retryDelaySeconds"`
-		Allowcustomconfig bool        `json:"allowCustomConfig"`
-		Credential        struct {
-			Type string `json:"type"`
-		} `json:"credential"`
-		Datecreated time.Time `json:"dateCreated"`
-		Lastupdated time.Time `json:"lastUpdated"`
-	} `json:"task"`
 }

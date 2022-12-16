@@ -89,7 +89,7 @@ resource "morpheus_shell_script_task" "tfexample_shell_git" {
 - `retryable` (Boolean) Whether to retry the task if there is a failure
 - `script_content` (String) The content of the shell script. Used when the local source type is specified
 - `script_path` (String) The path of the shell script, either the url or the path in the repository
-- `sudo` (Boolean)
+- `sudo` (Boolean) Whether to run the script as sudo
 - `version_ref` (String) The git reference of the repository to pull (main, master, etc.)
 
 ### Read-Only

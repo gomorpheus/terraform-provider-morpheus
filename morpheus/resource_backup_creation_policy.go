@@ -2,7 +2,6 @@ package morpheus
 
 import (
 	"context"
-	"encoding/json"
 
 	"log"
 
@@ -35,6 +34,7 @@ func resourceBackupCreationPolicy() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The description of the backup creation policy",
 				Optional:    true,
+				Computed:    true,
 			},
 			"enabled": {
 				Type:        schema.TypeBool,
@@ -93,6 +93,13 @@ func resourceBackupCreationPolicy() *schema.Resource {
 				Optional:      true,
 				ConflictsWith: []string{"cloud_id", "user_id", "group_id"},
 			},
+			"tenant_ids": {
+				Type:        schema.TypeList,
+				Description: "A list of tenant IDs to assign the policy to",
+				Optional:    true,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeInt},
+			},
 		},
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
@@ -125,6 +132,8 @@ func resourceBackupCreationPolicyCreate(ctx context.Context, d *schema.ResourceD
 		"code": "createBackup",
 		"name": "Backup Creation",
 	}
+
+	policy["accounts"] = d.Get("tenant_ids")
 
 	switch d.Get("scope") {
 	case "group":
@@ -206,32 +215,41 @@ func resourceBackupCreationPolicyRead(ctx context.Context, d *schema.ResourceDat
 	log.Printf("API RESPONSE: %s", resp)
 
 	// store resource data
-	var backupCreationPolicy BackupCreationPolicy
-	json.Unmarshal(resp.Body, &backupCreationPolicy)
+	result := resp.Result.(*morpheus.GetPolicyResult)
+	backupCreationPolicy := result.Policy
 
-	d.SetId(intToString(backupCreationPolicy.Policy.ID))
-	d.Set("name", backupCreationPolicy.Policy.Name)
-	d.Set("description", backupCreationPolicy.Policy.Description)
-	d.Set("enabled", backupCreationPolicy.Policy.Enabled)
-	d.Set("enforcement_type", backupCreationPolicy.Policy.Config.CreateBackupType)
-	d.Set("create_backup", backupCreationPolicy.Policy.Config.CreateBackup)
-	switch backupCreationPolicy.Policy.Reftype {
+	d.SetId(int64ToString(backupCreationPolicy.ID))
+	d.Set("name", backupCreationPolicy.Name)
+	d.Set("description", backupCreationPolicy.Description)
+	d.Set("enabled", backupCreationPolicy.Enabled)
+	d.Set("enforcement_type", backupCreationPolicy.Config.CreateBackupType)
+	d.Set("create_backup", backupCreationPolicy.Config.CreateBackup)
+	switch backupCreationPolicy.RefType {
 	case "ComputeSite":
 		d.Set("scope", "group")
-		d.Set("group_id", backupCreationPolicy.Policy.Site.ID)
+		d.Set("group_id", backupCreationPolicy.Site.ID)
 	case "ComputeZone":
 		d.Set("scope", "cloud")
-		d.Set("cloud_id", backupCreationPolicy.Policy.Zone.ID)
+		d.Set("cloud_id", backupCreationPolicy.Zone.ID)
 	case "User":
 		d.Set("scope", "user")
-		d.Set("user_id", backupCreationPolicy.Policy.User.ID)
+		d.Set("user_id", backupCreationPolicy.User.ID)
 	case "Role":
 		d.Set("scope", "role")
-		d.Set("role_id", backupCreationPolicy.Policy.Role.ID)
-		d.Set("apply_to_each_user", backupCreationPolicy.Policy.Eachuser)
+		d.Set("role_id", backupCreationPolicy.Role.ID)
+		d.Set("apply_to_each_user", backupCreationPolicy.EachUser)
 	default:
 		d.Set("scope", "global")
 	}
+
+	var tenantIds []int64
+	if backupCreationPolicy.Accounts != nil {
+		// iterate over the array of accounts
+		for _, account := range backupCreationPolicy.Accounts {
+			tenantIds = append(tenantIds, account.ID)
+		}
+	}
+	d.Set("tenant_ids", tenantIds)
 
 	return diags
 }
@@ -259,6 +277,8 @@ func resourceBackupCreationPolicyUpdate(ctx context.Context, d *schema.ResourceD
 		"code": "createBackup",
 		"name": "Backup Creation",
 	}
+
+	policy["accounts"] = d.Get("tenant_ids")
 
 	switch d.Get("scope") {
 	case "group":
@@ -330,46 +350,4 @@ func resourceBackupCreationPolicyDelete(ctx context.Context, d *schema.ResourceD
 	log.Printf("API RESPONSE: %s", resp)
 	d.SetId("")
 	return diags
-}
-
-type BackupCreationPolicy struct {
-	Policy struct {
-		Accounts []interface{} `json:"accounts"`
-		Config   struct {
-			CreateBackup     string `json:"createBackup"`
-			CreateBackupType string `json:"createBackupType"`
-		} `json:"config"`
-		Description string `json:"description"`
-		Eachuser    bool   `json:"eachUser"`
-		Enabled     bool   `json:"enabled"`
-		ID          int    `json:"id"`
-		Name        string `json:"name"`
-		Owner       struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"owner"`
-		Policytype struct {
-			Code string `json:"code"`
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"policyType"`
-		Refid   int    `json:"refId"`
-		Reftype string `json:"refType"`
-		Role    struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"role"`
-		Site struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"site"`
-		User struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"user"`
-		Zone struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"zone"`
-	}
 }

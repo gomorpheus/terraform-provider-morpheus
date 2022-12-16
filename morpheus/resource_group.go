@@ -38,11 +38,13 @@ func resourceMorpheusGroup() *schema.Resource {
 				Description: "Optional code for use with policies",
 				Type:        schema.TypeString,
 				Optional:    true,
+				Computed:    true,
 			},
 			"location": {
 				Description: "Optional location argument for your group",
 				Type:        schema.TypeString,
 				Optional:    true,
+				Computed:    true,
 			},
 			"cloud_ids": {
 				Description: "An array of all the clouds assigned to this group",
@@ -50,6 +52,9 @@ func resourceMorpheusGroup() *schema.Resource {
 				Optional:    true,
 				Elem:        &schema.Schema{Type: schema.TypeInt},
 			},
+		},
+		Importer: &schema.ResourceImporter{
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 	}
 }

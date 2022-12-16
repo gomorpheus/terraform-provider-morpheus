@@ -43,6 +43,7 @@ func resourceTaskJob() *schema.Resource {
 				Type:        schema.TypeInt,
 				Description: "The id of the task associated with the job",
 				Optional:    true,
+				Computed:    true,
 			},
 			"schedule_mode": {
 				Type:         schema.TypeString,
@@ -54,12 +55,14 @@ func resourceTaskJob() *schema.Resource {
 				Type:          schema.TypeString,
 				Description:   "The date and time the job will be executed if schedule mode date_and_time is used",
 				Optional:      true,
+				Computed:      true,
 				ConflictsWith: []string{"execution_schedule_id"},
 			},
 			"execution_schedule_id": {
 				Type:        schema.TypeInt,
 				Description: "The id of the execution schedule associated with the job",
 				Optional:    true,
+				Computed:    true,
 			},
 			"context_type": {
 				Type:         schema.TypeString,
@@ -71,6 +74,7 @@ func resourceTaskJob() *schema.Resource {
 				Type:          schema.TypeList,
 				Description:   "A list of server ids to associate with the job",
 				Optional:      true,
+				Computed:      true,
 				Elem:          &schema.Schema{Type: schema.TypeInt},
 				ConflictsWith: []string{"instance_ids"},
 			},
@@ -78,6 +82,7 @@ func resourceTaskJob() *schema.Resource {
 				Type:          schema.TypeList,
 				Description:   "A list of instance ids to associate with the job",
 				Optional:      true,
+				Computed:      true,
 				Elem:          &schema.Schema{Type: schema.TypeInt},
 				ConflictsWith: []string{"server_ids"},
 			},
@@ -85,6 +90,7 @@ func resourceTaskJob() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The task custom configuration",
 				Optional:    true,
+				Computed:    true,
 			},
 		},
 		Importer: &schema.ResourceImporter{

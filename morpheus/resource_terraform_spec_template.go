@@ -42,21 +42,25 @@ func resourceTerraformSpecTemplate() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The content of the terraform spec template. Used when the local source type is specified",
 				Optional:    true,
+				Computed:    true,
 			},
 			"spec_path": {
 				Type:        schema.TypeString,
 				Description: "The path of the terraform spec template, either the url or the path in the repository",
 				Optional:    true,
+				Computed:    true,
 			},
 			"repository_id": {
 				Type:        schema.TypeInt,
 				Description: "The ID of the git repository integration",
 				Optional:    true,
+				Computed:    true,
 			},
 			"version_ref": {
 				Type:        schema.TypeString,
 				Description: "The git reference of the repository to pull (main, master, etc.)",
 				Optional:    true,
+				Computed:    true,
 			},
 		},
 		Importer: &schema.ResourceImporter{

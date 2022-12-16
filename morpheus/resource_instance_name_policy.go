@@ -2,7 +2,6 @@ package morpheus
 
 import (
 	"context"
-	"encoding/json"
 
 	"log"
 
@@ -35,6 +34,7 @@ func resourceInstanceNamePolicy() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The description of the instance naming policy",
 				Optional:    true,
+				Computed:    true,
 			},
 			"enabled": {
 				Type:        schema.TypeBool,
@@ -43,9 +43,10 @@ func resourceInstanceNamePolicy() *schema.Resource {
 				Default:     true,
 			},
 			"enforcement_type": {
-				Type:        schema.TypeString,
-				Description: "The policy enforcement type (fixed or user)",
-				Required:    true,
+				Type:         schema.TypeString,
+				Description:  "The policy enforcement type (fixed or user)",
+				ValidateFunc: validation.StringInSlice([]string{"fixed", "user"}, false),
+				Required:     true,
 			},
 			"naming_pattern": {
 				Type:        schema.TypeString,
@@ -54,7 +55,7 @@ func resourceInstanceNamePolicy() *schema.Resource {
 			},
 			"auto_resolve_conflicts": {
 				Type:        schema.TypeBool,
-				Description: "",
+				Description: "Whether to automatically resolve naming conflicts",
 				Required:    true,
 			},
 			"scope": {
@@ -98,6 +99,13 @@ func resourceInstanceNamePolicy() *schema.Resource {
 				Optional:      true,
 				ConflictsWith: []string{"cloud_id", "user_id", "group_id"},
 			},
+			"tenant_ids": {
+				Type:        schema.TypeList,
+				Description: "A list of tenant IDs to assign the policy to",
+				Optional:    true,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeInt},
+			},
 		},
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
@@ -131,6 +139,8 @@ func resourceInstanceNamePolicyCreate(ctx context.Context, d *schema.ResourceDat
 		"code": "naming",
 		"name": "Instance Name",
 	}
+
+	policy["accounts"] = d.Get("tenant_ids")
 
 	switch d.Get("scope") {
 	case "group":
@@ -212,33 +222,42 @@ func resourceInstanceNamePolicyRead(ctx context.Context, d *schema.ResourceData,
 	log.Printf("API RESPONSE: %s", resp)
 
 	// store resource data
-	var instanceNamePolicy InstanceNamePolicy
-	json.Unmarshal(resp.Body, &instanceNamePolicy)
+	result := resp.Result.(*morpheus.GetPolicyResult)
+	instanceNamePolicy := result.Policy
 
-	d.SetId(intToString(instanceNamePolicy.Policy.ID))
-	d.Set("name", instanceNamePolicy.Policy.Name)
-	d.Set("description", instanceNamePolicy.Policy.Description)
-	d.Set("enabled", instanceNamePolicy.Policy.Enabled)
-	d.Set("enforcement_type", instanceNamePolicy.Policy.Config.NamingType)
-	d.Set("auto_resolve_conflicts", instanceNamePolicy.Policy.Config.NamingConflict)
-	d.Set("naming_pattern", instanceNamePolicy.Policy.Config.NamingPattern)
-	switch instanceNamePolicy.Policy.Reftype {
+	d.SetId(int64ToString(instanceNamePolicy.ID))
+	d.Set("name", instanceNamePolicy.Name)
+	d.Set("description", instanceNamePolicy.Description)
+	d.Set("enabled", instanceNamePolicy.Enabled)
+	d.Set("enforcement_type", instanceNamePolicy.Config.NamingType)
+	d.Set("auto_resolve_conflicts", instanceNamePolicy.Config.NamingConflict)
+	d.Set("naming_pattern", instanceNamePolicy.Config.NamingPattern)
+	switch instanceNamePolicy.RefType {
 	case "ComputeSite":
 		d.Set("scope", "group")
-		d.Set("group_id", instanceNamePolicy.Policy.Site.ID)
+		d.Set("group_id", instanceNamePolicy.Site.ID)
 	case "ComputeZone":
 		d.Set("scope", "cloud")
-		d.Set("cloud_id", instanceNamePolicy.Policy.Zone.ID)
+		d.Set("cloud_id", instanceNamePolicy.Zone.ID)
 	case "User":
 		d.Set("scope", "user")
-		d.Set("user_id", instanceNamePolicy.Policy.User.ID)
+		d.Set("user_id", instanceNamePolicy.User.ID)
 	case "Role":
 		d.Set("scope", "role")
-		d.Set("role_id", instanceNamePolicy.Policy.Role.ID)
-		d.Set("apply_to_each_user", instanceNamePolicy.Policy.Eachuser)
+		d.Set("role_id", instanceNamePolicy.Role.ID)
+		d.Set("apply_to_each_user", instanceNamePolicy.EachUser)
 	default:
 		d.Set("scope", "global")
 	}
+
+	var tenantIds []int64
+	if instanceNamePolicy.Accounts != nil {
+		// iterate over the array of accounts
+		for _, account := range instanceNamePolicy.Accounts {
+			tenantIds = append(tenantIds, account.ID)
+		}
+	}
+	d.Set("tenant_ids", tenantIds)
 
 	return diags
 }
@@ -267,6 +286,8 @@ func resourceInstanceNamePolicyUpdate(ctx context.Context, d *schema.ResourceDat
 		"code": "naming",
 		"name": "Instance Name",
 	}
+
+	policy["accounts"] = d.Get("tenant_ids")
 
 	switch d.Get("scope") {
 	case "group":
@@ -338,47 +359,4 @@ func resourceInstanceNamePolicyDelete(ctx context.Context, d *schema.ResourceDat
 	log.Printf("API RESPONSE: %s", resp)
 	d.SetId("")
 	return diags
-}
-
-type InstanceNamePolicy struct {
-	Policy struct {
-		Accounts []interface{} `json:"accounts"`
-		Config   struct {
-			NamingType     string `json:"namingType"`
-			NamingPattern  string `json:"namingPattern"`
-			NamingConflict string `json:"namingConflict"`
-		} `json:"config"`
-		Description string `json:"description"`
-		Eachuser    bool   `json:"eachUser"`
-		Enabled     bool   `json:"enabled"`
-		ID          int    `json:"id"`
-		Name        string `json:"name"`
-		Owner       struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"owner"`
-		Policytype struct {
-			Code string `json:"code"`
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"policyType"`
-		Refid   int    `json:"refId"`
-		Reftype string `json:"refType"`
-		Role    struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"role"`
-		Site struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"site"`
-		User struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"user"`
-		Zone struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"zone"`
-	}
 }

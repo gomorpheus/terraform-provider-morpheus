@@ -35,11 +35,13 @@ func resourceTerraformAppBlueprint() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The description of the terraform app blueprint",
 				Optional:    true,
+				Computed:    true,
 			},
 			"category": {
 				Type:        schema.TypeString,
 				Description: "The category of the terraform app blueprint",
 				Optional:    true,
+				Computed:    true,
 			},
 			"source_type": {
 				Type:         schema.TypeString,
@@ -51,6 +53,7 @@ func resourceTerraformAppBlueprint() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The content of the terraform app blueprint. Used when the hcl or json source types are specified",
 				Optional:    true,
+				Computed:    true,
 			},
 			"working_path": {
 				Type:          schema.TypeString,
@@ -75,27 +78,32 @@ func resourceTerraformAppBlueprint() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The git reference of the repository to pull (main, master, etc.)",
 				Optional:    true,
+				Computed:    true,
 			},
 			"spec_template_ids": {
 				Type:        schema.TypeList,
 				Description: "A list of terraform spec template ids associated with the app blueprint",
 				Elem:        &schema.Schema{Type: schema.TypeInt},
 				Optional:    true,
+				Computed:    true,
 			},
 			"terraform_version": {
 				Type:        schema.TypeString,
 				Description: "The terraform version associated with the app blueprint",
 				Optional:    true,
+				Computed:    true,
 			},
 			"terraform_options": {
 				Type:        schema.TypeString,
 				Description: "The additional terraform options to add to the app blueprint",
 				Optional:    true,
+				Computed:    true,
 			},
 			"tfvar_secret": {
 				Type:        schema.TypeString,
 				Description: "The name of the tfvar cypher secret to associate with the app blueprint",
 				Optional:    true,
+				Computed:    true,
 			},
 		},
 		Importer: &schema.ResourceImporter{

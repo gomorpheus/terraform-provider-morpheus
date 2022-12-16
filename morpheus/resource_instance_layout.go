@@ -335,7 +335,7 @@ func resourceInstanceLayoutUpdate(ctx context.Context, d *schema.ResourceData, m
 	instanceLayout["description"] = d.Get("description").(string)
 	instanceLayout["creatable"] = d.Get("creatable").(bool)
 	instanceLayout["provisionTypeCode"] = d.Get("technology").(string)
-	instanceLayout["memoryRequirement"] = d.Get("minimum_memory").(string)
+	instanceLayout["memoryRequirement"] = d.Get("minimum_memory").(int)
 	instanceLayout["taskSetId"] = d.Get("workflow_id").(int)
 	instanceLayout["supportsConvertToManaged"] = d.Get("support_convert_to_managed").(bool)
 	//instanceLayout["hasAutoScale"] = d.Get("enable_scaling").(bool)

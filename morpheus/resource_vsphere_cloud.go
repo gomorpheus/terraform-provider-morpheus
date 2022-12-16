@@ -376,7 +376,6 @@ func resourceVsphereCloudRead(ctx context.Context, d *schema.ResourceData, meta 
 		return diags
 		//return diag.Errorf("Cloud not found in response data.") // should not happen
 	} else {
-
 		d.SetId(int64ToString(cloud.ID))
 		d.Set("name", cloud.Name)
 		d.Set("code", cloud.Code)
@@ -384,33 +383,33 @@ func resourceVsphereCloudRead(ctx context.Context, d *schema.ResourceData, meta 
 		d.Set("visibility", cloud.Visibility)
 		d.Set("enabled", cloud.Enabled)
 		d.Set("tenant_id", strconv.Itoa(vsphereCloud.Zone.Accountid))
-		d.Set("api_url", cloud.Config["apiUrl"])
-		d.Set("username", cloud.Config["username"])
-		d.Set("password", cloud.Config["passwordHash"])
-		d.Set("api_version", cloud.Config["apiVersion"])
-		d.Set("datacenter", cloud.Config["datacenter"])
-		d.Set("cluster", cloud.Config["cluster"])
-		d.Set("rpc_mode", cloud.Config["rpcMode"])
+		d.Set("api_url", cloud.Config.APIUrl)
+		d.Set("username", cloud.Config.Username)
+		d.Set("password", cloud.Config.Passwordhash)
+		d.Set("api_version", cloud.Config.APIVersion)
+		d.Set("datacenter", cloud.Config.Datacenter)
+		d.Set("cluster", cloud.Config.Cluster)
+		d.Set("rpc_mode", cloud.Config.RPCMode)
 
-		if cloud.Config["cluster"] == "" {
+		if cloud.Config.Cluster == "" {
 			d.Set("cluster", "all")
 		} else {
-			d.Set("cluster", cloud.Config["cluster"])
+			d.Set("cluster", cloud.Config.Cluster)
 		}
 
-		if cloud.Config["hideHostSelection"] == "on" {
+		if vsphereCloud.Zone.Config.HideHostSelection == "on" {
 			d.Set("hide_host_selection", true)
 		} else {
 			d.Set("hide_host_selection", false)
 		}
 
-		if cloud.Config["importExisting"] == "on" {
+		if cloud.Config.ImportExisting == "on" {
 			d.Set("import_existing_vms", true)
 		} else {
 			d.Set("import_existing_vms", false)
 		}
 
-		if cloud.Config["enableVnc"] == "on" {
+		if cloud.Config.EnableVNC == "on" {
 			d.Set("enable_hypervisor_console", true)
 		} else {
 			d.Set("enable_hypervisor_console", false)
@@ -643,7 +642,7 @@ type VsphereCloud struct {
 			Configcmdbdiscovery        bool        `json:"configCmdbDiscovery"`
 			Apiurl                     string      `json:"apiUrl"`
 			Rpcmode                    string      `json:"rpcMode"`
-			Hidehostselection          string      `json:"hideHostSelection"`
+			HideHostSelection          string      `json:"hideHostSelection"`
 			Importexisting             interface{} `json:"importExisting"`
 			Resourcepool               string      `json:"resourcePool"`
 			Username                   string      `json:"username"`
@@ -682,5 +681,5 @@ type VsphereCloud struct {
 			} `json:"serverCounts"`
 		} `json:"stats"`
 		Servercount int `json:"serverCount"`
-	}
+	} `json:"cloud"`
 }

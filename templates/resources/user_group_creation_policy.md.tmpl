@@ -1,0 +1,40 @@
+---
+page_title: "morpheus_user_group_creation_policy Resource - terraform-provider-morpheus"
+subcategory: ""
+description: |-
+{{ .Description | plainmarkdown | trimspace | prefixlines "  " }}
+---
+
+# morpheus_user_group_creation_policy
+
+{{ .Description | trimspace }}
+
+## Example Usage
+
+Creating the policy with a global scope:
+
+{{tffile "examples/resources/morpheus_user_group_creation_policy/resource_global.tf"}}
+
+Creating the policy with a cloud scope:
+
+{{tffile "examples/resources/morpheus_user_group_creation_policy/resource_cloud.tf"}}
+
+Creating the policy with a group scope:
+
+{{tffile "examples/resources/morpheus_user_group_creation_policy/resource_group.tf"}}
+
+Creating the policy with a role scope:
+
+{{tffile "examples/resources/morpheus_user_group_creation_policy/resource_role.tf"}}
+
+Creating the policy with a user scope:
+
+{{tffile "examples/resources/morpheus_user_group_creation_policy/resource_user.tf"}}
+
+{{ .SchemaMarkdown | trimspace }}
+
+## Import
+
+Import is supported using the following syntax:
+
+{{codefile "shell" "examples/resources/morpheus_user_group_creation_policy/import.sh" }}

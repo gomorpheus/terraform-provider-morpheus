@@ -33,11 +33,13 @@ func resourceTextOptionType() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The description of the text option type",
 				Optional:    true,
+				Computed:    true,
 			},
 			"field_name": {
 				Type:        schema.TypeString,
 				Description: "The field name of the text option type",
 				Optional:    true,
+				Computed:    true,
 			},
 			"export_meta": {
 				Type:        schema.TypeBool,
@@ -49,11 +51,13 @@ func resourceTextOptionType() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The field or code used to trigger the reloading of the field",
 				Optional:    true,
+				Computed:    true,
 			},
 			"visibility_field": {
 				Type:        schema.TypeString,
 				Description: "The field or code used to trigger the visibility of the field",
 				Optional:    true,
+				Computed:    true,
 			},
 			"display_value_on_details": {
 				Type:        schema.TypeBool,
@@ -65,21 +69,25 @@ func resourceTextOptionType() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The label associated with the field in the UI",
 				Optional:    true,
+				Computed:    true,
 			},
 			"placeholder": {
 				Type:        schema.TypeString,
 				Description: "Text in the field used as a placeholder for example purposes",
 				Optional:    true,
+				Computed:    true,
 			},
 			"default_value": {
 				Type:        schema.TypeString,
 				Description: "The default value of the option type",
 				Optional:    true,
+				Computed:    true,
 			},
 			"help_block": {
 				Type:        schema.TypeString,
 				Description: "Text that provides additional details about the use of the option type",
 				Optional:    true,
+				Computed:    true,
 			},
 			"required": {
 				Type:        schema.TypeBool,

@@ -47,6 +47,7 @@ resource "morpheus_git_integration" "tf_example_git_integration" {
 ### Read-Only
 
 - `id` (String) The ID of the git integration
+- `repository_ids` (Map of Number) A map of git repository ids for use with integrations that reference a git repository
 
 ## Import
 

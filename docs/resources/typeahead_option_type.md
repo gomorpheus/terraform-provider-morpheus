@@ -23,7 +23,7 @@ resource "morpheus_typeahead_option_type" "tf_example_typeahead_option_type" {
   field_label              = "numbers"
   placeholder              = "fewf"
   default_value            = "testing"
-  help_block               = "fiwefw"
+  help_block               = "terraform example typeahead"
   required                 = true
   option_list_id           = 3
 }
