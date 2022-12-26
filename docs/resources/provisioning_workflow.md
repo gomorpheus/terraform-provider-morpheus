@@ -34,7 +34,7 @@ resource "morpheus_provisioning_workflow" "tf_example_provisioning_workflow" {
 ### Optional
 
 - `description` (String) The description of the provisioning workflow
-- `platform` (String) The operating system platforms the provisioning workflow is supported on (linux, macos, windows)
+- `platform` (String) The operating system platforms the provisioning workflow is supported on (all, linux, macos, windows)
 - `task` (Block List) A list of tasks associated with the provisioning workflow (see [below for nested schema](#nestedblock--task))
 - `visibility` (String) Whether the provisioning workflow is visible in sub-tenants or not
 
