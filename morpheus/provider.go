@@ -48,6 +48,7 @@ func Provider() *schema.Provider {
 			"morpheus_ansible_integration":           resourceAnsibleIntegration(),
 			"morpheus_ansible_playbook_task":         resourceAnsiblePlaybookTask(),
 			"morpheus_ansible_tower_integration":     resourceAnsibleTowerIntegration(),
+			"morpheus_api_option_list":               resourceApiOptionList(),
 			"morpheus_arm_app_blueprint":             resourceArmAppBlueprint(),
 			"morpheus_arm_spec_template":             resourceArmSpecTemplate(),
 			"morpheus_backup_creation_policy":        resourceBackupCreationPolicy(),
