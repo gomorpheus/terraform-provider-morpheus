@@ -38,8 +38,8 @@ func resourceProvisioningWorkflow() *schema.Resource {
 			},
 			"platform": {
 				Type:         schema.TypeString,
-				Description:  "The operating system platforms the provisioning workflow is supported on (linux, macos, windows)",
-				ValidateFunc: validation.StringInSlice([]string{"linux", "macos", "windows"}, false),
+				Description:  "The operating system platforms the provisioning workflow is supported on (all, linux, macos, windows)",
+				ValidateFunc: validation.StringInSlice([]string{"all", "linux", "macos", "windows"}, false),
 				Optional:     true,
 				Computed:     true,
 			},
