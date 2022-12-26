@@ -1,5 +1,14 @@
 ## Unreleased
 
+NOTES:
+
+* The `morpheus-sdk` dependcy has been upgraded to version 0.2.7.
+* Fix the `morpheus_provisioning_workflow` resource to properly support the "all" platform setting options.
+
+FEATURES:
+
+* **New Resource:** `morpheus_api_option_list`
+
 ## 0.7.0 (December 16, 2022)
 
 NOTES:
