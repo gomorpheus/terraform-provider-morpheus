@@ -10,40 +10,47 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func resourceTypeAheadOptionType() *schema.Resource {
+func resourceRadioListOptionType() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Provides a Morpheus typeahead option type resource",
-		CreateContext: resourceTypeAheadOptionTypeCreate,
-		ReadContext:   resourceTypeAheadOptionTypeRead,
-		UpdateContext: resourceTypeAheadOptionTypeUpdate,
-		DeleteContext: resourceTypeAheadOptionTypeDelete,
+		Description:   "Provides a Morpheus radio list option type resource",
+		CreateContext: resourceRadioListOptionTypeCreate,
+		ReadContext:   resourceRadioListOptionTypeRead,
+		UpdateContext: resourceRadioListOptionTypeUpdate,
+		DeleteContext: resourceRadioListOptionTypeDelete,
 
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Type:        schema.TypeString,
-				Description: "The ID of the typeahead option type",
+				Description: "The ID of the radio list option type",
 				Computed:    true,
 			},
 			"name": {
 				Type:        schema.TypeString,
-				Description: "The name of the typeahead option type",
+				Description: "The name of the radio list option type",
 				Required:    true,
 			},
 			"description": {
 				Type:        schema.TypeString,
-				Description: "The description of the typeahead option type",
+				Description: "The description of the radio list option type",
 				Optional:    true,
 				Computed:    true,
 			},
+			"labels": {
+				Type:        schema.TypeSet,
+				Description: "The organization labels associated with the option type(Only supported on Morpheus 5.5.3 or higher)",
+				Optional:    true,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+			},
 			"field_name": {
 				Type:        schema.TypeString,
-				Description: "The field name of the typeahead option type",
+				Description: "The field name of the radio list option type",
 				Optional:    true,
 				Computed:    true,
 			},
 			"export_meta": {
 				Type:        schema.TypeBool,
-				Description: "Whether to export the typeahead option type as a tag",
+				Description: "Whether to export the radio list option type as a tag",
 				Optional:    true,
 				Default:     false,
 			},
@@ -59,21 +66,33 @@ func resourceTypeAheadOptionType() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 			},
+			"require_field": {
+				Type:        schema.TypeString,
+				Description: "The field or code used to trigger the required status of the field",
+				Optional:    true,
+				Computed:    true,
+			},
+			"show_on_edit": {
+				Type:        schema.TypeBool,
+				Description: "Whether the option type will display in the edit section of the provisioned resource",
+				Optional:    true,
+				Computed:    true,
+			},
+			"editable": {
+				Type:        schema.TypeBool,
+				Description: "Whether the value of the option type can be edited after the initial request",
+				Optional:    true,
+				Computed:    true,
+			},
 			"display_value_on_details": {
 				Type:        schema.TypeBool,
-				Description: "Display the selected value of the typeahead option type on the associated resource's details page",
+				Description: "Display the selected value of the radio list option type on the associated resource's details page",
 				Optional:    true,
 				Default:     false,
 			},
 			"field_label": {
 				Type:        schema.TypeString,
 				Description: "The label associated with the field in the UI",
-				Optional:    true,
-				Computed:    true,
-			},
-			"placeholder": {
-				Type:        schema.TypeString,
-				Description: "Text in the field used as a placeholder for example purposes",
 				Optional:    true,
 				Computed:    true,
 			},
@@ -89,17 +108,17 @@ func resourceTypeAheadOptionType() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 			},
-			"option_list_id": {
-				Type:        schema.TypeInt,
-				Description: "The ID of the associated option list",
-				Optional:    true,
-				Computed:    true,
-			},
 			"required": {
 				Type:        schema.TypeBool,
 				Description: "Whether the option type is required",
 				Optional:    true,
 				Default:     false,
+			},
+			"option_list_id": {
+				Type:        schema.TypeInt,
+				Description: "The ID of the associated option list",
+				Optional:    true,
+				Computed:    true,
 			},
 		},
 		Importer: &schema.ResourceImporter{
@@ -108,7 +127,7 @@ func resourceTypeAheadOptionType() *schema.Resource {
 	}
 }
 
-func resourceTypeAheadOptionTypeCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceRadioListOptionTypeCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*morpheus.Client)
 
 	// Warning or errors can be collected in a slice type
@@ -116,20 +135,31 @@ func resourceTypeAheadOptionTypeCreate(ctx context.Context, d *schema.ResourceDa
 
 	name := d.Get("name").(string)
 	description := d.Get("description").(string)
+
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"optionType": map[string]interface{}{
 				"name":                  name,
 				"description":           description,
+				"labels":                labelsPayload,
 				"fieldName":             d.Get("field_name").(string),
-				"type":                  "typeahead",
-				"defaultValue":          d.Get("default_value").(string),
-				"dependsOnCode":         d.Get("dependent_field").(string),
-				"displayValueOnDetails": d.Get("display_value_on_details"),
 				"exportMeta":            d.Get("export_meta").(bool),
+				"dependsOnCode":         d.Get("dependent_field").(string),
 				"visibleOnCode":         d.Get("visibility_field").(string),
+				"requireOnCode":         d.Get("require_field").(string),
+				"showOnEdit":            d.Get("show_on_edit").(bool),
+				"editable":              d.Get("editable").(bool),
+				"displayValueOnDetails": d.Get("display_value_on_details").(bool),
+				"type":                  "radio",
 				"fieldLabel":            d.Get("field_label").(string),
-				"placeHolder":           d.Get("placeholder").(string),
+				"defaultValue":          d.Get("default_value").(string),
 				"helpBlock":             d.Get("help_block").(string),
 				"required":              d.Get("required").(bool),
 				"optionList": map[string]interface{}{
@@ -150,11 +180,11 @@ func resourceTypeAheadOptionTypeCreate(ctx context.Context, d *schema.ResourceDa
 	// Successfully created resource, now set id
 	d.SetId(int64ToString(environment.ID))
 
-	resourceTypeAheadOptionTypeRead(ctx, d, meta)
+	resourceRadioListOptionTypeRead(ctx, d, meta)
 	return diags
 }
 
-func resourceTypeAheadOptionTypeRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceRadioListOptionTypeRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*morpheus.Client)
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
@@ -192,18 +222,19 @@ func resourceTypeAheadOptionTypeRead(ctx context.Context, d *schema.ResourceData
 		d.SetId(int64ToString(optionType.ID))
 		d.Set("name", optionType.Name)
 		d.Set("description", optionType.Description)
+		d.Set("labels", optionType.Labels)
 		d.Set("field_name", optionType.FieldName)
-		d.Set("type", optionType.Type)
-		d.Set("default_value", optionType.DefaultValue)
-		d.Set("dependent_field", optionType.DependsOnCode)
-		d.Set("required", optionType.Required)
 		d.Set("export_meta", optionType.ExportMeta)
-		d.Set("help_block", optionType.HelpBlock)
-		d.Set("placeholder", optionType.PlaceHolder)
+		d.Set("dependent_field", optionType.DependsOnCode)
+		d.Set("visibility_field", optionType.VisibleOnCode)
+		d.Set("require_field", optionType.RequireOnCode)
+		d.Set("show_on_edit", optionType.ShowOnEdit)
+		d.Set("editable", optionType.Editable)
+		d.Set("display_value_on_details", optionType.DisplayValueOnDetails)
 		d.Set("field_label", optionType.FieldLabel)
+		d.Set("default_value", optionType.DefaultValue)
 		d.Set("help_block", optionType.HelpBlock)
 		d.Set("required", optionType.Required)
-		d.Set("visibility_field", optionType.VisibleOnCode)
 		d.Set("option_list_id", optionType.OptionList.ID)
 	} else {
 		log.Println(optionType)
@@ -213,26 +244,34 @@ func resourceTypeAheadOptionTypeRead(ctx context.Context, d *schema.ResourceData
 	return diags
 }
 
-func resourceTypeAheadOptionTypeUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceRadioListOptionTypeUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*morpheus.Client)
 	id := d.Id()
 	name := d.Get("name").(string)
 	description := d.Get("description").(string)
-
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"optionType": map[string]interface{}{
 				"name":                  name,
 				"description":           description,
+				"labels":                labelsPayload,
 				"fieldName":             d.Get("field_name").(string),
-				"type":                  "typeahead",
-				"defaultValue":          d.Get("default_value").(string),
-				"dependsOnCode":         d.Get("dependent_field").(string),
-				"displayValueOnDetails": d.Get("display_value_on_details"),
 				"exportMeta":            d.Get("export_meta").(bool),
+				"dependsOnCode":         d.Get("dependent_field").(string),
 				"visibleOnCode":         d.Get("visibility_field").(string),
+				"requireOnCode":         d.Get("require_field").(string),
+				"showOnEdit":            d.Get("show_on_edit").(bool),
+				"editable":              d.Get("editable").(bool),
+				"displayValueOnDetails": d.Get("display_value_on_details").(bool),
+				"type":                  "radio",
 				"fieldLabel":            d.Get("field_label").(string),
-				"placeHolder":           d.Get("placeholder").(string),
+				"defaultValue":          d.Get("default_value").(string),
 				"helpBlock":             d.Get("help_block").(string),
 				"required":              d.Get("required").(bool),
 				"optionList": map[string]interface{}{
@@ -253,10 +292,10 @@ func resourceTypeAheadOptionTypeUpdate(ctx context.Context, d *schema.ResourceDa
 	// Successfully updated resource, now set id
 	// err, it should not have changed though..
 	d.SetId(int64ToString(account.ID))
-	return resourceTypeAheadOptionTypeRead(ctx, d, meta)
+	return resourceRadioListOptionTypeRead(ctx, d, meta)
 }
 
-func resourceTypeAheadOptionTypeDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceRadioListOptionTypeDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*morpheus.Client)
 
 	// Warning or errors can be collected in a slice type

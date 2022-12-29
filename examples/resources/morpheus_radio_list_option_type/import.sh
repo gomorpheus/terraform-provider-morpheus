@@ -1,0 +1,1 @@
+terraform import morpheus_radio_list_option_type.tf_example_radio_list_option_type 1

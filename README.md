@@ -90,6 +90,7 @@ The following list of resources are supported by the Morpheus Terraform provider
 | [morpheus_provisiong_workflow](docs/resources/provisioning_workflow.md) | Morpheus provisioning automation workflow resource |
 | [morpheus_puppet_integration](docs/resources/puppet_integration.md) | Morpheus puppet integration resource |
 | [morpheus_python_script_task](docs/resources/python_script_task.md) | Morpheus python script automation task resource |
+| [morpheus_radio_list_option_type](docs/resources/radio_list_option_type.md) | Morpheus radio list option type resource |
 | [morpheus_rest_option_list](docs/resources/rest_option_list.md) | Morpheus REST API option list resource |
 | [morpheus_restart_task](docs/resources/restart_task.md) | Morpheus restart task resource |
 | [morpheus_router_quota_policy](docs/resources/router_quota_policy.md) | Morpheus router quota policy resource for configuring router quotas based upon the group, cloud, role, user or globally |
