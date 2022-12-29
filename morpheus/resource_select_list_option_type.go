@@ -187,8 +187,7 @@ func resourceSelectListOptionTypeRead(ctx context.Context, d *schema.ResourceDat
 		d.Set("default_value", optionType.DefaultValue)
 		d.Set("help_block", optionType.HelpBlock)
 		d.Set("required", optionType.Required)
-		optionId := optionType.OptionListId
-		d.Set("option_list_id", optionId["id"])
+		d.Set("option_list_id", optionType.OptionList.ID)
 	} else {
 		log.Println(optionType)
 		return diag.Errorf("read operation: option type not found in response data") // should not happen

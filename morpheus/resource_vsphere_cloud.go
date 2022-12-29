@@ -4,11 +4,9 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
-	"encoding/json"
 	"log"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/gomorpheus/morpheus-go-sdk"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -220,9 +218,9 @@ func resourceVsphereCloudCreate(ctx context.Context, d *schema.ResourceData, met
 	name := d.Get("name").(string)
 	code := d.Get("code").(string)
 	location := d.Get("location").(string)
+	visibility := d.Get("visibility").(string)
 	enabled := d.Get("enabled").(bool)
 	automatically_power_on_vms := d.Get("automatically_power_on_vms").(bool)
-	visibility := d.Get("visibility").(string)
 
 	config := make(map[string]interface{})
 	config["certificateProvider"] = "internal"
@@ -365,10 +363,6 @@ func resourceVsphereCloudRead(ctx context.Context, d *schema.ResourceData, meta 
 	log.Printf("API RESPONSE: %s", resp)
 
 	// store resource data
-	var vsphereCloud VsphereCloud
-	json.Unmarshal(resp.Body, &vsphereCloud)
-
-	// store resource data
 	result := resp.Result.(*morpheus.GetCloudResult)
 	cloud := result.Cloud
 	if cloud == nil {
@@ -382,10 +376,10 @@ func resourceVsphereCloudRead(ctx context.Context, d *schema.ResourceData, meta 
 		d.Set("location", cloud.Location)
 		d.Set("visibility", cloud.Visibility)
 		d.Set("enabled", cloud.Enabled)
-		d.Set("tenant_id", strconv.Itoa(vsphereCloud.Zone.Accountid))
+		d.Set("tenant_id", strconv.Itoa(int(cloud.AccountID)))
 		d.Set("api_url", cloud.Config.APIUrl)
 		d.Set("username", cloud.Config.Username)
-		d.Set("password", cloud.Config.Passwordhash)
+		d.Set("password", cloud.Config.PasswordHash)
 		d.Set("api_version", cloud.Config.APIVersion)
 		d.Set("datacenter", cloud.Config.Datacenter)
 		d.Set("cluster", cloud.Config.Cluster)
@@ -397,7 +391,7 @@ func resourceVsphereCloudRead(ctx context.Context, d *schema.ResourceData, meta 
 			d.Set("cluster", cloud.Config.Cluster)
 		}
 
-		if vsphereCloud.Zone.Config.HideHostSelection == "on" {
+		if cloud.Config.HideHostSelection == "on" {
 			d.Set("hide_host_selection", true)
 		} else {
 			d.Set("hide_host_selection", false)
@@ -415,31 +409,31 @@ func resourceVsphereCloudRead(ctx context.Context, d *schema.ResourceData, meta 
 			d.Set("enable_hypervisor_console", false)
 		}
 
-		d.Set("keyboard_layout", vsphereCloud.Zone.Consolekeymap)
+		d.Set("keyboard_layout", cloud.ConsoleKeymap)
 
-		if vsphereCloud.Zone.Config.EnableDiskTypeSelection == "on" {
+		if cloud.Config.EnableDiskTypeSelection == "on" {
 			d.Set("enable_disk_type_selection", true)
 		} else {
 			d.Set("enable_disk_type_selection", false)
 		}
 
-		if vsphereCloud.Zone.Config.EnableStorageTypeSelection == "on" {
+		if cloud.Config.EnableStorageTypeSelection == "on" {
 			d.Set("enable_storage_type_selection", true)
 		} else {
 			d.Set("enable_storage_type_selection", false)
 		}
-		if vsphereCloud.Zone.Config.EnableNetworkTypeSelection == "on" {
+		if cloud.Config.EnableNetworkTypeSelection == "on" {
 			d.Set("enable_network_interface_type_selection", true)
 		} else {
 			d.Set("enable_network_interface_type_selection", false)
 		}
-		d.Set("storage_type", vsphereCloud.Zone.Config.Diskstoragetype)
-		d.Set("appliance_url", vsphereCloud.Zone.Config.Applianceurl)
-		d.Set("time_zone", vsphereCloud.Zone.Timezone)
-		d.Set("datacenter_id", vsphereCloud.Zone.Config.Datacentername)
-		d.Set("guidance", vsphereCloud.Zone.Guidancemode)
-		d.Set("costing", vsphereCloud.Zone.Costingmode)
-		d.Set("agent_install_mode", vsphereCloud.Zone.Agentmode)
+		d.Set("storage_type", cloud.Config.DiskStorageType)
+		d.Set("appliance_url", cloud.Config.ApplianceUrl)
+		d.Set("time_zone", cloud.TimeZone)
+		d.Set("datacenter_id", cloud.Config.DatacenterName)
+		d.Set("guidance", cloud.GuidanceMode)
+		d.Set("costing", cloud.CostingMode)
+		d.Set("agent_install_mode", cloud.AgentMode)
 		return diags
 	}
 }
@@ -578,108 +572,4 @@ func resourceVsphereCloudDelete(ctx context.Context, d *schema.ResourceData, met
 	log.Printf("API RESPONSE: %s", resp)
 	d.SetId("")
 	return diags
-}
-
-type VsphereCloud struct {
-	Zone struct {
-		ID         int         `json:"id"`
-		UUID       string      `json:"uuid"`
-		Externalid interface{} `json:"externalId"`
-		Name       string      `json:"name"`
-		Code       string      `json:"code"`
-		Location   string      `json:"location"`
-		Owner      struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"owner"`
-		Accountid int `json:"accountId"`
-		Account   struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"account"`
-		Visibility        string      `json:"visibility"`
-		Enabled           bool        `json:"enabled"`
-		Status            string      `json:"status"`
-		Statusmessage     interface{} `json:"statusMessage"`
-		Statusdate        interface{} `json:"statusDate"`
-		Coststatus        string      `json:"costStatus"`
-		Coststatusmessage interface{} `json:"costStatusMessage"`
-		Coststatusdate    interface{} `json:"costStatusDate"`
-		Zonetype          struct {
-			ID   int    `json:"id"`
-			Code string `json:"code"`
-			Name string `json:"name"`
-		} `json:"zoneType"`
-		Zonetypeid            int         `json:"zoneTypeId"`
-		Guidancemode          string      `json:"guidanceMode"`
-		Storagemode           string      `json:"storageMode"`
-		Agentmode             string      `json:"agentMode"`
-		Userdatalinux         interface{} `json:"userDataLinux"`
-		Userdatawindows       interface{} `json:"userDataWindows"`
-		Consolekeymap         string      `json:"consoleKeymap"`
-		Containermode         string      `json:"containerMode"`
-		Costingmode           string      `json:"costingMode"`
-		Serviceversion        interface{} `json:"serviceVersion"`
-		Inventorylevel        string      `json:"inventoryLevel"`
-		Timezone              string      `json:"timezone"`
-		Apiproxy              interface{} `json:"apiProxy"`
-		Provisioningproxy     interface{} `json:"provisioningProxy"`
-		Networkdomain         interface{} `json:"networkDomain"`
-		Domainname            string      `json:"domainName"`
-		Regioncode            interface{} `json:"regionCode"`
-		Autorecoverpowerstate bool        `json:"autoRecoverPowerState"`
-		Scalepriority         int         `json:"scalePriority"`
-		Config                struct {
-			Cluster                    string      `json:"cluster"`
-			Certificateprovider        string      `json:"certificateProvider"`
-			Datacenter                 string      `json:"datacenter"`
-			Enablevnc                  string      `json:"enableVnc"`
-			EnableDiskTypeSelection    string      `json:"enableDiskTypeSelection"`
-			EnableStorageTypeSelection string      `json:"enableStorageTypeSelection"`
-			EnableNetworkTypeSelection string      `json:"enableNetworkTypeSelection"`
-			Password                   string      `json:"password"`
-			Apiversion                 string      `json:"apiVersion"`
-			Configcmdbdiscovery        bool        `json:"configCmdbDiscovery"`
-			Apiurl                     string      `json:"apiUrl"`
-			Rpcmode                    string      `json:"rpcMode"`
-			HideHostSelection          string      `json:"hideHostSelection"`
-			Importexisting             interface{} `json:"importExisting"`
-			Resourcepool               string      `json:"resourcePool"`
-			Username                   string      `json:"username"`
-			Resourcepoolid             string      `json:"resourcePoolId"`
-			Diskstoragetype            string      `json:"diskStorageType"`
-			Applianceurl               string      `json:"applianceUrl"`
-			Datacentername             string      `json:"datacenterName"`
-			NetworkserverID            string      `json:"networkServer.id"`
-			Networkserver              struct {
-				ID string `json:"id"`
-			} `json:"networkServer"`
-			Securityserver     string `json:"securityServer"`
-			Backupmode         string `json:"backupMode"`
-			Replicationmode    string `json:"replicationMode"`
-			Dnsintegrationid   string `json:"dnsIntegrationId"`
-			Serviceregistryid  string `json:"serviceRegistryId"`
-			Configmanagementid string `json:"configManagementId"`
-			Passwordhash       string `json:"passwordHash"`
-		} `json:"config"`
-		Credential struct {
-			Type string `json:"type"`
-		} `json:"credential"`
-		Datecreated    time.Time     `json:"dateCreated"`
-		Lastupdated    time.Time     `json:"lastUpdated"`
-		Groups         []interface{} `json:"groups"`
-		Securityserver interface{}   `json:"securityServer"`
-		Stats          struct {
-			Servercounts struct {
-				All           int `json:"all"`
-				Host          int `json:"host"`
-				Hypervisor    int `json:"hypervisor"`
-				Containerhost int `json:"containerHost"`
-				VM            int `json:"vm"`
-				Baremetal     int `json:"baremetal"`
-				Unmanaged     int `json:"unmanaged"`
-			} `json:"serverCounts"`
-		} `json:"stats"`
-		Servercount int `json:"serverCount"`
-	} `json:"cloud"`
 }

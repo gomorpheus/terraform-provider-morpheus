@@ -105,6 +105,7 @@ func Provider() *schema.Provider {
 			"morpheus_provisioning_workflow":      resourceProvisioningWorkflow(),
 			"morpheus_puppet_integration":         resourcePuppetIntegration(),
 			"morpheus_python_script_task":         resourcePythonScriptTask(),
+			"morpheus_radio_list_option_type":     resourceRadioListOptionType(),
 			"morpheus_rest_option_list":           resourceRestOptionList(),
 			"morpheus_restart_task":               resourceRestartTask(),
 			"morpheus_router_quota_policy":        resourceRouterQuotaPolicy(),
