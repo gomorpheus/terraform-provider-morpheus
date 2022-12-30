@@ -106,6 +106,7 @@ The following list of resources are supported by the Morpheus Terraform provider
 | [morpheus_terraform_app_blueprint](docs/resources/terraform_app_blueprint.md) | Morpheus Terraform app blueprint resource |
 | [morpheus_terraform_spec_template](docs/resources/terraform_spec_template.md) | Morpheus Terraform spec template resource |
 | [morpheus_text_option_type](docs/resources/text_option_type.md) | Morpheus text option type resource |
+| [morpheus_textarea_option_type](docs/resources/textarea_option_type.md) | Morpheus text area option type resource |
 | [morpheus_typeahead_option_type](docs/resources/typeahead_option_type.md) | Morpheus typeahead option type resource |
 | [morpheus_user_creation_policy](docs/resources/user_creation_policy.md) | Morpheus user creation policy resource for configuring user creation based upon the group, cloud, role, user or globally |
 | [morpheus_user_group_creation_policy](docs/resources/user_group_creation_policy.md) | Morpheus user group creation policy resource for configuring user group creation based upon the group, cloud, role, user or globally |

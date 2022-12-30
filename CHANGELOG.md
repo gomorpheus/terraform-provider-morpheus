@@ -9,6 +9,7 @@ FEATURES:
 
 * **New Resource:** `morpheus_api_option_list`
 * **New Resource:** `morpheus_radio_list_option_type`
+* **New Resource:** `morpheus_textarea_option_type`
 
 ## 0.7.0 (December 16, 2022)
 
