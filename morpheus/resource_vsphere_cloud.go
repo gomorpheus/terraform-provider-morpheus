@@ -354,7 +354,6 @@ func resourceVsphereCloudRead(ctx context.Context, d *schema.ResourceData, meta 
 	if err != nil {
 		if resp != nil && resp.StatusCode == 404 {
 			log.Printf("API 404: %s - %s", resp, err)
-			//return diag.FromErr(err)
 		} else {
 			log.Printf("API FAILURE: %s - %s", resp, err)
 			return diag.FromErr(err)
@@ -368,7 +367,6 @@ func resourceVsphereCloudRead(ctx context.Context, d *schema.ResourceData, meta 
 	if cloud == nil {
 		d.SetId("")
 		return diags
-		//return diag.Errorf("Cloud not found in response data.") // should not happen
 	} else {
 		d.SetId(int64ToString(cloud.ID))
 		d.Set("name", cloud.Name)

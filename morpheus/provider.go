@@ -121,6 +121,7 @@ func Provider() *schema.Provider {
 			"morpheus_terraform_app_blueprint":    resourceTerraformAppBlueprint(),
 			"morpheus_terraform_spec_template":    resourceTerraformSpecTemplate(),
 			"morpheus_text_option_type":           resourceTextOptionType(),
+			"morpheus_textarea_option_type":       resourceTextAreaOptionType(),
 			"morpheus_typeahead_option_type":      resourceTypeAheadOptionType(),
 			"morpheus_user_creation_policy":       resourceUserCreationPolicy(),
 			"morpheus_user_group_creation_policy": resourceUserGroupCreationPolicy(),
