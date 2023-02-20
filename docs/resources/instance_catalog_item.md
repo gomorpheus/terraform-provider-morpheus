@@ -15,8 +15,10 @@ Provides a Morpheus instance catalog item resource
 resource "morpheus_instance_catalog_item" "tf_example_instance_catalog_item" {
   name        = "tfexample_instance_catalog"
   description = "terraform example instance catalog item"
+  image_path  = "tfexample.png"
+  image_name  = "tfexample.png"
   enabled     = true
-  feature     = true
+  featured    = true
   content     = <<TFEOF
   {"name":"test"}
   TFEOF
@@ -44,6 +46,7 @@ resource "morpheus_instance_catalog_item" "tf_example_instance_catalog_item" {
 - `featured` (Boolean) Whether the instance catalog item is featured
 - `image_name` (String) The file name of the instance catalog item logo image
 - `image_path` (String) The file path of the instance catalog item logo image including the file name
+- `labels` (Set of String) The organization labels associated with the catalog item (Only supported on Morpheus 5.5.3 or higher)
 - `option_type_ids` (List of Number) The list of option type ids associated with the instance catalog item
 
 ### Read-Only
