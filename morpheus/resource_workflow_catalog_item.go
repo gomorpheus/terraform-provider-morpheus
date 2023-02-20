@@ -3,6 +3,8 @@ package morpheus
 import (
 	"context"
 	"encoding/json"
+	"os"
+	"strings"
 
 	"log"
 
@@ -31,10 +33,18 @@ func resourceWorkflowCatalogItem() *schema.Resource {
 				Description: "The name of the workflow catalog item",
 				Required:    true,
 			},
+			"labels": {
+				Type:        schema.TypeSet,
+				Description: "The organization labels associated with the catalog item (Only supported on Morpheus 5.5.3 or higher)",
+				Optional:    true,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+			},
 			"description": {
 				Type:        schema.TypeString,
 				Description: "The description of the workflow catalog item",
 				Optional:    true,
+				Computed:    true,
 			},
 			"enabled": {
 				Type:        schema.TypeBool,
@@ -46,6 +56,7 @@ func resourceWorkflowCatalogItem() *schema.Resource {
 				Type:        schema.TypeBool,
 				Description: "Whether the workflow catalog item is featured",
 				Optional:    true,
+				Computed:    true,
 			},
 			"workflow_id": {
 				Type:        schema.TypeInt,
@@ -57,17 +68,47 @@ func resourceWorkflowCatalogItem() *schema.Resource {
 				Description:  "The Morpheus context type of the operational workflow",
 				Optional:     true,
 				ValidateFunc: validation.StringInSlice([]string{"instance", "server", "appliance"}, false),
+				Computed:     true,
 			},
 			"content": {
 				Type:        schema.TypeString,
 				Description: "The markdown content associated with the workflow catalog item",
 				Optional:    true,
+				Computed:    true,
 			},
 			"option_type_ids": {
 				Type:        schema.TypeList,
 				Description: "The list of option type ids associated with the workflow catalog item",
 				Optional:    true,
 				Elem:        &schema.Schema{Type: schema.TypeInt},
+				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+					return new == old
+				},
+				Computed: true,
+			},
+			"logo_image_name": {
+				Type:        schema.TypeString,
+				Description: "The file name of the app blueprint catalog item logo image",
+				Optional:    true,
+				Computed:    true,
+			},
+			"logo_image_path": {
+				Type:        schema.TypeString,
+				Description: "The file path of the app blueprint catalog item logo image including the file name",
+				Optional:    true,
+				Computed:    true,
+			},
+			"dark_logo_image_name": {
+				Type:        schema.TypeString,
+				Description: "The file name of the app blueprint catalog item dark mode logo image",
+				Optional:    true,
+				Computed:    true,
+			},
+			"dark_logo_image_path": {
+				Type:        schema.TypeString,
+				Description: "The file path of the app blueprint catalog item dark mode logo image including the file name",
+				Optional:    true,
+				Computed:    true,
 			},
 		},
 		Importer: &schema.ResourceImporter{
@@ -89,6 +130,7 @@ func resourceWorkflowCatalogItemCreate(ctx context.Context, d *schema.ResourceDa
 	catalogItem["enabled"] = d.Get("enabled").(bool)
 	catalogItem["featured"] = d.Get("featured").(bool)
 	catalogItem["type"] = "workflow"
+	catalogItem["iconPath"] = "custom"
 	catalogItem["context"] = d.Get("context_type").(string)
 	catalogItem["optionTypes"] = d.Get("option_type_ids")
 	catalogItem["content"] = d.Get("content").(string)
@@ -96,6 +138,14 @@ func resourceWorkflowCatalogItemCreate(ctx context.Context, d *schema.ResourceDa
 	catalogItem["workflow"] = map[string]interface{}{
 		"id": d.Get("workflow_id").(int),
 	}
+
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+	catalogItem["labels"] = labelsPayload
 
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
@@ -111,6 +161,42 @@ func resourceWorkflowCatalogItemCreate(ctx context.Context, d *schema.ResourceDa
 
 	result := resp.Result.(*morpheus.CreateCatalogItemResult)
 	catalogItemResult := result.CatalogItem
+
+	var filePayloads []*morpheus.FilePayload
+
+	if d.Get("logo_image_path") != "" && d.Get("logo_image_name") != "" {
+		data, err := os.ReadFile(d.Get("logo_image_path").(string))
+		if err != nil {
+			return diag.FromErr(err)
+		}
+
+		filePayload := &morpheus.FilePayload{
+			ParameterName: "logo",
+			FileName:      d.Get("logo_image_name").(string),
+			FileContent:   data,
+		}
+		filePayloads = append(filePayloads, filePayload)
+	}
+	if d.Get("dark_logo_image_path") != "" && d.Get("dark_logo_image_name") != "" {
+		darkLogoData, err := os.ReadFile(d.Get("dark_logo_image_path").(string))
+		if err != nil {
+			return diag.FromErr(err)
+		}
+
+		darkLogoPayload := &morpheus.FilePayload{
+			ParameterName: "darkLogo",
+			FileName:      d.Get("dark_logo_image_name").(string),
+			FileContent:   darkLogoData,
+		}
+		filePayloads = append(filePayloads, darkLogoPayload)
+	}
+
+	response, err := client.UpdateCatalogItemLogo(catalogItemResult.ID, filePayloads, &morpheus.Request{})
+	if err != nil {
+		log.Printf("API FAILURE: %s - %s", response, err)
+	}
+	log.Printf("API RESPONSE: %s", response)
+
 	// Successfully created resource, now set id
 	d.SetId(int64ToString(catalogItemResult.ID))
 
@@ -153,10 +239,21 @@ func resourceWorkflowCatalogItemRead(ctx context.Context, d *schema.ResourceData
 
 	d.SetId(intToString(int(catalogItem.ID)))
 	d.Set("name", catalogItem.Name)
+	d.Set("labels", catalogItem.Labels)
 	d.Set("description", catalogItem.Description)
 	d.Set("enabled", catalogItem.Enabled)
 	d.Set("featured", catalogItem.Featured)
-	d.Set("option_type_ids", catalogItem.OptionTypes)
+	// option types
+	var optionTypes []int64
+	if catalogItem.OptionTypes != nil {
+		// iterate over the array of tasks
+		for i := 0; i < len(catalogItem.OptionTypes); i++ {
+			option := catalogItem.OptionTypes[i].(map[string]interface{})
+			optionID := int64(option["id"].(float64))
+			optionTypes = append(optionTypes, optionID)
+		}
+	}
+	d.Set("option_type_ids", optionTypes)
 	d.Set("content", catalogItem.Content)
 	d.Set("context_type", catalogItem.Context)
 
@@ -170,7 +267,12 @@ func resourceWorkflowCatalogItemRead(ctx context.Context, d *schema.ResourceData
 	workflowData := catalogItemData["workflow"].(map[string]interface{})
 	workflowId := int(workflowData["id"].(float64))
 	d.Set("workflow_id", workflowId)
-
+	imagePath := strings.Split(catalogItem.ImagePath, "/")
+	opt := strings.Replace(imagePath[len(imagePath)-1], "_original", "", 1)
+	d.Set("logo_image_path", opt)
+	darkImagePath := strings.Split(catalogItem.DarkImagePath, "/")
+	darkOpt := strings.Replace(darkImagePath[len(darkImagePath)-1], "_original", "", 1)
+	d.Set("dark_logo_image_path", darkOpt)
 	return diags
 }
 
@@ -181,6 +283,13 @@ func resourceWorkflowCatalogItemUpdate(ctx context.Context, d *schema.ResourceDa
 	catalogItem := make(map[string]interface{})
 
 	catalogItem["name"] = d.Get("name").(string)
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+	catalogItem["labels"] = labelsPayload
 	catalogItem["description"] = d.Get("description").(string)
 	catalogItem["enabled"] = d.Get("enabled").(bool)
 	catalogItem["featured"] = d.Get("featured").(bool)
@@ -198,7 +307,7 @@ func resourceWorkflowCatalogItemUpdate(ctx context.Context, d *schema.ResourceDa
 			"catalogItemType": catalogItem,
 		},
 	}
-	log.Printf("API REQUEST: %s", req)
+
 	resp, err := client.UpdateCatalogItem(toInt64(id), req)
 	if err != nil {
 		log.Printf("API FAILURE: %s - %s", resp, err)
@@ -207,6 +316,41 @@ func resourceWorkflowCatalogItemUpdate(ctx context.Context, d *schema.ResourceDa
 	log.Printf("API RESPONSE: %s", resp)
 	result := resp.Result.(*morpheus.UpdateCatalogItemResult)
 	catalogItemResult := result.CatalogItem
+
+	var filePayloads []*morpheus.FilePayload
+
+	if d.Get("logo_image_path") != "" && d.Get("logo_image_name") != "" {
+		data, err := os.ReadFile(d.Get("logo_image_path").(string))
+		if err != nil {
+			return diag.FromErr(err)
+		}
+
+		filePayload := &morpheus.FilePayload{
+			ParameterName: "logo",
+			FileName:      d.Get("logo_image_name").(string),
+			FileContent:   data,
+		}
+		filePayloads = append(filePayloads, filePayload)
+	}
+	if d.Get("dark_logo_image_path") != "" && d.Get("dark_logo_image_name") != "" {
+		darkLogoData, err := os.ReadFile(d.Get("dark_logo_image_path").(string))
+		if err != nil {
+			return diag.FromErr(err)
+		}
+
+		darkLogoPayload := &morpheus.FilePayload{
+			ParameterName: "darkLogo",
+			FileName:      d.Get("dark_logo_image_name").(string),
+			FileContent:   darkLogoData,
+		}
+		filePayloads = append(filePayloads, darkLogoPayload)
+	}
+
+	response, err := client.UpdateCatalogItemLogo(catalogItemResult.ID, filePayloads, &morpheus.Request{})
+	if err != nil {
+		log.Printf("API FAILURE: %s - %s", response, err)
+	}
+	log.Printf("API RESPONSE: %s", response)
 
 	// Successfully updated resource, now set id
 	// err, it should not have changed though..

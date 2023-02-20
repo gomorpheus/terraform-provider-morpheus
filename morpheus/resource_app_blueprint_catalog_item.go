@@ -2,7 +2,6 @@ package morpheus
 
 import (
 	"context"
-	"encoding/json"
 	"os"
 	"strings"
 
@@ -11,27 +10,50 @@ import (
 	"github.com/gomorpheus/morpheus-go-sdk"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
-func resourceInstanceCatalogItem() *schema.Resource {
+func resourceAppBlueprintCatalogItem() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Provides a Morpheus instance catalog item resource",
-		CreateContext: resourceInstanceCatalogItemCreate,
-		ReadContext:   resourceInstanceCatalogItemRead,
-		UpdateContext: resourceInstanceCatalogItemUpdate,
-		DeleteContext: resourceInstanceCatalogItemDelete,
+		Description:   "Provides a Morpheus AppBlueprint catalog item resource",
+		CreateContext: resourceAppBlueprintCatalogItemCreate,
+		ReadContext:   resourceAppBlueprintCatalogItemRead,
+		UpdateContext: resourceAppBlueprintCatalogItemUpdate,
+		DeleteContext: resourceAppBlueprintCatalogItemDelete,
 
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Type:        schema.TypeString,
-				Description: "The ID of the instance catalog item",
+				Description: "The ID of the app blueprint catalog item",
 				Computed:    true,
 			},
 			"name": {
 				Type:        schema.TypeString,
-				Description: "The name of the instance catalog item",
+				Description: "The name of the app blueprint catalog item",
 				Required:    true,
+			},
+			"description": {
+				Type:        schema.TypeString,
+				Description: "The description of the app blueprint catalog item",
+				Optional:    true,
+				Computed:    true,
+			},
+			"enabled": {
+				Type:        schema.TypeBool,
+				Description: "Whether the app blueprint catalog item is enabled",
+				Optional:    true,
+				Default:     true,
+			},
+			"featured": {
+				Type:        schema.TypeBool,
+				Description: "Whether the app blueprint catalog item is featured",
+				Optional:    true,
+				Computed:    true,
+			},
+			"content": {
+				Type:        schema.TypeString,
+				Description: "The markdown content associated with the app blueprint catalog item",
+				Optional:    true,
+				Computed:    true,
 			},
 			"labels": {
 				Type:        schema.TypeSet,
@@ -40,38 +62,19 @@ func resourceInstanceCatalogItem() *schema.Resource {
 				Computed:    true,
 				Elem:        &schema.Schema{Type: schema.TypeString},
 			},
-			"description": {
+			"blueprint_id": {
+				Type:        schema.TypeInt,
+				Description: "The id of the blueprint to associate with the app blueprint catalog item",
+				Required:    true,
+			},
+			"app_spec": {
 				Type:        schema.TypeString,
-				Description: "The description of the instance catalog item",
-				Optional:    true,
-				Computed:    true,
-			},
-			"enabled": {
-				Type:        schema.TypeBool,
-				Description: "Whether the instance catalog item is enabled",
-				Optional:    true,
-				Default:     true,
-			},
-			"featured": {
-				Type:        schema.TypeBool,
-				Description: "Whether the instance catalog item is featured",
-				Optional:    true,
-				Computed:    true,
-			},
-			"content": {
-				Type:        schema.TypeString,
-				Description: "The markdown content associated with the instance catalog item",
-				Optional:    true,
-				Computed:    true,
-			},
-			"config": {
-				Type:        schema.TypeString,
-				Description: "The instance config associated with the instance catalog item",
+				Description: "The app spec associated with the app blueprint catalog item",
 				Required:    true,
 			},
 			"option_type_ids": {
 				Type:        schema.TypeList,
-				Description: "The list of option type ids associated with the instance catalog item",
+				Description: "The list of option type ids associated with the app blueprint catalog item",
 				Optional:    true,
 				Elem:        &schema.Schema{Type: schema.TypeInt},
 				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
@@ -79,24 +82,38 @@ func resourceInstanceCatalogItem() *schema.Resource {
 				},
 				Computed: true,
 			},
-			"image_name": {
+			"logo_image_name": {
 				Type:        schema.TypeString,
-				Description: "The file name of the instance catalog item logo image",
+				Description: "The file name of the app blueprint catalog item logo image",
 				Optional:    true,
 				Computed:    true,
 			},
-			"image_path": {
+			"logo_image_path": {
 				Type:        schema.TypeString,
-				Description: "The file path of the instance catalog item logo image including the file name",
+				Description: "The file path of the app blueprint catalog item logo image including the file name",
 				Optional:    true,
 				Computed:    true,
 			},
+			"dark_logo_image_name": {
+				Type:        schema.TypeString,
+				Description: "The file name of the app blueprint catalog item dark mode logo image",
+				Optional:    true,
+				Computed:    true,
+			},
+			"dark_logo_image_path": {
+				Type:        schema.TypeString,
+				Description: "The file path of the app blueprint catalog item dark mode logo image including the file name",
+				Optional:    true,
+				Computed:    true,
+			},
+			/* AWAITING API SUPPORT
 			"visibility": {
-				Type:         schema.TypeString,
-				Description:  "The visibility of the instance catalog item (public or private)",
-				Required:     true,
-				ValidateFunc: validation.StringInSlice([]string{"public", "private"}, false),
-			},
+							Type:         schema.TypeString,
+							Description:  "The visibility of the app blueprint catalog item (public or private)",
+							Required:     true,
+							ValidateFunc: validation.StringInSlice([]string{"public", "private"}, false),
+						},
+			*/
 		},
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
@@ -104,7 +121,7 @@ func resourceInstanceCatalogItem() *schema.Resource {
 	}
 }
 
-func resourceInstanceCatalogItemCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceAppBlueprintCatalogItemCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*morpheus.Client)
 
 	// Warning or errors can be collected in a slice type
@@ -116,17 +133,17 @@ func resourceInstanceCatalogItemCreate(ctx context.Context, d *schema.ResourceDa
 	catalogItem["description"] = d.Get("description").(string)
 	catalogItem["enabled"] = d.Get("enabled").(bool)
 	catalogItem["featured"] = d.Get("featured").(bool)
-	catalogItem["type"] = "instance"
+	catalogItem["type"] = "blueprint"
+	catalogItem["iconPath"] = "custom"
 	catalogItem["optionTypes"] = d.Get("option_type_ids")
 	catalogItem["content"] = d.Get("content").(string)
-	catalogItem["visibility"] = d.Get("visibility").(string)
+	//catalogItem["visibility"] = d.Get("visibility").(string)
 
-	// Declared an empty interface
-	var outjson map[string]interface{}
+	blueprint := make(map[string]interface{})
+	blueprint["id"] = d.Get("blueprint_id").(int)
+	catalogItem["blueprint"] = blueprint
 
-	// Unmarshal or Decode the JSON to the interface.
-	json.Unmarshal([]byte(d.Get("config").(string)), &outjson)
-	catalogItem["config"] = outjson
+	catalogItem["appSpec"] = d.Get("app_spec").(string)
 
 	labelsPayload := make([]string, 0)
 	if attr, ok := d.GetOk("labels"); ok {
@@ -141,6 +158,7 @@ func resourceInstanceCatalogItemCreate(ctx context.Context, d *schema.ResourceDa
 			"catalogItemType": catalogItem,
 		},
 	}
+
 	resp, err := client.CreateCatalogItem(req)
 	if err != nil {
 		log.Printf("API FAILURE: %s - %s", resp, err)
@@ -150,36 +168,49 @@ func resourceInstanceCatalogItemCreate(ctx context.Context, d *schema.ResourceDa
 
 	result := resp.Result.(*morpheus.CreateCatalogItemResult)
 	catalogItemResult := result.CatalogItem
+	var filePayloads []*morpheus.FilePayload
 
-	if d.Get("image_path") != "" && d.Get("image_name") != "" {
-		data, err := os.ReadFile(d.Get("image_path").(string))
+	if d.Get("logo_image_path") != "" && d.Get("logo_image_name") != "" {
+		data, err := os.ReadFile(d.Get("logo_image_path").(string))
 		if err != nil {
 			return diag.FromErr(err)
 		}
 
-		var filePayloads []*morpheus.FilePayload
 		filePayload := &morpheus.FilePayload{
 			ParameterName: "logo",
-			FileName:      d.Get("image_name").(string),
+			FileName:      d.Get("logo_image_name").(string),
 			FileContent:   data,
 		}
 		filePayloads = append(filePayloads, filePayload)
-		response, err := client.UpdateCatalogItemLogo(catalogItemResult.ID, filePayloads, &morpheus.Request{})
+	}
+	if d.Get("dark_logo_image_path") != "" && d.Get("dark_logo_image_name") != "" {
+		darkLogoData, err := os.ReadFile(d.Get("dark_logo_image_path").(string))
 		if err != nil {
-			log.Printf("API FAILURE: %s - %s", response, err)
 			return diag.FromErr(err)
 		}
-		log.Printf("API RESPONSE: %s", response)
+
+		darkLogoPayload := &morpheus.FilePayload{
+			ParameterName: "darkLogo",
+			FileName:      d.Get("dark_logo_image_name").(string),
+			FileContent:   darkLogoData,
+		}
+		filePayloads = append(filePayloads, darkLogoPayload)
 	}
+
+	response, err := client.UpdateCatalogItemLogo(catalogItemResult.ID, filePayloads, &morpheus.Request{})
+	if err != nil {
+		log.Printf("API FAILURE: %s - %s", response, err)
+	}
+	log.Printf("API RESPONSE: %s", response)
 
 	// Successfully created resource, now set id
 	d.SetId(int64ToString(catalogItemResult.ID))
 
-	resourceInstanceCatalogItemRead(ctx, d, meta)
+	resourceAppBlueprintCatalogItemRead(ctx, d, meta)
 	return diags
 }
 
-func resourceInstanceCatalogItemRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceAppBlueprintCatalogItemRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*morpheus.Client)
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
@@ -228,16 +259,20 @@ func resourceInstanceCatalogItemRead(ctx context.Context, d *schema.ResourceData
 		}
 	}
 	d.Set("option_type_ids", optionTypes)
+	d.Set("app_spec", catalogItem.AppSpec)
 	d.Set("content", catalogItem.Content)
-	d.Set("config", catalogItem.Config)
+	d.Set("blueprint_id", catalogItem.Blueprint.ID)
 	d.Set("labels", catalogItem.Labels)
 	imagePath := strings.Split(catalogItem.ImagePath, "/")
 	opt := strings.Replace(imagePath[len(imagePath)-1], "_original", "", 1)
-	d.Set("image_path", opt)
+	d.Set("logo_image_path", opt)
+	darkImagePath := strings.Split(catalogItem.DarkImagePath, "/")
+	darkOpt := strings.Replace(darkImagePath[len(darkImagePath)-1], "_original", "", 1)
+	d.Set("dark_logo_image_path", darkOpt)
 	return diags
 }
 
-func resourceInstanceCatalogItemUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceAppBlueprintCatalogItemUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*morpheus.Client)
 	id := d.Id()
 
@@ -247,17 +282,18 @@ func resourceInstanceCatalogItemUpdate(ctx context.Context, d *schema.ResourceDa
 	catalogItem["description"] = d.Get("description").(string)
 	catalogItem["enabled"] = d.Get("enabled").(bool)
 	catalogItem["featured"] = d.Get("featured").(bool)
-	catalogItem["type"] = "instance"
+	catalogItem["type"] = "blueprint"
+	catalogItem["iconPath"] = "custom"
 	catalogItem["optionTypes"] = d.Get("option_type_ids")
 	catalogItem["content"] = d.Get("content").(string)
-	catalogItem["visibility"] = d.Get("visibility").(string)
+	//catalogItem["visibility"] = d.Get("visibility").(string)
 
-	// Declared an empty interface
-	var outjson map[string]interface{}
+	blueprint := make(map[string]interface{})
+	blueprint["id"] = d.Get("blueprint_id").(int)
+	catalogItem["blueprint"] = blueprint
 
 	// Unmarshal or Decode the JSON to the interface.
-	json.Unmarshal([]byte(d.Get("config").(string)), &outjson)
-	catalogItem["config"] = outjson
+	catalogItem["appSpec"] = d.Get("app_spec").(string)
 
 	labelsPayload := make([]string, 0)
 	if attr, ok := d.GetOk("labels"); ok {
@@ -272,7 +308,6 @@ func resourceInstanceCatalogItemUpdate(ctx context.Context, d *schema.ResourceDa
 			"catalogItemType": catalogItem,
 		},
 	}
-
 	resp, err := client.UpdateCatalogItem(toInt64(id), req)
 	if err != nil {
 		log.Printf("API FAILURE: %s - %s", resp, err)
@@ -282,29 +317,48 @@ func resourceInstanceCatalogItemUpdate(ctx context.Context, d *schema.ResourceDa
 	result := resp.Result.(*morpheus.UpdateCatalogItemResult)
 	catalogItemResult := result.CatalogItem
 
-	if d.HasChange("image_name") || d.HasChange("image_path") {
-		data, err := os.ReadFile(d.Get("image_path").(string))
+	var filePayloads []*morpheus.FilePayload
+
+	if d.Get("logo_image_path") != "" && d.Get("logo_image_name") != "" {
+		data, err := os.ReadFile(d.Get("logo_image_path").(string))
 		if err != nil {
 			return diag.FromErr(err)
 		}
 
-		var filePayloads []*morpheus.FilePayload
 		filePayload := &morpheus.FilePayload{
 			ParameterName: "logo",
-			FileName:      d.Get("image_name").(string),
+			FileName:      d.Get("logo_image_name").(string),
 			FileContent:   data,
 		}
 		filePayloads = append(filePayloads, filePayload)
-		client.UpdateCatalogItemLogo(catalogItemResult.ID, filePayloads, &morpheus.Request{})
 	}
+	if d.Get("dark_logo_image_path") != "" && d.Get("dark_logo_image_name") != "" {
+		darkLogoData, err := os.ReadFile(d.Get("dark_logo_image_path").(string))
+		if err != nil {
+			return diag.FromErr(err)
+		}
+
+		darkLogoPayload := &morpheus.FilePayload{
+			ParameterName: "darkLogo",
+			FileName:      d.Get("dark_logo_image_name").(string),
+			FileContent:   darkLogoData,
+		}
+		filePayloads = append(filePayloads, darkLogoPayload)
+	}
+
+	response, err := client.UpdateCatalogItemLogo(catalogItemResult.ID, filePayloads, &morpheus.Request{})
+	if err != nil {
+		log.Printf("API FAILURE: %s - %s", response, err)
+	}
+	log.Printf("API RESPONSE: %s", response)
 
 	// Successfully updated resource, now set id
 	// err, it should not have changed though..
 	d.SetId(int64ToString(catalogItemResult.ID))
-	return resourceInstanceCatalogItemRead(ctx, d, meta)
+	return resourceAppBlueprintCatalogItemRead(ctx, d, meta)
 }
 
-func resourceInstanceCatalogItemDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceAppBlueprintCatalogItemDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*morpheus.Client)
 
 	// Warning or errors can be collected in a slice type

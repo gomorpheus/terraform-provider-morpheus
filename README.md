@@ -36,6 +36,7 @@ The following list of resources are supported by the Morpheus Terraform provider
 | [morpheus_ansible_playbook_task](docs/resources/ansible_playbook_task.md) | Morpheus ansible playbook automation task resource |
 | [morpheus_ansible_tower_integration](docs/resources/ansible_tower_integration.md) | Morpheus ansible_tower_integration resource |
 | [morpheus_api_option_list](docs/resources/api_option_list.md) | Morpheus api_option_list resource |
+| [morpheus_app_blueprint_catalog_item](docs/resources/app_blueprint_catalog_item.md) | Morpheus app_blueprint_catalog_item resource |
 | [morpheus_arm_app_blueprint](docs/resources/arm_app_blueprint.md) | Morpheus ARM app blueprint resource |
 | [morpheus_arm_spec_template](docs/resources/arm_spec_template.md) | Morpheus ARM spec template resource |
 | [morpheus_backup_creation_policy](docs/resources/backup_creation_policy.md) | Morpheus backup creation policy resource |

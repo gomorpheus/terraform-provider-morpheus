@@ -2,12 +2,14 @@
 
 NOTES:
 
-* The `morpheus-sdk` dependcy has been upgraded to version 0.2.8.
+* The `morpheus-sdk` dependcy has been upgraded to version 0.2.9.
 * Fix the `morpheus_provisioning_workflow` resource to properly support the "all" platform setting options.
+* Add label support for various Morpheus resources.
 
 FEATURES:
 
 * **New Resource:** `morpheus_api_option_list`
+* **New Resource:** `morpheus_app_blueprint_catalog_item`
 * **New Resource:** `morpheus_radio_list_option_type`
 * **New Resource:** `morpheus_textarea_option_type`
 
