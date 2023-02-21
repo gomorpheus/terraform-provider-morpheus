@@ -5,6 +5,7 @@ NOTES:
 * The `morpheus-sdk` dependcy has been upgraded to version 0.2.9.
 * Fix the `morpheus_provisioning_workflow` resource to properly support the "all" platform setting options.
 * Add label support for various Morpheus resources.
+* Add custom option support for the `vsphere_instance` resource.
 
 FEATURES:
 

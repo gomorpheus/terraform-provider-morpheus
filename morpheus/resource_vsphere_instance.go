@@ -42,6 +42,7 @@ func resourceVsphereInstance() *schema.Resource {
 				Description: "The user friendly description of the instance",
 				Type:        schema.TypeString,
 				Optional:    true,
+				Computed:    true,
 			},
 			"cloud_id": {
 				Description: "The ID of the cloud associated with the instance",
@@ -76,11 +77,13 @@ func resourceVsphereInstance() *schema.Resource {
 				Description: "The ID of the resource pool to provision the instance to",
 				Type:        schema.TypeInt,
 				Optional:    true,
+				Computed:    true,
 			},
 			"environment": {
 				Description: "The environment to assign the instance to",
 				Type:        schema.TypeString,
 				Optional:    true,
+				Computed:    true,
 			},
 			"labels": {
 				Type:        schema.TypeList,
@@ -89,9 +92,17 @@ func resourceVsphereInstance() *schema.Resource {
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
+				Computed: true,
 			},
 			"tags": {
 				Description: "Tags to assign to the instance",
+				Type:        schema.TypeMap,
+				Optional:    true,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+			},
+			"custom_options": {
+				Description: "Custom options to pass to the instance",
 				Type:        schema.TypeMap,
 				Optional:    true,
 				Elem:        &schema.Schema{Type: schema.TypeString},
@@ -115,26 +126,35 @@ func resourceVsphereInstance() *schema.Resource {
 				Type:        schema.TypeBool,
 				ForceNew:    true,
 				Optional:    true,
-				Default:     true,
+				Computed:    true,
 			},
-			//"user_group_id": {
-			//	Description: "",
-			//	Type:        schema.TypeInt,
-			//	ForceNew:    true,
-			//	Optional:    true,
-			//},
+			"user_group_id": {
+				Description: "The id of the user group associated with the instance",
+				Type:        schema.TypeInt,
+				ForceNew:    true,
+				Optional:    true,
+				Computed:    true,
+			},
 			"asset_tag": {
 				Description: "The asset tag associated with the instance",
 				Type:        schema.TypeString,
 				ForceNew:    true,
 				Optional:    true,
+				Computed:    true,
 			},
 			"skip_agent_install": {
 				Description: "Whether to skip installation of the Morpheus agent",
 				Type:        schema.TypeBool,
 				ForceNew:    true,
 				Optional:    true,
-				Default:     false,
+				Computed:    true,
+			},
+			"nested_virtualization": {
+				Description: "Whether to skip installation of the Morpheus agent",
+				Type:        schema.TypeBool,
+				ForceNew:    true,
+				Optional:    true,
+				Computed:    true,
 			},
 			"evar": {
 				Type:        schema.TypeList,
@@ -185,21 +205,25 @@ func resourceVsphereInstance() *schema.Resource {
 							Description: "The size of the LV being created",
 							Type:        schema.TypeInt,
 							Optional:    true,
+							Computed:    true,
 						},
 						"size_id": {
 							Description: "The ID of an existing LV to assign to the instance",
 							Type:        schema.TypeInt,
 							Optional:    true,
+							Computed:    true,
 						},
 						"storage_type": {
 							Description: "The ID of the LV type",
 							Type:        schema.TypeInt,
 							Optional:    true,
+							Computed:    true,
 						},
 						"datastore_id": {
 							Description: "The ID of the datastore",
 							Type:        schema.TypeInt,
 							Optional:    true,
+							Computed:    true,
 						},
 					},
 				},
@@ -214,22 +238,25 @@ func resourceVsphereInstance() *schema.Resource {
 							Description: "The network to assign the network interface to",
 							Type:        schema.TypeInt,
 							Optional:    true,
+							Computed:    true,
 						},
 						"ip_address": {
 							Description: "",
 							Type:        schema.TypeString,
 							Optional:    true,
+							Computed:    true,
 						},
 						"ip_mode": {
 							Description: "",
 							Type:        schema.TypeString,
 							Optional:    true,
-							Default:     "",
+							Computed:    true,
 						},
 						"network_interface_type_id": {
 							Description: "The network interface type",
 							Type:        schema.TypeInt,
 							Optional:    true,
+							Computed:    true,
 						},
 					},
 				},
@@ -247,11 +274,11 @@ func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, 
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
-	name := d.Get("name").(string)
 	group := d.Get("group_id").(int)
 	cloud := d.Get("cloud_id").(int)
+	name := d.Get("name").(string)
 
-	// Plan
+	// Service Plan
 	planResp, err := client.GetPlan(int64(d.Get("plan_id").(int)), &morpheus.Request{})
 	if err != nil {
 		diag.FromErr(err)
@@ -274,13 +301,9 @@ func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, 
 	}
 	instanceLayoutResult := instanceLayoutResp.Result.(*morpheus.GetInstanceLayoutResult)
 	instanceLayout := instanceLayoutResult.InstanceLayout
-	log.Printf("Instance Layout: %v", instanceLayout)
 
 	// Config
 	config := make(map[string]interface{})
-	if d.Get("config") != nil {
-		config = d.Get("config").(map[string]interface{})
-	}
 
 	// Resource Pool
 	resourcePoolResp, err := client.GetResourcePool(int64(cloud), int64(d.Get("resource_pool_id").(int)), &morpheus.Request{})
@@ -289,8 +312,17 @@ func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, 
 	}
 	resourcePoolResult := resourcePoolResp.Result.(*morpheus.GetResourcePoolResult)
 	resourcePool := resourcePoolResult.ResourcePool
-	log.Printf("Instance Layout: %v", resourcePool)
 	config["resourcePoolId"] = resourcePool.ID
+
+	// Custom Options
+	if d.Get("custom_options") != nil {
+		customOptionsInput := d.Get("custom_options").(map[string]interface{})
+		customOptions := make(map[string]interface{})
+		for key, value := range customOptionsInput {
+			customOptions[key] = value.(string)
+		}
+		config["customOptions"] = customOptions
+	}
 
 	// Create User
 	config["createUser"] = d.Get("create_user").(bool)
@@ -302,6 +334,9 @@ func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, 
 
 	// Skip Agent Install
 	config["noAgent"] = d.Get("skip_agent_install").(bool)
+
+	// Nested Virtualization
+	config["nestedVirtualization"] = d.Get("nested_virtualization").(bool)
 
 	instancePayload := map[string]interface{}{
 		"name": name,
@@ -332,12 +367,12 @@ func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, 
 	}
 
 	// User Group ID
-	//if d.Get("user_group_id") != nil {
-	//	userGroupPayload := map[string]interface{}{
-	//		"id": d.Get("user_group_id").(int),
-	//	}
-	//	instancePayload["userGroup"] = userGroupPayload
-	//}
+	if d.Get("user_group_id") != nil {
+		userGroupPayload := map[string]interface{}{
+			"id": d.Get("user_group_id").(int),
+		}
+		instancePayload["userGroup"] = userGroupPayload
+	}
 
 	payload := map[string]interface{}{
 		"zoneId":   cloud,
@@ -374,7 +409,7 @@ func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, 
 	}
 
 	// Environment Variables
-	if d.Get("evar") != nil {
+	if d.Get("evar") != "" {
 		payload["evars"] = parseEnvironmentVariables(d.Get("evar").([]interface{}))
 	}
 
@@ -392,7 +427,6 @@ func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, 
 	slcB, _ := json.Marshal(req.Body)
 	log.Printf("API JSON REQUEST: %s", string(slcB))
 	resp, err := client.CreateInstance(req)
-	log.Printf("API REQUEST: %s", req) // debug
 	if err != nil {
 		log.Printf("API FAILURE: %s - %s", resp, err)
 		return diag.FromErr(err)
@@ -403,7 +437,7 @@ func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, 
 
 	stateConf := &resource.StateChangeConf{
 		Pending: []string{"provisioning", "starting", "stopping"},
-		Target:  []string{"running", "failed", "warning"},
+		Target:  []string{"running", "failed", "warning", "denied", "cancelled"},
 		Refresh: func() (interface{}, string, error) {
 			instanceDetails, err := client.GetInstance(instance.ID, &morpheus.Request{})
 			if err != nil {
@@ -493,12 +527,19 @@ func resourceVsphereInstanceRead(ctx context.Context, d *schema.ResourceData, me
 		}
 	}
 	d.Set("tags", tags)
-	//userGroup := instance.Config["userGroup"].(map[string]interface{})
-	//d.Set("user_group_id", userGroup["id"])
+	if instance.Config["userGroup"] != nil {
+		userGroup := instance.Config["userGroup"].(map[string]interface{})
+		d.Set("user_group_id", userGroup["id"])
+	}
 	d.Set("create_user", instance.Config["createUser"])
 	d.Set("asset_tag", instance.Config["smbiosAssetTag"])
 	d.Set("skip_agent_install", instance.Config["noAgent"])
-
+	if instance.Config["nestedVirtualization"] == "off" {
+		d.Set("nested_virtualization", false)
+	} else {
+		d.Set("nested_virtualization", true)
+	}
+	d.Set("custom_options", instance.Config["customOptions"])
 	return diags
 }
 
@@ -519,6 +560,17 @@ func resourceVsphereInstanceUpdate(ctx context.Context, d *schema.ResourceData, 
 			tags = append(tags, tag)
 		}
 	}
+	config := make(map[string]interface{})
+
+	// Custom Options
+	if d.Get("custom_options") != nil {
+		customOptionsInput := d.Get("custom_options").(map[string]interface{})
+		customOptions := make(map[string]interface{})
+		for key, value := range customOptionsInput {
+			customOptions[key] = value.(string)
+		}
+		config["customOptions"] = customOptions
+	}
 
 	instancePayload := map[string]interface{}{
 		"name":            name,
@@ -526,6 +578,7 @@ func resourceVsphereInstanceUpdate(ctx context.Context, d *schema.ResourceData, 
 		"labels":          d.Get("labels"),
 		"tags":            tags,
 		"instanceContext": d.Get("environment"),
+		"config":          config,
 	}
 	payload := map[string]interface{}{
 		"instance": instancePayload,

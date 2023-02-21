@@ -53,4 +53,8 @@ resource "morpheus_vsphere_instance" "tf_example_vsphere_instance" {
     export = true
     masked = true
   }
+
+  custom_options = {
+    awsRegion = "us-east-1"
+  }
 }

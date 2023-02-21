@@ -67,6 +67,10 @@ resource "morpheus_vsphere_instance" "tf_example_vsphere_instance" {
     export = true
     masked = true
   }
+
+  custom_options = {
+    awsRegion = "us-east-1"
+  }
 }
 ```
 
@@ -85,16 +89,19 @@ resource "morpheus_vsphere_instance" "tf_example_vsphere_instance" {
 
 - `asset_tag` (String) The asset tag associated with the instance
 - `create_user` (Boolean) Whether to create a user account on the instance that is associated with the provisioning user account
+- `custom_options` (Map of String) Custom options to pass to the instance
 - `description` (String) The user friendly description of the instance
 - `environment` (String) The environment to assign the instance to
 - `evar` (Block List) The environment variables to create (see [below for nested schema](#nestedblock--evar))
 - `interfaces` (Block List) The instance network interfaces to create (see [below for nested schema](#nestedblock--interfaces))
 - `labels` (List of String) The list of labels to add to the instance
 - `name` (String) The name of the instance
+- `nested_virtualization` (Boolean) Whether to skip installation of the Morpheus agent
 - `resource_pool_id` (Number) The ID of the resource pool to provision the instance to
 - `skip_agent_install` (Boolean) Whether to skip installation of the Morpheus agent
 - `tags` (Map of String) Tags to assign to the instance
 - `timeouts` (Block, Optional) (see [below for nested schema](#nestedblock--timeouts))
+- `user_group_id` (Number) The id of the user group associated with the instance
 - `volumes` (Block List) The instance volumes to create (see [below for nested schema](#nestedblock--volumes))
 - `workflow_id` (Number) The ID of the provisioning workflow to execute (`workflow_name` can be used alternatively, only one is needed)
 - `workflow_name` (String) The name of the provisioning workflow to execute (`workflow_id` can be used alternatively, only one is needed)
