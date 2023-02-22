@@ -1,11 +1,14 @@
 ## Unreleased
 
+## 0.7.0 (February 22, 2023)
+
 NOTES:
 
 * The `morpheus-sdk` dependcy has been upgraded to version 0.2.9.
 * Fix the `morpheus_provisioning_workflow` resource to properly support the "all" platform setting options.
 * Add label support for various Morpheus resources.
 * Add custom option support for the `vsphere_instance` resource.
+* Fix issue #58 - Incorrect default monitoring check for node types.
 
 FEATURES:
 
