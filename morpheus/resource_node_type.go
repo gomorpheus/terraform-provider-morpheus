@@ -211,6 +211,7 @@ func resourceNodeTypeCreate(ctx context.Context, d *schema.ResourceData, meta in
 	containerType["scripts"] = d.Get("script_template_ids")
 	containerType["containerTemplates"] = d.Get("file_template_ids")
 	containerType["category"] = d.Get("category").(string)
+	containerType["serverType"] = "vm"
 
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
@@ -345,6 +346,7 @@ func resourceNodeTypeUpdate(ctx context.Context, d *schema.ResourceData, meta in
 				"containerScripts":   d.Get("script_template_ids"),
 				"containerTemplates": d.Get("file_template_ids"),
 				"category":           d.Get("category").(string),
+				"serverType":         "vm",
 			},
 		},
 	}
