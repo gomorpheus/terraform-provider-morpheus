@@ -9,10 +9,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func dataSourceMorpheusNetwork() *schema.Resource {
+func dataSourceMorpheusNetworkGroup() *schema.Resource {
 	return &schema.Resource{
-		Description: "Provides a Morpheus network data source.",
-		ReadContext: dataSourceMorpheusNetworkRead,
+		Description: "Provides a Morpheus network group data source.",
+		ReadContext: dataSourceMorpheusNetworkGroupRead,
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Type:          schema.TypeInt,
@@ -22,30 +22,30 @@ func dataSourceMorpheusNetwork() *schema.Resource {
 			},
 			"name": {
 				Type:          schema.TypeString,
-				Description:   "The name of the Morpheus network",
+				Description:   "The name of the Morpheus network group",
 				Optional:      true,
 				ConflictsWith: []string{"id"},
 			},
 			"active": {
 				Type:        schema.TypeBool,
-				Description: "Whether the network is active or not",
+				Description: "Whether the network group is active or not",
 				Computed:    true,
 			},
 			"description": {
 				Type:        schema.TypeString,
-				Description: "The description of the network",
+				Description: "The description of the network group",
 				Computed:    true,
 			},
 			"visibility": {
 				Type:        schema.TypeString,
-				Description: "Whether the network is visible in sub-tenants or not",
+				Description: "Whether the network group is visible in sub-tenants or not",
 				Computed:    true,
 			},
 		},
 	}
 }
 
-func dataSourceMorpheusNetworkRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func dataSourceMorpheusNetworkGroupRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*morpheus.Client)
 
 	// Warning or errors can be collected in a slice type
@@ -58,11 +58,11 @@ func dataSourceMorpheusNetworkRead(ctx context.Context, d *schema.ResourceData, 
 	var resp *morpheus.Response
 	var err error
 	if id == 0 && name != "" {
-		resp, err = client.FindNetworkByName(name)
+		resp, err = client.FindNetworkGroupByName(name)
 	} else if id != 0 {
-		resp, err = client.GetNetwork(int64(id), &morpheus.Request{})
+		resp, err = client.GetNetworkGroup(int64(id), &morpheus.Request{})
 	} else {
-		return diag.Errorf("Network cannot be read without name or id")
+		return diag.Errorf("Network group cannot be read without name or id")
 	}
 	if err != nil {
 		if resp != nil && resp.StatusCode == 404 {
@@ -76,16 +76,16 @@ func dataSourceMorpheusNetworkRead(ctx context.Context, d *schema.ResourceData, 
 	log.Printf("API RESPONSE: %s", resp)
 
 	// store resource data
-	result := resp.Result.(*morpheus.GetNetworkResult)
-	network := result.Network
-	if network != nil {
-		d.SetId(int64ToString(network.ID))
-		d.Set("name", network.Name)
-		d.Set("active", network.Active)
-		d.Set("description", network.Description)
-		d.Set("visibility", network.Visibility)
+	result := resp.Result.(*morpheus.GetNetworkGroupResult)
+	networkGroup := result.NetworkGroup
+	if networkGroup != nil {
+		d.SetId(int64ToString(networkGroup.ID))
+		d.Set("name", networkGroup.Name)
+		d.Set("active", networkGroup.Active)
+		d.Set("description", networkGroup.Description)
+		d.Set("visibility", networkGroup.Visibility)
 	} else {
-		return diag.Errorf("Network not found in response data.") // should not happen
+		return diag.Errorf("Network group not found in response data.") // should not happen
 	}
 	return diags
 }
