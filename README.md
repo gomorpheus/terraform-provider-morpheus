@@ -140,6 +140,7 @@ The following list of data sources are supported by the Morpheus Terraform provi
 | [morpheus_integration](docs/data-sources/integration.md) | Morpheus integration data source |
 | [morpheus_job](docs/data-sources/job.md) | Morpheus job data source |
 | [morpheus_network](docs/data-sources/network.md) | Morpheus network data source |
+| [morpheus_network_group](docs/data-sources/network_group.md) | Morpheus network group data source |
 | [morpheus_node_type](docs/data-sources/node_type.md) | Morpheus node type data source |
 | [morpheus_option_list](docs/data-sources/option_list.md) | Morpheus option list data source |
 | [morpheus_option_type](docs/data-sources/option_type.md) | Morpheus option type data source |

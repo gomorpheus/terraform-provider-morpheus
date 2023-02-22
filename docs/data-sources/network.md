@@ -22,11 +22,11 @@ data "morpheus_network" "vmnetwork" {
 
 ### Optional
 
-- `name` (String) The name of the Morpheus network.
+- `name` (String) The name of the Morpheus network
 
 ### Read-Only
 
-- `active` (Boolean) Optional code for use with policies
+- `active` (Boolean) Whether the network is active or not
 - `description` (String) The description of the network
 - `id` (Number) The ID of this resource.
 - `visibility` (String) Whether the network is visible in sub-tenants or not

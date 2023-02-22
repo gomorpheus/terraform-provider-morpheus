@@ -9,6 +9,7 @@ NOTES:
 
 FEATURES:
 
+* **New Data Source:** `morpheus_network_group`
 * **New Resource:** `morpheus_api_option_list`
 * **New Resource:** `morpheus_app_blueprint_catalog_item`
 * **New Resource:** `morpheus_radio_list_option_type`
