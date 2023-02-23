@@ -1,6 +1,6 @@
 ## Unreleased
 
-## 0.7.0 (February 22, 2023)
+## 0.8.0 (February 23, 2023)
 
 NOTES:
 
@@ -15,6 +15,7 @@ FEATURES:
 * **New Data Source:** `morpheus_network_group`
 * **New Resource:** `morpheus_api_option_list`
 * **New Resource:** `morpheus_app_blueprint_catalog_item`
+* **New Resource:** `morpheus_aws_cloud`
 * **New Resource:** `morpheus_radio_list_option_type`
 * **New Resource:** `morpheus_textarea_option_type`
 

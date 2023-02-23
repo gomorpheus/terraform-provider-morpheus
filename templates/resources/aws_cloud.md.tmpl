@@ -1,0 +1,28 @@
+---
+page_title: "morpheus_aws_cloud Resource - terraform-provider-morpheus"
+subcategory: ""
+description: |-
+{{ .Description | plainmarkdown | trimspace | prefixlines "  " }}
+---
+
+# morpheus_aws_cloud
+
+{{ .Description | trimspace }}
+
+## Example Usage
+
+Creating the AWS cloud with local credentials:
+
+{{tffile "examples/resources/morpheus_aws_cloud/resource.tf"}}
+
+Creating the AWS cloud with a credential store credential:
+
+{{tffile "examples/resources/morpheus_aws_cloud/resource_credentials.tf"}}
+
+{{ .SchemaMarkdown | trimspace }}
+
+## Import
+
+Import is supported using the following syntax:
+
+{{codefile "shell" "examples/resources/morpheus_aws_cloud/import.sh" }}
