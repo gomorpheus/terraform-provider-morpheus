@@ -206,7 +206,6 @@ func resourceArmSpecTemplateUpdate(ctx context.Context, d *schema.ResourceData, 
 			},
 		},
 	}
-	log.Printf("API REQUEST: %s", req)
 	resp, err := client.UpdateSpecTemplate(toInt64(id), req)
 	if err != nil {
 		log.Printf("API FAILURE: %s - %s", resp, err)

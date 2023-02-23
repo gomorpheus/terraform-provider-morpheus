@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
-	"encoding/json"
 	"fmt"
 	"log"
 	"strconv"
@@ -255,9 +254,6 @@ func resourceAWSCloudCreate(ctx context.Context, d *schema.ResourceData, meta in
 	}
 
 	req := &morpheus.Request{Body: payload}
-
-	jsonRequest, _ := json.Marshal(req.Body)
-	log.Printf("API JSON REQUEST: %s", string(jsonRequest))
 
 	resp, err := client.CreateCloud(req)
 	if err != nil {

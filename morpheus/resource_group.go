@@ -1,12 +1,7 @@
 package morpheus
 
-// this is for Groups/Sites.
-// this resource has an extra Morpheus prefix in it
-// to distinguish it from ResourceGroups.
-
 import (
 	"context"
-	"encoding/json"
 	"log"
 
 	"github.com/gomorpheus/morpheus-go-sdk"
@@ -28,7 +23,6 @@ func resourceMorpheusGroup() *schema.Resource {
 				Type:        schema.TypeString,
 				Computed:    true,
 			},
-			// Required inputs
 			"name": {
 				Description: "A unique name scoped to your account for the group",
 				Type:        schema.TypeString,
@@ -95,9 +89,7 @@ func resourceMorpheusGroupCreate(ctx context.Context, d *schema.ResourceData, me
 			},
 		},
 	}
-	jsonRequest, _ := json.Marshal(req.Body)
-	log.Printf("API JSON REQUEST: %s", string(jsonRequest))
-	log.Printf("API REQUEST: %s", req) // debug
+
 	resp, err := client.CreateGroup(req)
 	if err != nil {
 		log.Printf("API FAILURE: %s - %s", resp, err)
@@ -118,9 +110,7 @@ func resourceMorpheusGroupCreate(ctx context.Context, d *schema.ResourceData, me
 				},
 			},
 		}
-		jsonRequest, _ := json.Marshal(req2.Body)
-		log.Printf("API JSON REQUEST: %s", string(jsonRequest))
-		log.Printf("API REQUEST: %s", req2) // debug
+
 		resp2, err2 := client.UpdateGroupClouds(group.ID, req2)
 		if err2 != nil {
 			log.Printf("API FAILURE: %s - %s", resp2, err2)
@@ -204,9 +194,7 @@ func resourceMorpheusGroupUpdate(ctx context.Context, d *schema.ResourceData, me
 			},
 		},
 	}
-	jsonRequest, _ := json.Marshal(req.Body)
-	log.Printf("API JSON REQUEST: %s", string(jsonRequest))
-	log.Printf("API REQUEST: %s", req) // debug
+
 	resp, err := client.UpdateGroup(toInt64(id), req)
 	if err != nil {
 		log.Printf("API FAILURE: %s - %s", resp, err)
@@ -239,9 +227,7 @@ func resourceMorpheusGroupUpdate(ctx context.Context, d *schema.ResourceData, me
 				},
 			},
 		}
-		jsonRequest, _ := json.Marshal(req2.Body)
-		log.Printf("API JSON REQUEST: %s", string(jsonRequest))
-		log.Printf("API REQUEST: %s", req2) // debug
+
 		resp2, err2 := client.UpdateGroupClouds(group.ID, req2)
 		if err2 != nil {
 			log.Printf("API FAILURE: %s - %s", resp2, err2)

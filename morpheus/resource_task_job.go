@@ -307,7 +307,6 @@ func resourceTaskJobUpdate(ctx context.Context, d *schema.ResourceData, meta int
 		},
 	}
 
-	log.Printf("API REQUEST: %s", req)
 	resp, err := client.UpdateJob(toInt64(id), req)
 	if err != nil {
 		log.Printf("API FAILURE: %s - %s", resp, err)

@@ -200,7 +200,6 @@ func resourceTenantUpdate(ctx context.Context, d *schema.ResourceData, meta inte
 			},
 		},
 	}
-	log.Printf("API REQUEST: %s", req)
 	resp, err := client.UpdateTenant(toInt64(id), req)
 	if err != nil {
 		log.Printf("API FAILURE: %s - %s", resp, err)

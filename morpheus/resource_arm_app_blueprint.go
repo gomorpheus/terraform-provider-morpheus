@@ -146,8 +146,7 @@ func resourceArmAppBlueprintCreate(ctx context.Context, d *schema.ResourceData, 
 			},
 		},
 	}
-	jsonRequest, _ := json.Marshal(req.Body)
-	log.Printf("API JSON REQUEST: %s", string(jsonRequest))
+
 	resp, err := client.CreateBlueprint(req)
 	if err != nil {
 		log.Printf("API FAILURE: %s - %s", resp, err)
@@ -267,7 +266,7 @@ func resourceArmAppBlueprintUpdate(ctx context.Context, d *schema.ResourceData, 
 			},
 		},
 	}
-	log.Printf("API REQUEST: %s", req)
+
 	resp, err := client.UpdateBlueprint(toInt64(id), req)
 	if err != nil {
 		log.Printf("API FAILURE: %s - %s", resp, err)
