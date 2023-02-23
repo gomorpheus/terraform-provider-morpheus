@@ -337,7 +337,6 @@ func resourcePowerShellScriptTaskUpdate(ctx context.Context, d *schema.ResourceD
 			},
 		},
 	}
-	log.Printf("API REQUEST: %s", req)
 	resp, err := client.UpdateTask(toInt64(id), req)
 	if err != nil {
 		log.Printf("API FAILURE: %s - %s", resp, err)

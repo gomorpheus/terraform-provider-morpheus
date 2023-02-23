@@ -507,7 +507,6 @@ func resourceServicePlanUpdate(ctx context.Context, d *schema.ResourceData, meta
 		},
 	}
 
-	log.Printf("API REQUEST: %s", req)
 	resp, err := client.UpdatePlan(toInt64(id), req)
 	if err != nil {
 		log.Printf("API FAILURE: %s - %s", resp, err)

@@ -9,6 +9,7 @@ NOTES:
 * Add label support for various Morpheus resources.
 * Add custom option support for the `vsphere_instance` resource.
 * Fix issue #58 - Incorrect default monitoring check for node types.
+* Remove unnecessary request logging
 
 FEATURES:
 

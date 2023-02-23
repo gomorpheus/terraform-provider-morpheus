@@ -2,7 +2,6 @@ package morpheus
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"log"
 	"time"
@@ -424,8 +423,6 @@ func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, 
 	}
 
 	req := &morpheus.Request{Body: payload}
-	slcB, _ := json.Marshal(req.Body)
-	log.Printf("API JSON REQUEST: %s", string(slcB))
 	resp, err := client.CreateInstance(req)
 	if err != nil {
 		log.Printf("API FAILURE: %s - %s", resp, err)
@@ -696,7 +693,7 @@ func parseEnvironmentVariables(variables []interface{}) []map[string]interface{}
 			}
 		}
 		evars = append(evars, row)
-		log.Printf("evars payload: %s", evars)
+		//log.Printf("evars payload: %s", evars)
 	}
 	return evars
 }

@@ -223,7 +223,6 @@ func resourceSelectListOptionTypeUpdate(ctx context.Context, d *schema.ResourceD
 			},
 		},
 	}
-	log.Printf("API REQUEST: %s", req)
 	resp, err := client.UpdateOptionType(toInt64(id), req)
 	if err != nil {
 		log.Printf("API FAILURE: %s - %s", resp, err)

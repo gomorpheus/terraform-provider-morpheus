@@ -295,7 +295,6 @@ func resourceCypherAccessPolicyUpdate(ctx context.Context, d *schema.ResourceDat
 			"policy": policy,
 		},
 	}
-	log.Printf("API REQUEST: %s", req)
 	resp, err := client.UpdatePolicy(toInt64(id), req)
 	if err != nil {
 		log.Printf("API FAILURE: %s - %s", resp, err)
