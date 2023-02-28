@@ -32,6 +32,7 @@ The following list of resources are supported by the Morpheus Terraform provider
 
 | Resource Name | Description |
 |------|---------------|
+| [morpheus_active_directory_identity_source](docs/resources/active_directory_identity_source.md) | Morpheus active directory identity source resource |
 | [morpheus_ansible_integration](docs/resources/ansible_integration.md) | Morpheus ansible_integration resource |
 | [morpheus_ansible_playbook_task](docs/resources/ansible_playbook_task.md) | Morpheus ansible playbook automation task resource |
 | [morpheus_ansible_tower_integration](docs/resources/ansible_tower_integration.md) | Morpheus ansible_tower_integration resource |
