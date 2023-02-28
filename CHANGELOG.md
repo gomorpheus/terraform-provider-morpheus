@@ -1,5 +1,7 @@
 ## Unreleased
 
+* **New Resource:** `morpheus_active_directory_identity_source`
+
 ## 0.8.0 (February 23, 2023)
 
 NOTES:
