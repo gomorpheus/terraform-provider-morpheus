@@ -1,5 +1,13 @@
 ## Unreleased
 
+NOTES:
+
+* The `morpheus-sdk` dependcy has been upgraded to version 0.2.10.
+* Add label support for additional Morpheus resources.
+* Update inputs to support additional configuration parameters (i.e. - editable, verify pattern, etc).
+
+FEATURES:
+
 * **New Resource:** `morpheus_active_directory_identity_source`
 
 ## 0.8.0 (February 23, 2023)

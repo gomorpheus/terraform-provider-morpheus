@@ -53,7 +53,7 @@ resource "morpheus_active_directory_identity_source" "addemo" {
 - `enable_role_mapping_permission` (Boolean) When enabled, Tenant users with appropriate rights to view and edit Roles will have the ability to set role mapping for the Identity Source integration
 - `required_group` (String) The active directory group users must be in to access Morpheus
 - `role_mapping` (Block Set) The Active Directory to Morpheus Role mapping (see [below for nested schema](#nestedblock--role_mapping))
-- `search_member_groups` (Boolean) The path in the repository of the Ansible playbooks relative to the Git url
+- `search_member_groups` (Boolean) Whether groups nested inside the required group will also be included
 - `use_ssl` (Boolean) Whether to use SSL when connecting to the domain controller
 
 ### Read-Only

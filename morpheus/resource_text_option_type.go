@@ -35,6 +35,13 @@ func resourceTextOptionType() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 			},
+			"labels": {
+				Type:        schema.TypeSet,
+				Description: "The organization labels associated with the option type (Only supported on Morpheus 5.5.3 or higher)",
+				Optional:    true,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+			},
 			"field_name": {
 				Type:        schema.TypeString,
 				Description: "The field name of the text option type",
@@ -56,6 +63,24 @@ func resourceTextOptionType() *schema.Resource {
 			"visibility_field": {
 				Type:        schema.TypeString,
 				Description: "The field or code used to trigger the visibility of the field",
+				Optional:    true,
+				Computed:    true,
+			},
+			"require_field": {
+				Type:        schema.TypeString,
+				Description: "The field or code used to determine whether the field is required or not",
+				Optional:    true,
+				Computed:    true,
+			},
+			"show_on_edit": {
+				Type:        schema.TypeBool,
+				Description: "Whether the option type will display in the edit section of the provisioned resource",
+				Optional:    true,
+				Computed:    true,
+			},
+			"editable": {
+				Type:        schema.TypeBool,
+				Description: "Whether the value of the option type can be edited after the initial request",
 				Optional:    true,
 				Computed:    true,
 			},
@@ -95,6 +120,12 @@ func resourceTextOptionType() *schema.Resource {
 				Optional:    true,
 				Default:     false,
 			},
+			"verify_pattern": {
+				Type:        schema.TypeString,
+				Description: "The regex pattern used to validate the entered",
+				Optional:    true,
+				Computed:    true,
+			},
 		},
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
@@ -110,22 +141,33 @@ func resourceTextOptionTypeCreate(ctx context.Context, d *schema.ResourceData, m
 
 	name := d.Get("name").(string)
 	description := d.Get("description").(string)
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"optionType": map[string]interface{}{
 				"name":                  name,
 				"description":           description,
+				"labels":                labelsPayload,
 				"fieldName":             d.Get("field_name").(string),
-				"type":                  "text",
-				"defaultValue":          d.Get("default_value").(string),
-				"dependsOnCode":         d.Get("dependent_field").(string),
-				"displayValueOnDetails": d.Get("display_value_on_details"),
 				"exportMeta":            d.Get("export_meta"),
+				"dependsOnCode":         d.Get("dependent_field").(string),
 				"visibleOnCode":         d.Get("visibility_field"),
+				"requireOnCode":         d.Get("require_field").(string),
+				"showOnEdit":            d.Get("show_on_edit").(bool),
+				"editable":              d.Get("editable").(bool),
+				"displayValueOnDetails": d.Get("display_value_on_details"),
+				"type":                  "text",
 				"fieldLabel":            d.Get("field_label"),
 				"placeHolder":           d.Get("placeholder"),
+				"defaultValue":          d.Get("default_value").(string),
 				"helpBlock":             d.Get("help_block"),
 				"required":              d.Get("required"),
+				"verifyPattern":         d.Get("verify_pattern").(string),
 			},
 		},
 	}
@@ -182,18 +224,21 @@ func resourceTextOptionTypeRead(ctx context.Context, d *schema.ResourceData, met
 		d.SetId(int64ToString(optionType.ID))
 		d.Set("name", optionType.Name)
 		d.Set("description", optionType.Description)
+		d.Set("labels", optionType.Labels)
 		d.Set("field_name", optionType.FieldName)
-		d.Set("type", optionType.Type)
-		d.Set("default_value", optionType.DefaultValue)
-		d.Set("dependent_field", optionType.DependsOnCode)
-		d.Set("required", optionType.Required)
 		d.Set("export_meta", optionType.ExportMeta)
-		d.Set("help_block", optionType.HelpBlock)
-		d.Set("placeholder", optionType.PlaceHolder)
+		d.Set("dependent_field", optionType.DependsOnCode)
+		d.Set("visibility_field", optionType.VisibleOnCode)
+		d.Set("require_field", optionType.RequireOnCode)
+		d.Set("show_on_edit", optionType.ShowOnEdit)
+		d.Set("editable", optionType.Editable)
+		d.Set("display_value_on_details", optionType.DisplayValueOnDetails)
 		d.Set("field_label", optionType.FieldLabel)
+		d.Set("placeholder", optionType.PlaceHolder)
+		d.Set("default_value", optionType.DefaultValue)
 		d.Set("help_block", optionType.HelpBlock)
 		d.Set("required", optionType.Required)
-		d.Set("visibility_field", optionType.VisibleOnCode)
+		d.Set("verify_pattern", optionType.VerifyPattern)
 	} else {
 		log.Println(optionType)
 		return diag.Errorf("read operation: option type not found in response data") // should not happen
@@ -207,23 +252,33 @@ func resourceTextOptionTypeUpdate(ctx context.Context, d *schema.ResourceData, m
 	id := d.Id()
 	name := d.Get("name").(string)
 	description := d.Get("description").(string)
-
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"optionType": map[string]interface{}{
 				"name":                  name,
 				"description":           description,
+				"labels":                labelsPayload,
 				"fieldName":             d.Get("field_name").(string),
-				"type":                  "text",
-				"defaultValue":          d.Get("default_value").(string),
-				"dependsOnCode":         d.Get("dependent_field").(string),
-				"displayValueOnDetails": d.Get("display_value_on_details"),
 				"exportMeta":            d.Get("export_meta"),
+				"dependsOnCode":         d.Get("dependent_field").(string),
 				"visibleOnCode":         d.Get("visibility_field"),
+				"requireOnCode":         d.Get("require_field").(string),
+				"showOnEdit":            d.Get("show_on_edit").(bool),
+				"editable":              d.Get("editable").(bool),
+				"displayValueOnDetails": d.Get("display_value_on_details"),
+				"type":                  "text",
 				"fieldLabel":            d.Get("field_label"),
 				"placeHolder":           d.Get("placeholder"),
+				"defaultValue":          d.Get("default_value").(string),
 				"helpBlock":             d.Get("help_block"),
 				"required":              d.Get("required"),
+				"verifyPattern":         d.Get("verify_pattern").(string),
 			},
 		},
 	}
