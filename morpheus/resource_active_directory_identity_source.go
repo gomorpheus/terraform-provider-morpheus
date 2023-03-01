@@ -84,7 +84,7 @@ func resourceActiveDirectoryIdentitySource() *schema.Resource {
 			},
 			"search_member_groups": {
 				Type:        schema.TypeBool,
-				Description: "The path in the repository of the Ansible playbooks relative to the Git url",
+				Description: "Whether groups nested inside the required group will also be included",
 				Optional:    true,
 				Computed:    true,
 			},
@@ -152,7 +152,11 @@ func resourceActiveDirectoryIdentitySourceCreate(ctx context.Context, d *schema.
 	config := make(map[string]interface{})
 	config["url"] = d.Get("ad_server").(string)
 	config["domain"] = d.Get("domain").(string)
-	config["useSSL"] = d.Get("use_ssl").(bool)
+	if d.Get("use_ssl").(bool) {
+		config["useSSL"] = "on"
+	} else {
+		config["useSSL"] = "off"
+	}
 	config["bindingUsername"] = d.Get("binding_username").(string)
 	config["bindingPassword"] = d.Get("binding_password").(string)
 	config["requiredGroup"] = d.Get("required_group").(string)
@@ -230,7 +234,11 @@ func resourceActiveDirectoryIdentitySourceRead(ctx context.Context, d *schema.Re
 	d.Set("description", identitySource.Description)
 	d.Set("ad_server", identitySource.Config.URL)
 	d.Set("domain", identitySource.Config.Domain)
-	d.Set("use_ssl", identitySource.Config.UseSSL)
+	if identitySource.Config.UseSSL == "off" {
+		d.Set("use_ssl", false)
+	} else {
+		d.Set("use_ssl", true)
+	}
 	d.Set("binding_username", identitySource.Config.BindingUsername)
 	d.Set("binding_password", identitySource.Config.BindingPasswordHash)
 	d.Set("required_group", identitySource.Config.RequiredGroup)
@@ -265,7 +273,11 @@ func resourceActiveDirectoryIdentitySourceUpdate(ctx context.Context, d *schema.
 	config := make(map[string]interface{})
 	config["url"] = d.Get("ad_server").(string)
 	config["domain"] = d.Get("domain").(string)
-	config["useSSL"] = d.Get("use_ssl").(bool)
+	if d.Get("use_ssl").(bool) {
+		config["useSSL"] = "on"
+	} else {
+		config["useSSL"] = "off"
+	}
 	config["bindingUsername"] = d.Get("binding_username").(string)
 	if d.HasChange("binding_password") {
 		config["bindingPassword"] = d.Get("binding_password").(string)

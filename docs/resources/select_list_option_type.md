@@ -15,10 +15,14 @@ Provides a Morpheus select list option type resource
 resource "morpheus_select_list_option_type" "tf_example_select_list_option_type" {
   name                     = "tf_example_select_list_option_type"
   description              = "Terraform select list option type example"
-  field_name               = "test1"
+  labels                   = ["demo", "terraform"]
+  field_name               = "tfSelectExample"
   export_meta              = true
-  dependent_field          = "servicemsh"
-  visibility_field         = "demotestin"
+  dependent_field          = "dependent_example"
+  visibility_field         = "visibility_example"
+  require_field            = "require_example"
+  show_on_edit             = true
+  editable                 = true
   display_value_on_details = true
   field_label              = "numbers"
   default_value            = "testing"
@@ -41,12 +45,16 @@ resource "morpheus_select_list_option_type" "tf_example_select_list_option_type"
 - `dependent_field` (String) The field or code used to trigger the reloading of the field
 - `description` (String) The description of the select list option type
 - `display_value_on_details` (Boolean) Display the selected value of the text option type on the associated resource's details page
+- `editable` (Boolean) Whether the value of the option type can be edited after the initial request
 - `export_meta` (Boolean) Whether to export the select list option type as a tag
 - `field_label` (String) The label associated with the field in the UI
 - `field_name` (String) The field name of the select list option type
 - `help_block` (String) Text that provides additional details about the use of the option type
+- `labels` (Set of String) The organization labels associated with the option type (Only supported on Morpheus 5.5.3 or higher)
 - `option_list_id` (Number) The ID of the associated option list
+- `require_field` (String) The field or code used to determine whether the field is required or not
 - `required` (Boolean) Whether the option type is required
+- `show_on_edit` (Boolean) Whether the option type will display in the edit section of the provisioned resource
 - `visibility_field` (String) The field or code used to trigger the visibility of the field
 
 ### Read-Only

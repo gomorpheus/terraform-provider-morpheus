@@ -13,19 +13,24 @@ Provides a Morpheus typeahead option type resource
 
 ```terraform
 resource "morpheus_typeahead_option_type" "tf_example_typeahead_option_type" {
-  name                     = "tf_example_typeahead_option_type"
-  description              = "testing"
-  field_name               = "test1"
-  export_meta              = true
-  dependent_field          = "servicemsh"
-  visibility_field         = "demotestin"
-  display_value_on_details = true
-  field_label              = "numbers"
-  placeholder              = "fewf"
-  default_value            = "testing"
-  help_block               = "terraform example typeahead"
-  required                 = true
-  option_list_id           = 3
+  name                      = "tf_example_typeahead_option_type"
+  description               = "terraform example typeahead option type"
+  labels                    = ["demo", "terraform"]
+  field_name                = "example"
+  export_meta               = true
+  dependent_field           = "dependent_example"
+  visibility_field          = "visibility_example"
+  require_field             = "require_example"
+  show_on_edit              = true
+  editable                  = true
+  display_value_on_details  = true
+  field_label               = "numbers"
+  placeholder               = "enter text here"
+  default_value             = "testing"
+  help_block                = "terraform example typeahead"
+  allow_multiple_selections = true
+  required                  = true
+  option_list_id            = 3
 }
 ```
 
@@ -38,17 +43,22 @@ resource "morpheus_typeahead_option_type" "tf_example_typeahead_option_type" {
 
 ### Optional
 
+- `allow_multiple_selections` (Boolean) Whether to allow multiple options to be select
 - `default_value` (String) The default value of the option type
 - `dependent_field` (String) The field or code used to trigger the reloading of the field
 - `description` (String) The description of the typeahead option type
 - `display_value_on_details` (Boolean) Display the selected value of the typeahead option type on the associated resource's details page
+- `editable` (Boolean) Whether the value of the option type can be edited after the initial request
 - `export_meta` (Boolean) Whether to export the typeahead option type as a tag
 - `field_label` (String) The label associated with the field in the UI
 - `field_name` (String) The field name of the typeahead option type
 - `help_block` (String) Text that provides additional details about the use of the option type
+- `labels` (Set of String) The organization labels associated with the option type (Only supported on Morpheus 5.5.3 or higher)
 - `option_list_id` (Number) The ID of the associated option list
 - `placeholder` (String) Text in the field used as a placeholder for example purposes
+- `require_field` (String) The field or code used to trigger the requirement of this field
 - `required` (Boolean) Whether the option type is required
+- `show_on_edit` (Boolean) Whether the option type will display in the edit section of the provisioned resource
 - `visibility_field` (String) The field or code used to trigger the visibility of the field
 
 ### Read-Only

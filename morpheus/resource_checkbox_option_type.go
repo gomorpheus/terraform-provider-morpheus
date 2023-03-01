@@ -8,7 +8,6 @@ import (
 	"github.com/gomorpheus/morpheus-go-sdk"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceCheckboxOptionType() *schema.Resource {
@@ -34,6 +33,14 @@ func resourceCheckboxOptionType() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The description of the checkbox option type",
 				Optional:    true,
+				Computed:    true,
+			},
+			"labels": {
+				Type:        schema.TypeSet,
+				Description: "The organization labels associated with the option type (Only supported on Morpheus 5.5.3 or higher)",
+				Optional:    true,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
 			},
 			"field_name": {
 				Type:        schema.TypeString,
@@ -50,11 +57,31 @@ func resourceCheckboxOptionType() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The field or code used to trigger the reloading of the field",
 				Optional:    true,
+				Computed:    true,
 			},
 			"visibility_field": {
 				Type:        schema.TypeString,
 				Description: "The field or code used to trigger the visibility of the field",
 				Optional:    true,
+				Computed:    true,
+			},
+			"require_field": {
+				Type:        schema.TypeString,
+				Description: "The field or code used to trigger the requirement of this field",
+				Optional:    true,
+				Computed:    true,
+			},
+			"show_on_edit": {
+				Type:        schema.TypeBool,
+				Description: "Whether the option type will display in the edit section of the provisioned resource",
+				Optional:    true,
+				Computed:    true,
+			},
+			"editable": {
+				Type:        schema.TypeBool,
+				Description: "Whether the value of the option type can be edited after the initial request",
+				Optional:    true,
+				Computed:    true,
 			},
 			"display_value_on_details": {
 				Type:        schema.TypeBool,
@@ -68,11 +95,10 @@ func resourceCheckboxOptionType() *schema.Resource {
 				Required:    true,
 			},
 			"default_checked": {
-				Type:         schema.TypeString,
-				Description:  "Whether the checkbox option type is checked by default (on or off)",
-				Optional:     true,
-				Default:      "off",
-				ValidateFunc: validation.StringInSlice([]string{"on", "off"}, false),
+				Type:        schema.TypeBool,
+				Description: "Whether the checkbox option type is checked by default",
+				Optional:    true,
+				Computed:    true,
 			},
 		},
 		Importer: &schema.ResourceImporter{
@@ -89,19 +115,35 @@ func resourceCheckboxOptionTypeCreate(ctx context.Context, d *schema.ResourceDat
 
 	name := d.Get("name").(string)
 	description := d.Get("description").(string)
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+	var defaultCheck string
+	if d.Get("default_checked").(bool) {
+		defaultCheck = "on"
+	} else {
+		defaultCheck = "off"
+	}
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"optionType": map[string]interface{}{
 				"name":                  name,
 				"description":           description,
+				"labels":                labelsPayload,
 				"fieldName":             d.Get("field_name").(string),
 				"exportMeta":            d.Get("export_meta"),
 				"dependsOnCode":         d.Get("dependent_field").(string),
 				"visibleOnCode":         d.Get("visibility_field"),
+				"requireOnCode":         d.Get("require_field").(string),
+				"showOnEdit":            d.Get("show_on_edit").(bool),
+				"editable":              d.Get("editable").(bool),
 				"displayValueOnDetails": d.Get("display_value_on_details"),
 				"type":                  "checkbox",
 				"fieldLabel":            d.Get("field_label").(string),
-				"defaultValue":          d.Get("default_checked").(string),
+				"defaultValue":          defaultCheck,
 			},
 		},
 	}
@@ -160,14 +202,21 @@ func resourceCheckboxOptionTypeRead(ctx context.Context, d *schema.ResourceData,
 		d.SetId(int64ToString(optionType.ID))
 		d.Set("name", optionType.Name)
 		d.Set("description", optionType.Description)
+		d.Set("labels", optionType.Labels)
 		d.Set("field_name", optionType.FieldName)
 		d.Set("export_meta", optionType.ExportMeta)
 		d.Set("dependent_field", optionType.DependsOnCode)
 		d.Set("visibility_field", optionType.VisibleOnCode)
+		d.Set("require_field", optionType.RequireOnCode)
+		d.Set("show_on_edit", optionType.ShowOnEdit)
+		d.Set("editable", optionType.Editable)
 		d.Set("display_value_on_details", optionType.DisplayValueOnDetails)
-		d.Set("type", optionType.Type)
 		d.Set("field_label", optionType.FieldLabel)
-		d.Set("default_checked", optionType.DefaultValue)
+		if optionType.DefaultValue == "on" {
+			d.Set("default_checked", true)
+		} else {
+			d.Set("default_checked", true)
+		}
 	} else {
 		return diag.Errorf("read operation: option type not found in response data") // should not happen
 	}
@@ -180,20 +229,35 @@ func resourceCheckboxOptionTypeUpdate(ctx context.Context, d *schema.ResourceDat
 	id := d.Id()
 	name := d.Get("name").(string)
 	description := d.Get("description").(string)
-
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+	var defaultCheck string
+	if d.Get("default_checked").(bool) {
+		defaultCheck = "on"
+	} else {
+		defaultCheck = "off"
+	}
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"optionType": map[string]interface{}{
 				"name":                  name,
 				"description":           description,
+				"labels":                labelsPayload,
 				"fieldName":             d.Get("field_name").(string),
 				"exportMeta":            d.Get("export_meta"),
 				"dependsOnCode":         d.Get("dependent_field").(string),
 				"visibleOnCode":         d.Get("visibility_field"),
+				"requireOnCode":         d.Get("require_field").(string),
+				"showOnEdit":            d.Get("show_on_edit").(bool),
+				"editable":              d.Get("editable").(bool),
 				"displayValueOnDetails": d.Get("display_value_on_details"),
 				"type":                  "checkbox",
 				"fieldLabel":            d.Get("field_label").(string),
-				"defaultValue":          d.Get("default_checked").(string),
+				"defaultValue":          defaultCheck,
 			},
 		},
 	}

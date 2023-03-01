@@ -34,6 +34,13 @@ func resourceSelectListOptionType() *schema.Resource {
 				Description: "The description of the select list option type",
 				Optional:    true,
 			},
+			"labels": {
+				Type:        schema.TypeSet,
+				Description: "The organization labels associated with the option type (Only supported on Morpheus 5.5.3 or higher)",
+				Optional:    true,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+			},
 			"field_name": {
 				Type:        schema.TypeString,
 				Description: "The field name of the select list option type",
@@ -55,6 +62,24 @@ func resourceSelectListOptionType() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The field or code used to trigger the visibility of the field",
 				Optional:    true,
+			},
+			"require_field": {
+				Type:        schema.TypeString,
+				Description: "The field or code used to determine whether the field is required or not",
+				Optional:    true,
+				Computed:    true,
+			},
+			"show_on_edit": {
+				Type:        schema.TypeBool,
+				Description: "Whether the option type will display in the edit section of the provisioned resource",
+				Optional:    true,
+				Computed:    true,
+			},
+			"editable": {
+				Type:        schema.TypeBool,
+				Description: "Whether the value of the option type can be edited after the initial request",
+				Optional:    true,
+				Computed:    true,
 			},
 			"display_value_on_details": {
 				Type:        schema.TypeBool,
@@ -103,15 +128,25 @@ func resourceSelectListOptionTypeCreate(ctx context.Context, d *schema.ResourceD
 
 	name := d.Get("name").(string)
 	description := d.Get("description").(string)
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"optionType": map[string]interface{}{
 				"name":                  name,
 				"description":           description,
+				"labels":                labelsPayload,
 				"fieldName":             d.Get("field_name").(string),
 				"exportMeta":            d.Get("export_meta"),
 				"dependsOnCode":         d.Get("dependent_field").(string),
 				"visibleOnCode":         d.Get("visibility_field"),
+				"requireOnCode":         d.Get("require_field").(string),
+				"showOnEdit":            d.Get("show_on_edit").(bool),
+				"editable":              d.Get("editable").(bool),
 				"displayValueOnDetails": d.Get("display_value_on_details"),
 				"type":                  "select",
 				"fieldLabel":            d.Get("field_label"),
@@ -177,12 +212,15 @@ func resourceSelectListOptionTypeRead(ctx context.Context, d *schema.ResourceDat
 		d.SetId(int64ToString(optionType.ID))
 		d.Set("name", optionType.Name)
 		d.Set("description", optionType.Description)
+		d.Set("labels", optionType.Labels)
 		d.Set("field_name", optionType.FieldName)
 		d.Set("export_meta", optionType.ExportMeta)
 		d.Set("dependent_field", optionType.DependsOnCode)
 		d.Set("visibility_field", optionType.VisibleOnCode)
+		d.Set("require_field", optionType.RequireOnCode)
+		d.Set("show_on_edit", optionType.ShowOnEdit)
+		d.Set("editable", optionType.Editable)
 		d.Set("display_value_on_details", optionType.DisplayValueOnDetails)
-		d.Set("type", optionType.Type)
 		d.Set("field_label", optionType.FieldLabel)
 		d.Set("default_value", optionType.DefaultValue)
 		d.Set("help_block", optionType.HelpBlock)
@@ -201,16 +239,25 @@ func resourceSelectListOptionTypeUpdate(ctx context.Context, d *schema.ResourceD
 	id := d.Id()
 	name := d.Get("name").(string)
 	description := d.Get("description").(string)
-
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"optionType": map[string]interface{}{
 				"name":                  name,
 				"description":           description,
+				"labels":                labelsPayload,
 				"fieldName":             d.Get("field_name").(string),
 				"exportMeta":            d.Get("export_meta"),
 				"dependsOnCode":         d.Get("dependent_field").(string),
 				"visibleOnCode":         d.Get("visibility_field"),
+				"requireOnCode":         d.Get("require_field").(string),
+				"showOnEdit":            d.Get("show_on_edit").(bool),
+				"editable":              d.Get("editable").(bool),
 				"displayValueOnDetails": d.Get("display_value_on_details"),
 				"type":                  "select",
 				"fieldLabel":            d.Get("field_label"),

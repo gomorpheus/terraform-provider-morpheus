@@ -15,10 +15,14 @@ Provides a Morpheus hidden option type resource
 resource "morpheus_hidden_option_type" "tf_example_hidden_option_type" {
   name                     = "tf_example_hidden_option_type"
   description              = "Terraform hidden option type example"
+  labels                   = ["demo", "terraform"]
   field_name               = "hidden_example"
   export_meta              = true
   dependent_field          = "dependent_example"
   visibility_field         = "visibility_example"
+  require_field            = "require_example"
+  show_on_edit             = true
+  editable                 = true
   display_value_on_details = true
   default_value            = "example"
 }
@@ -37,8 +41,12 @@ resource "morpheus_hidden_option_type" "tf_example_hidden_option_type" {
 - `dependent_field` (String) The field or code used to trigger the reloading of the field
 - `description` (String) The description of the hidden option type
 - `display_value_on_details` (Boolean) Display the selected value of the number option type on the associated resource's details page
+- `editable` (Boolean) Whether the value of the option type can be edited after the initial request
 - `export_meta` (Boolean) Whether to export the hidden option type as a tag
 - `field_name` (String) The field name of the hidden option type
+- `labels` (Set of String) The organization labels associated with the option type (Only supported on Morpheus 5.5.3 or higher)
+- `require_field` (String) The field or code used to trigger the requirement of this field
+- `show_on_edit` (Boolean) Whether the option type will display in the edit section of the provisioned resource
 - `visibility_field` (String) The field or code used to trigger the visibility of the field
 
 ### Read-Only

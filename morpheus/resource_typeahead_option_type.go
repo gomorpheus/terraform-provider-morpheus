@@ -35,6 +35,13 @@ func resourceTypeAheadOptionType() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 			},
+			"labels": {
+				Type:        schema.TypeSet,
+				Description: "The organization labels associated with the option type (Only supported on Morpheus 5.5.3 or higher)",
+				Optional:    true,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+			},
 			"field_name": {
 				Type:        schema.TypeString,
 				Description: "The field name of the typeahead option type",
@@ -56,6 +63,24 @@ func resourceTypeAheadOptionType() *schema.Resource {
 			"visibility_field": {
 				Type:        schema.TypeString,
 				Description: "The field or code used to trigger the visibility of the field",
+				Optional:    true,
+				Computed:    true,
+			},
+			"require_field": {
+				Type:        schema.TypeString,
+				Description: "The field or code used to trigger the requirement of this field",
+				Optional:    true,
+				Computed:    true,
+			},
+			"show_on_edit": {
+				Type:        schema.TypeBool,
+				Description: "Whether the option type will display in the edit section of the provisioned resource",
+				Optional:    true,
+				Computed:    true,
+			},
+			"editable": {
+				Type:        schema.TypeBool,
+				Description: "Whether the value of the option type can be edited after the initial request",
 				Optional:    true,
 				Computed:    true,
 			},
@@ -95,6 +120,12 @@ func resourceTypeAheadOptionType() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 			},
+			"allow_multiple_selections": {
+				Type:        schema.TypeBool,
+				Description: "Whether to allow multiple options to be select",
+				Optional:    true,
+				Computed:    true,
+			},
 			"required": {
 				Type:        schema.TypeBool,
 				Description: "Whether the option type is required",
@@ -116,11 +147,25 @@ func resourceTypeAheadOptionTypeCreate(ctx context.Context, d *schema.ResourceDa
 
 	name := d.Get("name").(string)
 	description := d.Get("description").(string)
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+
+	var allowMultipleSelections string
+	if d.Get("allow_multiple_selections").(bool) {
+		allowMultipleSelections = "on"
+	} else {
+		allowMultipleSelections = "off"
+	}
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"optionType": map[string]interface{}{
 				"name":                  name,
 				"description":           description,
+				"labels":                labelsPayload,
 				"fieldName":             d.Get("field_name").(string),
 				"type":                  "typeahead",
 				"defaultValue":          d.Get("default_value").(string),
@@ -128,10 +173,16 @@ func resourceTypeAheadOptionTypeCreate(ctx context.Context, d *schema.ResourceDa
 				"displayValueOnDetails": d.Get("display_value_on_details"),
 				"exportMeta":            d.Get("export_meta").(bool),
 				"visibleOnCode":         d.Get("visibility_field").(string),
+				"requireOnCode":         d.Get("require_field").(string),
+				"showOnEdit":            d.Get("show_on_edit").(bool),
+				"editable":              d.Get("editable").(bool),
 				"fieldLabel":            d.Get("field_label").(string),
 				"placeHolder":           d.Get("placeholder").(string),
 				"helpBlock":             d.Get("help_block").(string),
 				"required":              d.Get("required").(bool),
+				"config": map[string]interface{}{
+					"multiSelect": allowMultipleSelections,
+				},
 				"optionList": map[string]interface{}{
 					"id": d.Get("option_list_id").(int),
 				},
@@ -192,19 +243,26 @@ func resourceTypeAheadOptionTypeRead(ctx context.Context, d *schema.ResourceData
 		d.SetId(int64ToString(optionType.ID))
 		d.Set("name", optionType.Name)
 		d.Set("description", optionType.Description)
+		d.Set("labels", optionType.Labels)
 		d.Set("field_name", optionType.FieldName)
-		d.Set("type", optionType.Type)
-		d.Set("default_value", optionType.DefaultValue)
-		d.Set("dependent_field", optionType.DependsOnCode)
-		d.Set("required", optionType.Required)
 		d.Set("export_meta", optionType.ExportMeta)
-		d.Set("help_block", optionType.HelpBlock)
-		d.Set("placeholder", optionType.PlaceHolder)
-		d.Set("field_label", optionType.FieldLabel)
-		d.Set("help_block", optionType.HelpBlock)
-		d.Set("required", optionType.Required)
+		d.Set("dependent_field", optionType.DependsOnCode)
 		d.Set("visibility_field", optionType.VisibleOnCode)
+		d.Set("require_field", optionType.RequireOnCode)
+		d.Set("show_on_edit", optionType.ShowOnEdit)
+		d.Set("editable", optionType.Editable)
+		d.Set("display_value_on_details", optionType.DisplayValueOnDetails)
+		d.Set("field_label", optionType.FieldLabel)
+		d.Set("placeholder", optionType.PlaceHolder)
+		d.Set("default_value", optionType.DefaultValue)
+		d.Set("help_block", optionType.HelpBlock)
 		d.Set("option_list_id", optionType.OptionList.ID)
+		if optionType.Config.MultiSelect == nil || optionType.Config.MultiSelect == "off" {
+			d.Set("allow_multiple_selections", false)
+		} else {
+			d.Set("allow_multiple_selections", true)
+		}
+		d.Set("required", optionType.Required)
 	} else {
 		log.Println(optionType)
 		return diag.Errorf("read operation: option type not found in response data") // should not happen
@@ -218,12 +276,24 @@ func resourceTypeAheadOptionTypeUpdate(ctx context.Context, d *schema.ResourceDa
 	id := d.Id()
 	name := d.Get("name").(string)
 	description := d.Get("description").(string)
-
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+	var allowMultipleSelections string
+	if d.Get("allow_multiple_selections").(bool) {
+		allowMultipleSelections = "on"
+	} else {
+		allowMultipleSelections = "off"
+	}
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"optionType": map[string]interface{}{
 				"name":                  name,
 				"description":           description,
+				"labels":                labelsPayload,
 				"fieldName":             d.Get("field_name").(string),
 				"type":                  "typeahead",
 				"defaultValue":          d.Get("default_value").(string),
@@ -231,10 +301,16 @@ func resourceTypeAheadOptionTypeUpdate(ctx context.Context, d *schema.ResourceDa
 				"displayValueOnDetails": d.Get("display_value_on_details"),
 				"exportMeta":            d.Get("export_meta").(bool),
 				"visibleOnCode":         d.Get("visibility_field").(string),
+				"requireOnCode":         d.Get("require_field").(string),
+				"showOnEdit":            d.Get("show_on_edit").(bool),
+				"editable":              d.Get("editable").(bool),
 				"fieldLabel":            d.Get("field_label").(string),
 				"placeHolder":           d.Get("placeholder").(string),
 				"helpBlock":             d.Get("help_block").(string),
 				"required":              d.Get("required").(bool),
+				"config": map[string]interface{}{
+					"multiSelect": allowMultipleSelections,
+				},
 				"optionList": map[string]interface{}{
 					"id": d.Get("option_list_id").(int),
 				},
