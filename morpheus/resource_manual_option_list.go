@@ -43,10 +43,9 @@ func resourceManualOptionList() *schema.Resource {
 				Default:      "private",
 			},
 			"dataset": {
-				Type:             schema.TypeString,
-				Description:      "The dataset for the manual option list",
-				Optional:         true,
-				DiffSuppressFunc: suppressEquivalentJsonDiffs,
+				Type:        schema.TypeString,
+				Description: "The dataset for the manual option list",
+				Optional:    true,
 			},
 			"real_time": {
 				Type:        schema.TypeBool,
