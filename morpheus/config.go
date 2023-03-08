@@ -19,8 +19,7 @@ type Config struct {
 
 	Insecure bool
 
-	client    *morpheus.Client
-	userAgent string
+	client *morpheus.Client
 }
 
 func (c *Config) Client() (*morpheus.Client, diag.Diagnostics) {

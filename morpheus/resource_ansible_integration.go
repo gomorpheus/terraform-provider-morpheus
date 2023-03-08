@@ -107,7 +107,7 @@ func resourceAnsibleIntegration() *schema.Resource {
 					h := sha256.New()
 					h.Write([]byte(new))
 					sha256_hash := hex.EncodeToString(h.Sum(nil))
-					return strings.ToLower(old) == strings.ToLower(sha256_hash)
+					return strings.EqualFold(old, sha256_hash)
 				},
 				DiffSuppressOnRefresh: true,
 			},
@@ -121,7 +121,7 @@ func resourceAnsibleIntegration() *schema.Resource {
 					h := sha256.New()
 					h.Write([]byte(new))
 					sha256_hash := hex.EncodeToString(h.Sum(nil))
-					return strings.ToLower(old) == strings.ToLower(sha256_hash)
+					return strings.EqualFold(old, sha256_hash)
 				},
 			},
 			"key_pair_id": {
@@ -162,7 +162,7 @@ func resourceAnsibleIntegrationCreate(ctx context.Context, d *schema.ResourceDat
 
 	config := make(map[string]interface{})
 	config["defaultBranch"] = d.Get("default_branch").(string)
-        config["ansibleDefaultBranch"] = d.Get("default_branch").(string)
+	config["ansibleDefaultBranch"] = d.Get("default_branch").(string)
 	config["cacheEnabled"] = d.Get("enable_git_caching").(bool)
 	config["ansiblePlaybooks"] = d.Get("playbooks_path").(string)
 	config["ansibleRoles"] = d.Get("roles_path").(string)
@@ -266,7 +266,7 @@ func resourceAnsibleIntegrationUpdate(ctx context.Context, d *schema.ResourceDat
 
 	config := make(map[string]interface{})
 	config["defaultBranch"] = d.Get("default_branch").(string)
-        config["ansibleDefaultBranch"] = d.Get("default_branch").(string)
+	config["ansibleDefaultBranch"] = d.Get("default_branch").(string)
 	config["cacheEnabled"] = d.Get("enable_git_caching").(bool)
 	config["ansiblePlaybooks"] = d.Get("playbooks_path").(string)
 	config["ansibleRoles"] = d.Get("roles_path").(string)
