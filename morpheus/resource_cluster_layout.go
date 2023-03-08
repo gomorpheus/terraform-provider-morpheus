@@ -530,29 +530,6 @@ func parseClusterLayoutNodePools(variables []interface{}) []map[string]interface
 	return nodepools
 }
 
-func readClusterLayoutNodePools(variables []interface{}) []map[string]interface{} {
-	var nodepools []map[string]interface{}
-	// iterate over the array of nodepools
-	for i := 0; i < len(variables); i++ {
-		row := make(map[string]interface{})
-		nodepoolconfig := variables[i].(map[string]interface{})
-		for k, v := range nodepoolconfig {
-			switch k {
-			case "count":
-				row["nodeCount"] = v.(int)
-			case "node_type_id":
-				node_type := make(map[string]interface{})
-				node_type["id"] = v.(int)
-				row["containerType"] = node_type
-			case "priority_order":
-				row["priorityOrder"] = v.(int)
-			}
-		}
-		nodepools = append(nodepools, row)
-	}
-	return nodepools
-}
-
 func parseClusterLayoutEnvironmentVariables(variables []interface{}) []map[string]interface{} {
 	var evars []map[string]interface{}
 	// iterate over the array of evars
