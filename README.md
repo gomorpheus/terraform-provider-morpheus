@@ -116,6 +116,7 @@ The following list of resources are supported by the Morpheus Terraform provider
 | [morpheus_user_role](docs/resources/user_role.md) | Morpheus user role resource |
 | [morpheus_vro_integration](docs/resources/vro_integration.md) | Morpheus VMware vRealize Orchestrator integration resource |
 | [morpheus_vro_task](docs/resources/vro_task.md) | Morpheus VMware vRealize Orchestrator task resource |
+| [morpheus_vsphere_cloud](docs/resources/vsphere_cloud.md) | Morpheus VMware vSphere cloud resource |
 | [morpheus_vsphere_instance](docs/resources/vsphere_instance.md) | Morpheus VMware vSphere instance resource |
 | [morpheus_wiki_page](docs/resources/wiki_page.md) | Morpheus wiki page resource for creating and managing wiki pages |
 | [morpheus_workflow_catalog_item](docs/resources/workflow_catalog_item.md) | Morpheus workflow catalog item resource for creating and managing operational workflow catalog items |
