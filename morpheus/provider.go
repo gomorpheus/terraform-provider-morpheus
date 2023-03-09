@@ -168,6 +168,7 @@ func Provider() *schema.Provider {
 			"morpheus_tenant":           dataSourceMorpheusTenant(),
 			"morpheus_user_group":       dataSourceMorpheusUserGroup(),
 			"morpheus_virtual_image":    dataSourceMorpheusVirtualImage(),
+			"morpheus_vro_workflow":     dataSourceMorpheusVrealizeOrchestratorWorkflow(),
 			"morpheus_workflow":         dataSourceMorpheusWorkflow(),
 		},
 		ConfigureContextFunc: providerConfigure,
