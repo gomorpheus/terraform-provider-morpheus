@@ -114,7 +114,8 @@ The following list of resources are supported by the Morpheus Terraform provider
 | [morpheus_user_creation_policy](docs/resources/user_creation_policy.md) | Morpheus user creation policy resource for configuring user creation based upon the group, cloud, role, user or globally |
 | [morpheus_user_group_creation_policy](docs/resources/user_group_creation_policy.md) | Morpheus user group creation policy resource for configuring user group creation based upon the group, cloud, role, user or globally |
 | [morpheus_user_role](docs/resources/user_role.md) | Morpheus user role resource |
-| [morpheus_vsphere_cloud](docs/resources/vsphere_cloud.md) | Morpheus VMware vSphere cloud resource |
+| [morpheus_vro_integration](docs/resources/vro_integration.md) | Morpheus VMware vRealize Orchestrator integration resource |
+| [morpheus_vro_task](docs/resources/vro_task.md) | Morpheus VMware vRealize Orchestrator task resource |
 | [morpheus_vsphere_instance](docs/resources/vsphere_instance.md) | Morpheus VMware vSphere instance resource |
 | [morpheus_wiki_page](docs/resources/wiki_page.md) | Morpheus wiki page resource for creating and managing wiki pages |
 | [morpheus_workflow_catalog_item](docs/resources/workflow_catalog_item.md) | Morpheus workflow catalog item resource for creating and managing operational workflow catalog items |
@@ -160,6 +161,7 @@ The following list of data sources are supported by the Morpheus Terraform provi
 | [morpheus_tenant](docs/data-sources/tenant.md) | Morpheus automation tenant data source |
 | [morpheus_user_group](docs/data-sources/user_group.md) | Morpheus user group data source |
 | [morpheus_virtual_image](docs/data-sources/virtual_image.md) | Morpheus virtual image data source |
+| [morpheus_vro_workflow](docs/data-sources/vro_workflow.md) | Morpheus VMware vRealize Orchestrator workflow data source |
 | [morpheus_workflow](docs/data-sources/workflow.md) | Morpheus workflow data source |
 
 ## Building the provider
