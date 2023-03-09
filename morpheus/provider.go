@@ -126,6 +126,7 @@ func Provider() *schema.Provider {
 			"morpheus_user_creation_policy":       resourceUserCreationPolicy(),
 			"morpheus_user_group_creation_policy": resourceUserGroupCreationPolicy(),
 			//			"morpheus_user_role":                  resourceUserRole(),
+			"morpheus_vro_integration":       resourceVrealizeOrchestratorIntegration(),
 			"morpheus_vsphere_cloud":         resourceVsphereCloud(),
 			"morpheus_vsphere_instance":      resourceVsphereInstance(),
 			"morpheus_wiki_page":             resourceWikiPage(),
