@@ -54,9 +54,10 @@ func resourceVrealizeOrchestratorTask() *schema.Resource {
 				Required:    true,
 			},
 			"body": {
-				Type:        schema.TypeString,
-				Description: "The JSON body to send to vRO",
-				Optional:    true,
+				Type:             schema.TypeString,
+				Description:      "The JSON body to send to vRO",
+				Optional:         true,
+				DiffSuppressFunc: suppressEquivalentJsonDiffs,
 			},
 			"execute_target": {
 				Type:        schema.TypeString,
