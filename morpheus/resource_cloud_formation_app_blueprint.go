@@ -159,8 +159,7 @@ func resourceCloudFormationAppBlueprintCreate(ctx context.Context, d *schema.Res
 			},
 		},
 	}
-	jsonRequest, _ := json.Marshal(req.Body)
-	log.Printf("API JSON REQUEST: %s", string(jsonRequest))
+
 	resp, err := client.CreateBlueprint(req)
 	if err != nil {
 		log.Printf("API FAILURE: %s - %s", resp, err)
@@ -292,7 +291,6 @@ func resourceCloudFormationAppBlueprintUpdate(ctx context.Context, d *schema.Res
 			},
 		},
 	}
-	log.Printf("API REQUEST: %s", req)
 	resp, err := client.UpdateBlueprint(toInt64(id), req)
 	if err != nil {
 		log.Printf("API FAILURE: %s - %s", resp, err)

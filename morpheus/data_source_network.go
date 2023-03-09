@@ -22,13 +22,13 @@ func dataSourceMorpheusNetwork() *schema.Resource {
 			},
 			"name": {
 				Type:          schema.TypeString,
-				Description:   "The name of the Morpheus network.",
+				Description:   "The name of the Morpheus network",
 				Optional:      true,
 				ConflictsWith: []string{"id"},
 			},
 			"active": {
 				Type:        schema.TypeBool,
-				Description: "Optional code for use with policies",
+				Description: "Whether the network is active or not",
 				Computed:    true,
 			},
 			"description": {

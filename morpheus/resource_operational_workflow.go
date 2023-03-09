@@ -2,7 +2,6 @@ package morpheus
 
 import (
 	"context"
-	"encoding/json"
 	"log"
 
 	"github.com/gomorpheus/morpheus-go-sdk"
@@ -108,8 +107,7 @@ func resourceOperationalWorkflowCreate(ctx context.Context, d *schema.ResourceDa
 			},
 		},
 	}
-	slcB, _ := json.Marshal(req.Body)
-	log.Printf("API JSON REQUEST: %s", string(slcB))
+
 	resp, err := client.CreateTaskSet(req)
 	if err != nil {
 		log.Printf("API FAILURE: %s - %s", resp, err)

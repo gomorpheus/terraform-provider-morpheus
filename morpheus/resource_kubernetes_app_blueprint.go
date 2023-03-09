@@ -147,8 +147,7 @@ func resourceKubernetesAppBlueprintCreate(ctx context.Context, d *schema.Resourc
 			},
 		},
 	}
-	jsonRequest, _ := json.Marshal(req.Body)
-	log.Printf("API JSON REQUEST: %s", string(jsonRequest))
+
 	resp, err := client.CreateBlueprint(req)
 	if err != nil {
 		log.Printf("API FAILURE: %s - %s", resp, err)

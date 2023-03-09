@@ -33,11 +33,20 @@ func resourceNumberOptionType() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The description of the number option type",
 				Optional:    true,
+				Computed:    true,
+			},
+			"labels": {
+				Type:        schema.TypeSet,
+				Description: "The organization labels associated with the option type (Only supported on Morpheus 5.5.3 or higher)",
+				Optional:    true,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
 			},
 			"field_name": {
 				Type:        schema.TypeString,
 				Description: "The field name of the number option type",
 				Optional:    true,
+				Computed:    true,
 			},
 			"export_meta": {
 				Type:        schema.TypeBool,
@@ -49,11 +58,31 @@ func resourceNumberOptionType() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The field or code used to trigger the reloading of the field",
 				Optional:    true,
+				Computed:    true,
 			},
 			"visibility_field": {
 				Type:        schema.TypeString,
 				Description: "The field or code used to trigger the visibility of the field",
 				Optional:    true,
+				Computed:    true,
+			},
+			"require_field": {
+				Type:        schema.TypeString,
+				Description: "The field or code used to trigger the requirement of this field",
+				Optional:    true,
+				Computed:    true,
+			},
+			"show_on_edit": {
+				Type:        schema.TypeBool,
+				Description: "Whether the option type will display in the edit section of the provisioned resource",
+				Optional:    true,
+				Computed:    true,
+			},
+			"editable": {
+				Type:        schema.TypeBool,
+				Description: "Whether the value of the option type can be edited after the initial request",
+				Optional:    true,
+				Computed:    true,
 			},
 			"display_value_on_details": {
 				Type:        schema.TypeBool,
@@ -65,21 +94,25 @@ func resourceNumberOptionType() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The label associated with the field in the UI",
 				Optional:    true,
+				Computed:    true,
 			},
 			"placeholder": {
 				Type:        schema.TypeString,
-				Description: "Number in the field used as a placeholder for example purposes",
+				Description: "Text in the field used as a placeholder for example purposes",
 				Optional:    true,
+				Computed:    true,
 			},
 			"default_value": {
 				Type:        schema.TypeString,
 				Description: "The default value of the option type",
 				Optional:    true,
+				Computed:    true,
 			},
 			"help_block": {
 				Type:        schema.TypeString,
-				Description: "Number that provides additional details about the use of the option type",
+				Description: "Text that provides additional details about the use of the option type",
 				Optional:    true,
+				Computed:    true,
 			},
 			"required": {
 				Type:        schema.TypeBool,
@@ -102,20 +135,30 @@ func resourceNumberOptionTypeCreate(ctx context.Context, d *schema.ResourceData,
 
 	name := d.Get("name").(string)
 	description := d.Get("description").(string)
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"optionType": map[string]interface{}{
 				"name":                  name,
 				"description":           description,
+				"labels":                labelsPayload,
 				"fieldName":             d.Get("field_name").(string),
-				"type":                  "number",
-				"defaultValue":          d.Get("default_value").(string),
-				"dependsOnCode":         d.Get("dependent_field").(string),
-				"displayValueOnDetails": d.Get("display_value_on_details"),
 				"exportMeta":            d.Get("export_meta"),
+				"dependsOnCode":         d.Get("dependent_field").(string),
 				"visibleOnCode":         d.Get("visibility_field"),
+				"requireOnCode":         d.Get("require_field").(string),
+				"showOnEdit":            d.Get("show_on_edit").(bool),
+				"editable":              d.Get("editable").(bool),
+				"displayValueOnDetails": d.Get("display_value_on_details"),
+				"type":                  "number",
 				"fieldLabel":            d.Get("field_label"),
 				"placeHolder":           d.Get("placeholder"),
+				"defaultValue":          d.Get("default_value").(string),
 				"helpBlock":             d.Get("help_block"),
 				"required":              d.Get("required"),
 			},
@@ -174,17 +217,20 @@ func resourceNumberOptionTypeRead(ctx context.Context, d *schema.ResourceData, m
 		d.SetId(int64ToString(optionType.ID))
 		d.Set("name", optionType.Name)
 		d.Set("description", optionType.Description)
+		d.Set("labels", optionType.Labels)
 		d.Set("field_name", optionType.FieldName)
-		d.Set("default_value", optionType.DefaultValue)
-		d.Set("dependent_field", optionType.DependsOnCode)
-		d.Set("required", optionType.Required)
 		d.Set("export_meta", optionType.ExportMeta)
-		d.Set("help_block", optionType.HelpBlock)
-		d.Set("placeholder", optionType.PlaceHolder)
+		d.Set("dependent_field", optionType.DependsOnCode)
+		d.Set("visibility_field", optionType.VisibleOnCode)
+		d.Set("require_field", optionType.RequireOnCode)
+		d.Set("show_on_edit", optionType.ShowOnEdit)
+		d.Set("editable", optionType.Editable)
+		d.Set("display_value_on_details", optionType.DisplayValueOnDetails)
 		d.Set("field_label", optionType.FieldLabel)
+		d.Set("placeholder", optionType.PlaceHolder)
+		d.Set("default_value", optionType.DefaultValue)
 		d.Set("help_block", optionType.HelpBlock)
 		d.Set("required", optionType.Required)
-		d.Set("visibility_field", optionType.VisibleOnCode)
 	} else {
 		log.Println(optionType)
 		return diag.Errorf("read operation: option type not found in response data") // should not happen
@@ -198,27 +244,35 @@ func resourceNumberOptionTypeUpdate(ctx context.Context, d *schema.ResourceData,
 	id := d.Id()
 	name := d.Get("name").(string)
 	description := d.Get("description").(string)
-
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"optionType": map[string]interface{}{
 				"name":                  name,
 				"description":           description,
+				"labels":                labelsPayload,
 				"fieldName":             d.Get("field_name").(string),
-				"type":                  "number",
-				"defaultValue":          d.Get("default_value").(string),
-				"dependsOnCode":         d.Get("dependent_field").(string),
-				"displayValueOnDetails": d.Get("display_value_on_details"),
 				"exportMeta":            d.Get("export_meta"),
+				"dependsOnCode":         d.Get("dependent_field").(string),
 				"visibleOnCode":         d.Get("visibility_field"),
+				"requireOnCode":         d.Get("require_field").(string),
+				"showOnEdit":            d.Get("show_on_edit").(bool),
+				"editable":              d.Get("editable").(bool),
+				"displayValueOnDetails": d.Get("display_value_on_details"),
+				"type":                  "number",
 				"fieldLabel":            d.Get("field_label"),
 				"placeHolder":           d.Get("placeholder"),
+				"defaultValue":          d.Get("default_value").(string),
 				"helpBlock":             d.Get("help_block"),
 				"required":              d.Get("required"),
 			},
 		},
 	}
-	log.Printf("API REQUEST: %s", req)
 	resp, err := client.UpdateOptionType(toInt64(id), req)
 	if err != nil {
 		log.Printf("API FAILURE: %s - %s", resp, err)

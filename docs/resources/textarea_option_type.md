@@ -15,11 +15,12 @@ Provides a Morpheus textarea option type resource
 resource "morpheus_textarea_option_type" "tf_example_textarea_option_type" {
   name                     = "tf_example_textarea_option_type"
   description              = "Terraform text area option type example"
+  labels                   = ["demo", "terraform"]
   field_name               = "textareaExample"
   export_meta              = true
-  dependent_field          = "upstreamExample"
-  visibility_field         = "upstreamExample"
-  require_field            = "upstreamExample"
+  dependent_field          = "dependent_example"
+  visibility_field         = "visibility_example"
+  require_field            = "require_example"
   show_on_edit             = true
   editable                 = true
   display_value_on_details = true
@@ -29,6 +30,7 @@ resource "morpheus_textarea_option_type" "tf_example_textarea_option_type" {
   default_value            = "example"
   help_block               = "Terraform text area option type example"
   required                 = true
+  verify_pattern           = "a\\D{4}"
 }
 ```
 
@@ -56,6 +58,7 @@ resource "morpheus_textarea_option_type" "tf_example_textarea_option_type" {
 - `required` (Boolean) Whether the option type is required
 - `rows` (String) The number of rows displayed for the text area
 - `show_on_edit` (Boolean) Whether the option type will display in the edit section of the provisioned resource
+- `verify_pattern` (String) The regex pattern used to validate the entered
 - `visibility_field` (String) The field or code used to trigger the visibility of the field
 
 ### Read-Only

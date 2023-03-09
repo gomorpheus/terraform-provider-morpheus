@@ -2,12 +2,31 @@
 
 NOTES:
 
-* The `morpheus-sdk` dependcy has been upgraded to version 0.2.8.
-* Fix the `morpheus_provisioning_workflow` resource to properly support the "all" platform setting options.
+* The `morpheus-sdk` dependcy has been upgraded to version 0.2.10.
+* Add label support for additional Morpheus resources.
+* Update inputs to support additional configuration parameters (i.e. - editable, verify pattern, etc).
 
 FEATURES:
 
+* **New Resource:** `morpheus_active_directory_identity_source`
+
+## 0.8.0 (February 23, 2023)
+
+NOTES:
+
+* The `morpheus-sdk` dependcy has been upgraded to version 0.2.9.
+* Fix the `morpheus_provisioning_workflow` resource to properly support the "all" platform setting options.
+* Add label support for various Morpheus resources.
+* Add custom option support for the `vsphere_instance` resource.
+* Fix issue #58 - Incorrect default monitoring check for node types.
+* Remove unnecessary request logging
+
+FEATURES:
+
+* **New Data Source:** `morpheus_network_group`
 * **New Resource:** `morpheus_api_option_list`
+* **New Resource:** `morpheus_app_blueprint_catalog_item`
+* **New Resource:** `morpheus_aws_cloud`
 * **New Resource:** `morpheus_radio_list_option_type`
 * **New Resource:** `morpheus_textarea_option_type`
 

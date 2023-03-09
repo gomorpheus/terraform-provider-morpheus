@@ -15,13 +15,17 @@ Provides a Morpheus checkbox option type resource
 resource "morpheus_checkbox_option_type" "tf_example_checkbox_option_type" {
   name                     = "tfcheckboxexample"
   description              = "Terraform checkbox option type example"
+  labels                   = ["demo", "terraform"]
   field_name               = "checkbox_example"
   export_meta              = true
   dependent_field          = "dependent_example"
   visibility_field         = "visibility_example"
+  require_field            = "require_example"
+  show_on_edit             = true
+  editable                 = true
   display_value_on_details = true
   field_label              = "Checkbox Example"
-  default_checked          = "on"
+  default_checked          = true
 }
 ```
 
@@ -36,11 +40,15 @@ resource "morpheus_checkbox_option_type" "tf_example_checkbox_option_type" {
 
 ### Optional
 
-- `default_checked` (String) Whether the checkbox option type is checked by default (on or off)
+- `default_checked` (Boolean) Whether the checkbox option type is checked by default
 - `dependent_field` (String) The field or code used to trigger the reloading of the field
 - `description` (String) The description of the checkbox option type
 - `display_value_on_details` (Boolean) Display the selected value of the checkbox option type on the associated resource's details page
+- `editable` (Boolean) Whether the value of the option type can be edited after the initial request
 - `export_meta` (Boolean) Whether to export the checkbox option type as a tag
+- `labels` (Set of String) The organization labels associated with the option type (Only supported on Morpheus 5.5.3 or higher)
+- `require_field` (String) The field or code used to trigger the requirement of this field
+- `show_on_edit` (Boolean) Whether the option type will display in the edit section of the provisioned resource
 - `visibility_field` (String) The field or code used to trigger the visibility of the field
 
 ### Read-Only

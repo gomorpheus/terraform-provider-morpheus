@@ -32,12 +32,15 @@ The following list of resources are supported by the Morpheus Terraform provider
 
 | Resource Name | Description |
 |------|---------------|
+| [morpheus_active_directory_identity_source](docs/resources/active_directory_identity_source.md) | Morpheus active directory identity source resource |
 | [morpheus_ansible_integration](docs/resources/ansible_integration.md) | Morpheus ansible_integration resource |
 | [morpheus_ansible_playbook_task](docs/resources/ansible_playbook_task.md) | Morpheus ansible playbook automation task resource |
 | [morpheus_ansible_tower_integration](docs/resources/ansible_tower_integration.md) | Morpheus ansible_tower_integration resource |
 | [morpheus_api_option_list](docs/resources/api_option_list.md) | Morpheus api_option_list resource |
+| [morpheus_app_blueprint_catalog_item](docs/resources/app_blueprint_catalog_item.md) | Morpheus app_blueprint_catalog_item resource |
 | [morpheus_arm_app_blueprint](docs/resources/arm_app_blueprint.md) | Morpheus ARM app blueprint resource |
 | [morpheus_arm_spec_template](docs/resources/arm_spec_template.md) | Morpheus ARM spec template resource |
+| [morpheus_aws_cloud](docs/resources/aws_cloud.md) | Morpheus AWS cloud integration resource |
 | [morpheus_backup_creation_policy](docs/resources/backup_creation_policy.md) | Morpheus backup creation policy resource |
 | [morpheus_backup_setting](docs/resources/backup_setting.md) | Morpheus backup setting resource |
 | [morpheus_boot_script](docs/resources/boot_script.md) | Morpheus boot script resource |
@@ -139,6 +142,7 @@ The following list of data sources are supported by the Morpheus Terraform provi
 | [morpheus_integration](docs/data-sources/integration.md) | Morpheus integration data source |
 | [morpheus_job](docs/data-sources/job.md) | Morpheus job data source |
 | [morpheus_network](docs/data-sources/network.md) | Morpheus network data source |
+| [morpheus_network_group](docs/data-sources/network_group.md) | Morpheus network group data source |
 | [morpheus_node_type](docs/data-sources/node_type.md) | Morpheus node type data source |
 | [morpheus_option_list](docs/data-sources/option_list.md) | Morpheus option list data source |
 | [morpheus_option_type](docs/data-sources/option_type.md) | Morpheus option type data source |

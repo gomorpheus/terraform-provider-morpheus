@@ -313,7 +313,6 @@ func resourceBackupCreationPolicyUpdate(ctx context.Context, d *schema.ResourceD
 			"policy": policy,
 		},
 	}
-	log.Printf("API REQUEST: %s", req)
 	resp, err := client.UpdatePolicy(toInt64(id), req)
 	if err != nil {
 		log.Printf("API FAILURE: %s - %s", resp, err)

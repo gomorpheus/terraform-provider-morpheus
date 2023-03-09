@@ -128,7 +128,6 @@ func resourceEmailTaskCreate(ctx context.Context, d *schema.ResourceData, meta i
 		},
 	}
 
-	log.Printf("API REQUEST: %s", req)
 	resp, err := client.CreateTask(req)
 	if err != nil {
 		log.Printf("API FAILURE: %s - %s", resp, err)
@@ -228,7 +227,6 @@ func resourceEmailTaskUpdate(ctx context.Context, d *schema.ResourceData, meta i
 		},
 	}
 
-	log.Printf("API REQUEST: %s", req)
 	resp, err := client.UpdateTask(toInt64(id), req)
 	if err != nil {
 		log.Printf("API FAILURE: %s - %s", resp, err)

@@ -126,6 +126,12 @@ func resourceTextAreaOptionType() *schema.Resource {
 				Optional:    true,
 				Default:     false,
 			},
+			"verify_pattern": {
+				Type:        schema.TypeString,
+				Description: "The regex pattern used to validate the entered",
+				Optional:    true,
+				Computed:    true,
+			},
 		},
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
@@ -160,16 +166,17 @@ func resourceTextAreaOptionTypeCreate(ctx context.Context, d *schema.ResourceDat
 				"requireOnCode":         d.Get("require_field").(string),
 				"showOnEdit":            d.Get("show_on_edit").(bool),
 				"editable":              d.Get("editable").(bool),
-				"displayValueOnDetails": d.Get("display_value_on_details"),
+				"displayValueOnDetails": d.Get("display_value_on_details").(bool),
 				"type":                  "textarea",
 				"fieldLabel":            d.Get("field_label").(string),
 				"config": map[string]interface{}{
 					"rows": d.Get("rows").(string),
 				},
-				"placeHolder":  d.Get("placeholder").(string),
-				"defaultValue": d.Get("default_value").(string),
-				"helpBlock":    d.Get("help_block").(string),
-				"required":     d.Get("required").(bool),
+				"placeHolder":   d.Get("placeholder").(string),
+				"defaultValue":  d.Get("default_value").(string),
+				"helpBlock":     d.Get("help_block").(string),
+				"required":      d.Get("required").(bool),
+				"verifyPattern": d.Get("verify_pattern").(string),
 			},
 		},
 	}
@@ -243,6 +250,7 @@ func resourceTextAreaOptionTypeRead(ctx context.Context, d *schema.ResourceData,
 		d.Set("default_value", optionType.DefaultValue)
 		d.Set("help_block", optionType.HelpBlock)
 		d.Set("required", optionType.Required)
+		d.Set("verify_pattern", optionType.VerifyPattern)
 	} else {
 		log.Println(optionType)
 		return diag.Errorf("read operation: option type not found in response data") // should not happen
@@ -274,20 +282,20 @@ func resourceTextAreaOptionTypeUpdate(ctx context.Context, d *schema.ResourceDat
 				"requireOnCode":         d.Get("require_field").(string),
 				"showOnEdit":            d.Get("show_on_edit").(bool),
 				"editable":              d.Get("editable").(bool),
-				"displayValueOnDetails": d.Get("display_value_on_details"),
+				"displayValueOnDetails": d.Get("display_value_on_details").(bool),
 				"type":                  "textarea",
 				"fieldLabel":            d.Get("field_label").(string),
 				"config": map[string]interface{}{
 					"rows": d.Get("rows").(string),
 				},
-				"placeHolder":  d.Get("placeholder").(string),
-				"defaultValue": d.Get("default_value").(string),
-				"helpBlock":    d.Get("help_block").(string),
-				"required":     d.Get("required").(bool),
+				"placeHolder":   d.Get("placeholder").(string),
+				"defaultValue":  d.Get("default_value").(string),
+				"helpBlock":     d.Get("help_block").(string),
+				"required":      d.Get("required").(bool),
+				"verifyPattern": d.Get("verify_pattern").(string),
 			},
 		},
 	}
-	log.Printf("API REQUEST: %s", req)
 	resp, err := client.UpdateOptionType(toInt64(id), req)
 	if err != nil {
 		log.Printf("API FAILURE: %s - %s", resp, err)

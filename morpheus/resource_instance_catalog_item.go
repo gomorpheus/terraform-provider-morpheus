@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"os"
+	"strings"
 
 	"log"
 
@@ -31,6 +32,13 @@ func resourceInstanceCatalogItem() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The name of the instance catalog item",
 				Required:    true,
+			},
+			"labels": {
+				Type:        schema.TypeSet,
+				Description: "The organization labels associated with the catalog item (Only supported on Morpheus 5.5.3 or higher)",
+				Optional:    true,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
 			},
 			"description": {
 				Type:        schema.TypeString,
@@ -120,6 +128,14 @@ func resourceInstanceCatalogItemCreate(ctx context.Context, d *schema.ResourceDa
 	json.Unmarshal([]byte(d.Get("config").(string)), &outjson)
 	catalogItem["config"] = outjson
 
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+	catalogItem["labels"] = labelsPayload
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"catalogItemType": catalogItem,
@@ -201,10 +217,23 @@ func resourceInstanceCatalogItemRead(ctx context.Context, d *schema.ResourceData
 	d.Set("description", catalogItem.Description)
 	d.Set("enabled", catalogItem.Enabled)
 	d.Set("featured", catalogItem.Featured)
-	d.Set("option_type_ids", catalogItem.OptionTypes)
+	// option types
+	var optionTypes []int64
+	if catalogItem.OptionTypes != nil {
+		// iterate over the array of tasks
+		for i := 0; i < len(catalogItem.OptionTypes); i++ {
+			option := catalogItem.OptionTypes[i].(map[string]interface{})
+			optionID := int64(option["id"].(float64))
+			optionTypes = append(optionTypes, optionID)
+		}
+	}
+	d.Set("option_type_ids", optionTypes)
 	d.Set("content", catalogItem.Content)
-	d.Set("context_type", catalogItem.Context)
-
+	d.Set("config", catalogItem.Config)
+	d.Set("labels", catalogItem.Labels)
+	imagePath := strings.Split(catalogItem.ImagePath, "/")
+	opt := strings.Replace(imagePath[len(imagePath)-1], "_original", "", 1)
+	d.Set("image_path", opt)
 	return diags
 }
 
@@ -230,12 +259,20 @@ func resourceInstanceCatalogItemUpdate(ctx context.Context, d *schema.ResourceDa
 	json.Unmarshal([]byte(d.Get("config").(string)), &outjson)
 	catalogItem["config"] = outjson
 
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+	catalogItem["labels"] = labelsPayload
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"catalogItemType": catalogItem,
 		},
 	}
-	log.Printf("API REQUEST: %s", req)
+
 	resp, err := client.UpdateCatalogItem(toInt64(id), req)
 	if err != nil {
 		log.Printf("API FAILURE: %s - %s", resp, err)
@@ -258,7 +295,7 @@ func resourceInstanceCatalogItemUpdate(ctx context.Context, d *schema.ResourceDa
 			FileContent:   data,
 		}
 		filePayloads = append(filePayloads, filePayload)
-		client.UpdateInstanceTypeLogo(catalogItemResult.ID, filePayloads, &morpheus.Request{})
+		client.UpdateCatalogItemLogo(catalogItemResult.ID, filePayloads, &morpheus.Request{})
 	}
 
 	// Successfully updated resource, now set id

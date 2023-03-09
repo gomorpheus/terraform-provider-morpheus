@@ -337,7 +337,6 @@ func resourcePriceUpdate(ctx context.Context, d *schema.ResourceData, meta inter
 			"price": price,
 		},
 	}
-	log.Printf("API REQUEST: %s", req)
 	resp, err := client.UpdatePrice(toInt64(id), req)
 	if err != nil {
 		log.Printf("API FAILURE: %s - %s", resp, err)
