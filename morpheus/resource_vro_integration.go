@@ -100,9 +100,8 @@ func resourceVrealizeOrchestratorIntegrationCreate(ctx context.Context, d *schem
 	integration["serviceUrl"] = d.Get("url").(string)
 	integration["serviceUsername"] = d.Get("username").(string)
 	integration["servicePassword"] = d.Get("password").(string)
-	//integration["token"] = d.Get("tenant").(string)
 	integration["serviceToken"] = d.Get("tenant").(string)
-	integration["authId"] = " "
+	integration["authId"] = ""
 	integration["authType"] = d.Get("auth_type").(string)
 
 	req := &morpheus.Request{
@@ -167,6 +166,7 @@ func resourceVrealizeOrchestratorIntegrationRead(ctx context.Context, d *schema.
 	d.Set("username", integration.Username)
 	d.Set("password", integration.PasswordHash)
 	d.Set("tenant", integration.TokenHash)
+	//d.Set("auth_type", integration.Config)
 	return diags
 }
 
@@ -203,7 +203,7 @@ func resourceVrealizeOrchestratorIntegrationUpdate(ctx context.Context, d *schem
 	// Successfully updated resource, now set id
 	// err, it should not have changed though..
 	d.SetId(int64ToString(integrationResult.ID))
-	return resourceAnsibleIntegrationRead(ctx, d, meta)
+	return resourceVrealizeOrchestratorIntegrationRead(ctx, d, meta)
 }
 
 func resourceVrealizeOrchestratorIntegrationDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {

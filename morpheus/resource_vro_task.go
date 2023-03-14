@@ -15,7 +15,7 @@ import (
 
 func resourceVrealizeOrchestratorTask() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Provides a Morpheus powershell script task resource",
+		Description:   "Provides a Morpheus vRealize Orchestrator (vRO) task resource",
 		CreateContext: resourceVrealizeOrchestratorTaskCreate,
 		ReadContext:   resourceVrealizeOrchestratorTaskRead,
 		UpdateContext: resourceVrealizeOrchestratorTaskUpdate,
@@ -36,12 +36,14 @@ func resourceVrealizeOrchestratorTask() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The code of the vRO workflow task",
 				Optional:    true,
+				Computed:    true,
 			},
 			"result_type": {
 				Type:         schema.TypeString,
 				Description:  "The expected result type (value, keyValue, json)",
 				ValidateFunc: validation.StringInSlice([]string{"value", "keyValue", "json"}, false),
 				Optional:     true,
+				Computed:     true,
 			},
 			"vro_integration_id": {
 				Type:        schema.TypeInt,
@@ -61,7 +63,7 @@ func resourceVrealizeOrchestratorTask() *schema.Resource {
 			},
 			"execute_target": {
 				Type:        schema.TypeString,
-				Description: "The target that the ansible playbook will be executed on",
+				Description: "The target that the vRO workflow will be executed on",
 				Optional:    true,
 			},
 			"retryable": {
@@ -84,7 +86,7 @@ func resourceVrealizeOrchestratorTask() *schema.Resource {
 			},
 			"allow_custom_config": {
 				Type:        schema.TypeBool,
-				Description: "Custom configuration data to pass during the execution of the shell script",
+				Description: "Custom configuration data to pass during the execution of the vRO workflow task",
 				Optional:    true,
 				Default:     false,
 			},
@@ -138,9 +140,8 @@ func resourceVrealizeOrchestratorTaskCreate(ctx context.Context, d *schema.Resou
 	task := result.Task
 	// Successfully created resource, now set id
 	d.SetId(int64ToString(task.ID))
-	log.Printf("Task ID: %s", int64ToString(task.ID))
 
-	resourcePowerShellScriptTaskRead(ctx, d, meta)
+	resourceVrealizeOrchestratorTaskRead(ctx, d, meta)
 	return diags
 }
 
@@ -241,7 +242,7 @@ func resourceVrealizeOrchestratorTaskUpdate(ctx context.Context, d *schema.Resou
 	// Successfully updated resource, now set id
 	// err, it should not have changed though..
 	d.SetId(int64ToString(shellScriptTask.ID))
-	return resourcePowerShellScriptTaskRead(ctx, d, meta)
+	return resourceVrealizeOrchestratorTaskRead(ctx, d, meta)
 }
 
 func resourceVrealizeOrchestratorTaskDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {

@@ -8,7 +8,10 @@ NOTES:
 
 FEATURES:
 
+* **New Data Source:** `morpheus_vro_workflow`
 * **New Resource:** `morpheus_active_directory_identity_source`
+* **New Resource:** `morpheus_vro_integration`
+* **New Resource:** `morpheus_vro_task`
 
 ## 0.8.0 (February 23, 2023)
 
