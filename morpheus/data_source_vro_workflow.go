@@ -24,7 +24,7 @@ func dataSourceMorpheusVrealizeOrchestratorWorkflow() *schema.Resource {
 			},
 			"name": {
 				Type:          schema.TypeString,
-				Description:   "The name of the option type",
+				Description:   "The name of the vRealize orchestrator workflow",
 				Optional:      true,
 				ConflictsWith: []string{"value"},
 			},
