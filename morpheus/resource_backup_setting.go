@@ -79,15 +79,23 @@ func resourceBackupSettingCreate(ctx context.Context, d *schema.ResourceData, me
 				"backupsEnabled":  d.Get("scheduled_backups").(bool),
 				"createBackups":   d.Get("create_backups").(bool),
 				"backupAppliance": d.Get("backup_appliance").(bool),
-				"defaultStorageBucket": map[string]interface{}{
-					"id": d.Get("default_backup_storage_bucket_id").(int),
-				},
-				"defaultSchedule": map[string]interface{}{
-					"id": d.Get("default_backup_schedule_id").(int),
-				},
-				"retentionCount": d.Get("retention_days").(int),
+				"retentionCount":  d.Get("retention_days").(int),
 			},
 		},
+	}
+
+	var defaultStorageBucketId = d.Get("default_backup_storage_bucket_id").(int)
+	if defaultStorageBucketId != 0 {
+		req.Body["defaultStorageBucket"] = map[string]interface{}{
+			"id": defaultStorageBucketId,
+		}
+	}
+
+	var defaultBackupScheduleId = d.Get("default_backup_schedule_id").(int)
+	if defaultBackupScheduleId != 0 {
+		req.Body["defaultSchedule"] = map[string]interface{}{
+			"id": defaultBackupScheduleId,
+		}
 	}
 
 	resp, err := client.UpdateBackupSettings(req)
@@ -151,16 +159,26 @@ func resourceBackupSettingUpdate(ctx context.Context, d *schema.ResourceData, me
 				"backupsEnabled":  d.Get("scheduled_backups").(bool),
 				"createBackups":   d.Get("create_backups").(bool),
 				"backupAppliance": d.Get("backup_appliance").(bool),
-				"defaultStorageBucket": map[string]interface{}{
-					"id": d.Get("default_backup_storage_bucket_id").(int),
-				},
-				"defaultSchedule": map[string]interface{}{
-					"id": d.Get("default_backup_schedule_id").(int),
-				},
-				"retentionCount": d.Get("retention_days").(int),
+				"retentionCount":  d.Get("retention_days").(int),
 			},
 		},
 	}
+
+	var defaultStorageBucketId = d.Get("default_backup_storage_bucket_id").(int)
+	if defaultStorageBucketId != 0 {
+		req.Body["defaultStorageBucket"] = map[string]interface{}{
+			"id": defaultStorageBucketId,
+		}
+	}
+
+	var defaultBackupScheduleId = d.Get("default_backup_schedule_id").(int)
+	if defaultBackupScheduleId != 0 {
+		req.Body["defaultSchedule"] = map[string]interface{}{
+			"id": defaultBackupScheduleId,
+		}
+	}
+
+	log.Printf("API Update: %s", req)
 
 	resp, err := client.UpdateBackupSettings(req)
 	if err != nil {
