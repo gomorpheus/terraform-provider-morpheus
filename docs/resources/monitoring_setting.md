@@ -14,18 +14,18 @@ Provides a Morpheus monitoring setting resource.
 ```terraform
 resource "morpheus_monitoring_setting" "tf_example_guidance_setting" {
   morpheus_auto_create_checks         = true
-  morpheus_availability_time_frame    = ""
-  morpheus_availability_precision     = ""
-  morpheus_default_check_interval     = ""
-  servicenow_monitoring_enabled       = false
+  morpheus_availability_time_frame    = 30
+  morpheus_availability_precision     = 4
+  morpheus_default_check_interval     = 120
+  servicenow_monitoring_enabled       = true
   servicenow_integration_id           = 1
-  servicenow_new_incident_action      = ""
-  servicenow_close_incident_action    = ""
-  servicenow_severity_info_impact     = ""
-  servicenow_severity_warning_impact  = ""
-  servicenow_severity_critical_impact = ""
-  new_relic_monitoring_enabled        = false
-  new_relic_license_key               = ""
+  servicenow_new_incident_action      = "create"
+  servicenow_close_incident_action    = "activity"
+  servicenow_severity_info_impact     = "high"
+  servicenow_severity_warning_impact  = "high"
+  servicenow_severity_critical_impact = "low"
+  new_relic_monitoring_enabled        = true
+  new_relic_license_key               = "ABC123"
 }
 ```
 
@@ -40,10 +40,10 @@ resource "morpheus_monitoring_setting" "tf_example_guidance_setting" {
 - `morpheus_default_check_interval` (Number) The default interval in minutes to use when creating new checks (1, 2, 3, 4, 5, 10, 15, 20, 25, 30, 45, 60, 120, 180)
 - `new_relic_license_key` (String) The New Relic license key
 - `new_relic_monitoring_enabled` (Boolean) Whether the New Relic monitoring integration is enabled
-- `servicenow_close_incident_action` (String) The Service Now action to take when a Morpheus incident is closed
+- `servicenow_close_incident_action` (String) The Service Now action to take when a Morpheus incident is closed (activity, close, none)
 - `servicenow_integration_id` (Number) The id of the ServiceNow monitoring integration
 - `servicenow_monitoring_enabled` (Boolean) Whether the ServiceNow monitoring integration is enabled
-- `servicenow_new_incident_action` (String) The Service Now action to take when a Morpheus incident is created
+- `servicenow_new_incident_action` (String) The Service Now action to take when a Morpheus incident is created (create, none)
 - `servicenow_severity_critical_impact` (String) The ServiceNow impact level to map to the Morpheus critical severity (high, medium, low)
 - `servicenow_severity_info_impact` (String) The ServiceNow impact level to map to the Morpheus info severity (high, medium, low)
 - `servicenow_severity_warning_impact` (String) The ServiceNow impact level to map to the Morpheus warning severity (high, medium, low)

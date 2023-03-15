@@ -68,16 +68,18 @@ func resourceMonitoringSetting() *schema.Resource {
 			},
 			"servicenow_new_incident_action": {
 				Type:         schema.TypeString,
-				Description:  "The Service Now action to take when a Morpheus incident is created",
+				Description:  "The Service Now action to take when a Morpheus incident is created (create, none)",
 				Optional:     true,
 				Computed:     true,
+				ValidateFunc: validation.StringInSlice([]string{"create", "none"}, false),
 				RequiredWith: []string{"servicenow_monitoring_enabled"},
 			},
 			"servicenow_close_incident_action": {
 				Type:         schema.TypeString,
-				Description:  "The Service Now action to take when a Morpheus incident is closed",
+				Description:  "The Service Now action to take when a Morpheus incident is closed (activity, close, none)",
 				Optional:     true,
 				Computed:     true,
+				ValidateFunc: validation.StringInSlice([]string{"activity", "close", "none"}, false),
 				RequiredWith: []string{"servicenow_monitoring_enabled"},
 			},
 			"servicenow_severity_info_impact": {
