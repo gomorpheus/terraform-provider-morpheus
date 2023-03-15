@@ -94,6 +94,7 @@ func Provider() *schema.Provider {
 			"morpheus_max_storage_policy":         resourceMaxStoragePolicy(),
 			"morpheus_max_vms_policy":             resourceMaxVmsPolicy(),
 			"morpheus_motd_policy":                resourceMotdPolicy(),
+			"morpheus_nested_workflow_task":       resourceNestedWorkflowTask(),
 			"morpheus_network_domain":             resourceNetworkDomain(),
 			"morpheus_network_quota_policy":       resourceNetworkQuotaPolicy(),
 			"morpheus_node_type":                  resourceNodeType(),
