@@ -79,6 +79,7 @@ The following list of resources are supported by the Morpheus Terraform provider
 | [morpheus_max_memory_policy](docs/resources/max_memory_policy.md) | Morpheus max memory policy resource |
 | [morpheus_max_storage_policy](docs/resources/max_storage_policy.md) | Morpheus max storage policy resource |
 | [morpheus_max_vms_policy](docs/resources/max_vms_policy.md) | Morpheus max vms policy resource |
+| [morpheus_monitoring_setting](docs/resources/monitoring_setting.md) | Morpheus monitoring setting resource |
 | [morpheus_motd_policy](docs/resources/motd_policy.md) | Morpheus message of the day policy resource |
 | [morpheus_network_domain](docs/resources/network_domain.md) | Morpheus network domain resource |
 | [morpheus_network_quota_policy](docs/resources/network_quota_policy.md) | Morpheus network quota policy resource |

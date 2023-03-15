@@ -1,0 +1,1 @@
+terraform import morpheus_monitoring_setting.tf_example_monitoring_config 1
