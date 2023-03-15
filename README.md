@@ -61,6 +61,7 @@ The following list of resources are supported by the Morpheus Terraform provider
 | [morpheus_git_integration](docs/resources/git_integration.md) | Morpheus git_integration resource |
 | [morpheus_groovy_task](docs/resources/groovy_script_task.md) | Morpheus groovy script task resource |
 | [morpheus_group](docs/resources/group.md) | Morpheus group resource |
+| [morpheus_guidance_setting](docs/resources/guidance_setting.md) | Morpheus guidance setting resource |
 | [morpheus_helm_app_blueprint](docs/resources/helm_app_blueprint.md) | Morpheus HELM app blueprint resource |
 | [morpheus_helm_spec_template](docs/resources/helm_spec_template.md) | Morpheus HELM spec template resource |
 | [morpheus_hidden_option_type](docs/resources/hidden_option_type.md) | Morpheus hidden option type resource |
