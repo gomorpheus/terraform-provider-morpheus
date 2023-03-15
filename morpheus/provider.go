@@ -74,6 +74,7 @@ func Provider() *schema.Provider {
 			"morpheus_git_integration":                  resourceGitIntegration(),
 			"morpheus_groovy_script_task":               resourceGroovyScriptTask(),
 			"morpheus_group":                            resourceMorpheusGroup(),
+			"morpheus_guidance_setting":                 resourceGuidanceSetting(),
 			"morpheus_helm_app_blueprint":               resourceHelmAppBlueprint(),
 			"morpheus_helm_spec_template":               resourceHelmSpecTemplate(),
 			"morpheus_hidden_option_type":               resourceHiddenOptionType(),
