@@ -90,6 +90,7 @@ The following list of resources are supported by the Morpheus Terraform provider
 | [morpheus_preseed_script](docs/resources/preseed_script.md) | Morpheus preseed script resource |
 | [morpheus_price](docs/resources/price.md) | Morpheus price resource |
 | [morpheus_price_set](docs/resources/price_set.md) | Morpheus price set resource |
+| [morpheus_provisiong_setting](docs/resources/provisioning_setting.md) | Morpheus provisioning setting resource |
 | [morpheus_provisiong_workflow](docs/resources/provisioning_workflow.md) | Morpheus provisioning automation workflow resource |
 | [morpheus_puppet_integration](docs/resources/puppet_integration.md) | Morpheus puppet integration resource |
 | [morpheus_python_script_task](docs/resources/python_script_task.md) | Morpheus python script automation task resource |
