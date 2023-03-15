@@ -107,6 +107,7 @@ func Provider() *schema.Provider {
 			"morpheus_preseed_script":             resourcePreseedScript(),
 			"morpheus_price":                      resourcePrice(),
 			"morpheus_price_set":                  resourcePriceSet(),
+			"morpheus_provisioning_setting":       resourceProvisioningSetting(),
 			"morpheus_provisioning_workflow":      resourceProvisioningWorkflow(),
 			"morpheus_puppet_integration":         resourcePuppetIntegration(),
 			"morpheus_python_script_task":         resourcePythonScriptTask(),
