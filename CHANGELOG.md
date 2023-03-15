@@ -13,6 +13,7 @@ FEATURES:
 * **New Data Source:** `morpheus_vro_workflow`
 * **New Resource:** `morpheus_active_directory_identity_source`
 * **New Resource:** `morpheus_guidance_setting`
+* **New Resource:** `morpheus_monitoring_setting`
 * **New Resource:** `morpheus_vro_integration`
 * **New Resource:** `morpheus_vro_task`
 
