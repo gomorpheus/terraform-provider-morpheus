@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
-	"encoding/json"
 	"strings"
 	"time"
 
@@ -253,30 +252,30 @@ func resourcePowerShellScriptTaskRead(ctx context.Context, d *schema.ResourceDat
 	log.Printf("API RESPONSE: %s", resp)
 
 	// store resource data
-	var powerShellScriptTask PowerShellScript
-	json.Unmarshal(resp.Body, &powerShellScriptTask)
-	d.SetId(intToString(powerShellScriptTask.Task.ID))
-	d.Set("name", powerShellScriptTask.Task.Name)
-	d.Set("code", powerShellScriptTask.Task.Code)
-	d.Set("result_type", powerShellScriptTask.Task.Resulttype)
-	d.Set("source_type", powerShellScriptTask.Task.File.Sourcetype)
-	d.Set("script_content", powerShellScriptTask.Task.File.Content)
-	d.Set("script_path", powerShellScriptTask.Task.File.Contentpath)
-	d.Set("version_ref", powerShellScriptTask.Task.File.Contentref)
-	d.Set("repository_id", powerShellScriptTask.Task.File.Repository.ID)
-	if powerShellScriptTask.Task.Taskoptions.WinrmElevated == "on" {
+	result := resp.Result.(*morpheus.GetTaskResult)
+	powerShellScriptTask := result.Task
+	d.SetId(int64ToString(powerShellScriptTask.ID))
+	d.Set("name", powerShellScriptTask.Name)
+	d.Set("code", powerShellScriptTask.Code)
+	d.Set("result_type", powerShellScriptTask.ResultType)
+	d.Set("source_type", powerShellScriptTask.File.SourceType)
+	d.Set("script_content", powerShellScriptTask.File.Content)
+	d.Set("script_path", powerShellScriptTask.File.ContentPath)
+	d.Set("version_ref", powerShellScriptTask.File.ContentRef)
+	d.Set("repository_id", powerShellScriptTask.File.Repository.ID)
+	if powerShellScriptTask.TaskOptions.WinrmElevated == "on" {
 		d.Set("elevated_shell", true)
 	} else {
 		d.Set("elevated_shell", false)
 	}
-	d.Set("remote_target_host", powerShellScriptTask.Task.Taskoptions.Host)
-	d.Set("remote_target_port", powerShellScriptTask.Task.Taskoptions.Port)
-	d.Set("remote_target_username", powerShellScriptTask.Task.Taskoptions.Username)
-	d.Set("remote_target_password", powerShellScriptTask.Task.Taskoptions.PasswordHash)
-	d.Set("retryable", powerShellScriptTask.Task.Retryable)
-	d.Set("retry_count", powerShellScriptTask.Task.Retrycount)
-	d.Set("retry_delay_seconds", powerShellScriptTask.Task.Retrydelayseconds)
-	d.Set("allow_custom_config", powerShellScriptTask.Task.Allowcustomconfig)
+	d.Set("remote_target_host", powerShellScriptTask.TaskOptions.Host)
+	d.Set("remote_target_port", powerShellScriptTask.TaskOptions.Port)
+	d.Set("remote_target_username", powerShellScriptTask.TaskOptions.Username)
+	d.Set("remote_target_password", powerShellScriptTask.TaskOptions.PasswordHash)
+	d.Set("retryable", powerShellScriptTask.Retryable)
+	d.Set("retry_count", powerShellScriptTask.RetryCount)
+	d.Set("retry_delay_seconds", powerShellScriptTask.RetryDelaySeconds)
+	d.Set("allow_custom_config", powerShellScriptTask.AllowCustomConfig)
 	return diags
 }
 

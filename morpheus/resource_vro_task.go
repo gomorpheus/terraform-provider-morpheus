@@ -3,7 +3,6 @@ package morpheus
 import (
 	"context"
 	"encoding/json"
-	"time"
 
 	"log"
 
@@ -178,20 +177,22 @@ func resourceVrealizeOrchestratorTaskRead(ctx context.Context, d *schema.Resourc
 	log.Printf("API RESPONSE: %s", resp)
 
 	// store resource data
-	var workflowTask VrealizeOrchestratorWorkflow
+	result := resp.Result.(*morpheus.GetTaskResult)
+	workflowTask := result.Task
+
 	json.Unmarshal(resp.Body, &workflowTask)
-	d.SetId(intToString(workflowTask.Task.ID))
-	d.Set("name", workflowTask.Task.Name)
-	d.Set("code", workflowTask.Task.Code)
-	d.Set("result_type", workflowTask.Task.Resulttype)
-	d.Set("vro_integration_id", workflowTask.Task.Taskoptions.VroIntegrationId)
-	d.Set("vro_workflow_value", workflowTask.Task.Taskoptions.VroWorkflow)
-	d.Set("body", workflowTask.Task.Taskoptions.VroBody)
-	d.Set("execute_target", workflowTask.Task.Executetarget)
-	d.Set("retryable", workflowTask.Task.Retryable)
-	d.Set("retry_count", workflowTask.Task.Retrycount)
-	d.Set("retry_delay_seconds", workflowTask.Task.Retrydelayseconds)
-	d.Set("allow_custom_config", workflowTask.Task.Allowcustomconfig)
+	d.SetId(int64ToString(workflowTask.ID))
+	d.Set("name", workflowTask.Name)
+	d.Set("code", workflowTask.Code)
+	d.Set("result_type", workflowTask.ResultType)
+	d.Set("vro_integration_id", workflowTask.TaskOptions.VroIntegrationId)
+	d.Set("vro_workflow_value", workflowTask.TaskOptions.VroWorkflow)
+	d.Set("body", workflowTask.TaskOptions.VroBody)
+	d.Set("execute_target", workflowTask.ExecuteTarget)
+	d.Set("retryable", workflowTask.Retryable)
+	d.Set("retry_count", workflowTask.RetryCount)
+	d.Set("retry_delay_seconds", workflowTask.RetryDelaySeconds)
+	d.Set("allow_custom_config", workflowTask.AllowCustomConfig)
 	return diags
 }
 
@@ -266,31 +267,4 @@ func resourceVrealizeOrchestratorTaskDelete(ctx context.Context, d *schema.Resou
 	log.Printf("API RESPONSE: %s", resp)
 	d.SetId("")
 	return diags
-}
-
-type VrealizeOrchestratorWorkflow struct {
-	Task struct {
-		ID        int    `json:"id"`
-		Accountid int    `json:"accountId"`
-		Name      string `json:"name"`
-		Code      string `json:"code"`
-		Tasktype  struct {
-			ID   int    `json:"id"`
-			Code string `json:"code"`
-			Name string `json:"name"`
-		} `json:"taskType"`
-		Taskoptions struct {
-			VroIntegrationId string `json:"vroIntegrationId"`
-			VroWorkflow      string `json:"vroWorkflow"`
-			VroBody          string `json:"vroBody"`
-		}
-		Resulttype        string    `json:"resultType"`
-		Executetarget     string    `json:"executeTarget"`
-		Retryable         bool      `json:"retryable"`
-		Retrycount        int       `json:"retryCount"`
-		Retrydelayseconds int       `json:"retryDelaySeconds"`
-		Allowcustomconfig bool      `json:"allowCustomConfig"`
-		Datecreated       time.Time `json:"dateCreated"`
-		Lastupdated       time.Time `json:"lastUpdated"`
-	} `json:"task"`
 }

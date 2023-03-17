@@ -35,7 +35,8 @@ The following list of resources are supported by the Morpheus Terraform provider
 | [morpheus_active_directory_identity_source](docs/resources/active_directory_identity_source.md) | Morpheus active directory identity source resource |
 | [morpheus_ansible_integration](docs/resources/ansible_integration.md) | Morpheus ansible_integration resource |
 | [morpheus_ansible_playbook_task](docs/resources/ansible_playbook_task.md) | Morpheus ansible playbook automation task resource |
-| [morpheus_ansible_tower_integration](docs/resources/ansible_tower_integration.md) | Morpheus ansible_tower_integration resource |
+| [morpheus_ansible_tower_integration](docs/resources/ansible_tower_integration.md) | Morpheus ansible tower integration resource |
+| [morpheus_ansible_tower_task](docs/resources/ansible_tower_task.md) | Morpheus ansible tower task resource |
 | [morpheus_api_option_list](docs/resources/api_option_list.md) | Morpheus api_option_list resource |
 | [morpheus_app_blueprint_catalog_item](docs/resources/app_blueprint_catalog_item.md) | Morpheus app_blueprint_catalog_item resource |
 | [morpheus_arm_app_blueprint](docs/resources/arm_app_blueprint.md) | Morpheus ARM app blueprint resource |
@@ -133,6 +134,8 @@ The following list of data sources are supported by the Morpheus Terraform provi
 
 | Data Source Name | Description |
 |------------------|-------------|
+| [morpheus_ansible_tower_inventory](docs/data-sources/ansible_tower_inventory.md) | Morpheus ansible tower inventory data source |
+| [morpheus_ansible_tower_job_template](docs/data-sources/ansible_tower_job_template.md) | Morpheus ansible tower job template data source |
 | [morpheus_blueprint](docs/data-sources/blueprint.md) | Morpheus blueprint data source |
 | [morpheus_budget](docs/data-sources/budget.md) | Morpheus budget data source |
 | [morpheus_cloud](docs/data-sources/cloud.md) | Morpheus cloud data source |

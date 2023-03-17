@@ -2,8 +2,6 @@ package morpheus
 
 import (
 	"context"
-	"encoding/json"
-	"time"
 
 	"log"
 
@@ -220,21 +218,21 @@ func resourcePythonScriptTaskRead(ctx context.Context, d *schema.ResourceData, m
 	log.Printf("API RESPONSE: %s", resp)
 
 	// store resource data
-	var pythonScriptTask PythonScript
-	json.Unmarshal(resp.Body, &pythonScriptTask)
-	d.SetId(intToString(pythonScriptTask.Task.ID))
-	d.Set("name", pythonScriptTask.Task.Name)
-	d.Set("code", pythonScriptTask.Task.Code)
-	d.Set("result_type", pythonScriptTask.Task.Resulttype)
-	d.Set("source_type", pythonScriptTask.Task.File.Sourcetype)
-	d.Set("script_content", pythonScriptTask.Task.File.Content)
-	d.Set("script_path", pythonScriptTask.Task.File.Contentpath)
-	d.Set("version_ref", pythonScriptTask.Task.File.Contentref)
-	d.Set("repository_id", pythonScriptTask.Task.File.Repository.ID)
-	d.Set("retryable", pythonScriptTask.Task.Retryable)
-	d.Set("retry_count", pythonScriptTask.Task.Retrycount)
-	d.Set("retry_delay_seconds", pythonScriptTask.Task.Retrydelayseconds)
-	d.Set("allow_custom_config", pythonScriptTask.Task.Allowcustomconfig)
+	result := resp.Result.(*morpheus.GetTaskResult)
+	pythonScriptTask := result.Task
+	d.SetId(int64ToString(pythonScriptTask.ID))
+	d.Set("name", pythonScriptTask.Name)
+	d.Set("code", pythonScriptTask.Code)
+	d.Set("result_type", pythonScriptTask.ResultType)
+	d.Set("source_type", pythonScriptTask.File.SourceType)
+	d.Set("script_content", pythonScriptTask.File.Content)
+	d.Set("script_path", pythonScriptTask.File.ContentPath)
+	d.Set("version_ref", pythonScriptTask.File.ContentRef)
+	d.Set("repository_id", pythonScriptTask.File.Repository.ID)
+	d.Set("retryable", pythonScriptTask.Retryable)
+	d.Set("retry_count", pythonScriptTask.RetryCount)
+	d.Set("retry_delay_seconds", pythonScriptTask.RetryDelaySeconds)
+	d.Set("allow_custom_config", pythonScriptTask.AllowCustomConfig)
 	return diags
 }
 
@@ -316,43 +314,4 @@ func resourcePythonScriptTaskDelete(ctx context.Context, d *schema.ResourceData,
 	log.Printf("API RESPONSE: %s", resp)
 	d.SetId("")
 	return diags
-}
-
-type PythonScript struct {
-	Task struct {
-		ID        int    `json:"id"`
-		Accountid int    `json:"accountId"`
-		Name      string `json:"name"`
-		Code      string `json:"code"`
-		Tasktype  struct {
-			ID   int    `json:"id"`
-			Code string `json:"code"`
-			Name string `json:"name"`
-		} `json:"taskType"`
-		Taskoptions struct {
-			Pythonbinary             string      `json:"pythonBinary"`
-			Pythonargs               string      `json:"pythonArgs"`
-			Pythonadditionalpackages string      `json:"pythonAdditionalPackages"`
-			Pythonscript             interface{} `json:"pythonScript"`
-		} `json:"taskOptions"`
-		File struct {
-			ID          int    `json:"id"`
-			Sourcetype  string `json:"sourceType"`
-			Contentref  string `json:"contentRef"`
-			Contentpath string `json:"contentPath"`
-			Repository  struct {
-				ID   int    `json:"id"`
-				Name string `json:"name"`
-			} `json:"repository"`
-			Content interface{} `json:"content"`
-		} `json:"file"`
-		Resulttype        string    `json:"resultType"`
-		Executetarget     string    `json:"executeTarget"`
-		Retryable         bool      `json:"retryable"`
-		Retrycount        int       `json:"retryCount"`
-		Retrydelayseconds int       `json:"retryDelaySeconds"`
-		Allowcustomconfig bool      `json:"allowCustomConfig"`
-		Datecreated       time.Time `json:"dateCreated"`
-		Lastupdated       time.Time `json:"lastUpdated"`
-	} `json:"task"`
 }
