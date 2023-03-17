@@ -2,8 +2,6 @@ package morpheus
 
 import (
 	"context"
-	"encoding/json"
-	"time"
 
 	"log"
 
@@ -162,18 +160,18 @@ func resourceNestedWorkflowTaskRead(ctx context.Context, d *schema.ResourceData,
 	log.Printf("API RESPONSE: %s", resp)
 
 	// store resource data
-	var nestedWorkflowTask NestedWorkflow
-	json.Unmarshal(resp.Body, &nestedWorkflowTask)
-	d.SetId(intToString(nestedWorkflowTask.Task.ID))
-	d.Set("name", nestedWorkflowTask.Task.Name)
-	d.Set("code", nestedWorkflowTask.Task.Code)
-	d.Set("execute_target", nestedWorkflowTask.Task.Executetarget)
-	d.Set("operational_workflow_id", nestedWorkflowTask.Task.Taskoptions.OperationalWorkflowId)
-	d.Set("operational_workflow_name", nestedWorkflowTask.Task.Taskoptions.OperationalWorkflowName)
-	d.Set("retryable", nestedWorkflowTask.Task.Retryable)
-	d.Set("retry_count", nestedWorkflowTask.Task.Retrycount)
-	d.Set("retry_delay_seconds", nestedWorkflowTask.Task.Retrydelayseconds)
-	d.Set("allow_custom_config", nestedWorkflowTask.Task.Allowcustomconfig)
+	result := resp.Result.(*morpheus.GetTaskResult)
+	nestedWorkflowTask := result.Task
+	d.SetId(int64ToString(nestedWorkflowTask.ID))
+	d.Set("name", nestedWorkflowTask.Name)
+	d.Set("code", nestedWorkflowTask.Code)
+	d.Set("execute_target", nestedWorkflowTask.ExecuteTarget)
+	d.Set("operational_workflow_id", nestedWorkflowTask.TaskOptions.OperationalWorkflowId)
+	d.Set("operational_workflow_name", nestedWorkflowTask.TaskOptions.OperationalWorkflowName)
+	d.Set("retryable", nestedWorkflowTask.Retryable)
+	d.Set("retry_count", nestedWorkflowTask.RetryCount)
+	d.Set("retry_delay_seconds", nestedWorkflowTask.RetryDelaySeconds)
+	d.Set("allow_custom_config", nestedWorkflowTask.AllowCustomConfig)
 	return diags
 }
 
@@ -241,29 +239,4 @@ func resourceNestedWorkflowTaskDelete(ctx context.Context, d *schema.ResourceDat
 	log.Printf("API RESPONSE: %s", resp)
 	d.SetId("")
 	return diags
-}
-
-type NestedWorkflow struct {
-	Task struct {
-		ID        int    `json:"id"`
-		Accountid int    `json:"accountId"`
-		Name      string `json:"name"`
-		Code      string `json:"code"`
-		Tasktype  struct {
-			ID   int    `json:"id"`
-			Code string `json:"code"`
-			Name string `json:"name"`
-		} `json:"taskType"`
-		Taskoptions struct {
-			OperationalWorkflowId   int    `json:"operational_workflow_id"`
-			OperationalWorkflowName string `json:"operational_workflow_name"`
-		}
-		Executetarget     string    `json:"executeTarget"`
-		Retryable         bool      `json:"retryable"`
-		Retrycount        int       `json:"retryCount"`
-		Retrydelayseconds int       `json:"retryDelaySeconds"`
-		Allowcustomconfig bool      `json:"allowCustomConfig"`
-		Datecreated       time.Time `json:"dateCreated"`
-		Lastupdated       time.Time `json:"lastUpdated"`
-	} `json:"task"`
 }

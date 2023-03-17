@@ -2,8 +2,6 @@ package morpheus
 
 import (
 	"context"
-	"encoding/json"
-	"time"
 
 	"log"
 
@@ -142,15 +140,15 @@ func resourceRestartTaskRead(ctx context.Context, d *schema.ResourceData, meta i
 	log.Printf("API RESPONSE: %s", resp)
 
 	// store resource data
-	var restartTask Restart
-	json.Unmarshal(resp.Body, &restartTask)
-	d.SetId(intToString(restartTask.Task.ID))
-	d.Set("name", restartTask.Task.Name)
-	d.Set("code", restartTask.Task.Code)
-	d.Set("retryable", restartTask.Task.Retryable)
-	d.Set("retry_count", restartTask.Task.Retrycount)
-	d.Set("retry_delay_seconds", restartTask.Task.Retrydelayseconds)
-	d.Set("allow_custom_config", restartTask.Task.Allowcustomconfig)
+	result := resp.Result.(*morpheus.GetTaskResult)
+	restartTask := result.Task
+	d.SetId(int64ToString(restartTask.ID))
+	d.Set("name", restartTask.Name)
+	d.Set("code", restartTask.Code)
+	d.Set("retryable", restartTask.Retryable)
+	d.Set("retry_count", restartTask.RetryCount)
+	d.Set("retry_delay_seconds", restartTask.RetryDelaySeconds)
+	d.Set("allow_custom_config", restartTask.AllowCustomConfig)
 	return diags
 }
 
@@ -211,38 +209,4 @@ func resourceRestartTaskDelete(ctx context.Context, d *schema.ResourceData, meta
 	log.Printf("API RESPONSE: %s", resp)
 	d.SetId("")
 	return diags
-}
-
-type Restart struct {
-	Task struct {
-		ID        int    `json:"id"`
-		Accountid int    `json:"accountId"`
-		Name      string `json:"name"`
-		Code      string `json:"code"`
-		Tasktype  struct {
-			ID   int    `json:"id"`
-			Code string `json:"code"`
-			Name string `json:"name"`
-		} `json:"taskType"`
-		Taskoptions struct {
-			Username          interface{} `json:"username"`
-			Host              interface{} `json:"host"`
-			Localscriptgitref interface{} `json:"localScriptGitRef"`
-			Password          interface{} `json:"password"`
-			Passwordhash      interface{} `json:"passwordHash"`
-			Port              interface{} `json:"port"`
-		} `json:"taskOptions"`
-		File              interface{} `json:"file"`
-		Resulttype        interface{} `json:"resultType"`
-		Executetarget     string      `json:"executeTarget"`
-		Retryable         bool        `json:"retryable"`
-		Retrycount        int         `json:"retryCount"`
-		Retrydelayseconds int         `json:"retryDelaySeconds"`
-		Allowcustomconfig bool        `json:"allowCustomConfig"`
-		Credential        struct {
-			Type string `json:"type"`
-		} `json:"credential"`
-		Datecreated time.Time `json:"dateCreated"`
-		Lastupdated time.Time `json:"lastUpdated"`
-	} `json:"task"`
 }

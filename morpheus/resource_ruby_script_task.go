@@ -2,8 +2,6 @@ package morpheus
 
 import (
 	"context"
-	"encoding/json"
-	"time"
 
 	"log"
 
@@ -190,21 +188,21 @@ func resourceRubyScriptTaskRead(ctx context.Context, d *schema.ResourceData, met
 	log.Printf("API RESPONSE: %s", resp)
 
 	// store resource data
-	var rubyScriptTask RubyScript
-	json.Unmarshal(resp.Body, &rubyScriptTask)
-	d.SetId(intToString(rubyScriptTask.Task.ID))
-	d.Set("name", rubyScriptTask.Task.Name)
-	d.Set("code", rubyScriptTask.Task.Code)
-	d.Set("result_type", rubyScriptTask.Task.Resulttype)
-	d.Set("source_type", rubyScriptTask.Task.File.Sourcetype)
-	d.Set("script_content", rubyScriptTask.Task.File.Content)
-	d.Set("script_path", rubyScriptTask.Task.File.Contentpath)
-	d.Set("version_ref", rubyScriptTask.Task.File.Contentref)
-	d.Set("repository_id", rubyScriptTask.Task.File.Repository.ID)
-	d.Set("retryable", rubyScriptTask.Task.Retryable)
-	d.Set("retry_count", rubyScriptTask.Task.Retrycount)
-	d.Set("retry_delay_seconds", rubyScriptTask.Task.Retrydelayseconds)
-	d.Set("allow_custom_config", rubyScriptTask.Task.Allowcustomconfig)
+	result := resp.Result.(*morpheus.GetTaskResult)
+	rubyScriptTask := result.Task
+	d.SetId(int64ToString(rubyScriptTask.ID))
+	d.Set("name", rubyScriptTask.Name)
+	d.Set("code", rubyScriptTask.Code)
+	d.Set("result_type", rubyScriptTask.ResultType)
+	d.Set("source_type", rubyScriptTask.File.SourceType)
+	d.Set("script_content", rubyScriptTask.File.Content)
+	d.Set("script_path", rubyScriptTask.File.ContentPath)
+	d.Set("version_ref", rubyScriptTask.File.ContentRef)
+	d.Set("repository_id", rubyScriptTask.File.Repository.ID)
+	d.Set("retryable", rubyScriptTask.Retryable)
+	d.Set("retry_count", rubyScriptTask.RetryCount)
+	d.Set("retry_delay_seconds", rubyScriptTask.RetryDelaySeconds)
+	d.Set("allow_custom_config", rubyScriptTask.AllowCustomConfig)
 	return diags
 }
 
@@ -280,37 +278,4 @@ func resourceRubyScriptTaskDelete(ctx context.Context, d *schema.ResourceData, m
 	log.Printf("API RESPONSE: %s", resp)
 	d.SetId("")
 	return diags
-}
-
-type RubyScript struct {
-	Task struct {
-		ID        int    `json:"id"`
-		Accountid int    `json:"accountId"`
-		Name      string `json:"name"`
-		Code      string `json:"code"`
-		Tasktype  struct {
-			ID   int    `json:"id"`
-			Code string `json:"code"`
-			Name string `json:"name"`
-		} `json:"taskType"`
-		File struct {
-			ID          int    `json:"id"`
-			Sourcetype  string `json:"sourceType"`
-			Contentref  string `json:"contentRef"`
-			Contentpath string `json:"contentPath"`
-			Repository  struct {
-				ID   int    `json:"id"`
-				Name string `json:"name"`
-			} `json:"repository"`
-			Content interface{} `json:"content"`
-		} `json:"file"`
-		Resulttype        string    `json:"resultType"`
-		Executetarget     string    `json:"executeTarget"`
-		Retryable         bool      `json:"retryable"`
-		Retrycount        int       `json:"retryCount"`
-		Retrydelayseconds int       `json:"retryDelaySeconds"`
-		Allowcustomconfig bool      `json:"allowCustomConfig"`
-		Datecreated       time.Time `json:"dateCreated"`
-		Lastupdated       time.Time `json:"lastUpdated"`
-	} `json:"task"`
 }

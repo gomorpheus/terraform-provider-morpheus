@@ -4,9 +4,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
-	"encoding/json"
 	"strings"
-	"time"
 
 	"log"
 
@@ -263,30 +261,31 @@ func resourceShellScriptTaskRead(ctx context.Context, d *schema.ResourceData, me
 	log.Printf("API RESPONSE: %s", resp)
 
 	// store resource data
-	var shellScriptTask ShellScript
-	json.Unmarshal(resp.Body, &shellScriptTask)
-	d.SetId(intToString(shellScriptTask.Task.ID))
-	d.Set("name", shellScriptTask.Task.Name)
-	d.Set("code", shellScriptTask.Task.Code)
-	d.Set("result_type", shellScriptTask.Task.Resulttype)
-	d.Set("source_type", shellScriptTask.Task.File.Sourcetype)
-	d.Set("script_content", shellScriptTask.Task.File.Content)
-	d.Set("script_path", shellScriptTask.Task.File.Contentpath)
-	d.Set("version_ref", shellScriptTask.Task.File.Contentref)
-	d.Set("repository_id", shellScriptTask.Task.File.Repository.ID)
-	if shellScriptTask.Task.Taskoptions.ShellSudo == "on" {
+	result := resp.Result.(*morpheus.GetTaskResult)
+	shellScriptTask := result.Task
+
+	d.SetId(int64ToString(shellScriptTask.ID))
+	d.Set("name", shellScriptTask.Name)
+	d.Set("code", shellScriptTask.Code)
+	d.Set("result_type", shellScriptTask.ResultType)
+	d.Set("source_type", shellScriptTask.File.SourceType)
+	d.Set("script_content", shellScriptTask.File.Content)
+	d.Set("script_path", shellScriptTask.File.ContentPath)
+	d.Set("version_ref", shellScriptTask.File.ContentRef)
+	d.Set("repository_id", shellScriptTask.File.Repository.ID)
+	if shellScriptTask.TaskOptions.ShellSudo == "on" {
 		d.Set("sudo", true)
 	} else {
 		d.Set("sudo", false)
 	}
-	d.Set("remote_target_host", shellScriptTask.Task.Taskoptions.Host)
-	d.Set("remote_target_port", shellScriptTask.Task.Taskoptions.Port)
-	d.Set("remote_target_username", shellScriptTask.Task.Taskoptions.Username)
-	d.Set("remote_target_password", shellScriptTask.Task.Taskoptions.PasswordHash)
-	d.Set("retryable", shellScriptTask.Task.Retryable)
-	d.Set("retry_count", shellScriptTask.Task.Retrycount)
-	d.Set("retry_delay_seconds", shellScriptTask.Task.Retrydelayseconds)
-	d.Set("allow_custom_config", shellScriptTask.Task.Allowcustomconfig)
+	d.Set("remote_target_host", shellScriptTask.TaskOptions.Host)
+	d.Set("remote_target_port", shellScriptTask.TaskOptions.Port)
+	d.Set("remote_target_username", shellScriptTask.TaskOptions.Username)
+	d.Set("remote_target_password", shellScriptTask.TaskOptions.PasswordHash)
+	d.Set("retryable", shellScriptTask.Retryable)
+	d.Set("retry_count", shellScriptTask.RetryCount)
+	d.Set("retry_delay_seconds", shellScriptTask.RetryDelaySeconds)
+	d.Set("allow_custom_config", shellScriptTask.AllowCustomConfig)
 	return diags
 }
 
@@ -382,46 +381,4 @@ func resourceShellScriptTaskDelete(ctx context.Context, d *schema.ResourceData, 
 	log.Printf("API RESPONSE: %s", resp)
 	d.SetId("")
 	return diags
-}
-
-type ShellScript struct {
-	Task struct {
-		ID        int    `json:"id"`
-		Accountid int    `json:"accountId"`
-		Name      string `json:"name"`
-		Code      string `json:"code"`
-		Tasktype  struct {
-			ID   int    `json:"id"`
-			Code string `json:"code"`
-			Name string `json:"name"`
-		} `json:"taskType"`
-		Taskoptions struct {
-			Port              string `json:"port"`
-			Host              string `json:"host"`
-			Password          string `json:"password"`
-			PasswordHash      string `json:"passwordHash"`
-			Username          string `json:"username"`
-			ShellSudo         string `json:"shell.sudo"`
-			LocalScriptGitRef string `json:"localScriptGitRef"`
-		}
-		File struct {
-			ID          int    `json:"id"`
-			Sourcetype  string `json:"sourceType"`
-			Contentref  string `json:"contentRef"`
-			Contentpath string `json:"contentPath"`
-			Repository  struct {
-				ID   int    `json:"id"`
-				Name string `json:"name"`
-			} `json:"repository"`
-			Content interface{} `json:"content"`
-		} `json:"file"`
-		Resulttype        string    `json:"resultType"`
-		Executetarget     string    `json:"executeTarget"`
-		Retryable         bool      `json:"retryable"`
-		Retrycount        int       `json:"retryCount"`
-		Retrydelayseconds int       `json:"retryDelaySeconds"`
-		Allowcustomconfig bool      `json:"allowCustomConfig"`
-		Datecreated       time.Time `json:"dateCreated"`
-		Lastupdated       time.Time `json:"lastUpdated"`
-	} `json:"task"`
 }

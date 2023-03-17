@@ -2,7 +2,7 @@
 
 NOTES:
 
-* The `morpheus-sdk` dependcy has been upgraded to version 0.3.0.
+* The `morpheus-sdk` dependcy has been upgraded to version 0.3.1.
 * The `terraform-plugin-docs` dependcy has been upgraded to version 0.14.1.
 * The `terraform-plugin-sdk` dependcy has been upgraded to version 2.25.0.
 * Add label support for additional Morpheus resources.
@@ -10,8 +10,11 @@ NOTES:
 
 FEATURES:
 
+* **New Data Source:** `morpheus_ansible_tower_inventory`
+* **New Data Source:** `morpheus_ansible_tower_job_template`
 * **New Data Source:** `morpheus_vro_workflow`
 * **New Resource:** `morpheus_active_directory_identity_source`
+* **New Resource:** `morpheus_ansible_tower_task`
 * **New Resource:** `morpheus_guidance_setting`
 * **New Resource:** `morpheus_monitoring_setting`
 * **New Resource:** `morpheus_vro_integration`
