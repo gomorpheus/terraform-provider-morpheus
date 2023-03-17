@@ -23,8 +23,7 @@ data "morpheus_ansible_tower_job_template" "example_ansible_tower_job_template" 
 ### Optional
 
 - `name` (String) The name of the ansible tower job template
-- `value` (Number)
 
 ### Read-Only
 
-- `id` (String) The ID of this resource.
+- `id` (Number) The ID of this resource.

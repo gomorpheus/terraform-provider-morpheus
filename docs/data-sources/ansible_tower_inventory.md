@@ -23,8 +23,7 @@ data "morpheus_ansible_tower_inventory" "example_ansible_tower_inventory" {
 ### Optional
 
 - `name` (String) The name of the ansible tower inventory
-- `value` (Number)
 
 ### Read-Only
 
-- `id` (String) The ID of this resource.
+- `id` (Number) The ID of this resource.
