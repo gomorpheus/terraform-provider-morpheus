@@ -47,7 +47,7 @@ func resourceProvisioningWorkflow() *schema.Resource {
 				Type:         schema.TypeString,
 				Description:  "Whether the provisioning workflow is visible in sub-tenants or not",
 				Optional:     true,
-				ValidateFunc: validation.StringInSlice([]string{"private", "public", ""}, false),
+				ValidateFunc: validation.StringInSlice([]string{"private", "public"}, false),
 				Default:      "private",
 			},
 			"task": {
@@ -62,9 +62,10 @@ func resourceProvisioningWorkflow() *schema.Resource {
 							Required:    true,
 						},
 						"task_phase": {
-							Type:        schema.TypeString,
-							Description: "The phase that the task is executed",
-							Required:    true,
+							Type:         schema.TypeString,
+							Description:  "The phase that the task is executed (configure, price, preProvision, provision, postProvision, start, stop, preDeploy, deploy, reconfigure, teardown, shutdown, startup)",
+							Required:     true,
+							ValidateFunc: validation.StringInSlice([]string{"configure", "price", "preProvision", "provision", "postProvision", "start", "stop", "preDeploy", "deploy", "reconfigure", "teardown", "shutdown", "startup"}, false),
 						},
 					},
 				},
@@ -161,14 +162,26 @@ func resourceProvisioningWorkflowRead(ctx context.Context, d *schema.ResourceDat
 	// store resource data
 	result := resp.Result.(*morpheus.GetTaskSetResult)
 	workflow := result.TaskSet
+
+	// Tasks
+	var tasks []map[string]interface{}
+	if len(workflow.TaskSetTasks) != 0 {
+		for _, task := range workflow.TaskSetTasks {
+			tag := make(map[string]interface{})
+			tag["task_phase"] = task.TaskPhase
+			tag["task_id"] = task.Task.ID
+			tasks = append(tasks, tag)
+		}
+	}
+
 	if workflow != nil {
 		d.SetId(int64ToString(workflow.ID))
 		d.Set("name", workflow.Name)
 		d.Set("description", workflow.Description)
 		d.Set("visibility", workflow.Visibility)
 		d.Set("platform", workflow.Platform)
+		d.Set("task", tasks)
 	} else {
-		log.Println(workflow)
 		return diag.Errorf("read operation: workflow not found in response data") // should not happen
 	}
 

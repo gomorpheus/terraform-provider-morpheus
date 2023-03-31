@@ -48,15 +48,39 @@ func resourceEmailTask() *schema.Resource {
 			},
 			"source": {
 				Type:        schema.TypeString,
-				Description: "Choose local to draft or paste the email directly into the Task. Choose Repository or URL to bring in a template from a Git repository or another outside source",
+				Description: "Choose local to draft or paste the email directly into the Task. Choose Repository or URL to bring in a template from a Git repository or another outside source (local, repository, url)",
 				Optional:    true,
 				Default:     "local",
 			},
+			"content_url": {
+				Type:        schema.TypeString,
+				Description: "The URL of the template used for the email task, used with a source type of url",
+				Optional:    true,
+				Computed:    true,
+			},
+			"content_path": {
+				Type:        schema.TypeString,
+				Description: "The file path of the template used for the email task, used with a source type of repository",
+				Optional:    true,
+				Computed:    true,
+			},
+			"repository_id": {
+				Type:        schema.TypeInt,
+				Description: "The ID of the git repository to fetch the email template",
+				Optional:    true,
+				Computed:    true,
+			},
+			"version_ref": {
+				Type:        schema.TypeString,
+				Description: "The git reference of the repository to pull (main, master, etc.)",
+				Optional:    true,
+				Computed:    true,
+			},
 			"content": {
 				Type:        schema.TypeString,
-				Description: "The body of the email is HTML. Morpheus automation variables can be injected into the email body when needed",
+				Description: "The body of the email is HTML. Morpheus automation variables can be injected into the email body when needed. Used with a source type of local",
 				Optional:    true,
-				Default:     "",
+				Computed:    true,
 			},
 			"skip_wrapped_email_template": {
 				Type:        schema.TypeBool,
@@ -102,6 +126,25 @@ func resourceEmailTaskCreate(ctx context.Context, d *schema.ResourceData, meta i
 	var diags diag.Diagnostics
 
 	name := d.Get("name").(string)
+	contentConfig := make(map[string]interface{})
+
+	switch d.Get("source") {
+	case "local":
+		contentConfig["sourceType"] = "local"
+		contentConfig["content"] = d.Get("content").(string)
+	case "url":
+		contentConfig["sourceType"] = "url"
+		contentConfig["contentPath"] = d.Get("content_url").(string)
+	case "repository":
+		contentConfig["sourceType"] = "repository"
+		repository := make(map[string]interface{})
+		repository["id"] = d.Get("repository_id")
+		contentConfig["contentPath"] = d.Get("content_path")
+		if d.Get("version_ref") != "" {
+			contentConfig["contentRef"] = d.Get("version_ref")
+		}
+		contentConfig["repository"] = repository
+	}
 
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
@@ -116,9 +159,7 @@ func resourceEmailTaskCreate(ctx context.Context, d *schema.ResourceData, meta i
 					"emailSubject":      d.Get("subject"),
 					"emailSkipTemplate": d.Get("skip_wrapped_email_template"),
 				},
-				"file": map[string]interface{}{
-					"content": d.Get("content"),
-				},
+				"file":              contentConfig,
 				"executeTarget":     "local",
 				"retryable":         d.Get("retryable"),
 				"retryCount":        d.Get("retry_count"),
@@ -139,9 +180,8 @@ func resourceEmailTaskCreate(ctx context.Context, d *schema.ResourceData, meta i
 	task := result.Task
 	// Successfully created resource, now set id
 	d.SetId(int64ToString(task.ID))
-	log.Printf("Task ID: %s", int64ToString(task.ID))
 
-	resourceRestartTaskRead(ctx, d, meta)
+	resourceEmailTaskRead(ctx, d, meta)
 	return diags
 }
 
@@ -186,8 +226,22 @@ func resourceEmailTaskRead(ctx context.Context, d *schema.ResourceData, meta int
 	d.Set("email_address", emailTask.Task.Taskoptions.Emailaddress)
 	d.Set("subject", emailTask.Task.Taskoptions.Emailsubject)
 	d.Set("source", emailTask.Task.File.Sourcetype)
-	d.Set("content", emailTask.Task.File.Content)
-	d.Set("skip_wrapped_email_template", emailTask.Task.Taskoptions.Emailskiptemplate)
+	if emailTask.Task.File.Sourcetype == "url" {
+		d.Set("content_url", emailTask.Task.File.Contentpath)
+	}
+	if emailTask.Task.File.Sourcetype == "repository" {
+		d.Set("content_path", emailTask.Task.File.Contentpath)
+		d.Set("repository_id", emailTask.Task.File.Repository.ID)
+		d.Set("version_ref", emailTask.Task.File.Contentref)
+	}
+	if emailTask.Task.File.Sourcetype == "local" {
+		d.Set("content", emailTask.Task.File.Content)
+	}
+	if emailTask.Task.Taskoptions.Emailskiptemplate == "on" {
+		d.Set("skip_wrapped_email_template", true)
+	} else {
+		d.Set("skip_wrapped_email_template", false)
+	}
 	d.Set("retryable", emailTask.Task.Retryable)
 	d.Set("retry_count", emailTask.Task.Retrycount)
 	d.Set("retry_delay_seconds", emailTask.Task.Retrydelayseconds)
@@ -199,8 +253,25 @@ func resourceEmailTaskUpdate(ctx context.Context, d *schema.ResourceData, meta i
 	client := meta.(*morpheus.Client)
 	id := d.Id()
 	name := d.Get("name").(string)
-	taskType := make(map[string]interface{})
-	taskType["code"] = "email"
+	contentConfig := make(map[string]interface{})
+
+	switch d.Get("source") {
+	case "local":
+		contentConfig["sourceType"] = "local"
+		contentConfig["content"] = d.Get("content").(string)
+	case "url":
+		contentConfig["sourceType"] = "url"
+		contentConfig["contentPath"] = d.Get("content_url").(string)
+	case "repository":
+		contentConfig["sourceType"] = "repository"
+		repository := make(map[string]interface{})
+		repository["id"] = d.Get("repository_id")
+		contentConfig["contentPath"] = d.Get("content_path")
+		if d.HasChange("version_ref") {
+			contentConfig["contentRef"] = d.Get("version_ref")
+		}
+		contentConfig["repository"] = repository
+	}
 
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
@@ -215,9 +286,7 @@ func resourceEmailTaskUpdate(ctx context.Context, d *schema.ResourceData, meta i
 					"emailSubject":      d.Get("subject"),
 					"emailSkipTemplate": d.Get("skip_wrapped_email_template"),
 				},
-				"file": map[string]interface{}{
-					"content": d.Get("content"),
-				},
+				"file":              contentConfig,
 				"executeTarget":     "local",
 				"retryable":         d.Get("retryable"),
 				"retryCount":        d.Get("retry_count"),
@@ -287,12 +356,15 @@ type Email struct {
 			Emailskiptemplate interface{} `json:"emailSkipTemplate"`
 		} `json:"taskOptions"`
 		File struct {
-			Id          interface{} `json:"id"`
-			Sourcetype  interface{} `json:"sourceType"`
-			Contentref  interface{} `json:"contentRef"`
-			Contentpath interface{} `json:"contentPath"`
-			Repository  interface{} `json:"repository"`
-			Content     interface{} `json:"content"`
+			Id          int64  `json:"id"`
+			Sourcetype  string `json:"sourceType"`
+			Contentref  string `json:"contentRef"`
+			Contentpath string `json:"contentPath"`
+			Repository  struct {
+				ID   int64  `json:"id"`
+				Name string `json:"name"`
+			} `json:"repository"`
+			Content string `json:"content"`
 		} `json:"file"`
 		Resulttype        interface{} `json:"resultType"`
 		Executetarget     string      `json:"executeTarget"`

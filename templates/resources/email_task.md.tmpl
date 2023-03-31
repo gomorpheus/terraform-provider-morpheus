@@ -11,7 +11,17 @@ description: |-
 
 ## Example Usage
 
+Creating the email task with local email template content:
+
 {{tffile "examples/resources/morpheus_email_task/resource.tf"}}
+
+Creating the email task with the email template fetched from a url:
+
+{{tffile "examples/resources/morpheus_email_task/resource_url.tf"}}
+
+Creating the email task with the email template fetched via git:
+
+{{tffile "examples/resources/morpheus_email_task/resource_git.tf"}}
 
 {{ .SchemaMarkdown | trimspace }}
 

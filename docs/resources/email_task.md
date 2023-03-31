@@ -11,6 +11,8 @@ Provides a Morpheus email task resource
 
 ## Example Usage
 
+Creating the email task with local email template content:
+
 ```terraform
 resource "morpheus_email_task" "tfexample_email" {
   name                        = "tfexample_email"
@@ -19,6 +21,44 @@ resource "morpheus_email_task" "tfexample_email" {
   subject                     = "<%=instance.hostname%> provisioning complete"
   source                      = "local"
   content                     = "Your instance <%=instance.hostname%> was provisioned."
+  skip_wrapped_email_template = false
+  retryable                   = true
+  retry_count                 = 1
+  retry_delay_seconds         = 10
+  allow_custom_config         = true
+}
+```
+
+Creating the email task with the email template fetched from a url:
+
+```terraform
+resource "morpheus_email_task" "tfexample_email_url" {
+  name                        = "tfexample_email_url"
+  code                        = "tfexample_email_url"
+  email_address               = "<%=instance.createdByEmail%>"
+  subject                     = "<%=instance.hostname%> provisioning complete"
+  source                      = "url"
+  content_url                 = "https://example.com/example.txt"
+  skip_wrapped_email_template = false
+  retryable                   = true
+  retry_count                 = 1
+  retry_delay_seconds         = 10
+  allow_custom_config         = true
+}
+```
+
+Creating the email task with the email template fetched via git:
+
+```terraform
+resource "morpheus_email_task" "tfexample_email_git" {
+  name                        = "tfexample_email_git"
+  code                        = "tfexample_email_git"
+  email_address               = "<%=instance.createdByEmail%>"
+  subject                     = "<%=instance.hostname%> provisioning complete"
+  source                      = "repository"
+  content_path                = "example.txt"
+  repository_id               = 1
+  version_ref                 = "main"
   skip_wrapped_email_template = false
   retryable                   = true
   retry_count                 = 1
@@ -40,12 +80,16 @@ resource "morpheus_email_task" "tfexample_email" {
 
 - `allow_custom_config` (Boolean) Custom configuration data to pass during the execution of the email task
 - `code` (String) The code of the email task
-- `content` (String) The body of the email is HTML. Morpheus automation variables can be injected into the email body when needed
+- `content` (String) The body of the email is HTML. Morpheus automation variables can be injected into the email body when needed. Used with a source type of local
+- `content_path` (String) The file path of the template used for the email task, used with a source type of repository
+- `content_url` (String) The URL of the template used for the email task, used with a source type of url
+- `repository_id` (Number) The ID of the git repository to fetch the email template
 - `retry_count` (Number) The number of times to retry the task if there is a failure
 - `retry_delay_seconds` (Number) The number of seconds to wait between retry attempts
 - `retryable` (Boolean) Whether to retry the task if there is a failure
 - `skip_wrapped_email_template` (Boolean) Whether to ignore the Morpheus-styled email template
-- `source` (String) Choose local to draft or paste the email directly into the Task. Choose Repository or URL to bring in a template from a Git repository or another outside source
+- `source` (String) Choose local to draft or paste the email directly into the Task. Choose Repository or URL to bring in a template from a Git repository or another outside source (local, repository, url)
+- `version_ref` (String) The git reference of the repository to pull (main, master, etc.)
 
 ### Read-Only
 
