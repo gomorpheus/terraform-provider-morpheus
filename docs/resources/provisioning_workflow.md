@@ -48,7 +48,7 @@ resource "morpheus_provisioning_workflow" "tf_example_provisioning_workflow" {
 Required:
 
 - `task_id` (Number) The ID of the task to associate with the provisioning workflow
-- `task_phase` (String) The phase that the task is executed
+- `task_phase` (String) The phase that the task is executed (configure, price, preProvision, provision, postProvision, start, stop, preDeploy, deploy, reconfigure, teardown, shutdown, startup)
 
 ## Import
 

@@ -53,7 +53,6 @@ resource "morpheus_ansible_tower_task" "tfexample_ansible_tower_task" {
 - `execute_mode` (String) The ansible tower execution mode (executeHost, executeGroup, executeAll, off)
 - `job_template_id` (Number) The ID of the ansible tower job template
 - `name` (String) The name of the ansible tower task
-- `visibility` (String) The visibility of the ansible tower task (public or private)
 
 ### Optional
 
@@ -66,6 +65,7 @@ resource "morpheus_ansible_tower_task" "tfexample_ansible_tower_task" {
 - `retry_delay_seconds` (Number) The number of seconds to wait between retry attempts
 - `retryable` (Boolean) Whether to retry the task if there is a failure
 - `scm_override` (String) The git reference override
+- `visibility` (String) The visibility of the ansible tower task (public or private)
 
 ### Read-Only
 

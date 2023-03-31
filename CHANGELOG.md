@@ -7,6 +7,10 @@ NOTES:
 * The `terraform-plugin-sdk` dependcy has been upgraded to version 2.25.0.
 * Add label support for additional Morpheus resources.
 * Update inputs to support additional configuration parameters (i.e. - editable, verify pattern, etc).
+* Updated provisioning workflow resource phase documentation and added validation support [#96](https://github.com/gomorpheus/terraform-provider-morpheus/issues/96)
+* Fixed a bug with the provisioning workflow resource not properly reading tasks, which impacted updates and state import operations [#96](https://github.com/gomorpheus/terraform-provider-morpheus/issues/96)
+* Updated the `morpheus_email_task` resource to support repository and url source types. [#97](https://github.com/gomorpheus/terraform-provider-morpheus/issues/97)
+* Updated the `morpheus_powershell_task` resource documentation and fixed an issue with the execute_target attribute not properly being set on import. [#98](https://github.com/gomorpheus/terraform-provider-morpheus/issues/98)
 
 FEATURES:
 

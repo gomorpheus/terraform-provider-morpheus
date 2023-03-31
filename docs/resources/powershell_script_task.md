@@ -77,8 +77,8 @@ resource "morpheus_powershell_script_task" "tfexample_powershell_git" {
 
 - `allow_custom_config` (Boolean) Custom configuration data to pass during the execution of the shell script
 - `code` (String) The code of the powershell script task
-- `elevated_shell` (Boolean)
-- `execute_target` (String) The source of the powershell script (local, url or repository)
+- `elevated_shell` (Boolean) Run the powershell script with elevated permissions
+- `execute_target` (String) The execute target for the powershell script (local, remote or resource)
 - `remote_target_host` (String) The hostname or ip address of the remote target
 - `remote_target_password` (String) The password of the user account used to authenticate to the remote target
 - `remote_target_port` (String) The port used to connect to the remote target
