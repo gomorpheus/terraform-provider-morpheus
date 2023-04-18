@@ -224,6 +224,8 @@ func resourceRestOptionListRead(ctx context.Context, d *schema.ResourceData, met
 		d.Set("real_time", optionList.RealTime)
 		d.Set("translation_script", optionList.TranslationScript)
 		d.Set("request_script", optionList.RequestScript)
+		d.Set("source_url", optionList.SourceURL)
+		d.Set("source_method", optionList.SourceMethod)
 	} else {
 		log.Println(optionList)
 		return diag.Errorf("read operation: option list not found in response data") // should not happen
