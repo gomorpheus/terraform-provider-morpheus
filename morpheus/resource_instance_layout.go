@@ -254,9 +254,11 @@ func resourceInstanceLayoutRead(ctx context.Context, d *schema.ResourceData, met
 	json.Unmarshal(resp.Body, &instanceLayout)
 
 	d.SetId(int64ToString(instanceLayout.InstanceLayout.ID))
+	d.Set("instance_type_id", instanceLayout.InstanceLayout.InstanceType.ID)
 	d.Set("name", instanceLayout.InstanceLayout.Name)
 	d.Set("version", instanceLayout.InstanceLayout.ContainerVersion)
 	d.Set("description", instanceLayout.InstanceLayout.Description)
+	d.Set("technology", instanceLayout.InstanceLayout.ProvisionType.Code)
 	d.Set("creatable", instanceLayout.InstanceLayout.Creatable)
 	d.Set("minimum_memory", instanceLayout.InstanceLayout.MemoryRequirement)
 	if len(instanceLayout.InstanceLayout.TaskSets) > 0 {
@@ -427,7 +429,11 @@ func parseInstanceLayoutEnvironmentVariables(variables []interface{}, d *schema.
 
 type InstanceLayoutPayload struct {
 	InstanceLayout struct {
-		ID      int64 `json:"id"`
+		ID           int64 `json:"id"`
+		InstanceType struct {
+			ID   int64  `json:"id"`
+			Name string `json:"name"`
+		} `json:"instanceType"`
 		Account struct {
 			ID   int64  `json:"id"`
 			Name string `json:"name"`
