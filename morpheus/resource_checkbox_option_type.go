@@ -98,7 +98,7 @@ func resourceCheckboxOptionType() *schema.Resource {
 				Type:        schema.TypeBool,
 				Description: "Whether the checkbox option type is checked by default",
 				Optional:    true,
-				Computed:    true,
+				Default:     false,
 			},
 		},
 		Importer: &schema.ResourceImporter{
@@ -215,7 +215,7 @@ func resourceCheckboxOptionTypeRead(ctx context.Context, d *schema.ResourceData,
 		if optionType.DefaultValue == "on" {
 			d.Set("default_checked", true)
 		} else {
-			d.Set("default_checked", true)
+			d.Set("default_checked", false)
 		}
 	} else {
 		return diag.Errorf("read operation: option type not found in response data") // should not happen
