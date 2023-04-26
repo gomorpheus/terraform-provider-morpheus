@@ -147,7 +147,6 @@ func resourceNodeType() *schema.Resource {
 				Description: "VMware custom options associated with the node type",
 				Optional:    true,
 				Elem:        &schema.Schema{Type: schema.TypeString},
-				Computed:    true,
 			},
 			"script_template_ids": {
 				Type:        schema.TypeList,
