@@ -65,9 +65,10 @@ func resourceInstanceCatalogItem() *schema.Resource {
 				Computed:    true,
 			},
 			"config": {
-				Type:        schema.TypeString,
-				Description: "The instance config associated with the instance catalog item",
-				Required:    true,
+				Type:             schema.TypeString,
+				Description:      "The instance config associated with the instance catalog item",
+				Required:         true,
+				DiffSuppressFunc: suppressEquivalentJsonDiffs,
 			},
 			"option_type_ids": {
 				Type:        schema.TypeList,
@@ -229,7 +230,9 @@ func resourceInstanceCatalogItemRead(ctx context.Context, d *schema.ResourceData
 	}
 	d.Set("option_type_ids", optionTypes)
 	d.Set("content", catalogItem.Content)
-	d.Set("config", catalogItem.Config)
+	configJson, _ := json.Marshal(catalogItem.Config.(map[string]interface{}))
+	d.Set("config", string(configJson))
+	d.Set("visibility", catalogItem.Visibility)
 	d.Set("labels", catalogItem.Labels)
 	imagePath := strings.Split(catalogItem.ImagePath, "/")
 	opt := strings.Replace(imagePath[len(imagePath)-1], "_original", "", 1)

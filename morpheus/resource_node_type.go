@@ -312,8 +312,8 @@ func resourceNodeTypeRead(ctx context.Context, d *schema.ResourceData, meta inte
 			for k, v := range nodeType.NodeType.Config.ExtraOptions {
 				extraOptions[k] = v
 			}
+			d.Set("extra_options", extraOptions)
 		}
-		d.Set("extra_options", extraOptions)
 	}
 	d.Set("category", nodeType.NodeType.Category)
 	return diags

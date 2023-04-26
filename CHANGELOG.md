@@ -1,8 +1,8 @@
-## Unreleased
+## 0.9.0 (April 26, 2023)
 
 NOTES:
 
-* The `morpheus-sdk` dependcy has been upgraded to version 0.3.1.
+* The `morpheus-sdk` dependcy has been upgraded to version 0.3.2.
 * The `terraform-plugin-docs` dependcy has been upgraded to version 0.14.1.
 * The `terraform-plugin-sdk` dependcy has been upgraded to version 2.25.0.
 * Add label support for additional Morpheus resources.
@@ -11,6 +11,8 @@ NOTES:
 * Fixed a bug with the provisioning workflow resource not properly reading tasks, which impacted updates and state import operations [#96](https://github.com/gomorpheus/terraform-provider-morpheus/issues/96)
 * Updated the `morpheus_email_task` resource to support repository and url source types. [#97](https://github.com/gomorpheus/terraform-provider-morpheus/issues/97)
 * Updated the `morpheus_powershell_task` resource documentation and fixed an issue with the execute_target attribute not properly being set on import. [#98](https://github.com/gomorpheus/terraform-provider-morpheus/issues/98)
+* Updated the `morpheus_node_type` resource to remove the computed attribute for the `extra_options` attribute that was causing issues for non-vsphere resources following a resource import. [#100](https://github.com/gomorpheus/terraform-provider-morpheus/issues/100)
+* Updated the `morpheus_instance_catalog_item` resource to properly set the state for config and visibility during resource import. [#102](https://github.com/gomorpheus/terraform-provider-morpheus/issues/102)
 
 FEATURES:
 
