@@ -2,7 +2,6 @@ package morpheus
 
 import (
 	"context"
-	"log"
 
 	"github.com/gomorpheus/morpheus-go-sdk"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -27,6 +26,11 @@ func dataSourceMorpheusKeyPair() *schema.Resource {
 				Optional:      true,
 				ConflictsWith: []string{"id"},
 			},
+			"publickey": {
+				Type:        schema.TypeString,
+				Description: "PublicKey of the KeyPair",
+				Optional:    true,
+			},
 		},
 	}
 }
@@ -36,59 +40,36 @@ func dataSourceMorphesKeyPairRead(ctx context.Context, d *schema.ResourceData, m
 
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
-
+	//read name and ID from Terraform
 	name := d.Get("name").(string)
-	id := d.Get("id").(int)
+	id := toInt64(d.Id())
 
-	// lookup by name if we do not have an id yet
 	var resp *morpheus.Response
 	var err error
-	if id == 0 && name != "" {
-		resp, err = client.ListKeyPairs(&morpheus.Request{})
-	} else {
+	if (id != 0 && name == "") || (id != 0 && name != "") { //if an ID is defined, use ID to retrieve KeyPair
+		resp, err = client.GetKeyPair(id)
+	} else if id == 0 && name != "" { // if no ID is defined search by name
+		resp, err = client.GetKeyPairByName(name)
+	} else if id == 0 && name == "" { // in case neither ID nore name is defined throw an error
 		return diag.Errorf("Key pair cannot be read without name or id")
 	}
 
 	if err != nil {
 		return diag.FromErr(err)
 	}
-
-	listResult := resp.Result.(*morpheus.ListKeyPairsResult)
-	keyPairCount := len(*listResult.KeyPairs)
-	if keyPairCount == 0 {
-		return diag.Errorf("found %d key pairs", keyPairCount) // should not happen
+	var keyPair *morpheus.KeyPair
+	if id != 0 {
+		result := resp.Result.(*morpheus.GetKeyPairResult) //read KeyPair from response, retireving an KeyPair via ID returns a pointer of type KeyPair, find by name return an pointer to an Array of KeyPair
+		keyPair = result.KeyPair
+	} else if name != "" {
+		listResult := resp.Result.(*morpheus.ListKeyPairsResult)
+		keyPairs := listResult.KeyPairs
+		keyPair = &(*keyPairs)[0]
 	}
-
-	var keyPairID int64
-	for _, v := range *listResult.KeyPairs {
-		if v.Name == name {
-			keyPairID = v.ID
-		}
-	}
-	log.Printf("KEY PAIR ID: %d", keyPairID)
-	if keyPairID > 0 {
-		resp, err = client.GetKeyPair(keyPairID, &morpheus.Request{})
-	} else {
-		return diag.Errorf("found %d key pairs for %s", keyPairID, name) // should not happen
-	}
-
-	if err != nil {
-		if resp != nil && resp.StatusCode == 404 {
-			log.Printf("API 404: %s - %v", resp, err)
-			return nil
-		} else {
-			log.Printf("API FAILURE: %s - %v", resp, err)
-			return diag.FromErr(err)
-		}
-	}
-	log.Printf("API RESPONSE: %s", resp)
-
-	// store resource data
-	result := resp.Result.(*morpheus.GetKeyPairResult)
-	keyPair := result.KeyPair
 	if keyPair != nil {
-		d.SetId(int64ToString(keyPair.ID))
-		d.Set("name", keyPair.Name)
+		d.SetId(int64ToString((*keyPair).ID))
+		d.Set("name", (*keyPair).Name)
+		d.Set("publickey", (*keyPair).PublicKey)
 	} else {
 		return diag.Errorf("Key pair not found in response data.") // should not happen
 	}
