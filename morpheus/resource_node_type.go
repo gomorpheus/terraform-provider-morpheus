@@ -147,7 +147,6 @@ func resourceNodeType() *schema.Resource {
 				Description: "VMware custom options associated with the node type",
 				Optional:    true,
 				Elem:        &schema.Schema{Type: schema.TypeString},
-				Computed:    true,
 			},
 			"script_template_ids": {
 				Type:        schema.TypeList,
@@ -313,8 +312,8 @@ func resourceNodeTypeRead(ctx context.Context, d *schema.ResourceData, meta inte
 			for k, v := range nodeType.NodeType.Config.ExtraOptions {
 				extraOptions[k] = v
 			}
+			d.Set("extra_options", extraOptions)
 		}
-		d.Set("extra_options", extraOptions)
 	}
 	d.Set("category", nodeType.NodeType.Category)
 	return diags
