@@ -1,3 +1,11 @@
+## UNRELEASED
+
+NOTES:
+
+FEATURES:
+
+* **New Resource:** `morpheus_resource_pool_group`
+
 ## 0.9.0 (April 26, 2023)
 
 NOTES:
