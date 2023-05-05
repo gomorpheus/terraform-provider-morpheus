@@ -272,6 +272,7 @@ func resourceShellScriptTaskRead(ctx context.Context, d *schema.ResourceData, me
 	d.Set("script_content", shellScriptTask.File.Content)
 	d.Set("script_path", shellScriptTask.File.ContentPath)
 	d.Set("version_ref", shellScriptTask.File.ContentRef)
+	d.Set("execute_target", shellScriptTask.ExecuteTarget)
 	d.Set("repository_id", shellScriptTask.File.Repository.ID)
 	if shellScriptTask.TaskOptions.ShellSudo == "on" {
 		d.Set("sudo", true)
