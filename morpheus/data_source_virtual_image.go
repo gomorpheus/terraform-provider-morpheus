@@ -3,7 +3,8 @@ package morpheus
 import (
 	"context"
 	"log"
-
+//        "fmt"
+	//"sberner"
 	"github.com/gomorpheus/morpheus-go-sdk"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -26,6 +27,12 @@ func dataSourceMorpheusVirtualImage() *schema.Resource {
 				Optional:      true,
 				ConflictsWith: []string{"id"},
 			},
+			"imagetype": {
+				Type:          schema.TypeString,
+				Description:   "The type of the Morpheus virtual image.",
+				Optional:      true,
+				ConflictsWith: []string{"id"},
+			},
 		},
 	}
 }
@@ -38,13 +45,15 @@ func dataSourceMorpheusVirtualImageRead(ctx context.Context, d *schema.ResourceD
 
 	name := d.Get("name").(string)
 	id := d.Get("id").(int)
-
+        imagetype := d.Get("imagetype").(string)
 	// lookup by name if we do not have an id yet
 	var resp *morpheus.Response
 	var err error
-	if id == 0 && name != "" {
+	if id == 0 && name != "" && imagetype == "" {
 		resp, err = client.FindVirtualImageByName(name)
-	} else if id != 0 {
+	} else if id == 0 && name != "" && imagetype != "" {
+                resp, err = client.FindVirtualImageByNameAndType(name, imagetype)
+        } else if id != 0 {
 		resp, err = client.GetVirtualImage(int64(id), &morpheus.Request{})
 	} else {
 		return diag.Errorf("Virtual image cannot be read without name or id")
@@ -66,6 +75,7 @@ func dataSourceMorpheusVirtualImageRead(ctx context.Context, d *schema.ResourceD
 	if virtualImage != nil {
 		d.SetId(int64ToString(virtualImage.ID))
 		d.Set("name", virtualImage.Name)
+		d.Set("imagetype", "test")
 	} else {
 		return diag.Errorf("Virtual image not found in response data.") // should not happen
 	}

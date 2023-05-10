@@ -86,6 +86,7 @@ func Provider() *schema.Provider {
 			"morpheus_instance_type":                    resourceInstanceType(),
 			"morpheus_javascript_task":                  resourceJavaScriptTask(),
 			//			"morpheus_license":                       resourceLicense(),
+			"morpheus_key_pair":                   resourceKeyPair(),
 			"morpheus_kubernetes_app_blueprint":   resourceKubernetesAppBlueprint(),
 			"morpheus_kubernetes_spec_template":   resourceKubernetesSpecTemplate(),
 			"morpheus_manual_option_list":         resourceManualOptionList(),
