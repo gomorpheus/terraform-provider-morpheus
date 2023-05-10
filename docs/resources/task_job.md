@@ -19,12 +19,13 @@ data "morpheus_task" "example_task" {
 }
 
 resource "morpheus_task_job" "tf_example_task_job_manual" {
-  name          = "TF Example Task Job Manual"
-  enabled       = true
-  task_id       = data.morpheus_task.example_task.id
-  schedule_mode = "manual"
-  context_type  = "instance"
-  instance_ids  = [1, 2]
+  name           = "TF Example Task Job Manual"
+  enabled        = true
+  labels         = ["aws", "demo"]
+  task_id        = data.morpheus_task.example_task.id
+  schedule_mode  = "manual"
+  context_type   = "instance-label"
+  instance_label = "demo"
 }
 ```
 
@@ -38,6 +39,7 @@ data "morpheus_task" "example_task" {
 resource "morpheus_task_job" "tf_example_task_job_date_and_time" {
   name                    = "TF Example Task Job Date and Time"
   enabled                 = true
+  labels                  = ["aws", "demo"]
   task_id                 = data.morpheus_task.example_task.id
   schedule_mode           = "date_and_time"
   scheduled_date_and_time = "2022-12-30T06:00:00Z"
@@ -60,6 +62,7 @@ data "morpheus_execute_schedule" "example_schedule" {
 resource "morpheus_task_job" "tf_example_task_job_schedule" {
   name                  = "TF Example Task Job Schedule"
   enabled               = true
+  labels                = ["aws", "demo"]
   task_id               = data.morpheus_task.example_task.id
   schedule_mode         = "scheduled"
   execution_schedule_id = data.morpheus_execute_schedule.jobtest.id
@@ -76,9 +79,10 @@ resource "morpheus_task_job" "tf_example_task_job_schedule" {
 
 ### Required
 
-- `context_type` (String) The context that the job should run as (appliance, server, instance)
+- `context_type` (String) The context that the job should run as (appliance, server, instance, instance-label, server-label)
 - `name` (String) The name of the task job
 - `schedule_mode` (String) The job scheduling type (manual, date_and_time, scheduled)
+- `task_id` (Number) The id of the task associated with the job
 
 ### Optional
 
@@ -86,9 +90,11 @@ resource "morpheus_task_job" "tf_example_task_job_schedule" {
 - `enabled` (Boolean) Whether the task job is enabled
 - `execution_schedule_id` (Number) The id of the execution schedule associated with the job
 - `instance_ids` (List of Number) A list of instance ids to associate with the job
+- `instance_label` (String) The instance label used for dynamic automation targeting
+- `labels` (Set of String) The organization labels associated with the task job (Only supported on Morpheus 5.5.3 or higher)
 - `scheduled_date_and_time` (String) The date and time the job will be executed if schedule mode date_and_time is used
 - `server_ids` (List of Number) A list of server ids to associate with the job
-- `task_id` (Number) The id of the task associated with the job
+- `server_label` (String) The server label used for dynamic automation targeting
 
 ### Read-Only
 
