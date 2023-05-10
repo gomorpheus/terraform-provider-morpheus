@@ -2,6 +2,9 @@
 
 NOTES:
 
+* Updated the `morpheus_task_job` resource to properly read all object attributes. [#113](https://github.com/gomorpheus/terraform-provider-morpheus/issues/113)
+* Updated the `morpheus_task_job` resource to add support for labels and support the new dynamic automation targeting feature in which instance or server labels can be used for the target selection.
+
 FEATURES:
 
 * **New Resource:** `morpheus_resource_pool_group`

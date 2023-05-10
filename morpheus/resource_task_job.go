@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"time"
+	"strconv"
 
 	"log"
 
@@ -33,6 +33,13 @@ func resourceTaskJob() *schema.Resource {
 				Description: "The name of the task job",
 				Required:    true,
 			},
+			"labels": {
+				Type:        schema.TypeSet,
+				Description: "The organization labels associated with the task job (Only supported on Morpheus 5.5.3 or higher)",
+				Optional:    true,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+			},
 			"enabled": {
 				Type:        schema.TypeBool,
 				Description: "Whether the task job is enabled",
@@ -42,8 +49,7 @@ func resourceTaskJob() *schema.Resource {
 			"task_id": {
 				Type:        schema.TypeInt,
 				Description: "The id of the task associated with the job",
-				Optional:    true,
-				Computed:    true,
+				Required:    true,
 			},
 			"schedule_mode": {
 				Type:         schema.TypeString,
@@ -55,42 +61,49 @@ func resourceTaskJob() *schema.Resource {
 				Type:          schema.TypeString,
 				Description:   "The date and time the job will be executed if schedule mode date_and_time is used",
 				Optional:      true,
-				Computed:      true,
 				ConflictsWith: []string{"execution_schedule_id"},
 			},
 			"execution_schedule_id": {
 				Type:        schema.TypeInt,
 				Description: "The id of the execution schedule associated with the job",
 				Optional:    true,
-				Computed:    true,
 			},
 			"context_type": {
 				Type:         schema.TypeString,
-				ValidateFunc: validation.StringInSlice([]string{"appliance", "server", "instance"}, false),
-				Description:  "The context that the job should run as (appliance, server, instance)",
+				ValidateFunc: validation.StringInSlice([]string{"appliance", "server", "instance", "instance-label", "server-label"}, false),
+				Description:  "The context that the job should run as (appliance, server, instance, instance-label, server-label)",
 				Required:     true,
 			},
 			"server_ids": {
 				Type:          schema.TypeList,
 				Description:   "A list of server ids to associate with the job",
 				Optional:      true,
-				Computed:      true,
 				Elem:          &schema.Schema{Type: schema.TypeInt},
-				ConflictsWith: []string{"instance_ids"},
+				ConflictsWith: []string{"instance_ids", "instance_label", "server_label"},
+			},
+			"server_label": {
+				Type:          schema.TypeString,
+				Description:   "The server label used for dynamic automation targeting",
+				Optional:      true,
+				ConflictsWith: []string{"instance_ids", "server_ids", "instance_label"},
 			},
 			"instance_ids": {
 				Type:          schema.TypeList,
 				Description:   "A list of instance ids to associate with the job",
 				Optional:      true,
-				Computed:      true,
 				Elem:          &schema.Schema{Type: schema.TypeInt},
-				ConflictsWith: []string{"server_ids"},
+				ConflictsWith: []string{"server_ids", "instance_label", "server_label"},
+			},
+			"instance_label": {
+				Type:          schema.TypeString,
+				Description:   "The instance label used for dynamic automation targeting",
+				Optional:      true,
+				ConflictsWith: []string{"instance_ids", "server_ids", "server_label"},
 			},
 			"custom_config": {
 				Type:        schema.TypeString,
 				Description: "The task custom configuration",
 				Optional:    true,
-				Computed:    true,
 			},
 		},
 		Importer: &schema.ResourceImporter{
@@ -108,11 +121,24 @@ func resourceTaskJobCreate(ctx context.Context, d *schema.ResourceData, meta int
 	job := make(map[string]interface{})
 
 	job["name"] = d.Get("name").(string)
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+	job["labels"] = labelsPayload
 	job["enabled"] = d.Get("enabled").(bool)
 	job["task"] = map[string]int{
 		"id": d.Get("task_id").(int),
 	}
 	job["targetType"] = d.Get("context_type").(string)
+	if d.Get("context_type").(string) == "instance-label" {
+		job["instanceLabel"] = d.Get("instance_label").(string)
+	}
+	if d.Get("context_type").(string) == "server-label" {
+		job["serverLabel"] = d.Get("server_label").(string)
+	}
 	job["customConfig"] = d.Get("custom_config")
 
 	// Evaluate different schedululing methods
@@ -207,46 +233,64 @@ func resourceTaskJobRead(ctx context.Context, d *schema.ResourceData, meta inter
 	log.Printf("API RESPONSE: %s", resp)
 
 	// store resource data
-	var taskJob TaskJob
-	json.Unmarshal(resp.Body, &taskJob)
+	result := resp.Result.(*morpheus.GetJobResult)
+	taskJob := result.Job
 
-	d.SetId(intToString(taskJob.Job.ID))
-	d.Set("name", taskJob.Job.Name)
-	d.Set("enabled", taskJob.Job.Enabled)
-	d.Set("task_id", taskJob.Job.Task.ID)
-
-	switch taskJob.Job.Schedulemode {
+	d.SetId(int64ToString(taskJob.ID))
+	d.Set("name", taskJob.Name)
+	if len(taskJob.Labels) > 0 {
+		d.Set("labels", taskJob.Labels)
+	}
+	d.Set("enabled", taskJob.Enabled)
+	d.Set("task_id", taskJob.Task.ID)
+	d.Set("context_type", taskJob.TargetType)
+	switch taskJob.ScheduleMode {
 	case "manual":
 		d.Set("schedule_mode", "manual")
 	case "dateTime":
 		d.Set("schedule_mode", "date_and_time")
-	case "scheduled":
+		d.Set("scheduled_date_and_time", taskJob.DateTime)
+		// Execute schedule uses the schedule mode field for storing the execute schedule id
+	default:
 		d.Set("schedule_mode", "scheduled")
-	}
-	d.Set("scheduled_date_and_time", taskJob.Job.Datetime)
-	d.Set("custom_config", taskJob.Job.Customconfig)
-
-	// instances
-	var instanceIds []int64
-	if taskJob.Job.Targets != nil {
-		// iterate over the array of targets
-		for i := 0; i < len(taskJob.Job.Targets); i++ {
-			instance := taskJob.Job.Targets[i]
-			instanceIds = append(instanceIds, int64(instance.Refid))
+		intVar, err := strconv.Atoi(taskJob.ScheduleMode)
+		if err != nil {
+			log.Printf("String Conversion Failure: %s", err)
 		}
+		d.Set("execution_schedule_id", intVar)
 	}
-	d.Set("instance_ids", instanceIds)
+	if taskJob.CustomConfig != "" {
+		d.Set("custom_config", taskJob.CustomConfig)
+	}
 
-	// servers
-	var serverIds []int64
-	if taskJob.Job.Targets != nil {
-		// iterate over the array of targets
-		for i := 0; i < len(taskJob.Job.Targets); i++ {
-			server := taskJob.Job.Targets[i]
-			serverIds = append(serverIds, int64(server.Refid))
+	switch taskJob.TargetType {
+	case "instance":
+		// instances
+		var instanceIds []int64
+		if taskJob.Targets != nil {
+			// iterate over the array of targets
+			for i := 0; i < len(taskJob.Targets); i++ {
+				instance := taskJob.Targets[i]
+				instanceIds = append(instanceIds, int64(instance.RefId))
+			}
 		}
+		d.Set("instance_ids", instanceIds)
+	case "server":
+		// servers
+		var serverIds []int64
+		if taskJob.Targets != nil {
+			// iterate over the array of targets
+			for i := 0; i < len(taskJob.Targets); i++ {
+				server := taskJob.Targets[i]
+				serverIds = append(serverIds, int64(server.RefId))
+			}
+		}
+		d.Set("server_ids", serverIds)
+	case "instance-label":
+		d.Set("instance_label", taskJob.Targets[0].Name)
+	case "server-label":
+		d.Set("server_label", taskJob.Targets[0].Name)
 	}
-	d.Set("server_ids", serverIds)
 
 	return diags
 }
@@ -258,11 +302,24 @@ func resourceTaskJobUpdate(ctx context.Context, d *schema.ResourceData, meta int
 	job := make(map[string]interface{})
 
 	job["name"] = d.Get("name").(string)
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+	job["labels"] = labelsPayload
 	job["enabled"] = d.Get("enabled").(bool)
 	job["task"] = map[string]int{
 		"id": d.Get("task_id").(int),
 	}
 	job["targetType"] = d.Get("context_type").(string)
+	if d.Get("context_type").(string) == "instance-label" {
+		job["instanceLabel"] = d.Get("instance_label").(string)
+	}
+	if d.Get("context_type").(string) == "server-label" {
+		job["serverLabel"] = d.Get("server_label").(string)
+	}
 	job["customConfig"] = d.Get("custom_config")
 
 	// Evaluate different schedululing methods
@@ -347,45 +404,4 @@ func resourceTaskJobDelete(ctx context.Context, d *schema.ResourceData, meta int
 	log.Printf("API RESPONSE: %s", resp)
 	d.SetId("")
 	return diags
-}
-
-type TaskJob struct {
-	Job struct {
-		Category  interface{} `json:"category"`
-		Createdby struct {
-			Displayname string `json:"displayName"`
-			ID          int    `json:"id"`
-			Username    string `json:"username"`
-		} `json:"createdBy"`
-		Customconfig  string      `json:"customConfig"`
-		Customoptions interface{} `json:"customOptions"`
-		Datecreated   time.Time   `json:"dateCreated"`
-		Datetime      interface{} `json:"dateTime"`
-		Description   interface{} `json:"description"`
-		Enabled       bool        `json:"enabled"`
-		ID            int         `json:"id"`
-		Jobsummary    string      `json:"jobSummary"`
-		Lastresult    string      `json:"lastResult"`
-		Lastrun       time.Time   `json:"lastRun"`
-		Lastupdated   time.Time   `json:"lastUpdated"`
-		Name          string      `json:"name"`
-		Namespace     interface{} `json:"namespace"`
-		Schedulemode  string      `json:"scheduleMode"`
-		Status        interface{} `json:"status"`
-		Targettype    string      `json:"targetType"`
-		Targets       []struct {
-			ID         int    `json:"id"`
-			Name       string `json:"name"`
-			Refid      int    `json:"refId"`
-			Targettype string `json:"targetType"`
-		} `json:"targets"`
-		Task struct {
-			ID int `json:"id"`
-		} `json:"task"`
-		Type struct {
-			Code string `json:"code"`
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"type"`
-	} `json:"job"`
 }
