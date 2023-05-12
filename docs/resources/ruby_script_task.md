@@ -17,6 +17,7 @@ Creating the ruby script task with local script content:
 resource "morpheus_ruby_script_task" "tfexample_ruby_local" {
   name                = "tfexample_ruby_local"
   code                = "tfexample_ruby_local"
+  labels              = ["demo", "terraform"]
   source_type         = "local"
   script_content      = <<EOF
   puts "testing"
@@ -34,6 +35,7 @@ Creating the ruby script task with the script fetched from a url:
 resource "morpheus_ruby_script_task" "tfexample_ruby_url" {
   name                = "tfexample_ruby_url"
   code                = "tfexample_ruby_url"
+  labels              = ["demo", "terraform"]
   source_type         = "url"
   result_type         = "json"
   script_path         = "https://example.com/example.rb"
@@ -50,6 +52,7 @@ Creating the ruby script task with the script fetch via git:
 resource "morpheus_ruby_script_task" "tfexample_ruby_git" {
   name                = "tfexample_ruby_git"
   code                = "tfexample_ruby_git"
+  labels              = ["demo", "terraform"]
   source_type         = "repository"
   result_type         = "json"
   script_path         = "example.rb"
@@ -74,6 +77,7 @@ resource "morpheus_ruby_script_task" "tfexample_ruby_git" {
 
 - `allow_custom_config` (Boolean) Custom configuration data to pass during the execution of the ruby script
 - `code` (String) The code of the ruby script task
+- `labels` (Set of String) The organization labels associated with the task (Only supported on Morpheus 5.5.3 or higher)
 - `repository_id` (Number) The ID of the git repository integration
 - `result_type` (String) The expected result type (single value, key pairs, json)
 - `retry_count` (Number) The number of times to retry the task if there is a failure

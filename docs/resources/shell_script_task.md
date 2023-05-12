@@ -17,6 +17,7 @@ Creating the shell script task with local script content:
 resource "morpheus_shell_script_task" "tfexample_shell_local" {
   name                = "tfexample_shell_local"
   code                = "tfexample_shell_local"
+  labels              = ["demo", "terraform"]
   source_type         = "local"
   script_content      = <<EOF
   echo "testing"
@@ -35,6 +36,7 @@ Creating the shell script task with the script fetched from a url:
 resource "morpheus_shell_script_task" "tfexample_shell_url" {
   name                = "tfexample_shell_url"
   code                = "tfexample_shell_url"
+  labels              = ["demo", "terraform"]
   source_type         = "url"
   result_type         = "json"
   script_path         = "https://example.com/example.sh"
@@ -52,6 +54,7 @@ Creating the shell script task with the script fetch via git:
 resource "morpheus_shell_script_task" "tfexample_shell_git" {
   name                = "tfexample_shell_git"
   code                = "tfexample_shell_git"
+  labels              = ["demo", "terraform"]
   source_type         = "repository"
   result_type         = "json"
   script_path         = "example.sh"
@@ -78,6 +81,7 @@ resource "morpheus_shell_script_task" "tfexample_shell_git" {
 - `allow_custom_config` (Boolean) Custom configuration data to pass during the execution of the shell script
 - `code` (String) The code of the shell script task
 - `execute_target` (String) The source of the shell script (local, url or repository)
+- `labels` (Set of String) The organization labels associated with the task (Only supported on Morpheus 5.5.3 or higher)
 - `remote_target_host` (String) The hostname or ip address of the remote target
 - `remote_target_password` (String) The password of the user account used to authenticate to the remote target
 - `remote_target_port` (String) The port used to connect to the remote target

@@ -502,10 +502,10 @@ func resourceVsphereInstanceRead(ctx context.Context, d *schema.ResourceData, me
 	d.SetId(int64ToString(instance.ID))
 	d.Set("name", instance.Name)
 	d.Set("description", instance.Description)
-	d.Set("cloud_id", instance.Cloud["id"])
-	d.Set("group_id", instance.Group["id"])
-	d.Set("instance_type_id", instance.InstanceType["id"])
-	d.Set("instance_layout_id", instance.Layout["id"])
+	d.Set("cloud_id", instance.Cloud.ID)
+	d.Set("group_id", instance.Group.ID)
+	d.Set("instance_type_id", instance.InstanceType.ID)
+	d.Set("instance_layout_id", instance.Layout.ID)
 	d.Set("plan_id", instance.Plan.ID)
 	d.Set("resource_pool_id", instance.Config["resourcePoolId"])
 	d.Set("environment", instance.Environment)
@@ -515,12 +515,12 @@ func resourceVsphereInstanceRead(ctx context.Context, d *schema.ResourceData, me
 	tags := make(map[string]interface{})
 	if instance.Tags != nil {
 		output := instance.Tags
-		tagList := *output
+		tagList := output
 		// iterate over the array of tags
 		for i := 0; i < len(tagList); i++ {
 			tag := tagList[i]
-			tagName := tag["name"]
-			tags[tagName.(string)] = tag["value"]
+			tagName := tag.Name
+			tags[tagName] = tag.Value
 		}
 	}
 	d.Set("tags", tags)

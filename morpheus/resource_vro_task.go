@@ -37,6 +37,13 @@ func resourceVrealizeOrchestratorTask() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 			},
+			"labels": {
+				Type:        schema.TypeSet,
+				Description: "The organization labels associated with the task (Only supported on Morpheus 5.5.3 or higher)",
+				Optional:    true,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+			},
 			"result_type": {
 				Type:         schema.TypeString,
 				Description:  "The expected result type (value, keyValue, json)",
@@ -112,11 +119,19 @@ func resourceVrealizeOrchestratorTaskCreate(ctx context.Context, d *schema.Resou
 	taskOptions["vroWorkflow"] = d.Get("vro_workflow_value")
 	taskOptions["vroBody"] = d.Get("body")
 
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"task": map[string]interface{}{
 				"name":              name,
 				"code":              d.Get("code").(string),
+				"labels":            labelsPayload,
 				"taskType":          taskType,
 				"taskOptions":       taskOptions,
 				"resultType":        d.Get("result_type"),
@@ -184,6 +199,7 @@ func resourceVrealizeOrchestratorTaskRead(ctx context.Context, d *schema.Resourc
 	d.SetId(int64ToString(workflowTask.ID))
 	d.Set("name", workflowTask.Name)
 	d.Set("code", workflowTask.Code)
+	d.Set("labels", workflowTask.Labels)
 	d.Set("result_type", workflowTask.ResultType)
 	d.Set("vro_integration_id", workflowTask.TaskOptions.VroIntegrationId)
 	d.Set("vro_workflow_value", workflowTask.TaskOptions.VroWorkflow)
@@ -215,11 +231,19 @@ func resourceVrealizeOrchestratorTaskUpdate(ctx context.Context, d *schema.Resou
 		taskOptions["vroBody"] = d.Get("body")
 	}
 
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"task": map[string]interface{}{
 				"name":              name,
 				"code":              d.Get("code").(string),
+				"labels":            labelsPayload,
 				"taskType":          taskType,
 				"taskOptions":       taskOptions,
 				"resultType":        d.Get("result_type"),

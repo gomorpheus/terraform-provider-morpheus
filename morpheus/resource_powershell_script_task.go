@@ -40,6 +40,13 @@ func resourcePowerShellScriptTask() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 			},
+			"labels": {
+				Type:        schema.TypeSet,
+				Description: "The organization labels associated with the task (Only supported on Morpheus 5.5.3 or higher)",
+				Optional:    true,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+			},
 			"result_type": {
 				Type:         schema.TypeString,
 				Description:  "The expected result type (value, keyValue, json)",
@@ -194,11 +201,19 @@ func resourcePowerShellScriptTaskCreate(ctx context.Context, d *schema.ResourceD
 		taskOptions["password"] = d.Get("remote_target_password")
 	}
 
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"task": map[string]interface{}{
 				"name":              name,
 				"code":              d.Get("code").(string),
+				"labels":            labelsPayload,
 				"file":              sourceOptions,
 				"taskType":          taskType,
 				"taskOptions":       taskOptions,
@@ -266,6 +281,7 @@ func resourcePowerShellScriptTaskRead(ctx context.Context, d *schema.ResourceDat
 	d.SetId(int64ToString(powerShellScriptTask.ID))
 	d.Set("name", powerShellScriptTask.Name)
 	d.Set("code", powerShellScriptTask.Code)
+	d.Set("labels", powerShellScriptTask.Labels)
 	d.Set("result_type", powerShellScriptTask.ResultType)
 	d.Set("source_type", powerShellScriptTask.File.SourceType)
 	d.Set("script_content", powerShellScriptTask.File.Content)
@@ -329,11 +345,19 @@ func resourcePowerShellScriptTaskUpdate(ctx context.Context, d *schema.ResourceD
 		taskOptions["password"] = d.Get("remote_target_password")
 	}
 
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"task": map[string]interface{}{
 				"name":              name,
 				"code":              d.Get("code").(string),
+				"labels":            labelsPayload,
 				"file":              sourceOptions,
 				"taskType":          taskType,
 				"taskOptions":       taskOptions,

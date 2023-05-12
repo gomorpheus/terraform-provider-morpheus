@@ -24,3 +24,4 @@ data "morpheus_key_pair" "tf_example_key_pair" {
 
 - `id` (Number) The ID of the key pair
 - `name` (String) The name of the integration
+- `publickey` (String) PublicKey of the KeyPair

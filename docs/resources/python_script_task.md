@@ -17,6 +17,7 @@ Creating the python script task with local script content:
 resource "morpheus_python_script_task" "tfexample_python_local" {
   name                = "tfexample_python_local"
   code                = "tfexample_python_local"
+  labels              = ["demo", "terraform"]
   source_type         = "local"
   script_content      = <<EOF
 print('morpheus')
@@ -38,6 +39,7 @@ Creating the python script task with the script fetched from a url:
 resource "morpheus_python_script_task" "tfexample_python_url" {
   name                = "tfexample_python_url"
   code                = "tfexample_python_url"
+  labels              = ["demo", "terraform"]
   source_type         = "url"
   result_type         = "json"
   script_path         = "https://example.com/example.py"
@@ -57,6 +59,7 @@ Creating the python script task with the script fetch via git:
 resource "morpheus_python_script_task" "tfexample_python_git" {
   name                = "tfexample_python_git"
   code                = "tfexample_python_git"
+  labels              = ["demo", "terraform"]
   source_type         = "repository"
   result_type         = "json"
   script_path         = "example.py"
@@ -86,6 +89,7 @@ resource "morpheus_python_script_task" "tfexample_python_git" {
 - `allow_custom_config` (Boolean) Custom configuration data to pass during the execution of the python script
 - `code` (String) The code of the python script task
 - `command_arguments` (String) Arguments to pass to the python script
+- `labels` (Set of String) The organization labels associated with the task (Only supported on Morpheus 5.5.3 or higher)
 - `python_binary` (String) The system path of the python binary to execute
 - `repository_id` (Number) The ID of the git repository integration
 - `result_type` (String) The expected result type (single value, key pairs, json)

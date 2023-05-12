@@ -17,6 +17,7 @@ Creating the powershell script task with local script content:
 resource "morpheus_powershell_script_task" "tfexample_powershell_local" {
   name                = "tfexample_powershell_local"
   code                = "tfexample_powershell_local"
+  labels              = ["demo", "terraform"]
   source_type         = "local"
   script_content      = <<EOF
   Write-Output "testing"
@@ -35,6 +36,7 @@ Creating the powershell script task with the script fetched from a url:
 resource "morpheus_powershell_script_task" "tfexample_powershell_url" {
   name                = "tfexample_powershell_url"
   code                = "tfexample_powershell_url"
+  labels              = ["demo", "terraform"]
   source_type         = "url"
   result_type         = "json"
   script_path         = "https://example.com/example.ps"
@@ -52,6 +54,7 @@ Creating the powershell script task with the script fetch via git:
 resource "morpheus_powershell_script_task" "tfexample_powershell_git" {
   name                = "tfexample_powershell_git"
   code                = "tfexample_powershell_git"
+  labels              = ["demo", "terraform"]
   source_type         = "repository"
   result_type         = "json"
   script_path         = "example.ps"
@@ -79,6 +82,7 @@ resource "morpheus_powershell_script_task" "tfexample_powershell_git" {
 - `code` (String) The code of the powershell script task
 - `elevated_shell` (Boolean) Run the powershell script with elevated permissions
 - `execute_target` (String) The execute target for the powershell script (local, remote or resource)
+- `labels` (Set of String) The organization labels associated with the task (Only supported on Morpheus 5.5.3 or higher)
 - `remote_target_host` (String) The hostname or ip address of the remote target
 - `remote_target_password` (String) The password of the user account used to authenticate to the remote target
 - `remote_target_port` (String) The port used to connect to the remote target

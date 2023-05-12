@@ -2,8 +2,6 @@ package morpheus
 
 import (
 	"context"
-	"encoding/json"
-	"time"
 
 	"log"
 
@@ -37,6 +35,13 @@ func resourceJavaScriptTask() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The code of the javascript script task",
 				Optional:    true,
+			},
+			"labels": {
+				Type:        schema.TypeSet,
+				Description: "The organization labels associated with the task (Only supported on Morpheus 5.5.3 or higher)",
+				Optional:    true,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
 			},
 			"result_type": {
 				Type:         schema.TypeString,
@@ -102,11 +107,19 @@ func resourceJavaScriptTaskCreate(ctx context.Context, d *schema.ResourceData, m
 	taskType := make(map[string]interface{})
 	taskType["code"] = "javascriptTask"
 
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"task": map[string]interface{}{
 				"name":              name,
 				"code":              d.Get("code").(string),
+				"labels":            labelsPayload,
 				"taskType":          taskType,
 				"taskOptions":       taskOptions,
 				"resultType":        d.Get("result_type"),
@@ -168,16 +181,17 @@ func resourceJavaScriptTaskRead(ctx context.Context, d *schema.ResourceData, met
 	log.Printf("API RESPONSE: %s", resp)
 
 	// store resource data
-	var javascriptTask JavaScriptTask
-	json.Unmarshal(resp.Body, &javascriptTask)
-	d.SetId(intToString(javascriptTask.Task.ID))
-	d.Set("name", javascriptTask.Task.Name)
-	d.Set("code", javascriptTask.Task.Code)
-	d.Set("script_content", javascriptTask.Task.Taskoptions.JsScript)
-	d.Set("retryable", javascriptTask.Task.Retryable)
-	d.Set("retry_count", javascriptTask.Task.Retrycount)
-	d.Set("retry_delay_seconds", javascriptTask.Task.Retrydelayseconds)
-	d.Set("allow_custom_config", javascriptTask.Task.Allowcustomconfig)
+	result := resp.Result.(*morpheus.GetTaskResult)
+	javascriptTask := result.Task
+	d.SetId(int64ToString(javascriptTask.ID))
+	d.Set("name", javascriptTask.Name)
+	d.Set("code", javascriptTask.Code)
+	d.Set("labels", javascriptTask.Labels)
+	d.Set("script_content", javascriptTask.TaskOptions.JsScript)
+	d.Set("retryable", javascriptTask.Retryable)
+	d.Set("retry_count", javascriptTask.RetryCount)
+	d.Set("retry_delay_seconds", javascriptTask.RetryDelaySeconds)
+	d.Set("allow_custom_config", javascriptTask.AllowCustomConfig)
 	return diags
 }
 
@@ -191,11 +205,19 @@ func resourceJavaScriptTaskUpdate(ctx context.Context, d *schema.ResourceData, m
 	taskType := make(map[string]interface{})
 	taskType["code"] = "javascriptTask"
 
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"task": map[string]interface{}{
 				"name":              name,
 				"code":              d.Get("code").(string),
+				"labels":            labelsPayload,
 				"taskType":          taskType,
 				"taskOptions":       taskOptions,
 				"resultType":        d.Get("result_type"),
@@ -243,39 +265,4 @@ func resourceJavaScriptTaskDelete(ctx context.Context, d *schema.ResourceData, m
 	log.Printf("API RESPONSE: %s", resp)
 	d.SetId("")
 	return diags
-}
-
-type JavaScriptTask struct {
-	Task struct {
-		ID        int    `json:"id"`
-		Accountid int    `json:"accountId"`
-		Name      string `json:"name"`
-		Code      string `json:"code"`
-		Tasktype  struct {
-			ID   int    `json:"id"`
-			Code string `json:"code"`
-			Name string `json:"name"`
-		} `json:"taskType"`
-		Taskoptions struct {
-			Username          interface{} `json:"username"`
-			Host              interface{} `json:"host"`
-			Localscriptgitref interface{} `json:"localScriptGitRef"`
-			Password          interface{} `json:"password"`
-			Passwordhash      interface{} `json:"passwordHash"`
-			JsScript          string      `json:"jsScript"`
-			Port              interface{} `json:"port"`
-		} `json:"taskOptions"`
-		File              interface{} `json:"file"`
-		Resulttype        interface{} `json:"resultType"`
-		Executetarget     string      `json:"executeTarget"`
-		Retryable         bool        `json:"retryable"`
-		Retrycount        int         `json:"retryCount"`
-		Retrydelayseconds int         `json:"retryDelaySeconds"`
-		Allowcustomconfig bool        `json:"allowCustomConfig"`
-		Credential        struct {
-			Type string `json:"type"`
-		} `json:"credential"`
-		Datecreated time.Time `json:"dateCreated"`
-		Lastupdated time.Time `json:"lastUpdated"`
-	} `json:"task"`
 }

@@ -15,6 +15,7 @@ Provides a Morpheus operational workflow resource.
 resource "morpheus_operational_workflow" "tf_example_operational_workflow" {
   name                = "tf_example_operational_workflow"
   description         = "Terraform operational workflow example"
+  labels              = ["demo", "terraform"]
   platform            = "all"
   visibility          = "private"
   allow_custom_config = true
@@ -36,6 +37,7 @@ resource "morpheus_operational_workflow" "tf_example_operational_workflow" {
 
 - `allow_custom_config` (Boolean) Allow a custom configuration to be supplied
 - `description` (String) The description of the operational workflow
+- `labels` (Set of String) The organization labels associated with the workflow (Only supported on Morpheus 5.5.3 or higher)
 - `option_types` (List of Number) The option types associated with the operational workflow
 - `platform` (String) The operating system platforms the operational workflow is supported to run on
 - `task_ids` (List of Number) A list of tasks ids associated with the operational workflow

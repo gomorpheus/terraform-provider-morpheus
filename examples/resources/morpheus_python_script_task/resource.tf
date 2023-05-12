@@ -1,6 +1,7 @@
 resource "morpheus_python_script_task" "tfexample_python_local" {
   name                = "tfexample_python_local"
   code                = "tfexample_python_local"
+  labels              = ["demo", "terraform"]
   source_type         = "local"
   script_content      = <<EOF
 print('morpheus')

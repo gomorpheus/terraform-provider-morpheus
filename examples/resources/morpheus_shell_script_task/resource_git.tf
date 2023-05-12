@@ -1,6 +1,7 @@
 resource "morpheus_shell_script_task" "tfexample_shell_git" {
   name                = "tfexample_shell_git"
   code                = "tfexample_shell_git"
+  labels              = ["demo", "terraform"]
   source_type         = "repository"
   result_type         = "json"
   script_path         = "example.sh"

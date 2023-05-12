@@ -1,14 +1,20 @@
 ## UNRELEASED
 
+## 0.9.1 (May 12, 2023)
+
 NOTES:
 
+* The `morpheus-sdk` dependcy has been upgraded to version 0.3.3.
 * Updated the `morpheus_task_job` resource to properly read all object attributes. [#113](https://github.com/gomorpheus/terraform-provider-morpheus/issues/113)
 * Updated the `morpheus_task_job` resource to add support for labels and support the new dynamic automation targeting feature in which instance or server labels can be used for the target selection.
+* Add label support for automation task and workflow resources (i.e - provisioning workflow, ansible playbook task, python script task, etc).
+* Add label support for option list resources.
 
 FEATURES:
 
 * **New Resource:** `morpheus_resource_pool_group`
 * **New Resource:** `morpheus_license`
+* **New Resource:** `morpheus_key_pair`
 
 ## 0.9.0 (April 26, 2023)
 

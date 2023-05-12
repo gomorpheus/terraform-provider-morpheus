@@ -35,6 +35,13 @@ func resourceNestedWorkflowTask() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 			},
+			"labels": {
+				Type:        schema.TypeSet,
+				Description: "The organization labels associated with the task (Only supported on Morpheus 5.5.3 or higher)",
+				Optional:    true,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+			},
 			"operational_workflow_id": {
 				Type:        schema.TypeInt,
 				Description: "The ID of the operational workflow",
@@ -95,11 +102,19 @@ func resourceNestedWorkflowTaskCreate(ctx context.Context, d *schema.ResourceDat
 		"operationalWorkflowName": d.Get("operational_workflow_name").(string),
 	}
 
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"task": map[string]interface{}{
 				"name":              name,
 				"code":              d.Get("code").(string),
+				"labels":            labelsPayload,
 				"taskType":          taskType,
 				"taskOptions":       taskOptions,
 				"executeTarget":     "local",
@@ -165,6 +180,7 @@ func resourceNestedWorkflowTaskRead(ctx context.Context, d *schema.ResourceData,
 	d.SetId(int64ToString(nestedWorkflowTask.ID))
 	d.Set("name", nestedWorkflowTask.Name)
 	d.Set("code", nestedWorkflowTask.Code)
+	d.Set("labels", nestedWorkflowTask.Labels)
 	d.Set("execute_target", nestedWorkflowTask.ExecuteTarget)
 	d.Set("operational_workflow_id", nestedWorkflowTask.TaskOptions.OperationalWorkflowId)
 	d.Set("operational_workflow_name", nestedWorkflowTask.TaskOptions.OperationalWorkflowName)
@@ -189,11 +205,19 @@ func resourceNestedWorkflowTaskUpdate(ctx context.Context, d *schema.ResourceDat
 		"operationalWorkflowName": d.Get("operational_workflow_name").(string),
 	}
 
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"task": map[string]interface{}{
 				"name":              name,
 				"code":              d.Get("code").(string),
+				"labels":            labelsPayload,
 				"taskType":          taskType,
 				"taskOptions":       taskOptions,
 				"executeTarget":     "local",

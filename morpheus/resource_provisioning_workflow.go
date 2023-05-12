@@ -36,6 +36,13 @@ func resourceProvisioningWorkflow() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 			},
+			"labels": {
+				Type:        schema.TypeSet,
+				Description: "The organization labels associated with the workflow (Only supported on Morpheus 5.5.3 or higher)",
+				Optional:    true,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+			},
 			"platform": {
 				Type:         schema.TypeString,
 				Description:  "The operating system platforms the provisioning workflow is supported on (all, linux, macos, windows)",
@@ -99,11 +106,19 @@ func resourceProvisioningWorkflowCreate(ctx context.Context, d *schema.ResourceD
 		}
 	}
 
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"taskSet": map[string]interface{}{
 				"name":        name,
 				"description": description,
+				"labels":      labelsPayload,
 				"type":        "provision",
 				"visibility":  d.Get("visibility"),
 				"platform":    d.Get("platform"),
@@ -178,8 +193,13 @@ func resourceProvisioningWorkflowRead(ctx context.Context, d *schema.ResourceDat
 		d.SetId(int64ToString(workflow.ID))
 		d.Set("name", workflow.Name)
 		d.Set("description", workflow.Description)
+		d.Set("labels", workflow.Labels)
 		d.Set("visibility", workflow.Visibility)
-		d.Set("platform", workflow.Platform)
+		if workflow.Platform == "" {
+			d.Set("platform", "all")
+		} else {
+			d.Set("platform", workflow.Platform)
+		}
 		d.Set("task", tasks)
 	} else {
 		return diag.Errorf("read operation: workflow not found in response data") // should not happen
@@ -207,11 +227,19 @@ func resourceProvisioningWorkflowUpdate(ctx context.Context, d *schema.ResourceD
 		}
 	}
 
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"taskSet": map[string]interface{}{
 				"name":        name,
 				"description": description,
+				"labels":      labelsPayload,
 				"visibility":  d.Get("visibility"),
 				"platform":    d.Get("platform"),
 				"tasks":       tasks,

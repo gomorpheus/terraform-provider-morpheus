@@ -1,6 +1,7 @@
 resource "morpheus_shell_script_task" "tfexample_shell_url" {
   name                = "tfexample_shell_url"
   code                = "tfexample_shell_url"
+  labels              = ["demo", "terraform"]
   source_type         = "url"
   result_type         = "json"
   script_path         = "https://example.com/example.sh"

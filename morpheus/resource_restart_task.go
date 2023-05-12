@@ -35,6 +35,13 @@ func resourceRestartTask() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 			},
+			"labels": {
+				Type:        schema.TypeSet,
+				Description: "The organization labels associated with the task (Only supported on Morpheus 5.5.3 or higher)",
+				Optional:    true,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+			},
 			"retryable": {
 				Type:        schema.TypeBool,
 				Description: "Whether to retry the task if there is a failure",
@@ -76,11 +83,19 @@ func resourceRestartTaskCreate(ctx context.Context, d *schema.ResourceData, meta
 	taskType := make(map[string]interface{})
 	taskType["code"] = "restartTask"
 
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"task": map[string]interface{}{
 				"name":              name,
 				"code":              d.Get("code").(string),
+				"labels":            labelsPayload,
 				"taskType":          taskType,
 				"executeTarget":     "resource",
 				"retryable":         d.Get("retryable"),
@@ -145,6 +160,7 @@ func resourceRestartTaskRead(ctx context.Context, d *schema.ResourceData, meta i
 	d.SetId(int64ToString(restartTask.ID))
 	d.Set("name", restartTask.Name)
 	d.Set("code", restartTask.Code)
+	d.Set("labels", restartTask.Labels)
 	d.Set("retryable", restartTask.Retryable)
 	d.Set("retry_count", restartTask.RetryCount)
 	d.Set("retry_delay_seconds", restartTask.RetryDelaySeconds)
@@ -159,11 +175,19 @@ func resourceRestartTaskUpdate(ctx context.Context, d *schema.ResourceData, meta
 	taskType := make(map[string]interface{})
 	taskType["code"] = "restartTask"
 
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"task": map[string]interface{}{
 				"name":              name,
 				"code":              d.Get("code").(string),
+				"labels":            labelsPayload,
 				"taskType":          taskType,
 				"executeTarget":     "resource",
 				"retryable":         d.Get("retryable"),

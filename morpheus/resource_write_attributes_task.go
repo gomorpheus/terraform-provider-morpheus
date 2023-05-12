@@ -35,6 +35,13 @@ func resourceWriteAttributesTask() *schema.Resource {
 				Description: "The code of the write attributes task",
 				Optional:    true,
 			},
+			"labels": {
+				Type:        schema.TypeSet,
+				Description: "The organization labels associated with the task (Only supported on Morpheus 5.5.3 or higher)",
+				Optional:    true,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+			},
 			"attributes": {
 				Type:        schema.TypeString,
 				Description: "The attributes payload",
@@ -93,11 +100,19 @@ func resourceWriteAttributesTaskCreate(ctx context.Context, d *schema.ResourceDa
 	taskType := make(map[string]interface{})
 	taskType["code"] = "writeAttributes"
 
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"task": map[string]interface{}{
 				"name":              name,
 				"code":              d.Get("code").(string),
+				"labels":            labelsPayload,
 				"taskType":          taskType,
 				"taskOptions":       taskOptions,
 				"executeTarget":     "local",
@@ -163,6 +178,7 @@ func resourceWriteAttributesTaskRead(ctx context.Context, d *schema.ResourceData
 	d.SetId(int64ToString(writeAttributesTask.ID))
 	d.Set("name", writeAttributesTask.Name)
 	d.Set("code", writeAttributesTask.Code)
+	d.Set("labels", writeAttributesTask.Labels)
 	d.Set("attributes", writeAttributesTask.TaskOptions.WriteAttributesAttributes)
 	d.Set("retryable", writeAttributesTask.Retryable)
 	d.Set("retry_count", writeAttributesTask.RetryCount)
@@ -181,11 +197,19 @@ func resourceWriteAttributesTaskUpdate(ctx context.Context, d *schema.ResourceDa
 	taskType := make(map[string]interface{})
 	taskType["code"] = "writeAttributes"
 
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"task": map[string]interface{}{
 				"name":              name,
 				"code":              d.Get("code").(string),
+				"labels":            labelsPayload,
 				"taskType":          taskType,
 				"taskOptions":       taskOptions,
 				"executeTarget":     "local",

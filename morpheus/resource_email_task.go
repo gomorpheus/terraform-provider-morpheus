@@ -2,8 +2,6 @@ package morpheus
 
 import (
 	"context"
-	"encoding/json"
-	"time"
 
 	"log"
 
@@ -35,6 +33,13 @@ func resourceEmailTask() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The code of the email task",
 				Optional:    true,
+			},
+			"labels": {
+				Type:        schema.TypeSet,
+				Description: "The organization labels associated with the task (Only supported on Morpheus 5.5.3 or higher)",
+				Optional:    true,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
 			},
 			"email_address": {
 				Type:        schema.TypeString,
@@ -146,11 +151,19 @@ func resourceEmailTaskCreate(ctx context.Context, d *schema.ResourceData, meta i
 		contentConfig["repository"] = repository
 	}
 
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"task": map[string]interface{}{
-				"name": name,
-				"code": d.Get("code").(string),
+				"name":   name,
+				"code":   d.Get("code").(string),
+				"labels": labelsPayload,
 				"taskType": map[string]interface{}{
 					"code": "email",
 				},
@@ -218,34 +231,36 @@ func resourceEmailTaskRead(ctx context.Context, d *schema.ResourceData, meta int
 	log.Printf("API RESPONSE: %s", resp)
 
 	// store resource data
-	var emailTask Email
-	json.Unmarshal(resp.Body, &emailTask)
-	d.SetId(intToString(emailTask.Task.ID))
-	d.Set("name", emailTask.Task.Name)
-	d.Set("code", emailTask.Task.Code)
-	d.Set("email_address", emailTask.Task.Taskoptions.Emailaddress)
-	d.Set("subject", emailTask.Task.Taskoptions.Emailsubject)
-	d.Set("source", emailTask.Task.File.Sourcetype)
-	if emailTask.Task.File.Sourcetype == "url" {
-		d.Set("content_url", emailTask.Task.File.Contentpath)
+	result := resp.Result.(*morpheus.GetTaskResult)
+	emailTask := result.Task
+
+	d.SetId(int64ToString(emailTask.ID))
+	d.Set("name", emailTask.Name)
+	d.Set("code", emailTask.Code)
+	d.Set("labels", emailTask.Labels)
+	d.Set("email_address", emailTask.TaskOptions.EmailAddress)
+	d.Set("subject", emailTask.TaskOptions.EmailSubject)
+	d.Set("source", emailTask.File.SourceType)
+	if emailTask.File.SourceType == "url" {
+		d.Set("content_url", emailTask.File.ContentPath)
 	}
-	if emailTask.Task.File.Sourcetype == "repository" {
-		d.Set("content_path", emailTask.Task.File.Contentpath)
-		d.Set("repository_id", emailTask.Task.File.Repository.ID)
-		d.Set("version_ref", emailTask.Task.File.Contentref)
+	if emailTask.File.SourceType == "repository" {
+		d.Set("content_path", emailTask.File.ContentPath)
+		d.Set("repository_id", emailTask.File.Repository.ID)
+		d.Set("version_ref", emailTask.File.ContentRef)
 	}
-	if emailTask.Task.File.Sourcetype == "local" {
-		d.Set("content", emailTask.Task.File.Content)
+	if emailTask.File.SourceType == "local" {
+		d.Set("content", emailTask.File.Content)
 	}
-	if emailTask.Task.Taskoptions.Emailskiptemplate == "on" {
+	if emailTask.TaskOptions.EmailSkipTemplate == "on" {
 		d.Set("skip_wrapped_email_template", true)
 	} else {
 		d.Set("skip_wrapped_email_template", false)
 	}
-	d.Set("retryable", emailTask.Task.Retryable)
-	d.Set("retry_count", emailTask.Task.Retrycount)
-	d.Set("retry_delay_seconds", emailTask.Task.Retrydelayseconds)
-	d.Set("allow_custom_config", emailTask.Task.Allowcustomconfig)
+	d.Set("retryable", emailTask.Retryable)
+	d.Set("retry_count", emailTask.RetryCount)
+	d.Set("retry_delay_seconds", emailTask.RetryDelaySeconds)
+	d.Set("allow_custom_config", emailTask.AllowCustomConfig)
 	return diags
 }
 
@@ -272,12 +287,18 @@ func resourceEmailTaskUpdate(ctx context.Context, d *schema.ResourceData, meta i
 		}
 		contentConfig["repository"] = repository
 	}
-
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"task": map[string]interface{}{
-				"name": name,
-				"code": d.Get("code").(string),
+				"name":   name,
+				"code":   d.Get("code").(string),
+				"labels": labelsPayload,
 				"taskType": map[string]interface{}{
 					"code": "email",
 				},
@@ -331,51 +352,4 @@ func resourceEmailTaskDelete(ctx context.Context, d *schema.ResourceData, meta i
 	log.Printf("API RESPONSE: %s", resp)
 	d.SetId("")
 	return diags
-}
-
-type Email struct {
-	Task struct {
-		ID        int    `json:"id"`
-		Accountid int    `json:"accountId"`
-		Name      string `json:"name"`
-		Code      string `json:"code"`
-		Tasktype  struct {
-			ID   int    `json:"id"`
-			Code string `json:"code"`
-			Name string `json:"name"`
-		} `json:"taskType"`
-		Taskoptions struct {
-			Username          interface{} `json:"username"`
-			Host              interface{} `json:"host"`
-			Localscriptgitref interface{} `json:"localScriptGitRef"`
-			Password          interface{} `json:"password"`
-			Passwordhash      interface{} `json:"passwordHash"`
-			Port              interface{} `json:"port"`
-			Emailaddress      interface{} `json:"emailAddress"`
-			Emailsubject      interface{} `json:"emailSubject"`
-			Emailskiptemplate interface{} `json:"emailSkipTemplate"`
-		} `json:"taskOptions"`
-		File struct {
-			Id          int64  `json:"id"`
-			Sourcetype  string `json:"sourceType"`
-			Contentref  string `json:"contentRef"`
-			Contentpath string `json:"contentPath"`
-			Repository  struct {
-				ID   int64  `json:"id"`
-				Name string `json:"name"`
-			} `json:"repository"`
-			Content string `json:"content"`
-		} `json:"file"`
-		Resulttype        interface{} `json:"resultType"`
-		Executetarget     string      `json:"executeTarget"`
-		Retryable         bool        `json:"retryable"`
-		Retrycount        int         `json:"retryCount"`
-		Retrydelayseconds int         `json:"retryDelaySeconds"`
-		Allowcustomconfig bool        `json:"allowCustomConfig"`
-		Credential        struct {
-			Type string `json:"type"`
-		} `json:"credential"`
-		Datecreated time.Time `json:"dateCreated"`
-		Lastupdated time.Time `json:"lastUpdated"`
-	} `json:"task"`
 }

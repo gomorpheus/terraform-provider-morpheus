@@ -2,7 +2,6 @@ package morpheus
 
 import (
 	"context"
-	"encoding/json"
 	"time"
 
 	"log"
@@ -37,6 +36,13 @@ func resourceGroovyScriptTask() *schema.Resource {
 				Description: "The code of the groovy script task",
 				Optional:    true,
 				Computed:    true,
+			},
+			"labels": {
+				Type:        schema.TypeSet,
+				Description: "The organization labels associated with the task (Only supported on Morpheus 5.5.3 or higher)",
+				Optional:    true,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
 			},
 			"result_type": {
 				Type:         schema.TypeString,
@@ -130,11 +136,19 @@ func resourceGroovyScriptTaskCreate(ctx context.Context, d *schema.ResourceData,
 	taskType := make(map[string]interface{})
 	taskType["code"] = "groovyTask"
 
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"task": map[string]interface{}{
 				"name":              name,
 				"code":              d.Get("code").(string),
+				"labels":            labelsPayload,
 				"file":              sourceOptions,
 				"taskType":          taskType,
 				"resultType":        d.Get("result_type"),
@@ -196,20 +210,21 @@ func resourceGroovyScriptTaskRead(ctx context.Context, d *schema.ResourceData, m
 	log.Printf("API RESPONSE: %s", resp)
 
 	// store resource data
-	var groovyScriptTask GroovyScript
-	json.Unmarshal(resp.Body, &groovyScriptTask)
-	d.SetId(intToString(groovyScriptTask.Task.ID))
-	d.Set("name", groovyScriptTask.Task.Name)
-	d.Set("code", groovyScriptTask.Task.Code)
-	d.Set("result_type", groovyScriptTask.Task.Resulttype)
-	d.Set("source_type", groovyScriptTask.Task.File.Sourcetype)
-	d.Set("script_content", groovyScriptTask.Task.File.Content)
-	d.Set("script_path", groovyScriptTask.Task.File.Contentpath)
-	d.Set("version_ref", groovyScriptTask.Task.File.Contentref)
-	d.Set("retryable", groovyScriptTask.Task.Retryable)
-	d.Set("retry_count", groovyScriptTask.Task.Retrycount)
-	d.Set("retry_delay_seconds", groovyScriptTask.Task.Retrydelayseconds)
-	d.Set("allow_custom_config", groovyScriptTask.Task.Allowcustomconfig)
+	result := resp.Result.(*morpheus.GetTaskResult)
+	groovyScriptTask := result.Task
+	d.SetId(int64ToString(groovyScriptTask.ID))
+	d.Set("name", groovyScriptTask.Name)
+	d.Set("code", groovyScriptTask.Code)
+	d.Set("labels", groovyScriptTask.Labels)
+	d.Set("result_type", groovyScriptTask.ResultType)
+	d.Set("source_type", groovyScriptTask.File.SourceType)
+	d.Set("script_content", groovyScriptTask.File.Content)
+	d.Set("script_path", groovyScriptTask.File.ContentPath)
+	d.Set("version_ref", groovyScriptTask.File.ContentRef)
+	d.Set("retryable", groovyScriptTask.Retryable)
+	d.Set("retry_count", groovyScriptTask.RetryCount)
+	d.Set("retry_delay_seconds", groovyScriptTask.RetryDelaySeconds)
+	d.Set("allow_custom_config", groovyScriptTask.AllowCustomConfig)
 	return diags
 }
 
@@ -234,11 +249,19 @@ func resourceGroovyScriptTaskUpdate(ctx context.Context, d *schema.ResourceData,
 	taskType := make(map[string]interface{})
 	taskType["code"] = "groovyTask"
 
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"task": map[string]interface{}{
 				"name":              name,
 				"code":              d.Get("code").(string),
+				"labels":            labelsPayload,
 				"file":              sourceOptions,
 				"taskType":          taskType,
 				"resultType":        d.Get("result_type"),

@@ -36,6 +36,13 @@ func resourceRestOptionList() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 			},
+			"labels": {
+				Type:        schema.TypeSet,
+				Description: "The organization labels associated with the option list (Only supported on Morpheus 5.5.3 or higher)",
+				Optional:    true,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+			},
 			"visibility": {
 				Type:         schema.TypeString,
 				Description:  "Whether the option list is visible in sub-tenants or not",
@@ -146,11 +153,18 @@ func resourceRestOptionListCreate(ctx context.Context, d *schema.ResourceData, m
 
 	name := d.Get("name").(string)
 	description := d.Get("description").(string)
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"optionTypeList": map[string]interface{}{
 				"name":              name,
 				"description":       description,
+				"labels":            labelsPayload,
 				"type":              "rest",
 				"visibility":        d.Get("visibility"),
 				"sourceUrl":         d.Get("source_url"),
@@ -219,6 +233,7 @@ func resourceRestOptionListRead(ctx context.Context, d *schema.ResourceData, met
 		d.SetId(int64ToString(optionList.ID))
 		d.Set("name", optionList.Name)
 		d.Set("description", optionList.Description)
+		d.Set("labels", optionList.Labels)
 		d.Set("visibility", optionList.Visibility)
 		d.Set("initial_dataset", optionList.InitialDataset)
 		d.Set("real_time", optionList.RealTime)
@@ -239,7 +254,12 @@ func resourceRestOptionListUpdate(ctx context.Context, d *schema.ResourceData, m
 	id := d.Id()
 	name := d.Get("name").(string)
 	description := d.Get("description").(string)
-
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
 	headers := d.Get("source_headers").([]interface{})
 	var sourceHeaders []map[string]interface{}
 	// iterate over the array of sourceHeaders
@@ -265,6 +285,7 @@ func resourceRestOptionListUpdate(ctx context.Context, d *schema.ResourceData, m
 			"optionTypeList": map[string]interface{}{
 				"name":              name,
 				"description":       description,
+				"labels":            labelsPayload,
 				"type":              "rest",
 				"visibility":        d.Get("visibility"),
 				"sourceUrl":         d.Get("source_url"),
