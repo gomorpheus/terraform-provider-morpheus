@@ -22,6 +22,7 @@ data "morpheus_virtual_image" "example_virtual_image" {
 
 ### Optional
 
+- `imagetype` (String) The type of the Morpheus virtual image (alibaba,ami,azure-reference,digitalocean,oci,pxe,iso,qcow2,raw,vhd,vmdk).
 - `name` (String) The name of the Morpheus virtual image.
 
 ### Read-Only

@@ -15,6 +15,7 @@ Provides a Morpheus restart task resource
 resource "morpheus_restart_task" "tfexample_restart" {
   name                = "tfexample_restart"
   code                = "tfexample_restart"
+  labels              = ["demo", "terraform"]
   retryable           = true
   retry_count         = 1
   retry_delay_seconds = 10
@@ -33,6 +34,7 @@ resource "morpheus_restart_task" "tfexample_restart" {
 
 - `allow_custom_config` (Boolean) Custom configuration data to pass during the execution of the restart task
 - `code` (String) The code of the restart task
+- `labels` (Set of String) The organization labels associated with the task (Only supported on Morpheus 5.5.3 or higher)
 - `retry_count` (Number) The number of times to retry the task if there is a failure
 - `retry_delay_seconds` (Number) The number of seconds to wait between retry attempts
 - `retryable` (Boolean) Whether to retry the task if there is a failure

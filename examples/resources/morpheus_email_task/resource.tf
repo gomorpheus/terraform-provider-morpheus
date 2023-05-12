@@ -1,6 +1,7 @@
 resource "morpheus_email_task" "tfexample_email" {
   name                        = "tfexample_email"
   code                        = "tfexample_email"
+  labels                      = ["demo", "terraform"]
   email_address               = "<%=instance.createdByEmail%>"
   subject                     = "<%=instance.hostname%> provisioning complete"
   source                      = "local"

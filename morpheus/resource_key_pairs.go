@@ -2,6 +2,9 @@ package morpheus
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
+	"strings"
 
 	"log"
 
@@ -20,20 +23,46 @@ func resourceKeyPair() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Type:        schema.TypeString,
-				Description: "The ID of the KeyPair",
+				Description: "The ID of the key pair",
 				Computed:    true,
 			},
 			"name": {
 				Type:        schema.TypeString,
-				Description: "Name of the KeyPair",
+				Description: "Name of the key pair",
 				ForceNew:    true,
 				Required:    true,
 			},
-			"publickey": {
+			"public_key": {
 				Type:        schema.TypeString,
-				Description: "PublicKey of the KeyPair",
+				Description: "The public key of the key pair",
 				ForceNew:    true,
 				Required:    true,
+			},
+			"private_key": {
+				Type:        schema.TypeString,
+				Description: "The private key of the key pair",
+				ForceNew:    true,
+				Optional:    true,
+				Sensitive:   true,
+				StateFunc: func(v interface{}) string {
+					h := sha256.New()
+					h.Write([]byte(v.(string)))
+					sha256_hash := hex.EncodeToString(h.Sum(nil))
+					return sha256_hash
+				},
+				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+					h := sha256.New()
+					h.Write([]byte(new))
+					sha256_hash := hex.EncodeToString(h.Sum(nil))
+					return strings.EqualFold(old, sha256_hash)
+				},
+			},
+			"passphrase": {
+				Type:        schema.TypeString,
+				Description: "The passphrase for the private key of the key pair",
+				ForceNew:    true,
+				Optional:    true,
+				Sensitive:   true,
 			},
 		},
 		Importer: &schema.ResourceImporter{
@@ -47,10 +76,19 @@ func resourceKeyPairCreate(ctx context.Context, d *schema.ResourceData, meta int
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
-	name := d.Get("name").(string)
-	publicKey := d.Get("publickey").(string)
+	keyPairPayload := make(map[string]interface{})
+	keyPairPayload["name"] = d.Get("name").(string)
+	keyPairPayload["publicKey"] = d.Get("public_key").(string)
+	keyPairPayload["privateKey"] = d.Get("private_key").(string)
+	keyPairPayload["passphrase"] = d.Get("passphrase").(string)
 
-	resp, err := client.CreateKeyPair(name, publicKey)
+	req := &morpheus.Request{
+		Body: map[string]interface{}{
+			"keyPair": keyPairPayload,
+		},
+	}
+
+	resp, err := client.CreateKeyPair(req)
 	if err != nil {
 		log.Printf("API FAILURE: %s - %s", resp, err)
 		return diag.FromErr(err)
@@ -98,9 +136,10 @@ func resourceKeyPairRead(ctx context.Context, d *schema.ResourceData, meta inter
 		keyPair = &(*keyPairs)[0]
 	}
 	if keyPair != nil {
-		d.SetId(int64ToString((*keyPair).ID))
-		d.Set("name", (*keyPair).Name)
-		d.Set("publickey", (*keyPair).PublicKey)
+		d.SetId(int64ToString(keyPair.ID))
+		d.Set("name", keyPair.Name)
+		d.Set("public_key", keyPair.PublicKey)
+		d.Set("private_key", keyPair.PrivateKeyHash)
 	} else {
 		return diag.Errorf("Key pair not found in response data.") // should not happen
 	}
@@ -113,15 +152,15 @@ func resourceKeyPairDelete(ctx context.Context, d *schema.ResourceData, meta int
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
-	//name := d.Get("name").(string)
 	id := toInt64(d.Get("id").(string))
 
-	resp, err := client.DeleteKeyPair(id)
+	req := &morpheus.Request{}
+	resp, err := client.DeleteKeyPair(id, req)
 	if err != nil {
 		log.Printf("API FAILURE: %s - %s", resp, err)
 		return diag.FromErr(err)
 	}
 	log.Printf("API RESPONSE: %s", resp)
-	resourceKeyPairRead(ctx, d, meta)
+	d.SetId("")
 	return diags
 }

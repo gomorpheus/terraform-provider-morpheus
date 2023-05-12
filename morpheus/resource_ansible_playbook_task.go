@@ -2,8 +2,6 @@ package morpheus
 
 import (
 	"context"
-	"encoding/json"
-	"time"
 
 	"log"
 
@@ -36,6 +34,13 @@ func resourceAnsiblePlaybookTask() *schema.Resource {
 				Description: "The code of the ansible playbook task",
 				Optional:    true,
 				Computed:    true,
+			},
+			"labels": {
+				Type:        schema.TypeSet,
+				Description: "The organization labels associated with the task (Only supported on Morpheus 5.5.3 or higher)",
+				Optional:    true,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
 			},
 			"ansible_repo_id": {
 				Type:        schema.TypeString,
@@ -125,11 +130,19 @@ func resourceAnsiblePlaybookTaskCreate(ctx context.Context, d *schema.ResourceDa
 	taskType := make(map[string]interface{})
 	taskType["code"] = "ansibleTask"
 
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"task": map[string]interface{}{
 				"name":              name,
 				"code":              d.Get("code").(string),
+				"labels":            labelsPayload,
 				"taskType":          taskType,
 				"taskOptions":       taskOptions,
 				"executeTarget":     d.Get("execute_target").(string),
@@ -189,22 +202,23 @@ func resourceAnsiblePlaybookTaskRead(ctx context.Context, d *schema.ResourceData
 	log.Printf("API RESPONSE: %s", resp)
 
 	// store resource data
-	var ansiblePlaybookTask AnsiblePlaybook
-	json.Unmarshal(resp.Body, &ansiblePlaybookTask)
-	d.SetId(intToString(ansiblePlaybookTask.Task.ID))
-	d.Set("name", ansiblePlaybookTask.Task.Name)
-	d.Set("code", ansiblePlaybookTask.Task.Code)
-	d.Set("ansible_repo_id", ansiblePlaybookTask.Task.Taskoptions.Ansiblegitid)
-	d.Set("git_ref", ansiblePlaybookTask.Task.Taskoptions.Ansiblegitref)
-	d.Set("playbook", ansiblePlaybookTask.Task.Taskoptions.Ansibleplaybook)
-	d.Set("tags", ansiblePlaybookTask.Task.Taskoptions.Ansibletags)
-	d.Set("skip_tags", ansiblePlaybookTask.Task.Taskoptions.Ansibleskiptags)
-	d.Set("command_options", ansiblePlaybookTask.Task.Taskoptions.Ansibleoptions)
-	d.Set("execute_target", ansiblePlaybookTask.Task.Executetarget)
-	d.Set("retryable", ansiblePlaybookTask.Task.Retryable)
-	d.Set("retry_count", ansiblePlaybookTask.Task.Retrycount)
-	d.Set("retry_delay_seconds", ansiblePlaybookTask.Task.Retrydelayseconds)
-	d.Set("allow_custom_config", ansiblePlaybookTask.Task.Allowcustomconfig)
+	result := resp.Result.(*morpheus.GetTaskResult)
+	ansiblePlaybookTask := result.Task
+	d.SetId(int64ToString(ansiblePlaybookTask.ID))
+	d.Set("name", ansiblePlaybookTask.Name)
+	d.Set("code", ansiblePlaybookTask.Code)
+	d.Set("labels", ansiblePlaybookTask.Labels)
+	d.Set("ansible_repo_id", ansiblePlaybookTask.TaskOptions.AnsibleGitId)
+	d.Set("git_ref", ansiblePlaybookTask.TaskOptions.AnsibleGitRef)
+	d.Set("playbook", ansiblePlaybookTask.TaskOptions.AnsiblePlaybook)
+	d.Set("tags", ansiblePlaybookTask.TaskOptions.AnsibleTags)
+	d.Set("skip_tags", ansiblePlaybookTask.TaskOptions.AnsibleSkipTags)
+	d.Set("command_options", ansiblePlaybookTask.TaskOptions.AnsibleOptions)
+	d.Set("execute_target", ansiblePlaybookTask.ExecuteTarget)
+	d.Set("retryable", ansiblePlaybookTask.Retryable)
+	d.Set("retry_count", ansiblePlaybookTask.RetryCount)
+	d.Set("retry_delay_seconds", ansiblePlaybookTask.RetryDelaySeconds)
+	d.Set("allow_custom_config", ansiblePlaybookTask.AllowCustomConfig)
 	return diags
 }
 
@@ -224,11 +238,19 @@ func resourceAnsiblePlaybookTaskUpdate(ctx context.Context, d *schema.ResourceDa
 	taskType := make(map[string]interface{})
 	taskType["code"] = "ansibleTask"
 
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"task": map[string]interface{}{
 				"name":              name,
 				"code":              d.Get("code").(string),
+				"labels":            labelsPayload,
 				"taskType":          taskType,
 				"taskOptions":       taskOptions,
 				"executeTarget":     d.Get("execute_target"),
@@ -274,36 +296,4 @@ func resourceAnsiblePlaybookTaskDelete(ctx context.Context, d *schema.ResourceDa
 	log.Printf("API RESPONSE: %s", resp)
 	d.SetId("")
 	return diags
-}
-
-type AnsiblePlaybook struct {
-	Task struct {
-		ID        int    `json:"id"`
-		Accountid int    `json:"accountId"`
-		Name      string `json:"name"`
-		Code      string `json:"code"`
-		Tasktype  struct {
-			ID   int    `json:"id"`
-			Code string `json:"code"`
-			Name string `json:"name"`
-		} `json:"taskType"`
-		Taskoptions struct {
-			Ansibleoptions  string `json:"ansibleOptions"`
-			Ansibletags     string `json:"ansibleTags"`
-			Ansibleplaybook string `json:"ansiblePlaybook"`
-			Ansiblegitref   string `json:"ansibleGitRef"`
-			Ansibleskiptags string `json:"ansibleSkipTags"`
-			Ansiblegitid    string `json:"ansibleGitId"`
-		} `json:"taskOptions"`
-		File              interface{} `json:"file"`
-		Resulttype        interface{} `json:"resultType"`
-		Executetarget     string      `json:"executeTarget"`
-		Retryable         bool        `json:"retryable"`
-		Retrycount        int         `json:"retryCount"`
-		Retrydelayseconds int         `json:"retryDelaySeconds"`
-		Allowcustomconfig bool        `json:"allowCustomConfig"`
-		Datecreated       time.Time   `json:"dateCreated"`
-		Lastupdated       time.Time   `json:"lastUpdated"`
-	} `json:"task"`
-	Success bool `json:"success"`
 }

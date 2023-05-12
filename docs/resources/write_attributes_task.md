@@ -15,6 +15,7 @@ Provides a Morpheus write attributes task resource
 resource "morpheus_write_attributes_task" "tfexample_write_attributes" {
   name                = "tfexample_write_attributes"
   code                = "tfexample_write_attributes"
+  labels              = ["demo", "terraform"]
   attributes          = <<EOF
 {"demo":"test"}
 EOF
@@ -37,6 +38,7 @@ EOF
 - `allow_custom_config` (Boolean) Custom configuration data to pass during the execution of the write attributes task
 - `attributes` (String) The attributes payload
 - `code` (String) The code of the write attributes task
+- `labels` (Set of String) The organization labels associated with the task (Only supported on Morpheus 5.5.3 or higher)
 - `retry_count` (Number) The number of times to retry the task if there is a failure
 - `retry_delay_seconds` (Number) The number of seconds to wait between retry attempts
 - `retryable` (Boolean) Whether to retry the task if there is a failure

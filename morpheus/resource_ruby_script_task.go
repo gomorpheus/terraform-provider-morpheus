@@ -35,6 +35,13 @@ func resourceRubyScriptTask() *schema.Resource {
 				Description: "The code of the ruby script task",
 				Optional:    true,
 			},
+			"labels": {
+				Type:        schema.TypeSet,
+				Description: "The organization labels associated with the task (Only supported on Morpheus 5.5.3 or higher)",
+				Optional:    true,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+			},
 			"result_type": {
 				Type:         schema.TypeString,
 				Description:  "The expected result type (single value, key pairs, json)",
@@ -122,11 +129,19 @@ func resourceRubyScriptTaskCreate(ctx context.Context, d *schema.ResourceData, m
 	taskType := make(map[string]interface{})
 	taskType["code"] = "jrubyTask"
 
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"task": map[string]interface{}{
 				"name":              name,
 				"code":              d.Get("code").(string),
+				"labels":            labelsPayload,
 				"file":              sourceOptions,
 				"taskType":          taskType,
 				"resultType":        d.Get("result_type"),
@@ -193,6 +208,7 @@ func resourceRubyScriptTaskRead(ctx context.Context, d *schema.ResourceData, met
 	d.SetId(int64ToString(rubyScriptTask.ID))
 	d.Set("name", rubyScriptTask.Name)
 	d.Set("code", rubyScriptTask.Code)
+	d.Set("labels", rubyScriptTask.Labels)
 	d.Set("result_type", rubyScriptTask.ResultType)
 	d.Set("source_type", rubyScriptTask.File.SourceType)
 	d.Set("script_content", rubyScriptTask.File.Content)
@@ -225,13 +241,21 @@ func resourceRubyScriptTaskUpdate(ctx context.Context, d *schema.ResourceData, m
 	sourceOptions["sourceType"] = d.Get("source_type")
 
 	taskType := make(map[string]interface{})
-	taskType["code"] = "jythonTask"
+	taskType["code"] = "jrubyTask"
+
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
 
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"task": map[string]interface{}{
 				"name":              name,
 				"code":              d.Get("code").(string),
+				"labels":            labelsPayload,
 				"file":              sourceOptions,
 				"taskType":          taskType,
 				"resultType":        d.Get("result_type"),

@@ -15,6 +15,7 @@ Provides a Morpheus javascript task resource
 resource "morpheus_javascript_task" "tfexample_javascript" {
   name                = "tfexample_javascript"
   code                = "tfexample_javascript"
+  labels              = ["demo", "terraform"]
   script_content      = <<EOF
 console.log("testing")
 EOF
@@ -36,6 +37,7 @@ EOF
 
 - `allow_custom_config` (Boolean) Custom configuration data to pass during the execution of the javascript script
 - `code` (String) The code of the javascript script task
+- `labels` (Set of String) The organization labels associated with the task (Only supported on Morpheus 5.5.3 or higher)
 - `result_type` (String) The expected result type (single value, key pairs, json)
 - `retry_count` (Number) The number of times to retry the task if there is a failure
 - `retry_delay_seconds` (Number) The number of seconds to wait between retry attempts

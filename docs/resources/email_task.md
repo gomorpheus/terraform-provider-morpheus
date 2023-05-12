@@ -17,6 +17,7 @@ Creating the email task with local email template content:
 resource "morpheus_email_task" "tfexample_email" {
   name                        = "tfexample_email"
   code                        = "tfexample_email"
+  labels                      = ["demo", "terraform"]
   email_address               = "<%=instance.createdByEmail%>"
   subject                     = "<%=instance.hostname%> provisioning complete"
   source                      = "local"
@@ -35,6 +36,7 @@ Creating the email task with the email template fetched from a url:
 resource "morpheus_email_task" "tfexample_email_url" {
   name                        = "tfexample_email_url"
   code                        = "tfexample_email_url"
+  labels                      = ["demo", "terraform"]
   email_address               = "<%=instance.createdByEmail%>"
   subject                     = "<%=instance.hostname%> provisioning complete"
   source                      = "url"
@@ -53,6 +55,7 @@ Creating the email task with the email template fetched via git:
 resource "morpheus_email_task" "tfexample_email_git" {
   name                        = "tfexample_email_git"
   code                        = "tfexample_email_git"
+  labels                      = ["demo", "terraform"]
   email_address               = "<%=instance.createdByEmail%>"
   subject                     = "<%=instance.hostname%> provisioning complete"
   source                      = "repository"
@@ -83,6 +86,7 @@ resource "morpheus_email_task" "tfexample_email_git" {
 - `content` (String) The body of the email is HTML. Morpheus automation variables can be injected into the email body when needed. Used with a source type of local
 - `content_path` (String) The file path of the template used for the email task, used with a source type of repository
 - `content_url` (String) The URL of the template used for the email task, used with a source type of url
+- `labels` (Set of String) The organization labels associated with the task (Only supported on Morpheus 5.5.3 or higher)
 - `repository_id` (Number) The ID of the git repository to fetch the email template
 - `retry_count` (Number) The number of times to retry the task if there is a failure
 - `retry_delay_seconds` (Number) The number of seconds to wait between retry attempts

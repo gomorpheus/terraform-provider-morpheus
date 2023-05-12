@@ -1,6 +1,7 @@
 resource "morpheus_javascript_task" "tfexample_javascript" {
   name                = "tfexample_javascript"
   code                = "tfexample_javascript"
+  labels              = ["demo", "terraform"]
   script_content      = <<EOF
 console.log("testing")
 EOF

@@ -1,6 +1,7 @@
 resource "morpheus_ansible_playbook_task" "ansplaybook" {
   name                = "tfansibletest"
   code                = "tfansibletest"
+  labels              = ["demo", "terraform"]
   ansible_repo_id     = "5"
   git_ref             = "master"
   playbook            = "mongo_install"

@@ -15,6 +15,7 @@ Provides a Morpheus ansible playbook task resource
 resource "morpheus_ansible_playbook_task" "ansplaybook" {
   name                = "tfansibletest"
   code                = "tfansibletest"
+  labels              = ["demo", "terraform"]
   ansible_repo_id     = "5"
   git_ref             = "master"
   playbook            = "mongo_install"
@@ -45,6 +46,7 @@ resource "morpheus_ansible_playbook_task" "ansplaybook" {
 - `command_options` (String) Additional commands options to pass during the execution of the ansible playbook
 - `execute_target` (String) The target that the ansible playbook will be executed on
 - `git_ref` (String) The git reference of the ansible repo to pull (main, master, etc.)
+- `labels` (Set of String) The organization labels associated with the task (Only supported on Morpheus 5.5.3 or higher)
 - `retry_count` (Number) The number of times to retry the task if there is a failure
 - `retry_delay_seconds` (Number) The number of seconds to wait between retry attempts
 - `retryable` (Boolean) Whether to retry the task if there is a failure

@@ -39,6 +39,13 @@ func resourceShellScriptTask() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 			},
+			"labels": {
+				Type:        schema.TypeSet,
+				Description: "The organization labels associated with the task (Only supported on Morpheus 5.5.3 or higher)",
+				Optional:    true,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+			},
 			"result_type": {
 				Type:         schema.TypeString,
 				Description:  "The expected result type (value, keyValue, json)",
@@ -194,11 +201,19 @@ func resourceShellScriptTaskCreate(ctx context.Context, d *schema.ResourceData, 
 		taskOptions["password"] = d.Get("remote_target_password")
 	}
 
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"task": map[string]interface{}{
 				"name":              name,
 				"code":              d.Get("code").(string),
+				"labels":            labelsPayload,
 				"file":              sourceOptions,
 				"taskType":          taskType,
 				"taskOptions":       taskOptions,
@@ -267,6 +282,7 @@ func resourceShellScriptTaskRead(ctx context.Context, d *schema.ResourceData, me
 	d.SetId(int64ToString(shellScriptTask.ID))
 	d.Set("name", shellScriptTask.Name)
 	d.Set("code", shellScriptTask.Code)
+	d.Set("labels", shellScriptTask.Labels)
 	d.Set("result_type", shellScriptTask.ResultType)
 	d.Set("source_type", shellScriptTask.File.SourceType)
 	d.Set("script_content", shellScriptTask.File.Content)
@@ -330,11 +346,19 @@ func resourceShellScriptTaskUpdate(ctx context.Context, d *schema.ResourceData, 
 		taskOptions["password"] = d.Get("remote_target_password")
 	}
 
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"task": map[string]interface{}{
 				"name":              name,
 				"code":              d.Get("code").(string),
+				"labels":            labelsPayload,
 				"file":              sourceOptions,
 				"taskType":          taskType,
 				"taskOptions":       taskOptions,

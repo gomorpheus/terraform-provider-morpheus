@@ -15,6 +15,7 @@ Provides a Morpheus provisioning workflow resource.
 resource "morpheus_provisioning_workflow" "tf_example_provisioning_workflow" {
   name        = "tf_example_provisioning_workflow"
   description = "Terraform provisioning workflow example"
+  labels      = ["demo", "terraform"]
   platform    = "all"
   visibility  = "private"
   task {
@@ -34,6 +35,7 @@ resource "morpheus_provisioning_workflow" "tf_example_provisioning_workflow" {
 ### Optional
 
 - `description` (String) The description of the provisioning workflow
+- `labels` (Set of String) The organization labels associated with the workflow (Only supported on Morpheus 5.5.3 or higher)
 - `platform` (String) The operating system platforms the provisioning workflow is supported on (all, linux, macos, windows)
 - `task` (Block List) A list of tasks associated with the provisioning workflow (see [below for nested schema](#nestedblock--task))
 - `visibility` (String) Whether the provisioning workflow is visible in sub-tenants or not

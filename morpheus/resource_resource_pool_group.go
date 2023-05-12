@@ -260,7 +260,7 @@ func resourceResourcePoolGroupUpdate(ctx context.Context, d *schema.ResourceData
 			"tenantPermissions":   tenantPermissions,
 		},
 	}
-	resp, err := client.UpdateResourcePoolGroup(0, toInt64(id), req)
+	resp, err := client.UpdateResourcePoolGroup(toInt64(id), req)
 	if err != nil {
 		log.Printf("API FAILURE: %s - %s", resp, err)
 		return diag.FromErr(err)
@@ -282,7 +282,7 @@ func resourceResourcePoolGroupDelete(ctx context.Context, d *schema.ResourceData
 
 	id := d.Id()
 	req := &morpheus.Request{}
-	resp, err := client.DeleteResourcePoolGroup(0, toInt64(id), req)
+	resp, err := client.DeleteResourcePoolGroup(toInt64(id), req)
 	if err != nil {
 		if resp != nil && resp.StatusCode == 404 {
 			log.Printf("API 404: %s - %s", resp, err)

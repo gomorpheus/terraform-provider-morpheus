@@ -1,6 +1,7 @@
 resource "morpheus_powershell_script_task" "tfexample_powershell_url" {
   name                = "tfexample_powershell_url"
   code                = "tfexample_powershell_url"
+  labels              = ["demo", "terraform"]
   source_type         = "url"
   result_type         = "json"
   script_path         = "https://example.com/example.ps"

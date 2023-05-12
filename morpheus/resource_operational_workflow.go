@@ -34,6 +34,13 @@ func resourceOperationalWorkflow() *schema.Resource {
 				Description: "The description of the operational workflow",
 				Optional:    true,
 			},
+			"labels": {
+				Type:        schema.TypeSet,
+				Description: "The organization labels associated with the workflow (Only supported on Morpheus 5.5.3 or higher)",
+				Optional:    true,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+			},
 			"option_types": {
 				Type:        schema.TypeList,
 				Description: "The option types associated with the operational workflow",
@@ -93,11 +100,19 @@ func resourceOperationalWorkflowCreate(ctx context.Context, d *schema.ResourceDa
 		}
 	}
 
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"taskSet": map[string]interface{}{
 				"name":              name,
 				"description":       description,
+				"labels":            labelsPayload,
 				"type":              "operation",
 				"optionTypes":       d.Get("option_types"),
 				"visibility":        d.Get("visibility"),
@@ -162,6 +177,7 @@ func resourceOperationalWorkflowRead(ctx context.Context, d *schema.ResourceData
 		d.SetId(int64ToString(workflow.ID))
 		d.Set("name", workflow.Name)
 		d.Set("description", workflow.Description)
+		d.Set("labels", workflow.Labels)
 		// option types
 		var optionTypes []int64
 		if workflow.OptionTypes != nil {
@@ -203,11 +219,19 @@ func resourceOperationalWorkflowUpdate(ctx context.Context, d *schema.ResourceDa
 		}
 	}
 
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"taskSet": map[string]interface{}{
 				"name":              name,
 				"description":       description,
+				"labels":            labelsPayload,
 				"type":              "operation",
 				"optionTypes":       d.Get("option_types"),
 				"visibility":        d.Get("visibility"),

@@ -37,7 +37,8 @@ resource "morpheus_api_option_list" "tf_example_api_option_list" {
 ### Optional
 
 - `description` (String) The description of the option list
-- `option_list` (String) The Morpheus object option list
+- `labels` (Set of String) The organization labels associated with the option list (Only supported on Morpheus 5.5.3 or higher)
+- `option_list` (String) The Morpheus object option list (clouds, instanceTypeClouds, environments, groups, instances, instance-wiki, networks, instanceNetworks, servicePlans, resourcePools, securityGroups, servers, server-wiki)
 - `request_script` (String) A js script to manipulate the request payload.
 - `translation_script` (String) A js script to translate the result data object into an Array containing objects with properties 'name’ and 'value’.
 - `visibility` (String) Whether the option list is visible in sub-tenants or not

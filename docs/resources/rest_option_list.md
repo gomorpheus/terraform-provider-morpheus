@@ -55,6 +55,7 @@ resource "morpheus_rest_option_list" "tf_example_rest_option_list" {
 - `description` (String) The description of the option list
 - `ignore_ssl_errors` (Boolean) Whether to ignore SSL errors with the REST API endpoint
 - `initial_dataset` (String) The initial dataset used to populate the option list
+- `labels` (Set of String) The organization labels associated with the option list (Only supported on Morpheus 5.5.3 or higher)
 - `real_time` (Boolean) Whether the list is refreshed every time an associated option type is requested
 - `request_script` (String) A js script to prepare the API request
 - `source_headers` (Block List) An array of source headers to use when requesting data (see [below for nested schema](#nestedblock--source_headers))

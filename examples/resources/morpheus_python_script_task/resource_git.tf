@@ -1,6 +1,7 @@
 resource "morpheus_python_script_task" "tfexample_python_git" {
   name                = "tfexample_python_git"
   code                = "tfexample_python_git"
+  labels              = ["demo", "terraform"]
   source_type         = "repository"
   result_type         = "json"
   script_path         = "example.py"

@@ -35,6 +35,13 @@ func resourceManualOptionList() *schema.Resource {
 				Description: "The description of the option list",
 				Optional:    true,
 			},
+			"labels": {
+				Type:        schema.TypeSet,
+				Description: "The organization labels associated with the option list (Only supported on Morpheus 5.5.3 or higher)",
+				Optional:    true,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+			},
 			"visibility": {
 				Type:         schema.TypeString,
 				Description:  "Whether the option list is visible in sub-tenants or not",
@@ -74,11 +81,18 @@ func resourceManualOptionListCreate(ctx context.Context, d *schema.ResourceData,
 
 	name := d.Get("name").(string)
 	description := d.Get("description").(string)
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"optionTypeList": map[string]interface{}{
 				"name":              name,
 				"description":       description,
+				"labels":            labelsPayload,
 				"type":              "manual",
 				"visibility":        d.Get("visibility"),
 				"initialDataset":    d.Get("dataset").(string),
@@ -140,6 +154,7 @@ func resourceManualOptionListRead(ctx context.Context, d *schema.ResourceData, m
 		d.SetId(int64ToString(optionList.ID))
 		d.Set("name", optionList.Name)
 		d.Set("description", optionList.Description)
+		d.Set("labels", optionList.Labels)
 		d.Set("type", optionList.Type)
 		d.Set("visibility", optionList.Visibility)
 		d.Set("dataset", optionList.InitialDataset)
@@ -158,12 +173,18 @@ func resourceManualOptionListUpdate(ctx context.Context, d *schema.ResourceData,
 	id := d.Id()
 	name := d.Get("name").(string)
 	description := d.Get("description").(string)
-
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"optionTypeList": map[string]interface{}{
 				"name":              name,
 				"description":       description,
+				"labels":            labelsPayload,
 				"type":              "manual",
 				"visibility":        d.Get("visibility"),
 				"initialDataset":    d.Get("dataset").(string),
