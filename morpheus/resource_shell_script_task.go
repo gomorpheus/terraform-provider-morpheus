@@ -96,6 +96,25 @@ func resourceShellScriptTask() *schema.Resource {
 				Optional:     true,
 				Computed:     true,
 			},
+			"local_repository_id": {
+				Type:        schema.TypeString,
+				Description: "The ID of the local git repository",
+				Optional:    true,
+				Computed:    true,
+			},
+			"local_repository_ref": {
+				Type:        schema.TypeString,
+				Description: "The git reference of the repository to pull (main, master, etc.)",
+				Optional:    true,
+				Computed:    true,
+			},
+			"visibility": {
+				Type:         schema.TypeString,
+				Description:  "The visibility of the task (private or public)",
+				ValidateFunc: validation.StringInSlice([]string{"private", "public"}, false),
+				Optional:     true,
+				Computed:     true,
+			},
 			"remote_target_host": {
 				Type:        schema.TypeString,
 				Description: "The hostname or ip address of the remote target",
@@ -200,6 +219,15 @@ func resourceShellScriptTaskCreate(ctx context.Context, d *schema.ResourceData, 
 	if d.Get("remote_target_password") != "" {
 		taskOptions["password"] = d.Get("remote_target_password")
 	}
+	if d.Get("local_repository_id") != "" {
+		taskOptions["localScriptGitId"] = d.Get("local_repository_id")
+	}
+	if d.Get("local_repository_ref") != "" {
+		taskOptions["localScriptGitRef"] = d.Get("local_repository_ref")
+	}
+	if d.Get("visibility") != "" {
+		taskOptions["visibility"] = d.Get("visibility")
+	}
 
 	labelsPayload := make([]string, 0)
 	if attr, ok := d.GetOk("labels"); ok {
@@ -219,6 +247,9 @@ func resourceShellScriptTaskCreate(ctx context.Context, d *schema.ResourceData, 
 				"taskOptions":       taskOptions,
 				"resultType":        d.Get("result_type"),
 				"executeTarget":     d.Get("execute_target").(string),
+				"localScriptGitRef": d.Get("local_repository_ref"),
+				"localScriptGitId":  d.Get("local_repository_id"),
+				"visibility":        d.Get("visibility"),
 				"retryable":         d.Get("retryable"),
 				"retryCount":        d.Get("retry_count"),
 				"retryDelaySeconds": d.Get("retry_delay_seconds"),
@@ -289,6 +320,8 @@ func resourceShellScriptTaskRead(ctx context.Context, d *schema.ResourceData, me
 	d.Set("script_path", shellScriptTask.File.ContentPath)
 	d.Set("version_ref", shellScriptTask.File.ContentRef)
 	d.Set("execute_target", shellScriptTask.ExecuteTarget)
+	d.Set("local_repository_id", shellScriptTask.TaskOptions.LocalScriptGitId)
+	d.Set("local_repository_ref", shellScriptTask.TaskOptions.LocalScriptGitRef)
 	d.Set("repository_id", shellScriptTask.File.Repository.ID)
 	if shellScriptTask.TaskOptions.ShellSudo == "on" {
 		d.Set("sudo", true)
@@ -303,6 +336,7 @@ func resourceShellScriptTaskRead(ctx context.Context, d *schema.ResourceData, me
 	d.Set("retry_count", shellScriptTask.RetryCount)
 	d.Set("retry_delay_seconds", shellScriptTask.RetryDelaySeconds)
 	d.Set("allow_custom_config", shellScriptTask.AllowCustomConfig)
+	d.Set("visibility", shellScriptTask.Visibility)
 	return diags
 }
 
@@ -345,6 +379,15 @@ func resourceShellScriptTaskUpdate(ctx context.Context, d *schema.ResourceData, 
 	if d.HasChange("remote_target_password") {
 		taskOptions["password"] = d.Get("remote_target_password")
 	}
+	if d.HasChange("local_repository_id") {
+		taskOptions["localScriptGitId"] = d.Get("local_repository_id")
+	}
+	if d.HasChange("local_repository_ref") {
+		taskOptions["localScriptGitRef"] = d.Get("local_repository_ref")
+	}
+	if d.HasChange("visibility") {
+		taskOptions["visibility"] = d.Get("visibility")
+	}
 
 	labelsPayload := make([]string, 0)
 	if attr, ok := d.GetOk("labels"); ok {
@@ -364,6 +407,9 @@ func resourceShellScriptTaskUpdate(ctx context.Context, d *schema.ResourceData, 
 				"taskOptions":       taskOptions,
 				"resultType":        d.Get("result_type"),
 				"executeTarget":     d.Get("execute_target").(string),
+				"localScriptGitRef": d.Get("local_repository_ref"),
+				"localScriptGitId":  d.Get("local_repository_id"),
+				"visibility":        d.Get("visibility"),
 				"retryable":         d.Get("retryable"),
 				"retryCount":        d.Get("retry_count"),
 				"retryDelaySeconds": d.Get("retry_delay_seconds"),
