@@ -7,9 +7,11 @@ import (
 	"log"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gomorpheus/morpheus-go-sdk"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
@@ -32,11 +34,6 @@ func resourceVsphereCloud() *schema.Resource {
 				Description: "A unique name scoped to your account for the cloud",
 				Type:        schema.TypeString,
 				Required:    true,
-			},
-			"description": {
-				Description: "The user friendly description of the cloud",
-				Type:        schema.TypeString,
-				Optional:    true,
 			},
 			"code": {
 				Description: "Optional code for use with policies",
@@ -65,15 +62,25 @@ func resourceVsphereCloud() *schema.Resource {
 				Description: "The SDK URL of the vCenter server (https://vcenter.morpheus.local/sdk)",
 				Required:    true,
 			},
+			"credential_id": {
+				Description:   "The ID of the credential store entry used for authentication",
+				Type:          schema.TypeInt,
+				Optional:      true,
+				Computed:      true,
+				ConflictsWith: []string{"username", "password"},
+			},
 			"username": {
-				Type:        schema.TypeString,
-				Description: "The username of the VMware vSphere account",
-				Required:    true,
+				Type:          schema.TypeString,
+				Description:   "The username of the VMware vSphere account",
+				Optional:      true,
+				ConflictsWith: []string{"credential_id"},
 			},
 			"password": {
-				Type:        schema.TypeString,
-				Description: "The password of the VMware vSphere account",
-				Required:    true,
+				Type:          schema.TypeString,
+				Description:   "The password of the VMware vSphere account",
+				Optional:      true,
+				Sensitive:     true,
+				ConflictsWith: []string{"credential_id"},
 				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
 					h := sha256.New()
 					h.Write([]byte(new))
@@ -170,14 +177,15 @@ func resourceVsphereCloud() *schema.Resource {
 			},
 			"datacenter_id": {
 				Type:        schema.TypeString,
-				Description: "An arbitrary id used to reference the datacenter for the cloud",
+				Description: "A custom id used to reference the datacenter for the cloud",
 				Optional:    true,
 			},
 			"guidance": {
-				Type:        schema.TypeString,
-				Description: "Whether to enable guidance recommendations on the cloud (manual, off)",
-				Optional:    true,
-				Default:     "off",
+				Type:         schema.TypeString,
+				Description:  "Whether to enable guidance recommendations on the cloud (manual, off)",
+				ValidateFunc: validation.StringInSlice([]string{"manual", "off", ""}, false),
+				Optional:     true,
+				Default:      "off",
 			},
 			"costing": {
 				Type:         schema.TypeString,
@@ -197,13 +205,14 @@ func resourceVsphereCloud() *schema.Resource {
 				Description:  "Determines whether the cloud is visible in sub-tenants or not",
 				Type:         schema.TypeString,
 				Optional:     true,
-				ValidateFunc: validation.StringInSlice([]string{"private", "public", ""}, false),
+				ValidateFunc: validation.StringInSlice([]string{"private", "public"}, false),
 				Default:      "private",
 			},
 			"tenant_id": {
 				Description: "The id of the morpheus tenant the cloud is assigned to",
 				Type:        schema.TypeString,
 				Optional:    true,
+				Computed:    true,
 			},
 		},
 	}
@@ -215,107 +224,132 @@ func resourceVsphereCloudCreate(ctx context.Context, d *schema.ResourceData, met
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
-	name := d.Get("name").(string)
-	code := d.Get("code").(string)
-	location := d.Get("location").(string)
-	visibility := d.Get("visibility").(string)
-	enabled := d.Get("enabled").(bool)
-	automatically_power_on_vms := d.Get("automatically_power_on_vms").(bool)
+	cloud := make(map[string]interface{})
+	// Name
+	cloud["name"] = d.Get("name").(string)
+	// Code
+	cloud["code"] = d.Get("code").(string)
+	// Location
+	cloud["location"] = d.Get("location").(string)
+	// Visibility
+	cloud["visibility"] = d.Get("visibility").(string)
+	// Tenant
+	account := make(map[string]interface{})
+	account["id"] = d.Get("tenant_id").(string)
+	cloud["account"] = account
+	cloud["accountId"] = d.Get("tenant_id").(string)
+	// Enabled
+	cloud["enabled"] = d.Get("enabled").(bool)
+	// Automatically Power On VMs
+	cloud["autoRecoverPowerState"] = d.Get("automatically_power_on_vms").(bool)
 
 	config := make(map[string]interface{})
 	config["certificateProvider"] = "internal"
+	// API URL
 	config["apiUrl"] = d.Get("api_url")
-	config["username"] = d.Get("username")
-	config["password"] = d.Get("password")
-	config["datacenter"] = d.Get("datacenter")
-	config["apiVersion"] = d.Get("api_version")
 
-	// Select all clusters by passing an
-	// empty string to the API
+	if d.Get("credential_id").(int) != 0 {
+		credential := make(map[string]interface{})
+		credential["type"] = "username-password"
+		credential["id"] = d.Get("credential_id").(int)
+		cloud["credential"] = credential
+	} else {
+		credential := make(map[string]interface{})
+		credential["type"] = "local"
+		cloud["credential"] = credential
+		config["username"] = d.Get("username")
+		config["password"] = d.Get("password")
+	}
+	// Version
+	config["apiVersion"] = d.Get("api_version")
+	// VDC
+	config["datacenter"] = d.Get("datacenter")
+	// Cluster
+	// Select all clusters by passing an empty string to the API
 	if d.Get("cluster") == "all" {
 		config["cluster"] = ""
 	} else {
 		config["cluster"] = d.Get("cluster")
 	}
-
+	// Resource Pool
+	// Select all resource pools by passing an empty string to the API
 	if d.Get("resource_pool") == "all" {
 		config["resourcePool"] = ""
 	} else {
 		config["resourcePool"] = d.Get("resource_pool")
 	}
-
+	// RPC Mode
 	config["rpcMode"] = d.Get("rpc_mode")
-	config["diskStorageType"] = d.Get("storage_type")
-	config["datacenterName"] = d.Get("datacenter_id")
-	config["applianceUrl"] = d.Get("appliance_url")
-
-	if d.Get("enable_disk_type_selection").(bool) {
-		config["enableDiskTypeSelection"] = "on"
-	} else {
-		config["enableDiskTypeSelection"] = ""
-	}
-
-	if d.Get("enable_storage_type_selection").(bool) {
-		config["enableStorageTypeSelection"] = "on"
-	} else {
-		config["enableStorageTypeSelection"] = ""
-	}
-
-	if d.Get("enable_network_interface_type_selection").(bool) {
-		config["enableNetworkTypeSelection"] = "on"
-	} else {
-		config["enableNetworkTypeSelection"] = ""
-	}
-
+	// Hide Host Selection From Users
 	if d.Get("hide_host_selection").(bool) {
 		config["hideHostSelection"] = "on"
 	} else {
 		config["hideHostSelection"] = ""
 	}
-
+	// Inventory Existing Instances
 	if d.Get("import_existing_vms").(bool) {
 		config["importExisting"] = "on"
 	} else {
 		config["importExisting"] = ""
 	}
-
+	// Enable Hypervisor Console
 	if d.Get("enable_hypervisor_console").(bool) {
 		config["enableVnc"] = "on"
 	} else {
 		config["enableVnc"] = ""
 	}
+	// Keyboard Layout
+	cloud["consoleKeymap"] = d.Get("keyboard_layout").(string)
+	// Enable Disk Type Selection
+	if d.Get("enable_disk_type_selection").(bool) {
+		config["enableDiskTypeSelection"] = "on"
+	} else {
+		config["enableDiskTypeSelection"] = ""
+	}
+	// Enable Storage Type Selection
+	if d.Get("enable_storage_type_selection").(bool) {
+		config["enableStorageTypeSelection"] = "on"
+	} else {
+		config["enableStorageTypeSelection"] = ""
+	}
+	// Enable Network Interface Type Selection
+	if d.Get("enable_network_interface_type_selection").(bool) {
+		config["enableNetworkTypeSelection"] = "on"
+	} else {
+		config["enableNetworkTypeSelection"] = ""
+	}
+	// Storage Type
+	config["diskStorageType"] = d.Get("storage_type")
+	// Domain
+	// Appliance URL
+	config["applianceUrl"] = d.Get("appliance_url")
+	// Time Zone
+	cloud["timezone"] = d.Get("time_zone").(string)
+	// Datacenter ID
+	config["datacenterName"] = d.Get("datacenter_id")
+	// Network Mode
+	// Local Firewall
+	// Security Server
+	// Backup Provider
+	// Replication Provider
+	// Guidance
+	cloud["guidanceMode"] = d.Get("guidance").(string)
+	// Costing
+	cloud["costingMode"] = d.Get("costing").(string)
+	// CMDB
+	// CMDB Discovery
+	// Agent Install Mode
+	cloud["agentMode"] = d.Get("agent_install_mode").(string)
+	// VDI Gatway
+	cloudType := make(map[string]interface{})
+	cloudType["code"] = "vmware"
+	cloud["zoneType"] = cloudType
 
-	time_zone := d.Get("time_zone").(string)
-	agent_install_mode := d.Get("agent_install_mode").(string)
-	costing := d.Get("costing").(string)
-	keyboard_layout := d.Get("keyboard_layout")
-	guidance := d.Get("guidance")
+	cloud["config"] = config
 
 	payload := map[string]interface{}{
-		"zone": map[string]interface{}{
-			"name":                  name,
-			"code":                  code,
-			"location":              location,
-			"enabled":               enabled,
-			"agentMode":             agent_install_mode,
-			"autoRecoverPowerState": automatically_power_on_vms,
-			"costingMode":           costing,
-			"consoleKeymap":         keyboard_layout,
-			"description":           d.Get("description").(string),
-			"accountId":             d.Get("tenant_id").(string),
-			"account": map[string]interface{}{
-				"id": d.Get("tenant_id").(string),
-			},
-			"guidanceMode": guidance,
-			"timezone":     time_zone,
-			"zoneType": map[string]interface{}{
-				"code": "vmware",
-			},
-			"config":     config,
-			"visibility": visibility,
-		},
+		"zone": cloud,
 	}
-
 	req := &morpheus.Request{Body: payload}
 
 	resp, err := client.CreateCloud(req)
@@ -325,9 +359,33 @@ func resourceVsphereCloudCreate(ctx context.Context, d *schema.ResourceData, met
 	}
 	log.Printf("API RESPONSE: %s", resp)
 	result := resp.Result.(*morpheus.CreateCloudResult)
-	cloud := result.Cloud
+	cloudOutput := result.Cloud
+
+	stateConf := &resource.StateChangeConf{
+		Pending: []string{"initializing", "syncing"},
+		Target:  []string{"ok"},
+		Refresh: func() (interface{}, string, error) {
+			cloudDetails, err := client.GetCloud(cloudOutput.ID, &morpheus.Request{})
+			if err != nil {
+				return "", "", err
+			}
+			result := cloudDetails.Result.(*morpheus.GetCloudResult)
+			cloudStatus := result.Cloud
+			return result, cloudStatus.Status, nil
+		},
+		Timeout:      1 * time.Hour,
+		MinTimeout:   1 * time.Minute,
+		PollInterval: 1 * time.Minute,
+	}
+
+	// Wait, catching any errors
+	_, err = stateConf.WaitForStateContext(ctx)
+	if err != nil {
+		return diag.Errorf("error creating cloud: %s", err)
+	}
+
 	// Successfully created resource, now set id
-	d.SetId(int64ToString(cloud.ID))
+	d.SetId(int64ToString(cloudOutput.ID))
 	resourceVsphereCloudRead(ctx, d, meta)
 	return diags
 }
@@ -376,8 +434,12 @@ func resourceVsphereCloudRead(ctx context.Context, d *schema.ResourceData, meta 
 		d.Set("enabled", cloud.Enabled)
 		d.Set("tenant_id", strconv.Itoa(int(cloud.AccountID)))
 		d.Set("api_url", cloud.Config.APIUrl)
-		d.Set("username", cloud.Config.Username)
-		d.Set("password", cloud.Config.PasswordHash)
+		if cloud.Credential.ID == 0 {
+			d.Set("username", cloud.Config.Username)
+			d.Set("password", cloud.Config.PasswordHash)
+		} else {
+			d.Set("credential_id", cloud.Credential.ID)
+		}
 		d.Set("api_version", cloud.Config.APIVersion)
 		d.Set("datacenter", cloud.Config.Datacenter)
 		d.Set("cluster", cloud.Config.Cluster)
@@ -439,100 +501,135 @@ func resourceVsphereCloudRead(ctx context.Context, d *schema.ResourceData, meta 
 func resourceVsphereCloudUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*morpheus.Client)
 	id := d.Id()
-	name := d.Get("name").(string)
-	code := d.Get("code").(string)
-	location := d.Get("location").(string)
-	enabled := d.Get("enabled").(bool)
-	automatically_power_on_vms := d.Get("automatically_power_on_vms").(bool)
-	visibility := d.Get("visibility").(string)
+	cloud := make(map[string]interface{})
+	// Name
+	cloud["name"] = d.Get("name").(string)
+	// Code
+	cloud["code"] = d.Get("code").(string)
+	// Location
+	cloud["location"] = d.Get("location").(string)
+	// Visibility
+	cloud["visibility"] = d.Get("visibility").(string)
+	// Tenant
+	account := make(map[string]interface{})
+	account["id"] = d.Get("tenant_id").(string)
+	cloud["account"] = account
+	cloud["accountId"] = d.Get("tenant_id").(string)
+	// Enabled
+	cloud["enabled"] = d.Get("enabled").(bool)
+	// Automatically Power On VMs
+	cloud["autoRecoverPowerState"] = d.Get("automatically_power_on_vms").(bool)
 
 	config := make(map[string]interface{})
 	config["certificateProvider"] = "internal"
+	// API URL
 	config["apiUrl"] = d.Get("api_url")
-	config["username"] = d.Get("username")
 
-	if d.HasChange("password") {
-		config["password"] = d.Get("password")
+	if d.Get("credential_id").(int) != 0 {
+		credential := make(map[string]interface{})
+		credential["type"] = "username-password"
+		credential["id"] = d.Get("credential_id").(int)
+		cloud["credential"] = credential
+	} else {
+		credential := make(map[string]interface{})
+		credential["type"] = "local"
+		cloud["credential"] = credential
+		if d.HasChange("username") {
+			config["username"] = d.Get("username")
+		}
+		if d.HasChange("password") {
+			config["password"] = d.Get("password")
+		}
 	}
-
-	config["datacenter"] = d.Get("datacenter")
+	// Version
 	config["apiVersion"] = d.Get("api_version")
-	// Select all clusters by passing an
-	// empty string to the API
+	// VDC
+	config["datacenter"] = d.Get("datacenter")
+	// Cluster
+	// Select all clusters by passing an empty string to the API
 	if d.Get("cluster") == "all" {
 		config["cluster"] = ""
 	} else {
 		config["cluster"] = d.Get("cluster")
 	}
+	// Resource Pool
+	// Select all resource pools by passing an empty string to the API
+	if d.Get("resource_pool") == "all" {
+		config["resourcePool"] = ""
+	} else {
+		config["resourcePool"] = d.Get("resource_pool")
+	}
+	// RPC Mode
 	config["rpcMode"] = d.Get("rpc_mode")
-	config["diskStorageType"] = d.Get("storage_type")
-	config["datacenterName"] = d.Get("datacenter_id")
-	config["applianceUrl"] = d.Get("appliance_url")
-	if d.Get("hide_host_selection") == nil {
-		config["hideHostSelection"] = ""
-	} else {
+	// Hide Host Selection From Users
+	if d.Get("hide_host_selection").(bool) {
 		config["hideHostSelection"] = "on"
-	}
-
-	if d.Get("import_existing") == nil {
-		config["importExisting"] = ""
 	} else {
+		config["hideHostSelection"] = ""
+	}
+	// Inventory Existing Instances
+	if d.Get("import_existing_vms").(bool) {
 		config["importExisting"] = "on"
-	}
-
-	if d.Get("enable_hypervisor_console") == nil {
-		config["enableVnc"] = ""
 	} else {
-		config["enableVnc"] = "on"
+		config["importExisting"] = ""
 	}
-
+	// Enable Hypervisor Console
+	if d.Get("enable_hypervisor_console").(bool) {
+		config["enableVnc"] = "on"
+	} else {
+		config["enableVnc"] = ""
+	}
+	// Keyboard Layout
+	cloud["consoleKeymap"] = d.Get("keyboard_layout").(string)
+	// Enable Disk Type Selection
 	if d.Get("enable_disk_type_selection").(bool) {
 		config["enableDiskTypeSelection"] = "on"
 	} else {
 		config["enableDiskTypeSelection"] = ""
 	}
-
+	// Enable Storage Type Selection
 	if d.Get("enable_storage_type_selection").(bool) {
 		config["enableStorageTypeSelection"] = "on"
 	} else {
 		config["enableStorageTypeSelection"] = ""
 	}
-
+	// Enable Network Interface Type Selection
 	if d.Get("enable_network_interface_type_selection").(bool) {
 		config["enableNetworkTypeSelection"] = "on"
 	} else {
 		config["enableNetworkTypeSelection"] = ""
 	}
+	// Storage Type
+	config["diskStorageType"] = d.Get("storage_type")
+	// Domain
+	// Appliance URL
+	config["applianceUrl"] = d.Get("appliance_url")
+	// Time Zone
+	cloud["timezone"] = d.Get("time_zone").(string)
+	// Datacenter ID
+	config["datacenterName"] = d.Get("datacenter_id")
+	// Network Mode
+	// Local Firewall
+	// Security Server
+	// Backup Provider
+	// Replication Provider
+	// Guidance
+	cloud["guidanceMode"] = d.Get("guidance").(string)
+	// Costing
+	cloud["costingMode"] = d.Get("costing").(string)
+	// CMDB
+	// CMDB Discovery
+	// Agent Install Mode
+	cloud["agentMode"] = d.Get("agent_install_mode").(string)
+	// VDI Gatway
+	cloudType := make(map[string]interface{})
+	cloudType["code"] = "vmware"
+	cloud["zoneType"] = cloudType
 
-	agent_install_mode := d.Get("agent_install_mode").(string)
-	costing := d.Get("costing").(string)
-	keyboard_layout := d.Get("keyboard_layout")
-	guidance := d.Get("guidance")
-	time_zone := d.Get("time_zone")
+	cloud["config"] = config
 
 	payload := map[string]interface{}{
-		"zone": map[string]interface{}{
-			"name":                  name,
-			"code":                  code,
-			"location":              location,
-			"enabled":               enabled,
-			"agentMode":             agent_install_mode,
-			"autoRecoverPowerState": automatically_power_on_vms,
-			"description":           d.Get("description").(string),
-			"accountId":             d.Get("tenant_id").(string),
-			"account": map[string]interface{}{
-				"id": d.Get("tenant_id").(string),
-			},
-			"costingMode":   costing,
-			"consoleKeymap": keyboard_layout,
-			"guidanceMode":  guidance,
-			"timezone":      time_zone,
-			"zoneType": map[string]interface{}{
-				"code": "vmware",
-			},
-			"config":     config,
-			"visibility": visibility,
-		},
+		"zone": cloud,
 	}
 
 	req := &morpheus.Request{Body: payload}
@@ -543,9 +640,9 @@ func resourceVsphereCloudUpdate(ctx context.Context, d *schema.ResourceData, met
 	}
 	log.Printf("API RESPONSE: %s", resp)
 	result := resp.Result.(*morpheus.UpdateCloudResult)
-	cloud := result.Cloud
+	cloudOutput := result.Cloud
 	// Successfully updated resource, now set id
-	d.SetId(int64ToString(cloud.ID))
+	d.SetId(int64ToString(cloudOutput.ID))
 	return resourceVsphereCloudRead(ctx, d, meta)
 }
 

@@ -1,8 +1,12 @@
 ## UNRELEASED
 
+## 0.9.2 (June 5, 2023)
+
 NOTES:
 
+* Update the `shell_script_task` resource to support local repository references and visibility attributes.
 * Update the evaluation logic for sending the user group id data payload when creating an instance using the `vsphere_instance` resource. The logic previously caused an error when the user_group_id attribute was not set despite it being an optional attribute. [#121](https://github.com/gomorpheus/terraform-provider-morpheus/issues/121)
+* Update the `vsphere_cloud` resource to add support for credentials referenced from the credential store. [#120](https://github.com/gomorpheus/terraform-provider-morpheus/issues/120)
 
 ## 0.9.1 (May 12, 2023)
 

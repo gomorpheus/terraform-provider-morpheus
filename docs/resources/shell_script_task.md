@@ -82,6 +82,8 @@ resource "morpheus_shell_script_task" "tfexample_shell_git" {
 - `code` (String) The code of the shell script task
 - `execute_target` (String) The source of the shell script (local, url or repository)
 - `labels` (Set of String) The organization labels associated with the task (Only supported on Morpheus 5.5.3 or higher)
+- `local_repository_id` (String) The ID of the local git repository
+- `local_repository_ref` (String) The git reference of the repository to pull (main, master, etc.)
 - `remote_target_host` (String) The hostname or ip address of the remote target
 - `remote_target_password` (String) The password of the user account used to authenticate to the remote target
 - `remote_target_port` (String) The port used to connect to the remote target
@@ -95,6 +97,7 @@ resource "morpheus_shell_script_task" "tfexample_shell_git" {
 - `script_path` (String) The path of the shell script, either the url or the path in the repository
 - `sudo` (Boolean) Whether to run the script as sudo
 - `version_ref` (String) The git reference of the repository to pull (main, master, etc.)
+- `visibility` (String) The visibility of the task (private or public)
 
 ### Read-Only
 
