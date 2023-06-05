@@ -1,5 +1,9 @@
 ## UNRELEASED
 
+NOTES:
+
+* Update the evaluation logic for sending the user group id data payload when creating an instance using the `vsphere_instance` resource. The logic previously caused an error when the user_group_id attribute was not set despite it being an optional attribute. [#121](https://github.com/gomorpheus/terraform-provider-morpheus/issues/121)
+
 ## 0.9.1 (May 12, 2023)
 
 NOTES:
