@@ -366,7 +366,7 @@ func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, 
 	}
 
 	// User Group ID
-	if d.Get("user_group_id") != nil {
+	if d.Get("user_group_id") != 0 {
 		userGroupPayload := map[string]interface{}{
 			"id": d.Get("user_group_id").(int),
 		}
@@ -433,8 +433,8 @@ func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, 
 	instance := result.Instance
 
 	stateConf := &resource.StateChangeConf{
-		Pending: []string{"provisioning", "starting", "stopping"},
-		Target:  []string{"running", "failed", "warning", "denied", "cancelled"},
+		Pending: []string{"provisioning", "starting", "stopping", "pending"},
+		Target:  []string{"running", "failed", "warning", "denied", "cancelled", "suspended"},
 		Refresh: func() (interface{}, string, error) {
 			instanceDetails, err := client.GetInstance(instance.ID, &morpheus.Request{})
 			if err != nil {
