@@ -111,6 +111,12 @@ func resourceAWSCloud() *schema.Resource {
 				},
 				RequiredWith: []string{"access_key"},
 			},
+			"role_arn": {
+				Type:        schema.TypeString,
+				Description: "The AWS IAM role ARN to assume for authentication",
+				Optional:    true,
+				Computed:    true,
+			},
 			/* AWAITING SDK SUPPORT
 			"use_host_iam_credentials": {
 				Description: "Whether to use the IAM profile associated with the Morpheus server or not",
@@ -217,6 +223,8 @@ func resourceAWSCloudCreate(ctx context.Context, d *schema.ResourceData, meta in
 		config["accessKey"] = d.Get("access_key").(string)
 		config["secretKey"] = d.Get("secret_key").(string)
 	}
+
+	config["stsAssumeRole"] = d.Get("role_arn").(string)
 
 	cloud["inventoryLevel"] = d.Get("inventory").(string)
 	config["isVpc"] = "true"
@@ -343,6 +351,7 @@ func resourceAWSCloudRead(ctx context.Context, d *schema.ResourceData, meta inte
 		d.Set("credential_id", cloud.Credential.ID)
 		d.Set("access_key", cloud.Config.AccessKey)
 		d.Set("secret_key", cloud.Config.SecretKeyHash)
+		d.Set("role_arn", cloud.Config.StsAssumeRole)
 		d.Set("inventory", cloud.InventoryLevel)
 		if cloud.Config.VPC == "" {
 			d.Set("vpc", "all")
@@ -398,6 +407,8 @@ func resourceAWSCloudUpdate(ctx context.Context, d *schema.ResourceData, meta in
 		config["accessKey"] = d.Get("access_key").(string)
 		config["secretKey"] = d.Get("secret_key").(string)
 	}
+
+	config["stsAssumeRole"] = d.Get("role_arn").(string)
 
 	cloud["inventoryLevel"] = d.Get("inventory").(string)
 	config["isVpc"] = "true"
