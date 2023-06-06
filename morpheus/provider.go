@@ -142,6 +142,7 @@ func Provider() *schema.Provider {
 			"morpheus_vsphere_instance":      resourceVsphereInstance(),
 			"morpheus_wiki_page":             resourceWikiPage(),
 			"morpheus_workflow_catalog_item": resourceWorkflowCatalogItem(),
+			"morpheus_workflow_job":          resourceWorkflowJob(),
 			"morpheus_workflow_policy":       resourceWorkflowPolicy(),
 			"morpheus_write_attributes_task": resourceWriteAttributesTask(),
 		},

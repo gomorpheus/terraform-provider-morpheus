@@ -1,5 +1,9 @@
 ## UNRELEASED
 
+FEATURES:
+
+* **New Resource:** `morpheus_workflow_job`
+
 ## 0.9.2 (June 5, 2023)
 
 NOTES:
