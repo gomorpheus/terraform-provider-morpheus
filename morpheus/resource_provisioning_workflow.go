@@ -2,6 +2,7 @@ package morpheus
 
 import (
 	"context"
+	"sort"
 
 	"log"
 
@@ -180,15 +181,23 @@ func resourceProvisioningWorkflowRead(ctx context.Context, d *schema.ResourceDat
 
 	// Tasks
 	var tasks []map[string]interface{}
+	var taskOrderList []TaskOrder
 	if len(workflow.TaskSetTasks) != 0 {
 		for _, task := range workflow.TaskSetTasks {
+			var data TaskOrder
+			data.ID = task.Task.ID
+			data.Phase = task.TaskPhase
+			data.Order = task.TaskOrder
+			taskOrderList = append(taskOrderList, data)
+		}
+		sort.Slice(taskOrderList, func(i, j int) bool { return taskOrderList[i].Order < taskOrderList[j].Order })
+		for _, task := range taskOrderList {
 			tag := make(map[string]interface{})
-			tag["task_phase"] = task.TaskPhase
-			tag["task_id"] = task.Task.ID
+			tag["task_phase"] = task.Phase
+			tag["task_id"] = task.ID
 			tasks = append(tasks, tag)
 		}
 	}
-
 	if workflow != nil {
 		d.SetId(int64ToString(workflow.ID))
 		d.Set("name", workflow.Name)
@@ -281,4 +290,10 @@ func resourceProvisioningWorkflowDelete(ctx context.Context, d *schema.ResourceD
 	log.Printf("API RESPONSE: %s", resp)
 	d.SetId("")
 	return diags
+}
+
+type TaskOrder struct {
+	Order int64  `json:"order"`
+	ID    int64  `json:"id"`
+	Phase string `json:"phase"`
 }
