@@ -7,6 +7,7 @@ NOTES:
 
 FEATURES:
 
+* **New Data Source:** `morpheus_git_integration`
 * **New Resource:** `morpheus_workflow_job`
 
 ## 0.9.2 (June 5, 2023)

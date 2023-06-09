@@ -1,0 +1,18 @@
+---
+page_title: "morpheus_git_integration Data Source - terraform-provider-morpheus"
+subcategory: ""
+description: |-
+{{ .Description | plainmarkdown | trimspace | prefixlines "  " }}
+---
+
+# morpheus_git_integration (Data Source)
+
+{{ .Description | trimspace }}
+
+## Example Usage
+
+{{tffile "examples/data-sources/morpheus_git_integration/data-source.tf"}}
+
+The name of the repository is used as the key to access the ID from the `repository_ids` map. The name can be found in the UI in the `code` section under `provisioning`.
+
+{{ .SchemaMarkdown | trimspace }}
