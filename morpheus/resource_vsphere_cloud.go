@@ -111,7 +111,7 @@ func resourceVsphereCloud() *schema.Resource {
 			},
 			"rpc_mode": {
 				Type:         schema.TypeString,
-				Description:  "",
+				Description:  "The method for interacting with cloud workloads (guestexec (VMware Tools) or rpc (SSH/WinRM))",
 				Optional:     true,
 				ValidateFunc: validation.StringInSlice([]string{"guestexec", "rpc", ""}, true),
 				Default:      "guestexec",
@@ -214,6 +214,9 @@ func resourceVsphereCloud() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 			},
+		},
+		Importer: &schema.ResourceImporter{
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 	}
 }
@@ -430,9 +433,8 @@ func resourceVsphereCloudRead(ctx context.Context, d *schema.ResourceData, meta 
 		d.Set("name", cloud.Name)
 		d.Set("code", cloud.Code)
 		d.Set("location", cloud.Location)
-		d.Set("visibility", cloud.Visibility)
 		d.Set("enabled", cloud.Enabled)
-		d.Set("tenant_id", strconv.Itoa(int(cloud.AccountID)))
+		d.Set("automatically_power_on_vms", cloud.AutoRecoverPowerState)
 		d.Set("api_url", cloud.Config.APIUrl)
 		if cloud.Credential.ID == 0 {
 			d.Set("username", cloud.Config.Username)
@@ -442,14 +444,17 @@ func resourceVsphereCloudRead(ctx context.Context, d *schema.ResourceData, meta 
 		}
 		d.Set("api_version", cloud.Config.APIVersion)
 		d.Set("datacenter", cloud.Config.Datacenter)
-		d.Set("cluster", cloud.Config.Cluster)
-		d.Set("rpc_mode", cloud.Config.RPCMode)
-
 		if cloud.Config.Cluster == "" {
 			d.Set("cluster", "all")
 		} else {
 			d.Set("cluster", cloud.Config.Cluster)
 		}
+		if cloud.Config.ResourcePool == "" {
+			d.Set("resource_pool", "all")
+		} else {
+			d.Set("resource_pool", cloud.Config.ResourcePool)
+		}
+		d.Set("rpc_mode", cloud.Config.RPCMode)
 
 		if cloud.Config.HideHostSelection == "on" {
 			d.Set("hide_host_selection", true)
@@ -494,6 +499,8 @@ func resourceVsphereCloudRead(ctx context.Context, d *schema.ResourceData, meta 
 		d.Set("guidance", cloud.GuidanceMode)
 		d.Set("costing", cloud.CostingMode)
 		d.Set("agent_install_mode", cloud.AgentMode)
+		d.Set("visibility", cloud.Visibility)
+		d.Set("tenant_id", strconv.Itoa(int(cloud.AccountID)))
 		return diags
 	}
 }
