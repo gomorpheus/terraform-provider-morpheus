@@ -126,7 +126,7 @@ resource "morpheus_vsphere_cloud" "tf_example_vsphere_cloud" {
 - `location` (String) Optional location for your cloud
 - `password` (String, Sensitive) The password of the VMware vSphere account
 - `resource_pool` (String) The name of the vSphere resource pool
-- `rpc_mode` (String)
+- `rpc_mode` (String) The method for interacting with cloud workloads (guestexec (VMware Tools) or rpc (SSH/WinRM))
 - `storage_type` (String) The default vSphere VMDK type for virtual machines (thin, thick, thickEager)
 - `tenant_id` (String) The id of the morpheus tenant the cloud is assigned to
 - `time_zone` (String) The time zone for the cloud

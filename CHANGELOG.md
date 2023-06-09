@@ -2,6 +2,7 @@
 
 NOTES:
 
+* Updated the `vsphere_cloud` resource to support importing existing VMware vSphere cloud integrations. [#129](https://github.com/gomorpheus/terraform-provider-morpheus/issues/129)
 * Updated the logic for setting the state for the `provisioning_workflow` resource to properly account for the API returning the tasks in API versions prior to 5.5.x in an out of order sequence. This resulted in an inconsistent state and plans constantly indicating that there were changes to be made despite the real configuration not chaning. [#116](https://github.com/gomorpheus/terraform-provider-morpheus/issues/116)
 
 FEATURES:
