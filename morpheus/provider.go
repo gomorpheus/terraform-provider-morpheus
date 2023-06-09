@@ -158,6 +158,7 @@ func Provider() *schema.Provider {
 			"morpheus_environment":                dataSourceMorpheusEnvironment(),
 			"morpheus_execute_schedule":           dataSourceMorpheusExecuteSchedule(),
 			"morpheus_file_template":              dataSourceMorpheusFileTemplate(),
+			"morpheus_git_integration":            dataSourceMorpheusGitIntegration(),
 			"morpheus_group":                      dataSourceMorpheusGroup(),
 			"morpheus_instance_layout":            dataSourceMorpheusInstanceLayout(),
 			"morpheus_instance_type":              dataSourceMorpheusInstanceType(),
