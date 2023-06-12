@@ -89,6 +89,7 @@ resource "morpheus_aws_cloud" "tf_example_aws_cloud" {
 - `guidance` (String) Whether to enable guidance recommendations on the cloud (manual, off)
 - `inventory` (String) Whether to import existing virtual machines (off, basic, full)
 - `location` (String) Optional location for the cloud
+- `role_arn` (String) The AWS IAM role ARN to assume for authentication
 - `secret_key` (String, Sensitive) The AWS secret key used for authentication
 - `tenant_id` (String) The id of the morpheus tenant the cloud is assigned to
 - `time_zone` (String) The time zone for the cloud
