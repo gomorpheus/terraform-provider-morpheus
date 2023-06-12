@@ -2,12 +2,14 @@
 
 NOTES:
 
+* Updated the `api_option_list`, `manual_option_list`, and `rest_option_list` resources to better handle the difference in the payload returned from the API and the payload defined by Terraform. The payloads are now being compared after a trim operation has been performed on the payload passed by Terraform to address cases in which a HEREDOC is used that includes additional spacing for readability. [#128](https://github.com/gomorpheus/terraform-provider-morpheus/issues/128)
 * Updated the `vsphere_cloud` resource to support importing existing VMware vSphere cloud integrations. [#129](https://github.com/gomorpheus/terraform-provider-morpheus/issues/129)
 * Updated the logic for setting the state for the `provisioning_workflow` resource to properly account for the API returning the tasks in API versions prior to 5.5.x in an out of order sequence. This resulted in an inconsistent state and plans constantly indicating that there were changes to be made despite the real configuration not chaning. [#116](https://github.com/gomorpheus/terraform-provider-morpheus/issues/116)
 
 FEATURES:
 
 * **New Resource:** `morpheus_workflow_job`
+* **New Resource:** `morpheus_provision_approval_policy`
 
 ## 0.9.2 (June 5, 2023)
 

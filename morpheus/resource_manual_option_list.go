@@ -62,9 +62,10 @@ func resourceManualOptionList() *schema.Resource {
 				Default:     false,
 			},
 			"translation_script": {
-				Type:        schema.TypeString,
-				Description: "A js script to translate the result data object into an Array containing objects with properties 'name’ and 'value’.",
-				Optional:    true,
+				Type:             schema.TypeString,
+				Description:      "A js script to translate the result data object into an Array containing objects with properties 'name’ and 'value’.",
+				DiffSuppressFunc: supressOptionListScripts,
+				Optional:         true,
 			},
 		},
 		Importer: &schema.ResourceImporter{
