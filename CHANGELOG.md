@@ -9,8 +9,10 @@ NOTES:
 FEATURES:
 
 * **New Data Source:** `morpheus_git_integration`
+* **New Data Source:** `morpheus_servicenow_workflow`
 * **New Resource:** `morpheus_workflow_job`
 * **New Resource:** `morpheus_provision_approval_policy`
+* **New Resource:** `morpheus_delete_approval_policy`
 
 ## 0.9.2 (June 5, 2023)
 
