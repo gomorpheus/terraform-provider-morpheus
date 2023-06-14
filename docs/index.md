@@ -25,7 +25,7 @@ terraform {
   required_providers {
     morpheus = {
       source  = "gomorpheus/morpheus"
-      version = "0.9.2"
+      version = "0.9.3"
     }
   }
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"log"
 	"strconv"
@@ -117,14 +118,13 @@ func resourceAWSCloud() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 			},
-			/* AWAITING SDK SUPPORT
 			"use_host_iam_credentials": {
-				Description: "Whether to use the IAM profile associated with the Morpheus server or not",
-				Type:        schema.TypeBool,
-				Optional:    true,
-				Computed:    true,
+				Description:   "Whether to use the IAM profile associated with the Morpheus server or not",
+				Type:          schema.TypeBool,
+				Optional:      true,
+				Computed:      true,
+				ConflictsWith: []string{"access_key", "secret_key"},
 			},
-			*/
 			"inventory": {
 				Type:         schema.TypeString,
 				Description:  "Whether to import existing virtual machines (off, basic, full)",
@@ -224,6 +224,11 @@ func resourceAWSCloudCreate(ctx context.Context, d *schema.ResourceData, meta in
 		config["secretKey"] = d.Get("secret_key").(string)
 	}
 
+	if d.Get("use_host_iam_credentials").(bool) {
+		config["useHostCredentials"] = "on"
+	} else {
+		config["useHostCredentials"] = "off"
+	}
 	config["stsAssumeRole"] = d.Get("role_arn").(string)
 
 	cloud["inventoryLevel"] = d.Get("inventory").(string)
@@ -263,6 +268,9 @@ func resourceAWSCloudCreate(ctx context.Context, d *schema.ResourceData, meta in
 
 	req := &morpheus.Request{Body: payload}
 
+	jsonRequest, _ := json.Marshal(req.Body)
+	log.Printf("API JSON REQUEST: %s", string(jsonRequest))
+
 	resp, err := client.CreateCloud(req)
 	if err != nil {
 		log.Printf("API FAILURE: %s - %s", resp, err)
@@ -273,7 +281,7 @@ func resourceAWSCloudCreate(ctx context.Context, d *schema.ResourceData, meta in
 	cloudOutput := result.Cloud
 
 	stateConf := &resource.StateChangeConf{
-		Pending: []string{"initializing"},
+		Pending: []string{"initializing", "syncing"},
 		Target:  []string{"ok"},
 		Refresh: func() (interface{}, string, error) {
 			cloudDetails, err := client.GetCloud(cloudOutput.ID, &morpheus.Request{})
@@ -286,7 +294,7 @@ func resourceAWSCloudCreate(ctx context.Context, d *schema.ResourceData, meta in
 		},
 		Timeout:      1 * time.Hour,
 		MinTimeout:   1 * time.Minute,
-		Delay:        3 * time.Minute,
+		Delay:        1 * time.Minute,
 		PollInterval: 1 * time.Minute,
 	}
 
@@ -351,6 +359,11 @@ func resourceAWSCloudRead(ctx context.Context, d *schema.ResourceData, meta inte
 		d.Set("credential_id", cloud.Credential.ID)
 		d.Set("access_key", cloud.Config.AccessKey)
 		d.Set("secret_key", cloud.Config.SecretKeyHash)
+		if cloud.Config.UseHostCredentials == "" {
+			d.Set("use_host_iam_credentials", false)
+		} else {
+			d.Set("use_host_iam_credentials", true)
+		}
 		d.Set("role_arn", cloud.Config.StsAssumeRole)
 		d.Set("inventory", cloud.InventoryLevel)
 		if cloud.Config.VPC == "" {
@@ -408,6 +421,11 @@ func resourceAWSCloudUpdate(ctx context.Context, d *schema.ResourceData, meta in
 		config["secretKey"] = d.Get("secret_key").(string)
 	}
 
+	if d.Get("use_host_iam_credentials").(bool) {
+		config["useHostCredentials"] = "on"
+	} else {
+		config["useHostCredentials"] = "off"
+	}
 	config["stsAssumeRole"] = d.Get("role_arn").(string)
 
 	cloud["inventoryLevel"] = d.Get("inventory").(string)
