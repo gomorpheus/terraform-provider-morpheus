@@ -94,6 +94,7 @@ resource "morpheus_aws_cloud" "tf_example_aws_cloud" {
 - `tenant_id` (String) The id of the morpheus tenant the cloud is assigned to
 - `time_zone` (String) The time zone for the cloud
 - `timeouts` (Block, Optional) (see [below for nested schema](#nestedblock--timeouts))
+- `use_host_iam_credentials` (Boolean) Whether to use the IAM profile associated with the Morpheus server or not
 - `visibility` (String) Determines whether the cloud is visible in sub-tenants or not
 - `vpc` (String) The VPC ID for a specific VPC (all or the AWS VPC id (vpc-25e6dae))
 
