@@ -50,10 +50,11 @@ func resourceUserRole() *schema.Resource {
 				Computed:    true,
 			},
 			"permission_set": {
-				Type:        schema.TypeString,
-				Description: "",
-				Optional:    true,
-				Computed:    true,
+				Type:             schema.TypeString,
+				Description:      "",
+				Optional:         true,
+				Computed:         true,
+				DiffSuppressFunc: suppressEquivalentJsonDiffs,
 			},
 		},
 		Importer: &schema.ResourceImporter{
@@ -89,16 +90,23 @@ func resourceUserRoleCreate(ctx context.Context, d *schema.ResourceData, meta in
 	roleDefinition.GlobalTaskAccess = data.DefaultTaskPermission
 	roleDefinition.FeaturePermissions = data.FeaturePermissions
 	roleDefinition.GroupPermissions = data.GroupPermissions
-	roleDefinition.PersonaPermissions = data.PersonaPermissions
 	roleDefinition.InstanceTypePermissions = data.InstanceTypePermissions
-	roleDefinition.Tasks = data.TaskPermissions
+	roleDefinition.BlueprintPermissions = data.BlueprintPermissions
+	roleDefinition.ReportTypePermissions = data.ReportTypePermissions
+	roleDefinition.PersonaPermissions = data.PersonaPermissions
+	roleDefinition.CatalogItemTypePermissions = data.CatalogItemTypePermissions
+	roleDefinition.VdiPoolPermissions = data.VdiPoolPermissions
 	roleDefinition.Workflows = data.WorkflowPermissions
+	roleDefinition.Tasks = data.TaskPermissions
 
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"role": roleDefinition,
 		},
 	}
+
+	jsonRequest, _ := json.Marshal(req.Body)
+	log.Printf("API JSON REQUEST: %s", string(jsonRequest))
 
 	resp, err := client.CreateRole(req)
 	if err != nil {
@@ -116,23 +124,6 @@ func resourceUserRoleCreate(ctx context.Context, d *schema.ResourceData, meta in
 
 	// Successfully created resource, now set id
 	d.SetId(int64ToString(role.Role.ID))
-
-	// Set Group Access
-	for _, it := range data.GroupPermissions {
-		req := &morpheus.Request{
-			Body: map[string]interface{}{
-				"groupId": it.Id,
-				"access":  it.Access,
-			},
-		}
-
-		resp, err := client.UpdateRoleGroupAccess(role.Role.ID, req)
-		if err != nil {
-			log.Printf("API FAILURE: %s - %s", resp, err)
-			return diag.FromErr(err)
-		}
-		log.Printf("API RESPONSE: %s", resp)
-	}
 
 	resourceUserRoleRead(ctx, d, meta)
 	return diags
@@ -178,6 +169,7 @@ func resourceUserRoleRead(ctx context.Context, d *schema.ResourceData, meta inte
 	d.Set("multitenant_role", role.Role.MultiTenant)
 	d.Set("multitenant_locked", role.Role.MultiTenantLocked)
 
+	// Convert the Morpheus API response into the permission set JSON format for comparison
 	data := PermissionSet{}
 	json.Unmarshal([]byte(d.Get("permission_set").(string)), &data)
 	log.Println("PERMISSIONS: ", data)
@@ -192,14 +184,34 @@ func resourceUserRoleRead(ctx context.Context, d *schema.ResourceData, meta inte
 		groupList = append(groupList, group.Id)
 	}
 
-	var instanceTypeList []string
+	var instanceTypeList []int
 	for _, instanceType := range data.InstanceTypePermissions {
-		instanceTypeList = append(instanceTypeList, instanceType.Code)
+		instanceTypeList = append(instanceTypeList, instanceType.Id)
+	}
+
+	var blueprintList []int
+	for _, blueprint := range data.BlueprintPermissions {
+		blueprintList = append(blueprintList, blueprint.Id)
+	}
+
+	var reportTypeList []string
+	for _, reportType := range data.ReportTypePermissions {
+		reportTypeList = append(reportTypeList, reportType.Code)
 	}
 
 	var personaList []string
 	for _, persona := range data.PersonaPermissions {
 		personaList = append(personaList, persona.Code)
+	}
+
+	var catalogItemTypeList []int
+	for _, catalogItemType := range data.CatalogItemTypePermissions {
+		catalogItemTypeList = append(catalogItemTypeList, catalogItemType.Id)
+	}
+
+	var vdiPoolList []int
+	for _, vdiPool := range data.VdiPoolPermissions {
+		vdiPoolList = append(vdiPoolList, vdiPool.Id)
 	}
 
 	var workflowList []int
@@ -212,6 +224,7 @@ func resourceUserRoleRead(ctx context.Context, d *schema.ResourceData, meta inte
 		taskList = append(taskList, task.Id)
 	}
 
+	// Set the default permissions
 	var permissionSet PermissionSet
 	permissionSet.DefaultGroupPermission = role.GlobalSiteAccess
 	permissionSet.DefaultInstanceTypePermission = role.GlobalInstanceTypeAccess
@@ -222,6 +235,7 @@ func resourceUserRoleRead(ctx context.Context, d *schema.ResourceData, meta inte
 	permissionSet.DefaultVdiPoolPermission = role.GlobalVDIPoolAccess
 	permissionSet.DefaultWorkflowPermission = role.GlobalTaskSetAccess
 	permissionSet.DefaultTaskPermission = role.GlobalTaskAccess
+
 	// Feature Permissions
 	var featurePermissions []featurePermission
 	for _, feature := range role.FeaturePermissions {
@@ -233,7 +247,6 @@ func resourceUserRoleRead(ctx context.Context, d *schema.ResourceData, meta inte
 		}
 	}
 	sort.Slice(featurePermissions, func(i, j int) bool { return featurePermissions[i].Code < featurePermissions[j].Code })
-
 	permissionSet.FeaturePermissions = featurePermissions
 
 	// Group Permissions
@@ -249,7 +262,6 @@ func resourceUserRoleRead(ctx context.Context, d *schema.ResourceData, meta inte
 	}
 
 	sort.Slice(groupPermissions, func(i, j int) bool { return groupPermissions[i].Id < groupPermissions[j].Id })
-
 	log.Println("GROUP PERMS: ", groupPermissions)
 	permissionSet.GroupPermissions = groupPermissions
 
@@ -257,18 +269,49 @@ func resourceUserRoleRead(ctx context.Context, d *schema.ResourceData, meta inte
 	var instanceTypePermissions []instanceTypePermission
 	log.Println("Instance Type DATA: ", role.InstanceTypePermissions)
 	for _, instanceType := range role.InstanceTypePermissions {
-		if containsString(instanceTypeList, instanceType.Code) {
+		if containsInt(instanceTypeList, int(instanceType.ID)) {
 			var instanceTypePerm instanceTypePermission
 			instanceTypePerm.Access = instanceType.Access
-			instanceTypePerm.Code = instanceType.Code
+			instanceTypePerm.Id = int(instanceType.ID)
 			instanceTypePermissions = append(instanceTypePermissions, instanceTypePerm)
 		}
 	}
 
-	sort.Slice(instanceTypePermissions, func(i, j int) bool { return instanceTypePermissions[i].Code < instanceTypePermissions[j].Code })
-
+	sort.Slice(instanceTypePermissions, func(i, j int) bool { return instanceTypePermissions[i].Id < instanceTypePermissions[j].Id })
 	log.Println("Instance Type PERMS: ", instanceTypePermissions)
 	permissionSet.InstanceTypePermissions = instanceTypePermissions
+
+	// Blueprint Permissions
+	var blueprintPermissions []blueprintPermission
+	log.Println("Blueprint DATA: ", role.AppTemplatePermissions)
+	for _, blueprint := range role.AppTemplatePermissions {
+		if containsInt(blueprintList, int(blueprint.ID)) {
+			var blueprintPerm blueprintPermission
+			blueprintPerm.Access = blueprint.Access
+			blueprintPerm.Id = int(blueprint.ID)
+			blueprintPermissions = append(blueprintPermissions, blueprintPerm)
+		}
+	}
+
+	sort.Slice(blueprintPermissions, func(i, j int) bool { return blueprintPermissions[i].Id < blueprintPermissions[j].Id })
+	log.Println("Blueprint PERMS: ", blueprintPermissions)
+	permissionSet.BlueprintPermissions = blueprintPermissions
+
+	// Report Type Permissions
+	var reportTypePermissions []reportTypePermission
+	log.Println("Report Type DATA: ", role.ReportTypePermissions)
+	for _, reportType := range role.ReportTypePermissions {
+		if containsString(reportTypeList, reportType.Code) {
+			var reportTypePerm reportTypePermission
+			reportTypePerm.Access = reportType.Access
+			reportTypePerm.Code = reportType.Code
+			reportTypePermissions = append(reportTypePermissions, reportTypePerm)
+		}
+	}
+
+	sort.Slice(reportTypePermissions, func(i, j int) bool { return reportTypePermissions[i].Code < reportTypePermissions[j].Code })
+	log.Println("Report Type PERMS: ", reportTypePermissions)
+	permissionSet.ReportTypePermissions = reportTypePermissions
 
 	// Persona Permissions
 	var personaPermissions []personaPermission
@@ -287,9 +330,41 @@ func resourceUserRoleRead(ctx context.Context, d *schema.ResourceData, meta inte
 	log.Println("Persona PERMS: ", personaPermissions)
 	permissionSet.PersonaPermissions = personaPermissions
 
+	// Catalog Item Type Permissions
+	var catalogItemTypePermissions []catalogItemTypePermission
+	log.Println("Catalog Item Type DATA: ", role.CatalogItemTypePermissions)
+	for _, catalogItemType := range role.CatalogItemTypePermissions {
+		if containsInt(catalogItemTypeList, int(catalogItemType.ID)) {
+			var catalogItemTypePerm catalogItemTypePermission
+			catalogItemTypePerm.Access = catalogItemType.Access
+			catalogItemTypePerm.Id = int(catalogItemType.ID)
+			catalogItemTypePermissions = append(catalogItemTypePermissions, catalogItemTypePerm)
+		}
+	}
+
+	sort.Slice(catalogItemTypePermissions, func(i, j int) bool { return catalogItemTypePermissions[i].Id < catalogItemTypePermissions[j].Id })
+	log.Println("Catalog Item Type PERMS: ", catalogItemTypePermissions)
+	permissionSet.CatalogItemTypePermissions = catalogItemTypePermissions
+
+	// VDI Pool Permissions
+	var vdiPoolPermissions []vdiPoolPermission
+	log.Println("VDI Pool DATA: ", role.VDIPoolPermissions)
+	for _, vdiPool := range role.VDIPoolPermissions {
+		if containsInt(vdiPoolList, int(vdiPool.ID)) {
+			var vdiPoolPerm vdiPoolPermission
+			vdiPoolPerm.Access = vdiPool.Access
+			vdiPoolPerm.Id = int(vdiPool.ID)
+			vdiPoolPermissions = append(vdiPoolPermissions, vdiPoolPerm)
+		}
+	}
+
+	sort.Slice(vdiPoolPermissions, func(i, j int) bool { return vdiPoolPermissions[i].Id < vdiPoolPermissions[j].Id })
+	log.Println("Catalog Item Type PERMS: ", vdiPoolPermissions)
+	permissionSet.VdiPoolPermissions = vdiPoolPermissions
+
 	// Workflow Permissions
 	var workflowPermissions []workflowPermission
-	for _, workflow := range role.TaskPermissions {
+	for _, workflow := range role.TaskSetPermissions {
 		if containsInt(workflowList, int(workflow.ID)) {
 			var workflowPerm workflowPermission
 			workflowPerm.Access = workflow.Access
@@ -299,7 +374,6 @@ func resourceUserRoleRead(ctx context.Context, d *schema.ResourceData, meta inte
 	}
 
 	sort.Slice(workflowPermissions, func(i, j int) bool { return workflowPermissions[i].Id < workflowPermissions[j].Id })
-
 	permissionSet.WorkflowPermissions = workflowPermissions
 
 	// Task Permissions
@@ -314,7 +388,6 @@ func resourceUserRoleRead(ctx context.Context, d *schema.ResourceData, meta inte
 	}
 
 	sort.Slice(taskPermissions, func(i, j int) bool { return taskPermissions[i].Id < taskPermissions[j].Id })
-
 	permissionSet.TaskPermissions = taskPermissions
 
 	jsonDoc, err := json.MarshalIndent(permissionSet, "", "  ")
@@ -348,20 +421,31 @@ func resourceUserRoleUpdate(ctx context.Context, d *schema.ResourceData, meta in
 	roleDefinition.MultitenantLocked = d.Get("multitenant_locked").(bool)
 	roleDefinition.DefaultPersona.Code = data.DefaultPersona
 	roleDefinition.GlobalGroupAccess = data.DefaultGroupPermission
+	roleDefinition.GlobalInstanceTypeAccess = data.DefaultInstanceTypePermission
+	roleDefinition.GlobalBlueprintAccess = data.DefaultBlueprintPermission
+	roleDefinition.GlobalReportTypeAccess = data.DefaultReportTypePermission
+	roleDefinition.GlobalCatalogItemTypeAccess = data.DefaultCatalogItemTypePermission
+	roleDefinition.GlobalVDIPoolAccess = data.DefaultVdiPoolPermission
 	roleDefinition.GlobalWorkflowAccess = data.DefaultWorkflowPermission
 	roleDefinition.GlobalTaskAccess = data.DefaultTaskPermission
 	roleDefinition.FeaturePermissions = data.FeaturePermissions
 	roleDefinition.GroupPermissions = data.GroupPermissions
 	roleDefinition.InstanceTypePermissions = data.InstanceTypePermissions
+	roleDefinition.BlueprintPermissions = data.BlueprintPermissions
+	roleDefinition.ReportTypePermissions = data.ReportTypePermissions
 	roleDefinition.PersonaPermissions = data.PersonaPermissions
-	roleDefinition.Tasks = data.TaskPermissions
+	roleDefinition.CatalogItemTypePermissions = data.CatalogItemTypePermissions
+	roleDefinition.VdiPoolPermissions = data.VdiPoolPermissions
 	roleDefinition.Workflows = data.WorkflowPermissions
+	roleDefinition.Tasks = data.TaskPermissions
 
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"role": roleDefinition,
 		},
 	}
+	jsonRequest, _ := json.Marshal(req.Body)
+	log.Printf("API JSON REQUEST: %s", string(jsonRequest))
 
 	log.Printf("API REQUEST: %s", req)
 	resp, err := client.UpdateRole(toInt64(id), req)
@@ -442,19 +526,23 @@ type RolePermissionPayload struct {
 	DefaultPersona    struct {
 		Code string `json:"code"`
 	} `json:"defaultPersona"`
-	GlobalGroupAccess           string                   `json:"globalSiteAccess"`
-	GlobalInstanceTypeAccess    string                   `json:"globalInstanceTypeAccess"`
-	GlobalBlueprintAccess       string                   `json:"globalAppTemplateAccess"`
-	GlobalReportTypeAccess      string                   `json:"globalReportTypeAccess"`
-	GlobalCatalogItemTypeAccess string                   `json:"globalCatalogItemTypeAccess"`
-	GlobalVDIPoolAccess         string                   `json:"globalVdiPoolAccess"`
-	GlobalTaskAccess            string                   `json:"globalTaskAccess"`
-	GlobalWorkflowAccess        string                   `json:"globalTaskSetAccess"`
-	GroupPermissions            []groupPermission        `json:"sites"`
-	FeaturePermissions          []featurePermission      `json:"permissions"`
-	InstanceTypePermissions     []instanceTypePermission `json:"instanceTypes"`
-	PersonaPermissions          []personaPermission      `json:"personas"`
-	VdiPoolPermissions          []vdiPoolPermission      `json:"vdipools"`
-	Tasks                       []taskPermission         `json:"tasks"`
-	Workflows                   []workflowPermission     `json:"taskSets"`
+	GlobalGroupAccess           string                      `json:"globalSiteAccess"`
+	GlobalInstanceTypeAccess    string                      `json:"globalInstanceTypeAccess"`
+	GlobalBlueprintAccess       string                      `json:"globalAppTemplateAccess"`
+	GlobalReportTypeAccess      string                      `json:"globalReportTypeAccess"`
+	GlobalPersonaAccess         string                      `json:"globalPersonaAccess"`
+	GlobalCatalogItemTypeAccess string                      `json:"globalCatalogItemTypeAccess"`
+	GlobalVDIPoolAccess         string                      `json:"globalVdiPoolAccess"`
+	GlobalTaskAccess            string                      `json:"globalTaskAccess"`
+	GlobalWorkflowAccess        string                      `json:"globalTaskSetAccess"`
+	FeaturePermissions          []featurePermission         `json:"permissions"`
+	GroupPermissions            []groupPermission           `json:"sites"`
+	InstanceTypePermissions     []instanceTypePermission    `json:"instanceTypes"`
+	BlueprintPermissions        []blueprintPermission       `json:"appTemplates"`
+	ReportTypePermissions       []reportTypePermission      `json:"reportTypes"`
+	PersonaPermissions          []personaPermission         `json:"personas"`
+	CatalogItemTypePermissions  []catalogItemTypePermission `json:"catalogItemTypes"`
+	VdiPoolPermissions          []vdiPoolPermission         `json:"vdiPools"`
+	Tasks                       []taskPermission            `json:"tasks"`
+	Workflows                   []workflowPermission        `json:"taskSets"`
 }

@@ -49,11 +49,10 @@ resource "morpheus_user_role" "tf_example_user_role" {
 
 ### Optional
 
-- `default_persona` (String) The name of the Morpheus plan.
 - `description` (String) The description of the user role
 - `multitenant_locked` (Boolean) Whether subtenants are allowed to branch off or modify this role.
 - `multitenant_role` (Boolean) Whether the user role is automatically copied into all existing subtenants as well as placed into a subtenant when created
-- `permission_set` (String) The name of the Morpheus plan.
+- `permission_set` (String)
 
 ### Read-Only
 

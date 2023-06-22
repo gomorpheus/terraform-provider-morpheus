@@ -81,8 +81,8 @@ data "morpheus_permission_set" "source_one" {
 
 ### Optional
 
-- `blueprint_permission` (Block List) The environment variables to create (see [below for nested schema](#nestedblock--blueprint_permission))
-- `catalog_item_type_permission` (Block List) The environment variables to create (see [below for nested schema](#nestedblock--catalog_item_type_permission))
+- `blueprint_permission` (Block List) The blueprint permissions associated with the user role (see [below for nested schema](#nestedblock--blueprint_permission))
+- `catalog_item_type_permission` (Block List) The catalog item type permissions associated with the user role (see [below for nested schema](#nestedblock--catalog_item_type_permission))
 - `default_blueprint_permission` (String) The default role permission for blueprints (none, full)
 - `default_catalog_item_type_permission` (String) The default role permission for catalog item types (none, full)
 - `default_group_permission` (String) The default role permission for groups (none, read, full)
@@ -93,14 +93,15 @@ data "morpheus_permission_set" "source_one" {
 - `default_task_permission` (String) The default role permission for tasks (none, full)
 - `default_vdi_pool_permission` (String) The default role permission for vdi pools (none, full)
 - `default_workflow_permission` (String) The default role permission for workflows (none, full)
-- `feature_permission` (Block List) The environment variables to create (see [below for nested schema](#nestedblock--feature_permission))
-- `group_permission` (Block List) The environment variables to create (see [below for nested schema](#nestedblock--group_permission))
-- `instance_type_permission` (Block List) The environment variables to create (see [below for nested schema](#nestedblock--instance_type_permission))
-- `persona_permission` (Block List) The environment variables to create (see [below for nested schema](#nestedblock--persona_permission))
-- `report_type_permission` (Block List) The environment variables to create (see [below for nested schema](#nestedblock--report_type_permission))
-- `task_permission` (Block List) The environment variables to create (see [below for nested schema](#nestedblock--task_permission))
-- `vdi_permission` (Block List) The environment variables to create (see [below for nested schema](#nestedblock--vdi_permission))
-- `workflow_permission` (Block List) The environment variables to create (see [below for nested schema](#nestedblock--workflow_permission))
+- `feature_permission` (Block List) The feature permissions associated with the user role (see [below for nested schema](#nestedblock--feature_permission))
+- `group_permission` (Block List) The group permissions associated with the user role (see [below for nested schema](#nestedblock--group_permission))
+- `instance_type_permission` (Block List) The instance type permissions associated with the user role (see [below for nested schema](#nestedblock--instance_type_permission))
+- `override_permission_sets` (List of String) List of permission sets that are merged together into the exported json. In merging, the last permission applied in the list order is used. Non-overriding permissions will be added to the exported json.
+- `persona_permission` (Block List) The persona permissions associated with the user role (see [below for nested schema](#nestedblock--persona_permission))
+- `report_type_permission` (Block List) The report type permissions associated with the user role (see [below for nested schema](#nestedblock--report_type_permission))
+- `task_permission` (Block List) The task permissions associated with the user role (see [below for nested schema](#nestedblock--task_permission))
+- `vdi_pool_permission` (Block List) The vdi pool permissions associated with the user role (see [below for nested schema](#nestedblock--vdi_pool_permission))
+- `workflow_permission` (Block List) The workflow permissions associated with the user role (see [below for nested schema](#nestedblock--workflow_permission))
 
 ### Read-Only
 
@@ -112,8 +113,8 @@ data "morpheus_permission_set" "source_one" {
 
 Optional:
 
-- `access` (String) The value of the environment variable
-- `id` (Number) The name of the environment variable
+- `access` (String) The level of access granted to the blueprint (default, full, none)
+- `id` (Number) The id of the blueprint
 
 
 <a id="nestedblock--catalog_item_type_permission"></a>
@@ -121,8 +122,8 @@ Optional:
 
 Optional:
 
-- `access` (String) The value of the environment variable
-- `name` (String) The name of the environment variable
+- `access` (String) The level of access granted to the catalog item type (default, full, none)
+- `id` (Number) The id of the catalog item type
 
 
 <a id="nestedblock--feature_permission"></a>
@@ -130,8 +131,8 @@ Optional:
 
 Optional:
 
-- `access` (String) The value of the environment variable
-- `code` (String) The name of the environment variable
+- `access` (String) The level of access granted to the feature permission (full, full_decrypted, group, listfiles, managerules, no, none, provision, read, rolemappings, user, view, yes)
+- `code` (String) The code of the feature permission
 
 
 <a id="nestedblock--group_permission"></a>
@@ -139,8 +140,8 @@ Optional:
 
 Optional:
 
-- `access` (String) The value of the environment variable
-- `id` (Number) The name of the environment variable
+- `access` (String) The level of access granted to the group (default, full, none)
+- `id` (Number) The id of the group
 
 
 <a id="nestedblock--instance_type_permission"></a>
@@ -148,8 +149,8 @@ Optional:
 
 Optional:
 
-- `access` (String) The value of the environment variable
-- `name` (String) The name of the environment variable
+- `access` (String) The level of access granted to the workflow (default, full, none)
+- `id` (Number) The id of the instance type
 
 
 <a id="nestedblock--persona_permission"></a>
@@ -157,8 +158,8 @@ Optional:
 
 Optional:
 
-- `access` (String) The value of the environment variable
-- `name` (String) The name of the environment variable
+- `access` (String) The level of access granted to the persona (default, full, none)
+- `code` (String) The code of the persona
 
 
 <a id="nestedblock--report_type_permission"></a>
@@ -166,8 +167,8 @@ Optional:
 
 Optional:
 
-- `access` (String) The value of the environment variable
-- `name` (String) The name of the environment variable
+- `access` (String) The level of access granted to the report type (default, full, none)
+- `code` (String) The report type code
 
 
 <a id="nestedblock--task_permission"></a>
@@ -175,17 +176,17 @@ Optional:
 
 Optional:
 
-- `access` (String) The value of the environment variable
-- `id` (Number) The name of the environment variable
+- `access` (String) The level of access granted to the task (default, full, none)
+- `id` (Number) The id of the task
 
 
-<a id="nestedblock--vdi_permission"></a>
-### Nested Schema for `vdi_permission`
+<a id="nestedblock--vdi_pool_permission"></a>
+### Nested Schema for `vdi_pool_permission`
 
 Optional:
 
-- `access` (String) The value of the environment variable
-- `name` (String) The name of the environment variable
+- `access` (String) The level of access granted to the vdi pool (default, full, none)
+- `id` (Number) The id of the vdi pool
 
 
 <a id="nestedblock--workflow_permission"></a>
@@ -193,5 +194,5 @@ Optional:
 
 Optional:
 
-- `access` (String) The value of the environment variable
-- `id` (Number) The name of the environment variable
+- `access` (String) The level of access granted to the workflow (default, full, none)
+- `id` (Number) The id of the workflow
