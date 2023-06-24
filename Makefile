@@ -27,6 +27,7 @@ gen-resource:
 	echo "* **New Resource:** `morpheus_$(resource)`"
 
 gen-data-source:
+	touch morpheus/data_source_$(data-source).go
 	mkdir -p examples/data-sources/morpheus_$(data-source)
 	touch examples/data-sources/morpheus_$(data-source)/data-source.tf
 	cp templates/data-sources/tenant.md.tmpl templates/data-sources/$(data-source).md.tmpl

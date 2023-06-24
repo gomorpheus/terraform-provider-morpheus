@@ -1,11 +1,3 @@
-resource "morpheus_user_role" "tfexample_resource_user_role" {
-  name               = "tf-example-user-role"
-  description        = "Terraform provider example user role"
-  multitenant_role   = false
-  multitenant_locked = false
-  permission_set     = data.morpheus_permission_set.base_permission_set.json
-}
-
 data "morpheus_group" "demo" {
   name = "Demo"
 }
@@ -34,7 +26,7 @@ data "morpheus_workflow" "demo" {
   name = "Demo"
 }
 
-data "morpheus_permission_set" "base_permission_set" {
+data "morpheus_permission_set" "source_one" {
   override_permission_sets = [
     data.morpheus_permission_set.override_set.json,
   ]
