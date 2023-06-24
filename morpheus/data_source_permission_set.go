@@ -196,7 +196,7 @@ func dataSourceMorpheusPermissionSet() *schema.Resource {
 					Schema: map[string]*schema.Schema{
 						"code": {
 							Type:        schema.TypeString,
-							Description: "The code of the persona",
+							Description: "The code of the persona (standard, vdi, serviceCatalog)",
 							Optional:    true,
 						},
 						"access": {
@@ -302,7 +302,6 @@ func dataSourceMorpheusPermissionSetRead(ctx context.Context, d *schema.Resource
 	var diags diag.Diagnostics
 
 	var permissionData PermissionSet
-
 	permissionData.DefaultGroupPermission = d.Get("default_group_permission").(string)
 	permissionData.DefaultInstanceTypePermission = d.Get("default_instance_type_permission").(string)
 	permissionData.DefaultBlueprintPermission = d.Get("default_blueprint_permission").(string)
@@ -317,13 +316,13 @@ func dataSourceMorpheusPermissionSetRead(ctx context.Context, d *schema.Resource
 	// Feature Permissions
 	var features []featurePermission
 	if d.Get("feature_permission") != nil {
-		taskList := d.Get("feature_permission").([]interface{})
-		// iterate over the array of tasks
-		for i := 0; i < len(taskList); i++ {
+		featureList := d.Get("feature_permission").([]interface{})
+		// iterate over the array of features
+		for i := 0; i < len(featureList); i++ {
 			var row featurePermission
-			taskconfig := taskList[i].(map[string]interface{})
-			row.Code = taskconfig["code"].(string)
-			row.Access = taskconfig["access"].(string)
+			featureConfig := featureList[i].(map[string]interface{})
+			row.Code = featureConfig["code"].(string)
+			row.Access = featureConfig["access"].(string)
 			features = append(features, row)
 		}
 	}
@@ -333,13 +332,13 @@ func dataSourceMorpheusPermissionSetRead(ctx context.Context, d *schema.Resource
 	// Group Permissions
 	var groups []groupPermission
 	if d.Get("group_permission") != nil {
-		taskList := d.Get("group_permission").([]interface{})
+		groupList := d.Get("group_permission").([]interface{})
 		// iterate over the array of groups
-		for i := 0; i < len(taskList); i++ {
+		for i := 0; i < len(groupList); i++ {
 			var row groupPermission
-			taskconfig := taskList[i].(map[string]interface{})
-			row.Id = taskconfig["id"].(int)
-			row.Access = taskconfig["access"].(string)
+			groupConfig := groupList[i].(map[string]interface{})
+			row.Id = groupConfig["id"].(int)
+			row.Access = groupConfig["access"].(string)
 			groups = append(groups, row)
 		}
 	}
@@ -349,13 +348,13 @@ func dataSourceMorpheusPermissionSetRead(ctx context.Context, d *schema.Resource
 	// Instance Type Permissions
 	var instanceTypes []instanceTypePermission
 	if d.Get("instance_type_permission") != nil {
-		taskList := d.Get("instance_type_permission").([]interface{})
-		// iterate over the array of groups
-		for i := 0; i < len(taskList); i++ {
+		instanceTypeList := d.Get("instance_type_permission").([]interface{})
+		// iterate over the array of instance types
+		for i := 0; i < len(instanceTypeList); i++ {
 			var row instanceTypePermission
-			taskconfig := taskList[i].(map[string]interface{})
-			row.Id = taskconfig["id"].(int)
-			row.Access = taskconfig["access"].(string)
+			instanceTypeConfig := instanceTypeList[i].(map[string]interface{})
+			row.Id = instanceTypeConfig["id"].(int)
+			row.Access = instanceTypeConfig["access"].(string)
 			instanceTypes = append(instanceTypes, row)
 		}
 	}
@@ -386,7 +385,6 @@ func dataSourceMorpheusPermissionSetRead(ctx context.Context, d *schema.Resource
 		for i := 0; i < len(reportTypeList); i++ {
 			var row reportTypePermission
 			reportTypeConfig := reportTypeList[i].(map[string]interface{})
-			log.Println(reportTypeConfig)
 			row.Code = reportTypeConfig["code"].(string)
 			row.Access = reportTypeConfig["access"].(string)
 			reportTypes = append(reportTypes, row)
@@ -398,13 +396,13 @@ func dataSourceMorpheusPermissionSetRead(ctx context.Context, d *schema.Resource
 	// Persona Permissions
 	var personas []personaPermission
 	if d.Get("persona_permission") != nil {
-		taskList := d.Get("persona_permission").([]interface{})
-		// iterate over the array of groups
-		for i := 0; i < len(taskList); i++ {
+		personaList := d.Get("persona_permission").([]interface{})
+		// iterate over the array of personas
+		for i := 0; i < len(personaList); i++ {
 			var row personaPermission
-			taskconfig := taskList[i].(map[string]interface{})
-			row.Code = taskconfig["code"].(string)
-			row.Access = taskconfig["access"].(string)
+			personaConfig := personaList[i].(map[string]interface{})
+			row.Code = personaConfig["code"].(string)
+			row.Access = personaConfig["access"].(string)
 			personas = append(personas, row)
 		}
 	}
@@ -415,7 +413,7 @@ func dataSourceMorpheusPermissionSetRead(ctx context.Context, d *schema.Resource
 	var catalogItemTypes []catalogItemTypePermission
 	if d.Get("catalog_item_type_permission") != nil {
 		catalogItemTypeList := d.Get("catalog_item_type_permission").([]interface{})
-		// iterate over the array of report types
+		// iterate over the array of catalog item types
 		for i := 0; i < len(catalogItemTypeList); i++ {
 			var row catalogItemTypePermission
 			catalogItemTypeConfig := catalogItemTypeList[i].(map[string]interface{})
@@ -462,229 +460,217 @@ func dataSourceMorpheusPermissionSetRead(ctx context.Context, d *schema.Resource
 	// Workflow Permissions
 	var workflows []workflowPermission
 	if d.Get("workflow_permission") != nil {
-		taskList := d.Get("workflow_permission").([]interface{})
+		workflowList := d.Get("workflow_permission").([]interface{})
 		// iterate over the array of workflows
-		for i := 0; i < len(taskList); i++ {
+		for i := 0; i < len(workflowList); i++ {
 			var row workflowPermission
-			taskconfig := taskList[i].(map[string]interface{})
-			row.Id = taskconfig["id"].(int)
-			row.Access = taskconfig["access"].(string)
+			workflowConfig := workflowList[i].(map[string]interface{})
+			row.Id = workflowConfig["id"].(int)
+			row.Access = workflowConfig["access"].(string)
 			workflows = append(workflows, row)
 		}
 	}
 	sort.Slice(workflows, func(i, j int) bool { return workflows[i].Id < workflows[j].Id })
 	permissionData.WorkflowPermissions = workflows
 
-	// merge override_policy_documents policies into mergedDoc in order specified
+	// Merge override permission sets with the base permission set in the order specified
 	if v, ok := d.GetOk("override_permission_sets"); ok && len(v.([]interface{})) > 0 {
 		for _, overrideJSON := range v.([]interface{}) {
 			if overrideJSON == nil {
 				continue
 			}
-			overrideDoc := &PermissionSet{}
-			json.Unmarshal([]byte(overrideJSON.(string)), overrideDoc)
-			if overrideDoc.DefaultGroupPermission != "" {
-				permissionData.DefaultGroupPermission = overrideDoc.DefaultGroupPermission
+			overridePayload := &PermissionSet{}
+			json.Unmarshal([]byte(overrideJSON.(string)), overridePayload)
+			if overridePayload.DefaultGroupPermission != "" {
+				permissionData.DefaultGroupPermission = overridePayload.DefaultGroupPermission
 			}
-			if overrideDoc.DefaultInstanceTypePermission != "" {
-				permissionData.DefaultInstanceTypePermission = overrideDoc.DefaultInstanceTypePermission
+			if overridePayload.DefaultInstanceTypePermission != "" {
+				permissionData.DefaultInstanceTypePermission = overridePayload.DefaultInstanceTypePermission
 			}
-			if overrideDoc.DefaultBlueprintPermission != "" {
-				permissionData.DefaultBlueprintPermission = overrideDoc.DefaultBlueprintPermission
+			if overridePayload.DefaultBlueprintPermission != "" {
+				permissionData.DefaultBlueprintPermission = overridePayload.DefaultBlueprintPermission
 			}
-			if overrideDoc.DefaultReportTypePermission != "" {
-				permissionData.DefaultReportTypePermission = overrideDoc.DefaultReportTypePermission
+			if overridePayload.DefaultReportTypePermission != "" {
+				permissionData.DefaultReportTypePermission = overridePayload.DefaultReportTypePermission
 			}
-			if overrideDoc.DefaultPersonaPermission != "" {
-				permissionData.DefaultPersonaPermission = overrideDoc.DefaultPersonaPermission
+			if overridePayload.DefaultPersonaPermission != "" {
+				permissionData.DefaultPersonaPermission = overridePayload.DefaultPersonaPermission
 			}
-			if overrideDoc.DefaultPersona != "" {
-				permissionData.DefaultPersona = overrideDoc.DefaultPersona
+			if overridePayload.DefaultPersona != "" {
+				permissionData.DefaultPersona = overridePayload.DefaultPersona
 			}
-			if overrideDoc.DefaultCatalogItemTypePermission != "" {
-				permissionData.DefaultCatalogItemTypePermission = overrideDoc.DefaultCatalogItemTypePermission
+			if overridePayload.DefaultCatalogItemTypePermission != "" {
+				permissionData.DefaultCatalogItemTypePermission = overridePayload.DefaultCatalogItemTypePermission
 			}
-			if overrideDoc.DefaultVdiPoolPermission != "" {
-				permissionData.DefaultVdiPoolPermission = overrideDoc.DefaultVdiPoolPermission
+			if overridePayload.DefaultVdiPoolPermission != "" {
+				permissionData.DefaultVdiPoolPermission = overridePayload.DefaultVdiPoolPermission
 			}
-			if overrideDoc.DefaultWorkflowPermission != "" {
-				permissionData.DefaultWorkflowPermission = overrideDoc.DefaultWorkflowPermission
+			if overridePayload.DefaultWorkflowPermission != "" {
+				permissionData.DefaultWorkflowPermission = overridePayload.DefaultWorkflowPermission
 			}
-			if overrideDoc.DefaultTaskPermission != "" {
-				permissionData.DefaultTaskPermission = overrideDoc.DefaultTaskPermission
+			if overridePayload.DefaultTaskPermission != "" {
+				permissionData.DefaultTaskPermission = overridePayload.DefaultTaskPermission
 			}
 
 			// Feature Permissions
-			if len(overrideDoc.FeaturePermissions) > 0 {
+			if len(overridePayload.FeaturePermissions) > 0 {
 				for indx, perm := range permissionData.FeaturePermissions {
-					for _, overperm := range overrideDoc.FeaturePermissions {
-						log.Println("PERM IDS: ", perm.Code, overperm.Code)
+					for _, overperm := range overridePayload.FeaturePermissions {
 						if perm.Code == overperm.Code {
 							permissionData.FeaturePermissions[indx].Access = overperm.Access
 						}
 					}
 				}
 			}
-			permissionData.FeaturePermissions = append(permissionData.FeaturePermissions, overrideDoc.FeaturePermissions...)
+			permissionData.FeaturePermissions = append(permissionData.FeaturePermissions, overridePayload.FeaturePermissions...)
 			permissionData.FeaturePermissions = removeDuplicate(permissionData.FeaturePermissions)
 			sort.Slice(permissionData.FeaturePermissions, func(i, j int) bool {
 				return permissionData.FeaturePermissions[i].Code < permissionData.FeaturePermissions[j].Code
 			})
 
 			// Group Permissions
-			if len(overrideDoc.GroupPermissions) > 0 {
+			if len(overridePayload.GroupPermissions) > 0 {
 				for indx, perm := range permissionData.GroupPermissions {
-					for _, overperm := range overrideDoc.GroupPermissions {
-						log.Println("PERM IDS: ", perm.Id, overperm.Id)
+					for _, overperm := range overridePayload.GroupPermissions {
 						if perm.Id == overperm.Id {
 							permissionData.GroupPermissions[indx].Access = overperm.Access
 						}
 					}
 				}
 			}
-			permissionData.GroupPermissions = append(permissionData.GroupPermissions, overrideDoc.GroupPermissions...)
+			permissionData.GroupPermissions = append(permissionData.GroupPermissions, overridePayload.GroupPermissions...)
 			permissionData.GroupPermissions = removeDuplicate(permissionData.GroupPermissions)
 			sort.Slice(permissionData.GroupPermissions, func(i, j int) bool {
 				return permissionData.GroupPermissions[i].Id < permissionData.GroupPermissions[j].Id
 			})
 
 			// Instance Type Permissions
-			if len(overrideDoc.InstanceTypePermissions) > 0 {
+			if len(overridePayload.InstanceTypePermissions) > 0 {
 				for indx, perm := range permissionData.InstanceTypePermissions {
-					for _, overperm := range overrideDoc.InstanceTypePermissions {
-						log.Println("PERM IDS: ", perm.Id, overperm.Id)
+					for _, overperm := range overridePayload.InstanceTypePermissions {
 						if perm.Id == overperm.Id {
 							permissionData.InstanceTypePermissions[indx].Access = overperm.Access
 						}
 					}
 				}
 			}
-			permissionData.InstanceTypePermissions = append(permissionData.InstanceTypePermissions, overrideDoc.InstanceTypePermissions...)
+			permissionData.InstanceTypePermissions = append(permissionData.InstanceTypePermissions, overridePayload.InstanceTypePermissions...)
 			permissionData.InstanceTypePermissions = removeDuplicate(permissionData.InstanceTypePermissions)
 			sort.Slice(permissionData.InstanceTypePermissions, func(i, j int) bool {
 				return permissionData.InstanceTypePermissions[i].Id < permissionData.InstanceTypePermissions[j].Id
 			})
 
 			// Blueprint Permissions
-			if len(overrideDoc.BlueprintPermissions) > 0 {
+			if len(overridePayload.BlueprintPermissions) > 0 {
 				for indx, perm := range permissionData.BlueprintPermissions {
-					for _, overperm := range overrideDoc.BlueprintPermissions {
-						log.Println("PERM IDS: ", perm.Id, overperm.Id)
+					for _, overperm := range overridePayload.BlueprintPermissions {
 						if perm.Id == overperm.Id {
 							permissionData.BlueprintPermissions[indx].Access = overperm.Access
 						}
 					}
 				}
 			}
-			permissionData.BlueprintPermissions = append(permissionData.BlueprintPermissions, overrideDoc.BlueprintPermissions...)
+			permissionData.BlueprintPermissions = append(permissionData.BlueprintPermissions, overridePayload.BlueprintPermissions...)
 			permissionData.BlueprintPermissions = removeDuplicate(permissionData.BlueprintPermissions)
 			sort.Slice(permissionData.BlueprintPermissions, func(i, j int) bool {
 				return permissionData.BlueprintPermissions[i].Id < permissionData.BlueprintPermissions[j].Id
 			})
 
 			// Report Type Permissions
-			if len(overrideDoc.ReportTypePermissions) > 0 {
+			if len(overridePayload.ReportTypePermissions) > 0 {
 				for indx, perm := range permissionData.ReportTypePermissions {
-					for _, overperm := range overrideDoc.ReportTypePermissions {
-						log.Println("PERM Codes: ", perm.Code, overperm.Code)
+					for _, overperm := range overridePayload.ReportTypePermissions {
 						if perm.Code == overperm.Code {
 							permissionData.ReportTypePermissions[indx].Access = overperm.Access
 						}
 					}
 				}
 			}
-			permissionData.ReportTypePermissions = append(permissionData.ReportTypePermissions, overrideDoc.ReportTypePermissions...)
+			permissionData.ReportTypePermissions = append(permissionData.ReportTypePermissions, overridePayload.ReportTypePermissions...)
 			permissionData.ReportTypePermissions = removeDuplicate(permissionData.ReportTypePermissions)
 			sort.Slice(permissionData.ReportTypePermissions, func(i, j int) bool {
 				return permissionData.ReportTypePermissions[i].Code < permissionData.ReportTypePermissions[j].Code
 			})
 
 			// Persona Permissions
-			if len(overrideDoc.PersonaPermissions) > 0 {
+			if len(overridePayload.PersonaPermissions) > 0 {
 				for indx, perm := range permissionData.PersonaPermissions {
-					for _, overperm := range overrideDoc.PersonaPermissions {
-						log.Println("PERM Codes: ", perm.Code, overperm.Code)
+					for _, overperm := range overridePayload.PersonaPermissions {
 						if perm.Code == overperm.Code {
 							permissionData.PersonaPermissions[indx].Access = overperm.Access
 						}
 					}
 				}
 			}
-			permissionData.PersonaPermissions = append(permissionData.PersonaPermissions, overrideDoc.PersonaPermissions...)
+			permissionData.PersonaPermissions = append(permissionData.PersonaPermissions, overridePayload.PersonaPermissions...)
 			permissionData.PersonaPermissions = removeDuplicate(permissionData.PersonaPermissions)
 			sort.Slice(permissionData.PersonaPermissions, func(i, j int) bool {
 				return permissionData.PersonaPermissions[i].Code < permissionData.PersonaPermissions[j].Code
 			})
 
 			// Catalog Item Type Permissions
-			if len(overrideDoc.CatalogItemTypePermissions) > 0 {
+			if len(overridePayload.CatalogItemTypePermissions) > 0 {
 				for indx, perm := range permissionData.CatalogItemTypePermissions {
-					for _, overperm := range overrideDoc.CatalogItemTypePermissions {
-						log.Println("PERM Codes: ", perm.Id, overperm.Id)
+					for _, overperm := range overridePayload.CatalogItemTypePermissions {
 						if perm.Id == overperm.Id {
 							permissionData.CatalogItemTypePermissions[indx].Access = overperm.Access
 						}
 					}
 				}
 			}
-			permissionData.CatalogItemTypePermissions = append(permissionData.CatalogItemTypePermissions, overrideDoc.CatalogItemTypePermissions...)
+			permissionData.CatalogItemTypePermissions = append(permissionData.CatalogItemTypePermissions, overridePayload.CatalogItemTypePermissions...)
 			permissionData.CatalogItemTypePermissions = removeDuplicate(permissionData.CatalogItemTypePermissions)
 			sort.Slice(permissionData.CatalogItemTypePermissions, func(i, j int) bool {
 				return permissionData.CatalogItemTypePermissions[i].Id < permissionData.CatalogItemTypePermissions[j].Id
 			})
 
 			// VDI Pool Permissions
-			if len(overrideDoc.VdiPoolPermissions) > 0 {
+			if len(overridePayload.VdiPoolPermissions) > 0 {
 				for indx, perm := range permissionData.VdiPoolPermissions {
-					for _, overperm := range overrideDoc.VdiPoolPermissions {
-						log.Println("PERM IDS: ", perm.Id, overperm.Id)
+					for _, overperm := range overridePayload.VdiPoolPermissions {
 						if perm.Id == overperm.Id {
 							permissionData.VdiPoolPermissions[indx].Access = overperm.Access
 						}
 					}
 				}
 			}
-			permissionData.VdiPoolPermissions = append(permissionData.VdiPoolPermissions, overrideDoc.VdiPoolPermissions...)
+			permissionData.VdiPoolPermissions = append(permissionData.VdiPoolPermissions, overridePayload.VdiPoolPermissions...)
 			permissionData.VdiPoolPermissions = removeDuplicate(permissionData.VdiPoolPermissions)
 			sort.Slice(permissionData.VdiPoolPermissions, func(i, j int) bool {
 				return permissionData.VdiPoolPermissions[i].Id < permissionData.VdiPoolPermissions[j].Id
 			})
 
 			// Workflow Permissions
-			if len(overrideDoc.WorkflowPermissions) > 0 {
+			if len(overridePayload.WorkflowPermissions) > 0 {
 				for indx, perm := range permissionData.WorkflowPermissions {
-					for _, overperm := range overrideDoc.WorkflowPermissions {
-						log.Println("PERM IDS: ", perm.Id, overperm.Id)
+					for _, overperm := range overridePayload.WorkflowPermissions {
 						if perm.Id == overperm.Id {
 							permissionData.WorkflowPermissions[indx].Access = overperm.Access
 						}
 					}
 				}
 			}
-			permissionData.WorkflowPermissions = append(permissionData.WorkflowPermissions, overrideDoc.WorkflowPermissions...)
+			permissionData.WorkflowPermissions = append(permissionData.WorkflowPermissions, overridePayload.WorkflowPermissions...)
 			permissionData.WorkflowPermissions = removeDuplicate(permissionData.WorkflowPermissions)
 			sort.Slice(permissionData.WorkflowPermissions, func(i, j int) bool {
 				return permissionData.WorkflowPermissions[i].Id < permissionData.WorkflowPermissions[j].Id
 			})
 
 			// Task Permissions
-			if len(overrideDoc.TaskPermissions) > 0 {
+			if len(overridePayload.TaskPermissions) > 0 {
 				for indx, perm := range permissionData.TaskPermissions {
-					for _, overperm := range overrideDoc.TaskPermissions {
-						log.Println("PERM IDS: ", perm.Id, overperm.Id)
+					for _, overperm := range overridePayload.TaskPermissions {
 						if perm.Id == overperm.Id {
 							permissionData.TaskPermissions[indx].Access = overperm.Access
 						}
 					}
 				}
 			}
-			permissionData.TaskPermissions = append(permissionData.TaskPermissions, overrideDoc.TaskPermissions...)
+			permissionData.TaskPermissions = append(permissionData.TaskPermissions, overridePayload.TaskPermissions...)
 			permissionData.TaskPermissions = removeDuplicate(permissionData.TaskPermissions)
 			sort.Slice(permissionData.TaskPermissions, func(i, j int) bool {
 				return permissionData.TaskPermissions[i].Id < permissionData.TaskPermissions[j].Id
 			})
-
-			log.Println("OVERRIDE PERMSSION SET: ", overrideDoc)
 		}
 	}
 
@@ -692,9 +678,7 @@ func dataSourceMorpheusPermissionSetRead(ctx context.Context, d *schema.Resource
 	log.Printf("API RESPONSE: %s", jsonDoc)
 
 	if err != nil {
-		log.Println("error")
-		// should never happen if the above code is correct
-		//		return diags.AppendErrorf(diags, "writing IAM Policy Document: formatting JSON: %s", err)
+		return diag.Errorf("writing permission set: formatting JSON: %s", err)
 	}
 	jsonString := string(jsonDoc)
 

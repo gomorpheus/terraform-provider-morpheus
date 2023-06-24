@@ -152,6 +152,7 @@ func Provider() *schema.Provider {
 			"morpheus_ansible_tower_job_template": dataSourceMorpheusAnsibleTowerJobTemplate(),
 			"morpheus_ansible_tower_inventory":    dataSourceMorpheusAnsibleTowerInventory(),
 			"morpheus_budget":                     dataSourceMorpheusBudget(),
+			"morpheus_catalog_item_type":          dataSourceMorpheusCatalogItemType(),
 			"morpheus_blueprint":                  dataSourceMorpheusBlueprint(),
 			"morpheus_cloud":                      dataSourceMorpheusCloud(),
 			"morpheus_cluster_type":               dataSourceMorpheusClusterType(),

@@ -14,7 +14,7 @@ import (
 
 func resourceUserRole() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Provides a Morpheus user role resource.",
+		Description:   "Provides a Morpheus user role resource (This resource requires Morpheus 6.0.4 or later).",
 		CreateContext: resourceUserRoleCreate,
 		ReadContext:   resourceUserRoleRead,
 		UpdateContext: resourceUserRoleUpdate,
@@ -51,7 +51,7 @@ func resourceUserRole() *schema.Resource {
 			},
 			"permission_set": {
 				Type:             schema.TypeString,
-				Description:      "",
+				Description:      "The permission set JSON document",
 				Optional:         true,
 				Computed:         true,
 				DiffSuppressFunc: suppressEquivalentJsonDiffs,
@@ -71,7 +71,6 @@ func resourceUserRoleCreate(ctx context.Context, d *schema.ResourceData, meta in
 
 	data := PermissionSet{}
 	json.Unmarshal([]byte(d.Get("permission_set").(string)), &data)
-	log.Println("PERMISSIONS: ", data)
 
 	var roleDefinition RolePermissionPayload
 	roleDefinition.Name = d.Get("name").(string)
@@ -117,10 +116,6 @@ func resourceUserRoleCreate(ctx context.Context, d *schema.ResourceData, meta in
 
 	var role CreateRoleResult
 	json.Unmarshal(resp.Body, &role)
-
-	//result := resp.Result.(*CreateRoleResult)
-	//role := result.Role
-	log.Printf("USER ROLE RESPONSE: %v", role.Role)
 
 	// Successfully created resource, now set id
 	d.SetId(int64ToString(role.Role.ID))
@@ -172,7 +167,6 @@ func resourceUserRoleRead(ctx context.Context, d *schema.ResourceData, meta inte
 	// Convert the Morpheus API response into the permission set JSON format for comparison
 	data := PermissionSet{}
 	json.Unmarshal([]byte(d.Get("permission_set").(string)), &data)
-	log.Println("PERMISSIONS: ", data)
 
 	var featureList []string
 	for _, feature := range data.FeaturePermissions {
@@ -251,7 +245,6 @@ func resourceUserRoleRead(ctx context.Context, d *schema.ResourceData, meta inte
 
 	// Group Permissions
 	var groupPermissions []groupPermission
-	log.Println("GROUP DATA: ", role.Sites)
 	for _, group := range role.Sites {
 		if containsInt(groupList, int(group.ID)) {
 			var groupPerm groupPermission
@@ -262,12 +255,10 @@ func resourceUserRoleRead(ctx context.Context, d *schema.ResourceData, meta inte
 	}
 
 	sort.Slice(groupPermissions, func(i, j int) bool { return groupPermissions[i].Id < groupPermissions[j].Id })
-	log.Println("GROUP PERMS: ", groupPermissions)
 	permissionSet.GroupPermissions = groupPermissions
 
 	// Instance Type Permissions
 	var instanceTypePermissions []instanceTypePermission
-	log.Println("Instance Type DATA: ", role.InstanceTypePermissions)
 	for _, instanceType := range role.InstanceTypePermissions {
 		if containsInt(instanceTypeList, int(instanceType.ID)) {
 			var instanceTypePerm instanceTypePermission
@@ -278,12 +269,10 @@ func resourceUserRoleRead(ctx context.Context, d *schema.ResourceData, meta inte
 	}
 
 	sort.Slice(instanceTypePermissions, func(i, j int) bool { return instanceTypePermissions[i].Id < instanceTypePermissions[j].Id })
-	log.Println("Instance Type PERMS: ", instanceTypePermissions)
 	permissionSet.InstanceTypePermissions = instanceTypePermissions
 
 	// Blueprint Permissions
 	var blueprintPermissions []blueprintPermission
-	log.Println("Blueprint DATA: ", role.AppTemplatePermissions)
 	for _, blueprint := range role.AppTemplatePermissions {
 		if containsInt(blueprintList, int(blueprint.ID)) {
 			var blueprintPerm blueprintPermission
@@ -294,12 +283,10 @@ func resourceUserRoleRead(ctx context.Context, d *schema.ResourceData, meta inte
 	}
 
 	sort.Slice(blueprintPermissions, func(i, j int) bool { return blueprintPermissions[i].Id < blueprintPermissions[j].Id })
-	log.Println("Blueprint PERMS: ", blueprintPermissions)
 	permissionSet.BlueprintPermissions = blueprintPermissions
 
 	// Report Type Permissions
 	var reportTypePermissions []reportTypePermission
-	log.Println("Report Type DATA: ", role.ReportTypePermissions)
 	for _, reportType := range role.ReportTypePermissions {
 		if containsString(reportTypeList, reportType.Code) {
 			var reportTypePerm reportTypePermission
@@ -310,12 +297,10 @@ func resourceUserRoleRead(ctx context.Context, d *schema.ResourceData, meta inte
 	}
 
 	sort.Slice(reportTypePermissions, func(i, j int) bool { return reportTypePermissions[i].Code < reportTypePermissions[j].Code })
-	log.Println("Report Type PERMS: ", reportTypePermissions)
 	permissionSet.ReportTypePermissions = reportTypePermissions
 
 	// Persona Permissions
 	var personaPermissions []personaPermission
-	log.Println("Persona DATA: ", role.PersonaPermissions)
 	for _, persona := range role.PersonaPermissions {
 		if containsString(personaList, persona.Code) {
 			var personaPerm personaPermission
@@ -326,13 +311,10 @@ func resourceUserRoleRead(ctx context.Context, d *schema.ResourceData, meta inte
 	}
 
 	sort.Slice(personaPermissions, func(i, j int) bool { return personaPermissions[i].Code < personaPermissions[j].Code })
-
-	log.Println("Persona PERMS: ", personaPermissions)
 	permissionSet.PersonaPermissions = personaPermissions
 
 	// Catalog Item Type Permissions
 	var catalogItemTypePermissions []catalogItemTypePermission
-	log.Println("Catalog Item Type DATA: ", role.CatalogItemTypePermissions)
 	for _, catalogItemType := range role.CatalogItemTypePermissions {
 		if containsInt(catalogItemTypeList, int(catalogItemType.ID)) {
 			var catalogItemTypePerm catalogItemTypePermission
@@ -343,12 +325,10 @@ func resourceUserRoleRead(ctx context.Context, d *schema.ResourceData, meta inte
 	}
 
 	sort.Slice(catalogItemTypePermissions, func(i, j int) bool { return catalogItemTypePermissions[i].Id < catalogItemTypePermissions[j].Id })
-	log.Println("Catalog Item Type PERMS: ", catalogItemTypePermissions)
 	permissionSet.CatalogItemTypePermissions = catalogItemTypePermissions
 
 	// VDI Pool Permissions
 	var vdiPoolPermissions []vdiPoolPermission
-	log.Println("VDI Pool DATA: ", role.VDIPoolPermissions)
 	for _, vdiPool := range role.VDIPoolPermissions {
 		if containsInt(vdiPoolList, int(vdiPool.ID)) {
 			var vdiPoolPerm vdiPoolPermission
@@ -359,7 +339,6 @@ func resourceUserRoleRead(ctx context.Context, d *schema.ResourceData, meta inte
 	}
 
 	sort.Slice(vdiPoolPermissions, func(i, j int) bool { return vdiPoolPermissions[i].Id < vdiPoolPermissions[j].Id })
-	log.Println("Catalog Item Type PERMS: ", vdiPoolPermissions)
 	permissionSet.VdiPoolPermissions = vdiPoolPermissions
 
 	// Workflow Permissions
@@ -394,9 +373,7 @@ func resourceUserRoleRead(ctx context.Context, d *schema.ResourceData, meta inte
 	log.Printf("API RESPONSE: %s", jsonDoc)
 
 	if err != nil {
-		log.Println("error")
-		// should never happen if the above code is correct
-		//		return diags.AppendErrorf(diags, "writing IAM Policy Document: formatting JSON: %s", err)
+		return diag.FromErr(err)
 	}
 	jsonString := string(jsonDoc)
 	d.Set("permission_set", jsonString)
@@ -407,11 +384,9 @@ func resourceUserRoleRead(ctx context.Context, d *schema.ResourceData, meta inte
 func resourceUserRoleUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*morpheus.Client)
 	id := d.Id()
-	log.Printf("USER ROLE ID: %d", toInt64(id))
 
 	data := PermissionSet{}
 	json.Unmarshal([]byte(d.Get("permission_set").(string)), &data)
-	log.Println("PERMISSIONS: ", data)
 
 	var roleDefinition RolePermissionPayload
 	roleDefinition.Name = d.Get("name").(string)
@@ -444,10 +419,7 @@ func resourceUserRoleUpdate(ctx context.Context, d *schema.ResourceData, meta in
 			"role": roleDefinition,
 		},
 	}
-	jsonRequest, _ := json.Marshal(req.Body)
-	log.Printf("API JSON REQUEST: %s", string(jsonRequest))
 
-	log.Printf("API REQUEST: %s", req)
 	resp, err := client.UpdateRole(toInt64(id), req)
 	if err != nil {
 		log.Printf("API FAILURE: %s - %s", resp, err)
@@ -456,9 +428,6 @@ func resourceUserRoleUpdate(ctx context.Context, d *schema.ResourceData, meta in
 	log.Printf("API RESPONSE: %s", resp)
 	var role CreateRoleResult
 	json.Unmarshal(resp.Body, &role)
-
-	//	result := resp.Result.(*morpheus.UpdateRoleResult)
-	//	role := result.Role
 
 	// Successfully updated resource, now set id
 	// err, it should not have changed though..

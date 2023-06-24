@@ -1,62 +1,114 @@
+data "morpheus_group" "demo" {
+  name = "Demo"
+}
+
+data "morpheus_instance_type" "demo" {
+  name = "Demo"
+}
+
+data "morpheus_blueprint" "demo" {
+  name = "Demo"
+}
+
+data "morpheus_catalog_item_type" "demo" {
+  name = "Demo"
+}
+
+data "morpheus_vdi_pool" "demo" {
+  name = "Demo"
+}
+
+data "morpheus_task" "demo" {
+  name = "Demo"
+}
+
+data "morpheus_workflow" "demo" {
+  name = "Demo"
+}
+
 data "morpheus_permission_set" "source_one" {
+  override_permission_sets = [
+    data.morpheus_permission_set.override_set.json,
+  ]
   default_group_permission             = "full"
-  default_cloud_permission             = "full"
-  default_instance_type_permission     = "full"
-  default_blueprint_permission         = "full"
+  default_instance_type_permission     = "none"
+  default_blueprint_permission         = "none"
   default_report_type_permission       = "full"
-  default_persona_permission           = "full"
+  default_persona                      = "vdi"
   default_catalog_item_type_permission = "full"
   default_vdi_pool_permission          = "full"
   default_workflow_permission          = "full"
   default_task_permission              = "full"
 
   feature_permission {
-    name   = "ansible"
+    code   = "provisioning-admin"
     access = "full"
   }
 
   group_permission {
-    name   = "ansible"
+    id     = data.morpheus_group.demo.id
     access = "full"
   }
 
   instance_type_permission {
-    name   = "ansible"
+    id     = data.morpheus_instance_type.demo.id
     access = "full"
   }
 
   blueprint_permission {
-    name   = "ansible"
+    id     = data.morpheus_blueprint.demo.id
     access = "full"
   }
 
   report_type_permission {
-    name   = "ansible"
+    code   = "guidance"
     access = "full"
   }
 
   persona_permission {
-    name   = "ansible"
+    code   = "standard"
     access = "full"
   }
 
+  persona_permission {
+    code   = "serviceCatalog"
+    access = "none"
+  }
+
   catalog_item_type_permission {
-    name   = "ansible"
+    id     = data.morpheus_catalog_item_type.demo.id
     access = "full"
   }
 
   vdi_pool_permission {
-    name   = "ansible"
+    id     = data.morpheus_vdi_pool.demo.id
     access = "full"
   }
 
   workflow_permission {
-    name   = "ansible"
+    id     = data.morpheus_workflow.demo.id
     access = "full"
   }
 
   task_permission {
-    name   = "ansible"
+    id     = data.morpheus_task.demo.id
+    access = "none"
+  }
+}
+
+data "morpheus_permission_set" "override_set" {
+  default_task_permission = "none"
+  default_persona         = "standard"
+  workflow_permission {
+    id     = 2
     access = "full"
+  }
+  workflow_permission {
+    id     = 11
+    access = "full"
+  }
+  group_permission {
+    id     = 1
+    access = "read"
   }
 }
