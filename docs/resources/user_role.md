@@ -3,12 +3,12 @@
 page_title: "morpheus_user_role Resource - terraform-provider-morpheus"
 subcategory: ""
 description: |-
-  Provides a Morpheus user role resource.
+  Provides a Morpheus user role resource (This resource requires Morpheus 6.0.4 or later).
 ---
 
 # morpheus_user_role (Resource)
 
-Provides a Morpheus user role resource.
+Provides a Morpheus user role resource (This resource requires Morpheus 6.0.4 or later).
 
 ## Example Usage
 
@@ -149,7 +149,7 @@ data "morpheus_permission_set" "override_set" {
 - `description` (String) The description of the user role
 - `multitenant_locked` (Boolean) Whether subtenants are allowed to branch off or modify this role.
 - `multitenant_role` (Boolean) Whether the user role is automatically copied into all existing subtenants as well as placed into a subtenant when created
-- `permission_set` (String)
+- `permission_set` (String) The permission set JSON document
 
 ### Read-Only
 

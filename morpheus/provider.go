@@ -85,6 +85,7 @@ func Provider() *schema.Provider {
 			"morpheus_instance_layout":                  resourceInstanceLayout(),
 			"morpheus_instance_name_policy":             resourceInstanceNamePolicy(),
 			"morpheus_instance_type":                    resourceInstanceType(),
+			"morpheus_ipv4_ip_pool":                     resourceIPv4IPPool(),
 			"morpheus_javascript_task":                  resourceJavaScriptTask(),
 			"morpheus_license":                          resourceLicense(),
 			"morpheus_key_pair":                         resourceKeyPair(),
