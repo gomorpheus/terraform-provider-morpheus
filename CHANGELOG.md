@@ -6,8 +6,10 @@ FEATURES:
 
 * **New Data Source:** `morpheus_catalog_item_type`
 * **New Data Source:** `morpheus_permission_set`
+* **New Data Source:** `morpheus_security_package`
 * **New Data Source:** `morpheus_vdi_pool`
 * **New Resource:** `morpheus_ipv4_ip_pool`
+* **New Resource:** `morpheus_security_package`
 * **New Resource:** `morpheus_user_role`
 
 ## 0.9.3 (June 13, 2023)
