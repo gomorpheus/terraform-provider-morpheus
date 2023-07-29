@@ -136,7 +136,6 @@ func resourceEnvironmentRead(ctx context.Context, d *schema.ResourceData, meta i
 		d.Set("visibility", environment.Visibility)
 		d.Set("code", environment.Code)
 	} else {
-		log.Println(environment)
 		err := fmt.Errorf("read operation: environment not found in response data") // should not happen
 		return diag.FromErr(err)
 	}

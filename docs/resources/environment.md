@@ -12,11 +12,11 @@ Provides a Morpheus environment resource
 ## Example Usage
 
 ```terraform
-resource "morpheus_environment" "sample" {
+resource "morpheus_environment" "tf_example_environment" {
   active      = true
-  code        = "staging"
-  description = "Staging"
-  name        = "Staging"
+  code        = "tfexample"
+  description = "Terraform Example"
+  name        = "tfexample"
 }
 ```
 
