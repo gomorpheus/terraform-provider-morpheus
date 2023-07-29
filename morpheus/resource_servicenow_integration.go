@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
+	"strconv"
 	"strings"
 
 	"log"
@@ -24,7 +25,7 @@ func resourceServiceNowIntegration() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Type:        schema.TypeString,
-				Description: "The ID of the ServiceNow integration",
+				Description: "The id of the ServiceNow integration",
 				Computed:    true,
 			},
 			"name": {
@@ -43,15 +44,22 @@ func resourceServiceNowIntegration() *schema.Resource {
 				Description: "The url of the ServiceNow instance",
 				Required:    true,
 			},
+			"credential_id": {
+				Description:   "The id of the credential store entry used for authentication",
+				Type:          schema.TypeInt,
+				Optional:      true,
+				Computed:      true,
+				ConflictsWith: []string{"username", "password"},
+			},
 			"username": {
 				Type:        schema.TypeString,
 				Description: "The username of the account used to connect to ServiceNow",
-				Required:    true,
+				Optional:    true,
 			},
 			"password": {
 				Type:        schema.TypeString,
 				Description: "The password of the account used to connect to ServiceNow",
-				Required:    true,
+				Optional:    true,
 				Sensitive:   true,
 				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
 					h := sha256.New()
@@ -63,12 +71,19 @@ func resourceServiceNowIntegration() *schema.Resource {
 			},
 			"cmdb_custom_mapping": {
 				Type:        schema.TypeString,
-				Description: "The username of the account used to connect to ServiceNow",
+				Description: "A JSON encoded payload to populate a specific field in the ServiceNow table and with a specific mapping",
 				Optional:    true,
+			},
+			"cmdb_class_mapping": {
+				Type:        schema.TypeMap,
+				Description: "The mapping between Morpheus server types and ServiceNow CI classes",
+				Optional:    true,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
 			},
 			"default_cmdb_business_class": {
 				Type:        schema.TypeString,
-				Description: "The username of the account used to connect to ServiceNow",
+				Description: "The default ServiceNow table that records are written to if they aren't explicitly defined",
 				Optional:    true,
 			},
 		},
@@ -86,13 +101,52 @@ func resourceServiceNowIntegrationCreate(ctx context.Context, d *schema.Resource
 
 	integration := make(map[string]interface{})
 
+	integration["type"] = "serviceNow"
 	integration["name"] = d.Get("name").(string)
 	integration["enabled"] = d.Get("enabled").(bool)
-	integration["type"] = "ansibleTower"
-	integration["version"] = "v2"
-	integration["url"] = d.Get("url").(string)
-	integration["username"] = d.Get("username").(string)
-	integration["password"] = d.Get("password").(string)
+	integration["serviceUrl"] = d.Get("url").(string)
+	config := make(map[string]interface{})
+
+	if d.Get("credential_id").(int) != 0 {
+		credential := make(map[string]interface{})
+		credential["type"] = "username-password"
+		credential["id"] = d.Get("credential_id").(int)
+		integration["credential"] = credential
+	} else {
+		integration["serviceUsername"] = d.Get("username").(string)
+		integration["servicePassword"] = d.Get("password").(string)
+	}
+
+	if d.Get("cmdb_class_mapping") != nil {
+		classMappingResponse, err := client.GetOptionSource("serviceNowServerMappings", &morpheus.Request{})
+		if err != nil {
+			diag.FromErr(err)
+		}
+		classMappingResult := classMappingResponse.Result.(*morpheus.GetOptionSourceResult)
+		classMappingsInput := d.Get("cmdb_class_mapping").(map[string]interface{})
+		var classMappings []Mapping
+		for key, value := range classMappingsInput {
+			matchStatus := false
+			for _, mapping := range *classMappingResult.Data {
+				if key == mapping.Name {
+					var classMapping Mapping
+					classMapping.Name = mapping.Name
+					classMapping.ID = strconv.Itoa(int(mapping.Value.(float64)))
+					classMapping.NowClass = value.(string)
+					classMappings = append(classMappings, classMapping)
+					matchStatus = true
+				}
+			}
+			if !matchStatus {
+				return diag.Errorf("The %s cmdb mapping class is not a supported class", key)
+			}
+		}
+		config["serviceNowCmdbClassMapping"] = classMappings
+	}
+	config["serviceNowCMDBBusinessObject"] = d.Get("default_cmdb_business_class").(string)
+	config["serviceNowCustomCmdbMapping"] = d.Get("cmdb_custom_mapping")
+
+	integration["config"] = config
 
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
@@ -153,11 +207,23 @@ func resourceServiceNowIntegrationRead(ctx context.Context, d *schema.ResourceDa
 	d.Set("name", integration.Name)
 	d.Set("enabled", integration.Enabled)
 	d.Set("url", integration.URL)
-	d.Set("username", integration.Username)
-	d.Set("password", integration.PasswordHash)
-	integration.Config.ServiceNowCmdbClassMapping
+	if integration.Credential.ID == 0 {
+		d.Set("username", integration.Username)
+		d.Set("password", integration.PasswordHash)
+	} else {
+		d.Set("credential_id", integration.Credential.ID)
+	}
 	d.Set("cmdb_custom_mapping", integration.Config.ServiceNowCustomCmdbMapping)
+	classMappings := make(map[string]interface{})
+	// iterate over the array of classMappings
+	for i := 0; i < len(integration.Config.ServiceNowCmdbClassMapping); i++ {
+		classMap := integration.Config.ServiceNowCmdbClassMapping[i]
+		classMapName := classMap.Name
+		classMappings[classMapName] = classMap.NowClass
+	}
+	d.Set("cmdb_class_mapping", classMappings)
 	d.Set("default_cmdb_business_class", integration.Config.ServiceNowCMDBBusinessObject)
+
 	return diags
 }
 
@@ -169,11 +235,57 @@ func resourceServiceNowIntegrationUpdate(ctx context.Context, d *schema.Resource
 
 	integration["name"] = d.Get("name").(string)
 	integration["enabled"] = d.Get("enabled").(bool)
-	integration["type"] = "ansibleTower"
-	integration["version"] = "v2"
-	integration["url"] = d.Get("url").(string)
-	integration["username"] = d.Get("username").(string)
-	integration["password"] = d.Get("password").(string)
+	integration["type"] = "serviceNow"
+	integration["serviceUrl"] = d.Get("url").(string)
+
+	config := make(map[string]interface{})
+
+	if d.Get("credential_id").(int) != 0 {
+		credential := make(map[string]interface{})
+		credential["type"] = "username-password"
+		credential["id"] = d.Get("credential_id").(int)
+		integration["credential"] = credential
+	} else {
+		if d.HasChange("username") {
+			integration["serviceUsername"] = d.Get("username").(string)
+		}
+		if d.HasChange("password") {
+			integration["servicePassword"] = d.Get("password").(string)
+		}
+	}
+
+	if d.Get("cmdb_class_mapping") != nil {
+		// Query the API to fetch the ID of the class map
+		classMappingResponse, err := client.GetOptionSource("serviceNowServerMappings", &morpheus.Request{})
+		if err != nil {
+			diag.FromErr(err)
+		}
+		classMappingResult := classMappingResponse.Result.(*morpheus.GetOptionSourceResult)
+		classMappingsInput := d.Get("cmdb_class_mapping").(map[string]interface{})
+		var classMappings []Mapping
+		for key, value := range classMappingsInput {
+			matchStatus := false
+			for _, mapping := range *classMappingResult.Data {
+				if key == mapping.Name {
+					var classMapping Mapping
+					classMapping.Name = mapping.Name
+					classMapping.ID = strconv.Itoa(int(mapping.Value.(float64)))
+					classMapping.NowClass = value.(string)
+					classMappings = append(classMappings, classMapping)
+					matchStatus = true
+				}
+			}
+			if !matchStatus {
+				return diag.Errorf("The %s cmdb mapping class is not a supported class", key)
+			}
+		}
+		config["serviceNowCmdbClassMapping"] = classMappings
+	}
+	config["serviceNowCMDBBusinessObject"] = d.Get("default_cmdb_business_class").(string)
+	if d.HasChange("cmdb_custom_mapping") {
+		config["serviceNowCustomCmdbMapping"] = d.Get("cmdb_custom_mapping")
+	}
+	integration["config"] = config
 
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
@@ -217,4 +329,11 @@ func resourceServiceNowIntegrationDelete(ctx context.Context, d *schema.Resource
 	log.Printf("API RESPONSE: %s", resp)
 	d.SetId("")
 	return diags
+}
+
+type Mapping struct {
+	ID       string `json:"id"`
+	Code     string `json:"code"`
+	Name     string `json:"name"`
+	NowClass string `json:"nowClass"`
 }
