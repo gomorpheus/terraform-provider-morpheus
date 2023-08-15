@@ -123,6 +123,7 @@ func Provider() *schema.Provider {
 			"morpheus_restart_task":                     resourceRestartTask(),
 			"morpheus_router_quota_policy":              resourceRouterQuotaPolicy(),
 			"morpheus_ruby_script_task":                 resourceRubyScriptTask(),
+			"morpheus_saml_identity_source":             resourceSAMLIdentitySource(),
 			"morpheus_scale_threshold":                  resourceScaleThreshold(),
 			"morpheus_script_template":                  resourceScriptTemplate(),
 			"morpheus_security_package":                 resourceSecurityPackage(),

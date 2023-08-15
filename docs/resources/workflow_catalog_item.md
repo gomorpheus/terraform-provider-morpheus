@@ -41,14 +41,14 @@ resource "morpheus_workflow_catalog_item" "tfexample_workflow_catalog_item" {
 
 - `content` (String) The markdown content associated with the workflow catalog item
 - `context_type` (String) The Morpheus context type of the operational workflow
-- `dark_logo_image_name` (String) The file name of the app blueprint catalog item dark mode logo image
-- `dark_logo_image_path` (String) The file path of the app blueprint catalog item dark mode logo image including the file name
+- `dark_logo_image_name` (String) The file name of the workflow catalog item dark mode logo image
+- `dark_logo_image_path` (String) The file path of the workflow catalog item dark mode logo image including the file name
 - `description` (String) The description of the workflow catalog item
 - `enabled` (Boolean) Whether the workflow catalog item is enabled
 - `featured` (Boolean) Whether the workflow catalog item is featured
 - `labels` (Set of String) The organization labels associated with the catalog item (Only supported on Morpheus 5.5.3 or higher)
-- `logo_image_name` (String) The file name of the app blueprint catalog item logo image
-- `logo_image_path` (String) The file path of the app blueprint catalog item logo image including the file name
+- `logo_image_name` (String) The file name of the workflow catalog item logo image
+- `logo_image_path` (String) The file path of the workflow catalog item logo image including the file name
 - `option_type_ids` (List of Number) The list of option type ids associated with the workflow catalog item
 
 ### Read-Only

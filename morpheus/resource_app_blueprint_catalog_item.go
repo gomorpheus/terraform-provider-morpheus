@@ -319,7 +319,7 @@ func resourceAppBlueprintCatalogItemUpdate(ctx context.Context, d *schema.Resour
 
 	var filePayloads []*morpheus.FilePayload
 
-	if d.Get("logo_image_path") != "" && d.Get("logo_image_name") != "" {
+	if d.HasChange("logo_image_path") || d.HasChange("logo_image_name") {
 		data, err := os.ReadFile(d.Get("logo_image_path").(string))
 		if err != nil {
 			return diag.FromErr(err)
@@ -332,7 +332,7 @@ func resourceAppBlueprintCatalogItemUpdate(ctx context.Context, d *schema.Resour
 		}
 		filePayloads = append(filePayloads, filePayload)
 	}
-	if d.Get("dark_logo_image_path") != "" && d.Get("dark_logo_image_name") != "" {
+	if d.HasChange("dark_logo_image_path") || d.HasChange("dark_logo_image_name") {
 		darkLogoData, err := os.ReadFile(d.Get("dark_logo_image_path").(string))
 		if err != nil {
 			return diag.FromErr(err)
