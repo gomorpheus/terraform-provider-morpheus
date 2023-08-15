@@ -1,6 +1,6 @@
 ## UNRELEASED
 
-## 0.9.3 (August 14, 2023)
+## 0.9.4 (August 14, 2023)
 
 NOTES:
 
