@@ -88,25 +88,25 @@ func resourceWorkflowCatalogItem() *schema.Resource {
 			},
 			"logo_image_name": {
 				Type:        schema.TypeString,
-				Description: "The file name of the app blueprint catalog item logo image",
+				Description: "The file name of the workflow catalog item logo image",
 				Optional:    true,
 				Computed:    true,
 			},
 			"logo_image_path": {
 				Type:        schema.TypeString,
-				Description: "The file path of the app blueprint catalog item logo image including the file name",
+				Description: "The file path of the workflow catalog item logo image including the file name",
 				Optional:    true,
 				Computed:    true,
 			},
 			"dark_logo_image_name": {
 				Type:        schema.TypeString,
-				Description: "The file name of the app blueprint catalog item dark mode logo image",
+				Description: "The file name of the workflow catalog item dark mode logo image",
 				Optional:    true,
 				Computed:    true,
 			},
 			"dark_logo_image_path": {
 				Type:        schema.TypeString,
-				Description: "The file path of the app blueprint catalog item dark mode logo image including the file name",
+				Description: "The file path of the workflow catalog item dark mode logo image including the file name",
 				Optional:    true,
 				Computed:    true,
 			},
@@ -319,7 +319,7 @@ func resourceWorkflowCatalogItemUpdate(ctx context.Context, d *schema.ResourceDa
 
 	var filePayloads []*morpheus.FilePayload
 
-	if d.Get("logo_image_path") != "" && d.Get("logo_image_name") != "" {
+	if d.HasChange("logo_image_path") || d.HasChange("logo_image_name") {
 		data, err := os.ReadFile(d.Get("logo_image_path").(string))
 		if err != nil {
 			return diag.FromErr(err)
@@ -332,7 +332,7 @@ func resourceWorkflowCatalogItemUpdate(ctx context.Context, d *schema.ResourceDa
 		}
 		filePayloads = append(filePayloads, filePayload)
 	}
-	if d.Get("dark_logo_image_path") != "" && d.Get("dark_logo_image_name") != "" {
+	if d.HasChange("dark_logo_image_path") || d.HasChange("dark_logo_image_name") {
 		darkLogoData, err := os.ReadFile(d.Get("dark_logo_image_path").(string))
 		if err != nil {
 			return diag.FromErr(err)

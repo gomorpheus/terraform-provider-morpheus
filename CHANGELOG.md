@@ -1,6 +1,11 @@
 ## UNRELEASED
 
+## 0.9.4 (August 14, 2023)
+
 NOTES:
+
+* Add support for managing a SAML identity source. [#140](https://github.com/gomorpheus/terraform-provider-morpheus/issues/140) 
+* Add support for managing user roles. [#114](https://github.com/gomorpheus/terraform-provider-morpheus/issues/114) 
 
 FEATURES:
 
@@ -9,6 +14,7 @@ FEATURES:
 * **New Data Source:** `morpheus_security_package`
 * **New Data Source:** `morpheus_vdi_pool`
 * **New Resource:** `morpheus_ipv4_ip_pool`
+* **New Resource:** `morpheus_saml_identity_source`
 * **New Resource:** `morpheus_security_package`
 * **New Resource:** `morpheus_servicenow_integration`
 * **New Resource:** `morpheus_user_role`
