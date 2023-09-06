@@ -39,6 +39,11 @@ func dataSourceMorpheusResourcePool() *schema.Resource {
 				Description: "The description of the resource pool",
 				Computed:    true,
 			},
+			"id": {
+				Type:        schema.TypeString,
+				Description: "The id of the resource pool",
+				Computed:    true,
+			},
 		},
 	}
 }
