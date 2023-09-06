@@ -40,8 +40,9 @@ func dataSourceMorpheusResourcePool() *schema.Resource {
 				Computed:    true,
 			},
 			"id": {
-				Type:        schema.TypeString,
+				Type:        schema.TypeInt,
 				Description: "The id of the resource pool",
+				Optional:    true,
 				Computed:    true,
 			},
 		},
@@ -54,42 +55,71 @@ func dataSourceMorpheusResourcePoolRead(ctx context.Context, d *schema.ResourceD
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
-	id := d.Id()
+	id := d.Get("id").(int) //* String?
+	// id := d.Id()
 	name := d.Get("name").(string)
 	cloud_id := d.Get("cloud_id").(int)
 
-	// lookup by name if we do not have an id yet
-	var resp *morpheus.Response
-	var err error
-	if id == "" && name != "" {
-		resp, err = client.FindResourcePoolByName(int64(cloud_id), name)
-	} else if id != "" {
-		resp, err = client.GetResourcePool(int64(cloud_id), toInt64(id), &morpheus.Request{})
-	} else {
-		return diag.Errorf("Resource pool cannot be read without name or id")
+	// If both id and name are provided, return an error
+	if id != 0 && name != "" {
+		return diag.Errorf("Only one of 'id' or 'name' can be provided to search for the resource pool")
 	}
-	if err != nil {
-		if resp != nil && resp.StatusCode == 404 {
-			log.Printf("API 404: %s - %v", resp, err)
-			return nil
-		} else {
-			log.Printf("API FAILURE: %s - %v", resp, err)
-			return diag.FromErr(err)
-		}
-	}
-	log.Printf("API RESPONSE: %s", resp)
 
-	// store resource data
-	result := resp.Result.(*morpheus.GetResourcePoolResult)
-	resourcePool := result.ResourcePool
-	if resourcePool != nil {
-		d.SetId(int64ToString(resourcePool.ID))
-		d.Set("name", resourcePool.Name)
-		d.Set("active", resourcePool.Active)
-		d.Set("type", resourcePool.Type)
-		d.Set("description", resourcePool.Description)
-	} else {
-		return diag.Errorf("Resource pool not found in response data.") // should not happen
+	// If id is provided, search by id
+	if id != 0 {
+		resp, err := client.GetResourcePool(int64(cloud_id), int64(id), &morpheus.Request{})
+		if err != nil {
+			if resp != nil && resp.StatusCode == 404 {
+				log.Printf("API 404: %s - %v", resp, err)
+				return nil
+			} else {
+				log.Printf("API FAILURE: %s - %v", resp, err)
+				return diag.FromErr(err)
+			}
+		}
+		log.Printf("API RESPONSE: %s", resp)
+
+		// store resource data
+		result := resp.Result.(*morpheus.GetResourcePoolResult)
+		resourcePool := result.ResourcePool
+		if resourcePool != nil {
+			d.SetId(int64ToString(resourcePool.ID))
+			d.Set("name", resourcePool.Name)
+			d.Set("active", resourcePool.Active)
+			d.Set("type", resourcePool.Type)
+			d.Set("description", resourcePool.Description)
+		} else {
+			return diag.Errorf("Resource pool not found in response data.")
+		}
+		return diags
 	}
-	return diags
+	// If name is provided, search by name
+	if name != "" {
+		resp, err := client.FindResourcePoolByName(int64(cloud_id), name)
+		if err != nil {
+			if resp != nil && resp.StatusCode == 404 {
+				log.Printf("API 404: %s - %v", resp, err)
+				return nil
+			} else {
+				log.Printf("API FAILURE: %s - %v", resp, err)
+				return diag.FromErr(err)
+			}
+		}
+		log.Printf("API RESPONSE: %s", resp)
+
+		// store resource data
+		result := resp.Result.(*morpheus.GetResourcePoolResult)
+		resourcePool := result.ResourcePool
+		if resourcePool != nil {
+			d.SetId(int64ToString(resourcePool.ID))
+			d.Set("name", resourcePool.Name)
+			d.Set("active", resourcePool.Active)
+			d.Set("type", resourcePool.Type)
+			d.Set("description", resourcePool.Description)
+		} else {
+			return diag.Errorf("Resource pool not found in response data.")
+		}
+		return diags
+	}
+	return diag.Errorf("Either 'id' or 'name' must be provided to search for the resource pool")
 }
