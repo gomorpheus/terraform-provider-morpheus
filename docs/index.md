@@ -25,7 +25,7 @@ terraform {
   required_providers {
     morpheus = {
       source  = "gomorpheus/morpheus"
-      version = "0.9.3"
+      version = "0.9.4"
     }
   }
 }
@@ -48,4 +48,5 @@ provider "morpheus" {
 
 - `access_token` (String, Sensitive) Access Token of Morpheus user. This can be used instead of authenticating with Username and Password.
 - `password` (String, Sensitive) Password of Morpheus user for authentication
+- `tenant_subdomain` (String) The tenant subdomain used for authentication
 - `username` (String) Username of Morpheus user for authentication

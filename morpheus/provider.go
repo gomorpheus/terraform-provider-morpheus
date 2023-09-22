@@ -23,7 +23,15 @@ func Provider() *schema.Provider {
 				Sensitive:     true,
 				Description:   "Access Token of Morpheus user. This can be used instead of authenticating with Username and Password.",
 				DefaultFunc:   schema.EnvDefaultFunc("MORPHEUS_API_TOKEN", nil),
-				ConflictsWith: []string{"username", "password"},
+				ConflictsWith: []string{"username", "password", "tenant_subdomain"},
+			},
+
+			"tenant_subdomain": {
+				Type:          schema.TypeString,
+				Optional:      true,
+				Description:   "The tenant subdomain used for authentication",
+				DefaultFunc:   schema.EnvDefaultFunc("MORPHEUS_API_TENANT", nil),
+				ConflictsWith: []string{"access_token"},
 			},
 
 			"username": {
@@ -205,10 +213,11 @@ func Provider() *schema.Provider {
 
 func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
 	config := Config{
-		Url:         d.Get("url").(string),
-		AccessToken: d.Get("access_token").(string),
-		Username:    d.Get("username").(string),
-		Password:    d.Get("password").(string),
+		Url:             d.Get("url").(string),
+		AccessToken:     d.Get("access_token").(string),
+		TenantSubdomain: d.Get("tenant_subdomain").(string),
+		Username:        d.Get("username").(string),
+		Password:        d.Get("password").(string),
 		//Insecure:                d.Get("insecure").(bool), //.(bool),
 	}
 	return config.Client()

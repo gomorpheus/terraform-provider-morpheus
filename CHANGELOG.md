@@ -1,5 +1,9 @@
 ## UNRELEASED
 
+NOTES:
+
+* Added the `tenant_subdomain` setting for the provider configuration to properly support authenticating with username and password to a subetnant. [#74](https://github.com/gomorpheus/terraform-provider-morpheus/issues/74)
+
 ## 0.9.4 (August 14, 2023)
 
 NOTES:
