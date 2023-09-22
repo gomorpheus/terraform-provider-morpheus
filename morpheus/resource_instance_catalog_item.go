@@ -236,7 +236,7 @@ func resourceInstanceCatalogItemRead(ctx context.Context, d *schema.ResourceData
 	d.Set("labels", catalogItem.Labels)
 	imagePath := strings.Split(catalogItem.ImagePath, "/")
 	opt := strings.Replace(imagePath[len(imagePath)-1], "_original", "", 1)
-	d.Set("image_path", opt)
+	d.Set("image_name", opt)
 	return diags
 }
 
