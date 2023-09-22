@@ -15,6 +15,12 @@ dev:
 	mkdir -p $(INSTALL_PATH)	
 	go build -o $(INSTALL_PATH)/terraform-provider-morpheus main.go
 
+reset-repo:
+	git fetch upstream
+	git checkout master
+	git reset --hard upstream/master
+	git push origin master --force
+
 gen-resource:
 	touch morpheus/resource_$(resource).go
 	mkdir -p examples/resources/morpheus_$(resource)
