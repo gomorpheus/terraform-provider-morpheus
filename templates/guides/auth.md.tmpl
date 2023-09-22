@@ -33,6 +33,20 @@ provider "morpheus" {
 }
 ```
 
+### Subtenant Username and Password
+
+Static credentials for authenticating to a subtenant using a username and password can be provided by adding a `username` and `password` along
+with `tenant_subdomain` in-line in the Morpheus provider block:
+
+```terraform
+provider "morpheus" {
+  url              = "https://morpheus_appliance_url"
+  tenant_subdomain = "subtenant1"
+  username         = "admin"
+  password         = "password"
+}
+```
+
 ### Access Token
 
 Static credentials using an access token can be provided by adding an `access_token` 
@@ -49,9 +63,9 @@ provider "morpheus" {
 
 ## Environment Variables
 
+### Username and Password
 
 Environment variable using a username and password can be provided by using the `MORPHEUS_API_URL`, `MORPHEUS_API_USERNAME` and `MORPHEUS_API_PASSWORD` environment variables:
-
 
 ```terraform
 provider "morpheus" {}
@@ -66,6 +80,25 @@ $ export MORPHEUS_API_PASSWORD="password"
 $ terraform plan
 ```
 
+### Subtenant Username and Password
+
+Environment variable using a username and password can be provided by using the `MORPHEUS_API_URL`, `MORPHEUS_API_USERNAME` and `MORPHEUS_API_PASSWORD` environment variables:
+
+```terraform
+provider "morpheus" {}
+```
+
+Usage:
+
+```terraform
+$ export MORPHEUS_API_URL="https://morpheus_appliance_url"
+$ export MORPHEUS_API_TENANT="subtenant1"
+$ export MORPHEUS_API_USERNAME="admin"
+$ export MORPHEUS_API_PASSWORD="password"
+$ terraform plan
+```
+
+### Access Token
 
 Environment variable using an access token can be provided by using the `MORPHEUS_API_URL` and `MORPHEUS_API_TOKEN` environment variables:
 
@@ -76,7 +109,7 @@ provider "morpheus" {}
 Usage:
 
 ```terraform
-$ export MORPHEUS_API_URL="https://yourmorpheus"
+$ export MORPHEUS_API_URL="https://morpheus_appliance_url"
 $ export MORPHEUS_API_TOKEN="d3a4c6fa-fb54-44af"
 $ terraform plan
 ```
