@@ -269,10 +269,10 @@ func resourceWorkflowCatalogItemRead(ctx context.Context, d *schema.ResourceData
 	d.Set("workflow_id", workflowId)
 	imagePath := strings.Split(catalogItem.ImagePath, "/")
 	opt := strings.Replace(imagePath[len(imagePath)-1], "_original", "", 1)
-	d.Set("logo_image_path", opt)
+	d.Set("logo_image_name", opt)
 	darkImagePath := strings.Split(catalogItem.DarkImagePath, "/")
 	darkOpt := strings.Replace(darkImagePath[len(darkImagePath)-1], "_original", "", 1)
-	d.Set("dark_logo_image_path", darkOpt)
+	d.Set("dark_logo_image_name", darkOpt)
 	return diags
 }
 
