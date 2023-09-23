@@ -170,6 +170,7 @@ func Provider() *schema.Provider {
 			"morpheus_cluster_type":               dataSourceMorpheusClusterType(),
 			"morpheus_contact":                    dataSourceMorpheusContact(),
 			"morpheus_credential":                 dataSourceMorpheusCredential(),
+			"morpheus_domain":                     dataSourceMorpheusDomain(),
 			"morpheus_environment":                dataSourceMorpheusEnvironment(),
 			"morpheus_execute_schedule":           dataSourceMorpheusExecuteSchedule(),
 			"morpheus_file_template":              dataSourceMorpheusFileTemplate(),
