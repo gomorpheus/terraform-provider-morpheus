@@ -12,8 +12,8 @@ Provides a Morpheus domain data source.
 ## Example Usage
 
 ```terraform
-data "morpheus_environment" "localdomain" {
-  name = "localdomain"
+data "morpheus_environment" "testdomain" {
+  name = "test.local"
 }
 ```
 
