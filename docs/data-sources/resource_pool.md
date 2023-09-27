@@ -27,11 +27,11 @@ data "morpheus_resource_pool" "morpheus_pool" {
 
 ### Optional
 
+- `id` (Number) The id of the resource pool
 - `name` (String) The name of the Morpheus resource pool.
 
 ### Read-Only
 
 - `active` (Boolean) Whether the resource pool is enabled or not
 - `description` (String) The description of the resource pool
-- `id` (String) The ID of this resource.
 - `type` (String) Optional code for use with policies
