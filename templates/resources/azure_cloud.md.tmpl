@@ -1,0 +1,28 @@
+---
+page_title: "morpheus_azure_cloud Resource - terraform-provider-morpheus"
+subcategory: ""
+description: |-
+{{ .Description | plainmarkdown | trimspace | prefixlines "  " }}
+---
+
+# morpheus_azure_cloud
+
+{{ .Description | trimspace }}
+
+## Example Usage
+
+Creating the Azure cloud with local credentials:
+
+{{tffile "examples/resources/morpheus_azure_cloud/resource.tf"}}
+
+Creating the Azure cloud with a credential store credential:
+
+{{tffile "examples/resources/morpheus_azure_cloud/resource_credentials.tf"}}
+
+{{ .SchemaMarkdown | trimspace }}
+
+## Import
+
+Import is supported using the following syntax:
+
+{{codefile "shell" "examples/resources/morpheus_azure_cloud/import.sh" }}

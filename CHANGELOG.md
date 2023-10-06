@@ -8,6 +8,7 @@ NOTES:
 FEATURES:
 
 * **New Data Source:** `morpheus_domain`
+* **New Resource:** `morpheus_azure_cloud`
 
 ## 0.9.4 (August 14, 2023)
 
