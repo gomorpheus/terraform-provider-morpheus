@@ -8,15 +8,16 @@ data "morpheus_cloud" "morpheus_vsphere" {
 
 data "morpheus_resource_pool" "vsphere_resource_pool" {
   name     = "Morpheus-Cluster"
-  cloud_id = data.morpheus_cloud.vsphere.id
+  cloud_id = data.morpheus_cloud.morpheus_vsphere.id
 }
 
-data "morpheus_instance_type" "apache" {
-  name = "apache"
+data "morpheus_instance_type" "ubuntu" {
+  name = "Ubuntu"
 }
 
-data "morpheus_instance_layout" "apache" {
-  name = "Apache"
+data "morpheus_instance_layout" "ubuntu" {
+  name    = "VMware VM"
+  version = "22.04"
 }
 
 data "morpheus_network" "vmnetwork" {
@@ -32,8 +33,8 @@ resource "morpheus_vsphere_instance" "tf_example_vsphere_instance" {
   description        = "Terraform instance example"
   cloud_id           = data.morpheus_cloud.morpheus_vsphere.id
   group_id           = data.morpheus_group.morpheus_lab.id
-  instance_type_id   = data.morpheus_instance_type.apache.id
-  instance_layout_id = data.morpheus_instance_layout.apache.id
+  instance_type_id   = data.morpheus_instance_type.ubuntu.id
+  instance_layout_id = data.morpheus_instance_layout.ubuntu.id
   plan_id            = data.morpheus_plan.vmware.id
   environment        = "dev"
   resource_pool_id   = data.morpheus_resource_pool.vsphere_resource_pool.id
@@ -44,7 +45,7 @@ resource "morpheus_vsphere_instance" "tf_example_vsphere_instance" {
   }
 
   tags = {
-    name = "apachetf"
+    name = "ubuntutf"
   }
 
   evar {

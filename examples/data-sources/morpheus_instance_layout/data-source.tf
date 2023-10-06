@@ -1,3 +1,4 @@
-data "morpheus_instance_layout" "apache" {
-  name = "Apache"
+data "morpheus_instance_layout" "ubuntu" {
+  name    = "VMware VM"
+  version = "22.04"
 }
