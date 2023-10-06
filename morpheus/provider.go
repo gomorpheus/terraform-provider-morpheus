@@ -63,6 +63,7 @@ func Provider() *schema.Provider {
 			"morpheus_arm_app_blueprint":                resourceArmAppBlueprint(),
 			"morpheus_arm_spec_template":                resourceArmSpecTemplate(),
 			"morpheus_aws_cloud":                        resourceAWSCloud(),
+			"morpheus_azure_cloud":                      resourceAzureCloud(),
 			"morpheus_backup_creation_policy":           resourceBackupCreationPolicy(),
 			"morpheus_backup_setting":                   resourceBackupSetting(),
 			"morpheus_boot_script":                      resourceBootScript(),

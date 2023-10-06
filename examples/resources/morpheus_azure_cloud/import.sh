@@ -1,0 +1,1 @@
+terraform import morpheus_azure_cloud.tf_example_azure_cloud 1

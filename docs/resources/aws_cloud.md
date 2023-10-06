@@ -118,5 +118,5 @@ Optional:
 Import is supported using the following syntax:
 
 ```shell
-terraform import morpheus_vsphere_cloud.tf_example_aws_cloud 1
+terraform import morpheus_aws_cloud.tf_example_aws_cloud 1
 ```
