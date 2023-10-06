@@ -29,5 +29,3 @@ data "morpheus_vro_workflow" "example_vro_workflow" {
 ### Read-Only
 
 - `id` (String) The ID of this resource.
-
-
