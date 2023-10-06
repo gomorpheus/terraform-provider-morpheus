@@ -1,7 +1,10 @@
 ## UNRELEASED
 
+## 0.9.5 (October 6, 2023)
+
 NOTES:
 
+* Added a `version` parameter for the `instance_layout` data source to properly handle multiple instance layouts with the same name.
 * Added the `tenant_subdomain` setting for the provider configuration to properly support authenticating with username and password to a subetnant. [#74](https://github.com/gomorpheus/terraform-provider-morpheus/issues/74)
 * Fixed the issue that was causing the logo/image path to continually indicate that there is a change despite nothing being changed. [#146](https://github.com/gomorpheus/terraform-provider-morpheus/issues/146)
 

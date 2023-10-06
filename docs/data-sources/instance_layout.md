@@ -12,8 +12,9 @@ Provides a Morpheus instance layout data source.
 ## Example Usage
 
 ```terraform
-data "morpheus_instance_layout" "apache" {
-  name = "Apache"
+data "morpheus_instance_layout" "ubuntu" {
+  name    = "VMware VM"
+  version = "22.04"
 }
 ```
 
@@ -23,6 +24,7 @@ data "morpheus_instance_layout" "apache" {
 ### Optional
 
 - `name` (String) The name of the Morpheus instance layout
+- `version` (String) The version of the instance layout.
 
 ### Read-Only
 

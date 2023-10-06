@@ -2,6 +2,7 @@ package morpheus
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	"github.com/gomorpheus/morpheus-go-sdk"
@@ -17,12 +18,18 @@ func dataSourceMorpheusInstanceLayout() *schema.Resource {
 			"id": {
 				Type:          schema.TypeInt,
 				Optional:      true,
-				ConflictsWith: []string{"name"},
+				ConflictsWith: []string{"name", "version"},
 				Computed:      true,
 			},
 			"name": {
 				Type:          schema.TypeString,
 				Description:   "The name of the Morpheus instance layout",
+				Optional:      true,
+				ConflictsWith: []string{"id"},
+			},
+			"version": {
+				Type:          schema.TypeString,
+				Description:   "The version of the instance layout.",
 				Optional:      true,
 				ConflictsWith: []string{"id"},
 			},
@@ -48,26 +55,30 @@ func dataSourceMorpheusInstanceLayoutRead(ctx context.Context, d *schema.Resourc
 
 	name := d.Get("name").(string)
 	id := d.Get("id").(int)
+	version := d.Get("version").(string)
 
 	// lookup by name if we do not have an id yet
 	var resp *morpheus.Response
 	var err error
-	if id == 0 && name != "" {
+	if id == 0 && name != "" && version == "" {
 		resp, err = client.FindInstanceLayoutByName(name)
+	} else if id == 0 && name != "" && version != "" {
+		resp, err = FindInstanceLayoutByNameAndVersion(client, name, version)
 	} else if id != 0 {
 		resp, err = client.GetInstanceLayout(int64(id), &morpheus.Request{})
 	} else {
 		return diag.Errorf("Instance layout cannot be read without name or id")
 	}
+
 	if err != nil {
+		errorPrefix := "API FAILURE"
 		if resp != nil && resp.StatusCode == 404 {
-			log.Printf("API 404: %s - %v", resp, err)
-			return nil
-		} else {
-			log.Printf("API FAILURE: %s - %v", resp, err)
-			return diag.FromErr(err)
+			errorPrefix = "API 404"
 		}
+		log.Printf("%s: %s - %v", errorPrefix, resp, err)
+		return diag.FromErr(err)
 	}
+
 	log.Printf("API RESPONSE: %s", resp)
 
 	// store resource data
@@ -78,8 +89,29 @@ func dataSourceMorpheusInstanceLayoutRead(ctx context.Context, d *schema.Resourc
 		d.Set("name", instanceLayout.Name)
 		d.Set("code", instanceLayout.Code)
 		d.Set("description", instanceLayout.Description)
+		d.Set("version", instanceLayout.ContainerVersion)
 	} else {
 		return diag.Errorf("Instance layout not found in response data.") // should not happen
 	}
 	return diags
+}
+
+func FindInstanceLayoutByNameAndVersion(client *morpheus.Client, name string, version string) (*morpheus.Response, error) {
+	// Find by name, then get by ID
+	resp, err := client.ListInstanceLayouts(&morpheus.Request{
+		QueryParams: map[string]string{
+			"name": name,
+			"max":  "5000",
+		},
+	})
+	if err != nil {
+		return resp, err
+	}
+	listResult := resp.Result.(*morpheus.ListInstanceLayoutsResult)
+	for _, layout := range *listResult.InstanceLayouts {
+		if layout.ContainerVersion == version {
+			return client.GetInstanceLayout(layout.ID, &morpheus.Request{})
+		}
+	}
+	return resp, fmt.Errorf("found 0 instance layouts named %v with a version of %v", name, version)
 }
