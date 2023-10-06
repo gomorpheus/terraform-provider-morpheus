@@ -17,7 +17,7 @@ This is being developed in conjunction with [morpheus-go-sdk](https://github.com
 ------------
 
 * [Terraform](https://www.terraform.io/) | 0.13+
-* [Go](https://golang.org/dl/) 1.18 (to build the provider plugin)
+* [Go](https://golang.org/dl/) 1.20 (to build the provider plugin)
 
 
 ## Getting Started
