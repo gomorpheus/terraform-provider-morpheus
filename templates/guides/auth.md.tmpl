@@ -82,7 +82,7 @@ $ terraform plan
 
 ### Subtenant Username and Password
 
-Environment variable using a username and password can be provided by using the `MORPHEUS_API_URL`, `MORPHEUS_API_USERNAME` and `MORPHEUS_API_PASSWORD` environment variables:
+Environment variable using a username and password can be provided by using the `MORPHEUS_API_URL`, `MORPHEUS_API_TENANT`, `MORPHEUS_API_USERNAME` and `MORPHEUS_API_PASSWORD` environment variables:
 
 ```terraform
 provider "morpheus" {}
