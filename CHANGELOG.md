@@ -2,6 +2,7 @@
 
 NOTES:
 
+* Updated authentication documentation to properly document the use of the subtenant domain setting when using environment variables when authenticating.
 * Updated the `morpheus_ansible_tower_integration` resource to fix an issue with the password continually indicating a change.
 * Added support for utilizing credentials to the `morpheus_ansible_tower_integration` resource.
 
