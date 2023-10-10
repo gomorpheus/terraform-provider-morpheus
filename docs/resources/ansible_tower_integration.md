@@ -27,13 +27,14 @@ resource "morpheus_ansible_tower_integration" "tf_example_ansible_tower_integrat
 ### Required
 
 - `name` (String) The name of the Ansible Tower integration
-- `password` (String, Sensitive) The password of the account used to connect to Ansible Tower
 - `url` (String) The url of the Ansible Tower instance
-- `username` (String) The username of the account used to connect to Ansible Tower
 
 ### Optional
 
+- `credential_id` (Number) The ID of the credential store entry used for authentication
 - `enabled` (Boolean) Whether the Ansible Tower integration is enabled
+- `password` (String, Sensitive) The password of the account used to connect to Ansible Tower
+- `username` (String) The username of the account used to connect to Ansible Tower
 
 ### Read-Only
 

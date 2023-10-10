@@ -44,14 +44,15 @@ func resourceAnsibleTowerIntegration() *schema.Resource {
 				Required:    true,
 			},
 			"username": {
-				Type:        schema.TypeString,
-				Description: "The username of the account used to connect to Ansible Tower",
-				Required:    true,
+				Type:          schema.TypeString,
+				Description:   "The username of the account used to connect to Ansible Tower",
+				Optional:      true,
+				ConflictsWith: []string{"credential_id"},
 			},
 			"password": {
 				Type:        schema.TypeString,
 				Description: "The password of the account used to connect to Ansible Tower",
-				Required:    true,
+				Optional:    true,
 				Sensitive:   true,
 				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
 					h := sha256.New()
@@ -59,7 +60,14 @@ func resourceAnsibleTowerIntegration() *schema.Resource {
 					sha256_hash := hex.EncodeToString(h.Sum(nil))
 					return strings.EqualFold(old, sha256_hash)
 				},
-				DiffSuppressOnRefresh: true,
+				ConflictsWith: []string{"credential_id"},
+			},
+			"credential_id": {
+				Description:   "The ID of the credential store entry used for authentication",
+				Type:          schema.TypeInt,
+				Optional:      true,
+				Computed:      true,
+				ConflictsWith: []string{"username", "password"},
 			},
 		},
 		Importer: &schema.ResourceImporter{
@@ -79,10 +87,22 @@ func resourceAnsibleTowerIntegrationCreate(ctx context.Context, d *schema.Resour
 	integration["name"] = d.Get("name").(string)
 	integration["enabled"] = d.Get("enabled").(bool)
 	integration["type"] = "ansibleTower"
-	integration["version"] = "v2"
-	integration["url"] = d.Get("url").(string)
-	integration["username"] = d.Get("username").(string)
-	integration["password"] = d.Get("password").(string)
+	integration["serviceVersion"] = "v2"
+
+	if d.Get("credential_id").(int) != 0 {
+		credential := make(map[string]interface{})
+		credential["type"] = "username-password"
+		credential["id"] = d.Get("credential_id").(int)
+		credential["credential"] = credential
+	} else {
+		credential := make(map[string]interface{})
+		credential["type"] = "local"
+		integration["credential"] = credential
+		integration["serviceUsername"] = d.Get("username").(string)
+		integration["servicePassword"] = d.Get("password").(string)
+	}
+
+	integration["serviceUrl"] = d.Get("url").(string)
 
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
@@ -143,8 +163,12 @@ func resourceAnsibleTowerIntegrationRead(ctx context.Context, d *schema.Resource
 	d.Set("name", integration.Name)
 	d.Set("enabled", integration.Enabled)
 	d.Set("url", integration.URL)
-	d.Set("username", integration.Username)
-	d.Set("password", integration.PasswordHash)
+	if integration.Credential.ID == 0 {
+		d.Set("username", integration.Username)
+		d.Set("password", integration.PasswordHash)
+	} else {
+		d.Set("credential_id", integration.Credential.ID)
+	}
 
 	return diags
 }
@@ -158,10 +182,25 @@ func resourceAnsibleTowerIntegrationUpdate(ctx context.Context, d *schema.Resour
 	integration["name"] = d.Get("name").(string)
 	integration["enabled"] = d.Get("enabled").(bool)
 	integration["type"] = "ansibleTower"
-	integration["version"] = "v2"
-	integration["url"] = d.Get("url").(string)
-	integration["username"] = d.Get("username").(string)
-	integration["password"] = d.Get("password").(string)
+	integration["serviceVersion"] = "v2"
+	integration["serviceUrl"] = d.Get("url").(string)
+
+	if d.Get("credential_id").(int) != 0 {
+		credential := make(map[string]interface{})
+		credential["type"] = "username-password"
+		credential["id"] = d.Get("credential_id").(int)
+		integration["credential"] = credential
+	} else {
+		credential := make(map[string]interface{})
+		credential["type"] = "local"
+		integration["credential"] = credential
+		if d.HasChange("username") {
+			integration["serviceUsername"] = d.Get("username")
+		}
+		if d.HasChange("password") {
+			integration["servicePassword"] = d.Get("password")
+		}
+	}
 
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
