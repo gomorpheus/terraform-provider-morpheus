@@ -6,6 +6,10 @@ NOTES:
 * Updated the `morpheus_ansible_tower_integration` resource to fix an issue with the password continually indicating a change.
 * Added support for utilizing credentials to the `morpheus_ansible_tower_integration` resource.
 
+FEATURES:
+
+* **New Resource:** `morpheus_credential`
+
 ## 0.9.5 (October 6, 2023)
 
 NOTES:
