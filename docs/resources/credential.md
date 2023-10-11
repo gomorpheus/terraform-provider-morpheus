@@ -135,7 +135,7 @@ resource "morpheus_credential" "tf_example_credential_username_password_keypair"
 ### Required
 
 - `name` (String) The name of the credential
-- `type` (String) The name of the credential (access-key-secret, api-key, client-id-secret, email-private-key, tenant-username-keypair, username-password, username-api-key, username-keypair, username-password-keypair)
+- `type` (String) The credential type (access-key-secret, api-key, client-id-secret, email-private-key, tenant-username-keypair, username-password, username-api-key, username-keypair, username-password-keypair)
 
 ### Optional
 
