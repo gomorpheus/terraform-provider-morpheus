@@ -276,10 +276,10 @@ func resourceLibraryScriptTaskUpdate(ctx context.Context, d *schema.ResourceData
 	}
 	log.Printf("API RESPONSE: %s", resp)
 	result := resp.Result.(*morpheus.UpdateTaskResult)
-	shellScriptTask := result.Task
+	libraryScriptTask := result.Task
 	// Successfully updated resource, now set id
 	// err, it should not have changed though..
-	d.SetId(int64ToString(shellScriptTask.ID))
+	d.SetId(int64ToString(libraryScriptTask.ID))
 	return resourceLibraryScriptTaskRead(ctx, d, meta)
 }
 
