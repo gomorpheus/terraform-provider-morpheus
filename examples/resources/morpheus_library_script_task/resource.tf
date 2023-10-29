@@ -1,9 +1,9 @@
 data "morpheus_script_template" "example_script_template" {
-  name = "My library script task"
+  name = "My script template"
 }
 
 resource "morpheus_library_script_task" "tf_example_library_script_task" {
-  name                = "Example Terraform Libary Script Task"
+  name                = "Example Terraform Library Script Task"
   code                = "tf-example-library-script-task"
   labels              = ["demo", "library", "terraform"]
   execute_target      = "resource"
