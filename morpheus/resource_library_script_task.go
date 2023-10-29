@@ -167,7 +167,7 @@ func resourceLibraryScriptTaskCreate(ctx context.Context, d *schema.ResourceData
 	d.SetId(int64ToString(task.ID))
 	log.Printf("Task ID: %s", int64ToString(task.ID))
 
-	resourceShellScriptTaskRead(ctx, d, meta)
+	resourceLibraryScriptTaskRead(ctx, d, meta)
 	return diags
 }
 
@@ -280,7 +280,7 @@ func resourceLibraryScriptTaskUpdate(ctx context.Context, d *schema.ResourceData
 	// Successfully updated resource, now set id
 	// err, it should not have changed though..
 	d.SetId(int64ToString(shellScriptTask.ID))
-	return resourceShellScriptTaskRead(ctx, d, meta)
+	return resourceLibraryScriptTaskRead(ctx, d, meta)
 }
 
 func resourceLibraryScriptTaskDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
