@@ -56,7 +56,7 @@ func resourceLibraryScriptTask() *schema.Resource {
 				Computed:    true,
 			},
 			"script_template_id": {
-				Type:        schema.TypeInt,
+				Type:        schema.TypeString,
 				Description: "The library script template id in Morpheus",
 				Optional:    true,
 				Computed:    true,
@@ -92,6 +92,13 @@ func resourceLibraryScriptTask() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 			},
+			"visibility": {
+				Type:         schema.TypeString,
+				Description:  "The visibility of the task (private or public)",
+				ValidateFunc: validation.StringInSlice([]string{"private", "public"}, false),
+				Optional:     true,
+				Computed:     true,
+			},
 		},
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
@@ -110,6 +117,18 @@ func resourceLibraryScriptTaskCreate(ctx context.Context, d *schema.ResourceData
 	taskType := make(map[string]interface{})
 	taskType["code"] = "containerScript"
 
+	taskOptions := make(map[string]interface{})
+	if d.Get("visibility") != "" {
+		taskOptions["visibility"] = d.Get("visibility")
+	}
+
+	if d.Get("script_template_id") != "" {
+		taskOptions["containerScriptId"] = d.Get("script_template_id")
+	}
+	if d.Get("script_template") != "" {
+		taskOptions["containerScript"] = d.Get("script_template")
+	}
+
 	labelsPayload := make([]string, 0)
 	if attr, ok := d.GetOk("labels"); ok {
 		for _, s := range attr.(*schema.Set).List() {
@@ -124,11 +143,10 @@ func resourceLibraryScriptTaskCreate(ctx context.Context, d *schema.ResourceData
 				"code":              d.Get("code").(string),
 				"labels":            labelsPayload,
 				"taskType":          taskType,
+				"taskOptions":       taskOptions,
 				"resultType":        d.Get("result_type"),
-				"containerScript":   d.Get("script_template").(string),
-				"containerScriptId": d.Get("script_template_id"),
 				"executeTarget":     d.Get("execute_target").(string),
-				//"visibility":        d.Get("visibility"),
+				"visibility":        d.Get("visibility"),
 				"retryable":         d.Get("retryable"),
 				"retryCount":        d.Get("retry_count"),
 				"retryDelaySeconds": d.Get("retry_delay_seconds"),
@@ -201,6 +219,7 @@ func resourceLibraryScriptTaskRead(ctx context.Context, d *schema.ResourceData, 
 	d.Set("retry_count", libraryScriptTask.RetryCount)
 	d.Set("retry_delay_seconds", libraryScriptTask.RetryDelaySeconds)
 	d.Set("allow_custom_config", libraryScriptTask.AllowCustomConfig)
+	d.Set("visibility", libraryScriptTask.Visibility)
 	return diags
 }
 
@@ -210,7 +229,19 @@ func resourceLibraryScriptTaskUpdate(ctx context.Context, d *schema.ResourceData
 	name := d.Get("name").(string)
 
 	taskType := make(map[string]interface{})
-	taskType["code"] = "script"
+	taskType["code"] = "containerScript"
+
+	taskOptions := make(map[string]interface{})
+	if d.Get("visibility") != "" {
+		taskOptions["visibility"] = d.Get("visibility")
+	}
+
+	if d.Get("script_template_id") != "" {
+		taskOptions["containerScriptId"] = d.Get("script_template_id")
+	}
+	if d.Get("script_template") != "" {
+		taskOptions["containerScript"] = d.Get("script_template")
+	}
 
 	labelsPayload := make([]string, 0)
 	if attr, ok := d.GetOk("labels"); ok {
@@ -226,11 +257,10 @@ func resourceLibraryScriptTaskUpdate(ctx context.Context, d *schema.ResourceData
 				"code":              d.Get("code").(string),
 				"labels":            labelsPayload,
 				"taskType":          taskType,
+				"taskOptions":       taskOptions,
 				"resultType":        d.Get("result_type"),
-				"containerScript":   d.Get("script_template").(string),
-				"containerScriptId": d.Get("script_template_id"),
 				"executeTarget":     d.Get("execute_target").(string),
-				//"visibility":        d.Get("visibility"),
+				"visibility":        d.Get("visibility"),
 				"retryable":         d.Get("retryable"),
 				"retryCount":        d.Get("retry_count"),
 				"retryDelaySeconds": d.Get("retry_delay_seconds"),
