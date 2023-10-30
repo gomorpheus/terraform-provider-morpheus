@@ -98,6 +98,7 @@ func Provider() *schema.Provider {
 			"morpheus_ipv4_ip_pool":                     resourceIPv4IPPool(),
 			"morpheus_javascript_task":                  resourceJavaScriptTask(),
 			"morpheus_library_script_task":              resourceLibraryScriptTask(),
+			"morpheus_library_template_task":            resourceLibraryTemplateTask(),
 			"morpheus_license":                          resourceLicense(),
 			"morpheus_key_pair":                         resourceKeyPair(),
 			"morpheus_kubernetes_app_blueprint":         resourceKubernetesAppBlueprint(),

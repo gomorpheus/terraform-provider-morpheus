@@ -10,34 +10,34 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
-func resourceLibraryScriptTask() *schema.Resource {
+func resourceLibraryTemplateTask() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Provides a Morpheus library script task resource",
-		CreateContext: resourceLibraryScriptTaskCreate,
-		ReadContext:   resourceLibraryScriptTaskRead,
-		UpdateContext: resourceLibraryScriptTaskUpdate,
-		DeleteContext: resourceLibraryScriptTaskDelete,
+		Description:   "Provides a Morpheus library template task resource",
+		CreateContext: resourceLibraryTemplateTaskCreate,
+		ReadContext:   resourceLibraryTemplateTaskRead,
+		UpdateContext: resourceLibraryTemplateTaskUpdate,
+		DeleteContext: resourceLibraryTemplateTaskDelete,
 
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Type:        schema.TypeString,
-				Description: "The ID of the library script task",
+				Description: "The ID of the library template task",
 				Computed:    true,
 			},
 			"name": {
 				Type:        schema.TypeString,
-				Description: "The name of the library script task",
+				Description: "The name of the library template task",
 				Required:    true,
 			},
 			"code": {
 				Type:        schema.TypeString,
-				Description: "The code of the library script task",
+				Description: "The code of the library template task",
 				Optional:    true,
 				Computed:    true,
 			},
 			"labels": {
 				Type:        schema.TypeSet,
-				Description: "The organization labels associated with the library task (Only supported on Morpheus 5.5.3 or higher)",
+				Description: "The organization labels associated with the library template task (Only supported on Morpheus 5.5.3 or higher)",
 				Optional:    true,
 				Computed:    true,
 				Elem:        &schema.Schema{Type: schema.TypeString},
@@ -49,21 +49,21 @@ func resourceLibraryScriptTask() *schema.Resource {
 				Optional:     true,
 				Computed:     true,
 			},
-			"script_template": {
+			"file_template": {
 				Type:        schema.TypeString,
-				Description: "The library script template in Morpheus",
+				Description: "The library file template in Morpheus",
 				Optional:    true,
 				Computed:    true,
 			},
-			"script_template_id": {
+			"file_template_id": {
 				Type:        schema.TypeString,
-				Description: "The library script template id in Morpheus",
+				Description: "The library file template id in Morpheus",
 				Optional:    true,
 				Computed:    true,
 			},
 			"execute_target": {
 				Type:         schema.TypeString,
-				Description:  "The target for the library script",
+				Description:  "The target for the library template",
 				ValidateFunc: validation.StringInSlice([]string{"resource"}, false),
 				Optional:     true,
 				Computed:     true,
@@ -88,7 +88,7 @@ func resourceLibraryScriptTask() *schema.Resource {
 			},
 			"allow_custom_config": {
 				Type:        schema.TypeBool,
-				Description: "Custom configuration data to pass during the execution of the library script",
+				Description: "Custom configuration data to pass during the execution of the library template",
 				Optional:    true,
 				Computed:    true,
 			},
@@ -106,7 +106,7 @@ func resourceLibraryScriptTask() *schema.Resource {
 	}
 }
 
-func resourceLibraryScriptTaskCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceLibraryTemplateTaskCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*morpheus.Client)
 
 	// Warning or errors can be collected in a slice type
@@ -115,18 +115,18 @@ func resourceLibraryScriptTaskCreate(ctx context.Context, d *schema.ResourceData
 	name := d.Get("name").(string)
 
 	taskType := make(map[string]interface{})
-	taskType["code"] = "containerScript"
+	taskType["code"] = "containerTemplate"
 
 	taskOptions := make(map[string]interface{})
 	if d.Get("visibility") != "" {
 		taskOptions["visibility"] = d.Get("visibility")
 	}
 
-	if d.Get("script_template_id") != "" {
-		taskOptions["containerScriptId"] = d.Get("script_template_id")
+	if d.Get("file_template_id") != "" {
+		taskOptions["containerTemplateId"] = d.Get("file_template_id")
 	}
-	if d.Get("script_template") != "" {
-		taskOptions["containerScript"] = d.Get("script_template")
+	if d.Get("file_template") != "" {
+		taskOptions["containerTemplate"] = d.Get("file_template")
 	}
 
 	labelsPayload := make([]string, 0)
@@ -167,11 +167,11 @@ func resourceLibraryScriptTaskCreate(ctx context.Context, d *schema.ResourceData
 	d.SetId(int64ToString(task.ID))
 	log.Printf("Task ID: %s", int64ToString(task.ID))
 
-	resourceLibraryScriptTaskRead(ctx, d, meta)
+	resourceLibraryTemplateTaskRead(ctx, d, meta)
 	return diags
 }
 
-func resourceLibraryScriptTaskRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceLibraryTemplateTaskRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*morpheus.Client)
 
 	// Warning or errors can be collected in a slice type
@@ -205,42 +205,42 @@ func resourceLibraryScriptTaskRead(ctx context.Context, d *schema.ResourceData, 
 
 	// store resource data
 	result := resp.Result.(*morpheus.GetTaskResult)
-	libraryScriptTask := result.Task
+	libraryTemplateTask := result.Task
 
-	d.SetId(int64ToString(libraryScriptTask.ID))
-	d.Set("name", libraryScriptTask.Name)
-	d.Set("code", libraryScriptTask.Code)
-	d.Set("labels", libraryScriptTask.Labels)
-	d.Set("result_type", libraryScriptTask.ResultType)
-	d.Set("script_template", libraryScriptTask.TaskOptions.ContainerScript)
-	d.Set("script_template_id", libraryScriptTask.TaskOptions.ContainerScriptId)
-	d.Set("execute_target", libraryScriptTask.ExecuteTarget)
-	d.Set("retryable", libraryScriptTask.Retryable)
-	d.Set("retry_count", libraryScriptTask.RetryCount)
-	d.Set("retry_delay_seconds", libraryScriptTask.RetryDelaySeconds)
-	d.Set("allow_custom_config", libraryScriptTask.AllowCustomConfig)
-	d.Set("visibility", libraryScriptTask.Visibility)
+	d.SetId(int64ToString(libraryTemplateTask.ID))
+	d.Set("name", libraryTemplateTask.Name)
+	d.Set("code", libraryTemplateTask.Code)
+	d.Set("labels", libraryTemplateTask.Labels)
+	d.Set("result_type", libraryTemplateTask.ResultType)
+	d.Set("file_template", libraryTemplateTask.TaskOptions.ContainerTemplate)
+	d.Set("file_template_id", libraryTemplateTask.TaskOptions.ContainerTemplateId)
+	d.Set("execute_target", libraryTemplateTask.ExecuteTarget)
+	d.Set("retryable", libraryTemplateTask.Retryable)
+	d.Set("retry_count", libraryTemplateTask.RetryCount)
+	d.Set("retry_delay_seconds", libraryTemplateTask.RetryDelaySeconds)
+	d.Set("allow_custom_config", libraryTemplateTask.AllowCustomConfig)
+	d.Set("visibility", libraryTemplateTask.Visibility)
 	return diags
 }
 
-func resourceLibraryScriptTaskUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceLibraryTemplateTaskUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*morpheus.Client)
 	id := d.Id()
 	name := d.Get("name").(string)
 
 	taskType := make(map[string]interface{})
-	taskType["code"] = "containerScript"
+	taskType["code"] = "containerTemplate"
 
 	taskOptions := make(map[string]interface{})
 	if d.Get("visibility") != "" {
 		taskOptions["visibility"] = d.Get("visibility")
 	}
 
-	if d.Get("script_template_id") != "" {
-		taskOptions["containerScriptId"] = d.Get("script_template_id")
+	if d.Get("file_template_id") != "" {
+		taskOptions["containerTemplateId"] = d.Get("file_template_id")
 	}
-	if d.Get("script_template") != "" {
-		taskOptions["containerScript"] = d.Get("script_template")
+	if d.Get("file_template") != "" {
+		taskOptions["containerTemplate"] = d.Get("file_template")
 	}
 
 	labelsPayload := make([]string, 0)
@@ -276,14 +276,14 @@ func resourceLibraryScriptTaskUpdate(ctx context.Context, d *schema.ResourceData
 	}
 	log.Printf("API RESPONSE: %s", resp)
 	result := resp.Result.(*morpheus.UpdateTaskResult)
-	libraryScriptTask := result.Task
+	libraryTemplateTask := result.Task
 	// Successfully updated resource, now set id
 	// err, it should not have changed though..
-	d.SetId(int64ToString(libraryScriptTask.ID))
-	return resourceLibraryScriptTaskRead(ctx, d, meta)
+	d.SetId(int64ToString(libraryTemplateTask.ID))
+	return resourceLibraryTemplateTaskRead(ctx, d, meta)
 }
 
-func resourceLibraryScriptTaskDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceLibraryTemplateTaskDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*morpheus.Client)
 
 	// Warning or errors can be collected in a slice type
