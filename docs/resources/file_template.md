@@ -14,6 +14,7 @@ Provides a Morpheus file template resource
 ```terraform
 resource "morpheus_file_template" "tfexample_file_template" {
   name             = "tf-terraform-file-template"
+  labels           = ["demo", "template", "terraform"]
   file_name        = "tfcustom.cnf"
   file_path        = "/etc/my.cnf.d"
   phase            = "preProvision"
@@ -38,6 +39,7 @@ resource "morpheus_file_template" "tfexample_file_template" {
 - `file_content` (String) The content of the file template
 - `file_owner` (String) The file template file owner
 - `file_path` (String) The system path of the file deployed by the file template
+- `labels` (Set of String) The organization labels associated with the file template (Only supported on Morpheus 5.5.3 or higher)
 - `setting_category` (String) The file template setting category
 - `setting_name` (String) The file template setting name
 

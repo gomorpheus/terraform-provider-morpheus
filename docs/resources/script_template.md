@@ -14,6 +14,7 @@ Provides a Morpheus script template resource
 ```terraform
 resource "morpheus_script_template" "tfexample_script_template" {
   name           = "tf-terraform-script-template"
+  labels         = ["demo", "template", "terraform"]
   script_type    = "bash"
   script_phase   = "provision"
   script_content = <<EOF
@@ -35,6 +36,7 @@ EOF
 
 ### Optional
 
+- `labels` (Set of String) The organization labels associated with the script template (Only supported on Morpheus 5.5.3 or higher)
 - `run_as_user` (String) The name of the user account the script should run as
 - `script_content` (String) The content of the script template
 - `sudo` (Boolean) Whether the script should run with sudo privileges

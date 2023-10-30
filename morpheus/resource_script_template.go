@@ -31,6 +31,13 @@ func resourceScriptTemplate() *schema.Resource {
 				Description: "The name of the script template",
 				Required:    true,
 			},
+			"labels": {
+				Type:        schema.TypeSet,
+				Description: "The organization labels associated with the script template (Only supported on Morpheus 5.5.3 or higher)",
+				Optional:    true,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+			},
 			"script_type": {
 				Type:         schema.TypeString,
 				Description:  "The type of the script template (powershell, bash)",
@@ -76,10 +83,19 @@ func resourceScriptTemplateCreate(ctx context.Context, d *schema.ResourceData, m
 	var diags diag.Diagnostics
 
 	name := d.Get("name").(string)
+
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"containerScript": map[string]interface{}{
 				"name":        name,
+				"labels":      labelsPayload,
 				"scriptType":  d.Get("script_type").(string),
 				"scriptPhase": d.Get("script_phase").(string),
 				"script":      d.Get("script_content").(string),
@@ -141,6 +157,7 @@ func resourceScriptTemplateRead(ctx context.Context, d *schema.ResourceData, met
 	scriptTemplate := result.ScriptTemplate
 	d.SetId(int64ToString(scriptTemplate.ID))
 	d.Set("name", scriptTemplate.Name)
+	d.Set("labels", scriptTemplate.Labels)
 	d.Set("script_phase", scriptTemplate.ScriptPhase)
 	d.Set("script_type", scriptTemplate.ScriptType)
 	d.Set("script_content", scriptTemplate.Script)
@@ -154,10 +171,19 @@ func resourceScriptTemplateUpdate(ctx context.Context, d *schema.ResourceData, m
 	id := d.Id()
 
 	name := d.Get("name").(string)
+
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"containerScript": map[string]interface{}{
 				"name":        name,
+				"labels":      labelsPayload,
 				"scriptType":  d.Get("script_type").(string),
 				"scriptPhase": d.Get("script_phase").(string),
 				"script":      d.Get("script_content").(string),

@@ -31,6 +31,13 @@ func resourceFileTemplate() *schema.Resource {
 				Description: "The name of the file template",
 				Required:    true,
 			},
+			"labels": {
+				Type:        schema.TypeSet,
+				Description: "The organization labels associated with the file template (Only supported on Morpheus 5.5.3 or higher)",
+				Optional:    true,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+			},
 			"file_name": {
 				Type:        schema.TypeString,
 				Description: "The name of the file deployed by the file template",
@@ -85,10 +92,19 @@ func resourceFileTemplateCreate(ctx context.Context, d *schema.ResourceData, met
 	var diags diag.Diagnostics
 
 	name := d.Get("name").(string)
+
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"containerTemplate": map[string]interface{}{
 				"name":            name,
+				"labels":          labelsPayload,
 				"fileName":        d.Get("file_name").(string),
 				"filePath":        d.Get("file_path").(string),
 				"templatePhase":   d.Get("phase").(string),
@@ -153,6 +169,7 @@ func resourceFileTemplateRead(ctx context.Context, d *schema.ResourceData, meta 
 	fileTemplate := result.FileTemplate
 	d.SetId(int64ToString(fileTemplate.ID))
 	d.Set("name", fileTemplate.Name)
+	d.Set("labels", fileTemplate.Labels)
 	d.Set("file_name", fileTemplate.FileName)
 	d.Set("file_path", fileTemplate.FilePath)
 	d.Set("phase", fileTemplate.TemplatePhase)
@@ -168,10 +185,19 @@ func resourceFileTemplateUpdate(ctx context.Context, d *schema.ResourceData, met
 	id := d.Id()
 
 	name := d.Get("name").(string)
+
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"containerTemplate": map[string]interface{}{
 				"name":            name,
+				"labels":          labelsPayload,
 				"fileName":        d.Get("file_name").(string),
 				"filePath":        d.Get("file_path").(string),
 				"templatePhase":   d.Get("phase").(string),
