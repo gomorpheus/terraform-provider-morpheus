@@ -16,6 +16,7 @@ resource "morpheus_instance_type" "tf_example_instance_type" {
   name               = "tf_example_instance"
   code               = "tf_example_instance"
   description        = "Terraform Example Instance Type"
+  labels             = ["demo", "instance", "terraform"]
   category           = "web"
   visibility         = "private"
   image_path         = "tfexample.png"

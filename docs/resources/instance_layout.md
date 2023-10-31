@@ -15,6 +15,7 @@ Provides a Morpheus instance layout resource
 resource "morpheus_instance_layout" "tf_example_instance_layout" {
   instance_type_id = morpheus_instance_type.tf_example_instance_type.id
   name             = "todo_app_frontend"
+  labels           = ["demo", "layout", "terraform"]
   version          = "1.0"
   technology       = "vmware"
   node_type_ids = [
@@ -39,6 +40,7 @@ resource "morpheus_instance_layout" "tf_example_instance_layout" {
 - `creatable` (Boolean) Whether the instance layout can be used to create an instance
 - `description` (String) The instance layout category
 - `evar` (Block List) The environment variables to create (see [below for nested schema](#nestedblock--evar))
+- `labels` (Set of String) The organization labels associated with the script template (Only supported on Morpheus 5.5.3 or higher)
 - `minimum_memory` (Number) The memory requirement in megabytes
 - `node_type_ids` (List of Number) A list of node type ids associated with the instance layout
 - `option_type_ids` (List of Number) A list of option type ids associated with the instance layout

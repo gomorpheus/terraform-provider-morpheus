@@ -19,6 +19,7 @@ data "morpheus_virtual_image" "example_virtual_image" {
 resource "morpheus_node_type" "tf_example_node" {
   name             = "tf_example_node_type"
   short_name       = "tfexamplenodetype"
+  labels           = ["demo", "nodeType", "terraform"]
   technology       = "vmware"
   version          = "2.0"
   category         = "tfexample"
@@ -63,6 +64,7 @@ resource "morpheus_node_type" "tf_example_node" {
 - `category` (String) The node type category
 - `extra_options` (Map of String) VMware custom options associated with the node type
 - `file_template_ids` (List of Number) A list of file template ids associated with the node type
+- `labels` (Set of String) The organization labels associated with the script template (Only supported on Morpheus 5.5.3 or higher)
 - `script_template_ids` (List of Number) A list of script template ids associated with the node type
 - `service_port` (Block List) Service ports associated with the node type (see [below for nested schema](#nestedblock--service_port))
 - `virtual_image_id` (Number) The ID of the virtual image associated with the node type
