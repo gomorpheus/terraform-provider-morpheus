@@ -45,6 +45,13 @@ func resourceNodeType() *schema.Resource {
 				Required:     true,
 				ValidateFunc: validation.StringMatch(shortNameCharacters, shortNameCharactersWarning),
 			},
+			"labels": {
+				Type:        schema.TypeSet,
+				Description: "The organization labels associated with the script template (Only supported on Morpheus 5.5.3 or higher)",
+				Optional:    true,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+			},
 			"technology": {
 				Type:         schema.TypeString,
 				Description:  "The technology of the node type (alibaba, amazon, azure, maas, esxi, fusion, google, huawei, hyperv, kvm, nutanix, opentelekom, openstack, oraclecloud, oraclevm, scvmm, upcloud, vcd.vapp, vcd, vmware, xen)",
@@ -212,6 +219,14 @@ func resourceNodeTypeCreate(ctx context.Context, d *schema.ResourceData, meta in
 	containerType["category"] = d.Get("category").(string)
 	containerType["serverType"] = "vm"
 
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+	containerType["labels"] = labelsPayload
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"containerType": containerType,
@@ -274,6 +289,7 @@ func resourceNodeTypeRead(ctx context.Context, d *schema.ResourceData, meta inte
 	d.SetId(int64ToString(nodeType.NodeType.ID))
 	d.Set("name", nodeType.NodeType.Name)
 	d.Set("short_name", nodeType.NodeType.ShortName)
+	d.Set("labels", nodeType.Labels)
 	d.Set("version", nodeType.NodeType.ContainerVersion)
 	d.Set("technology", nodeType.NodeType.ProvisionType.Code)
 	d.Set("virtual_image_id", nodeType.NodeType.VirtualImage.ID)
@@ -461,21 +477,22 @@ func matchTemplatesWithSchema(templates []int64, declaredTemplates []interface{}
 	return result
 }
 
-func parseServicePortPayload(variables []ContainerPort) []map[string]interface{} {
+func parseServicePortPayload(variables []morpheus.ContainerPort) []map[string]interface{} {
 	var svcports []map[string]interface{}
 	// iterate over the array of svcports
 	for i := 0; i < len(variables); i++ {
 		row := make(map[string]interface{})
 		row["name"] = variables[i].Name
 		row["port"] = strconv.Itoa(int(variables[i].Port))
-		row["protocol"] = variables[i].Loadbalanceprotocol
+		row["protocol"] = variables[i].LoadBalanceProtocol
 		svcports = append(svcports, row)
 	}
 	return svcports
 }
 
 type NodeTypePayload struct {
-	NodeType struct {
+	morpheus.NodeType `json:"containerType"`
+	/*NodeType struct {
 		ID      int64 `json:"id"`
 		Account struct {
 			ID   int64  `json:"id"`
@@ -516,8 +533,11 @@ type NodeTypePayload struct {
 			Masked       bool   `json:"masked"`
 		} `json:"environmentVariables"`
 	} `json:"containerType"`
+
+	*/
 }
 
+/*
 type ContainerPort struct {
 	ID                  int64  `json:"id"`
 	Name                string `json:"name"`
@@ -525,3 +545,4 @@ type ContainerPort struct {
 	Loadbalanceprotocol string `json:"loadBalanceProtocol"`
 	Exportname          string `json:"exportName"`
 }
+*/

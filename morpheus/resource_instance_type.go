@@ -413,7 +413,8 @@ func parseInstanceTypeEnvironmentVariables(variables []interface{}, d *schema.Re
 }
 
 type InstanceTypePayload struct {
-	InstanceType struct {
+	morpheus.InstanceType `json:"instanceType"`
+	/*InstanceType struct {
 		ID      int `json:"id"`
 		Account struct {
 			ID   int    `json:"id"`
@@ -516,4 +517,6 @@ type InstanceTypePayload struct {
 			Masked           bool   `json:"masked"`
 		} `json:"environmentVariables"`
 	} `json:"instanceType"`
+
+	*/
 }

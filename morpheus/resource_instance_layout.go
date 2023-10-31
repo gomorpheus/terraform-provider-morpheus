@@ -45,6 +45,13 @@ func resourceInstanceLayout() *schema.Resource {
 				Description: "The version of the instance layout",
 				Required:    true,
 			},
+			"labels": {
+				Type:        schema.TypeSet,
+				Description: "The organization labels associated with the script template (Only supported on Morpheus 5.5.3 or higher)",
+				Optional:    true,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+			},
 			"description": {
 				Type:        schema.TypeString,
 				Description: "The instance layout category",
@@ -195,6 +202,14 @@ func resourceInstanceLayoutCreate(ctx context.Context, d *schema.ResourceData, m
 		break
 	}
 
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+	instanceLayout["labels"] = labelsPayload
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"instanceTypeLayout": instanceLayout,
@@ -258,6 +273,7 @@ func resourceInstanceLayoutRead(ctx context.Context, d *schema.ResourceData, met
 	d.Set("name", instanceLayout.InstanceLayout.Name)
 	d.Set("version", instanceLayout.InstanceLayout.ContainerVersion)
 	d.Set("description", instanceLayout.InstanceLayout.Description)
+	d.Set("labels", instanceLayout.Labels)
 	d.Set("technology", instanceLayout.InstanceLayout.ProvisionType.Code)
 	d.Set("creatable", instanceLayout.InstanceLayout.Creatable)
 	d.Set("minimum_memory", instanceLayout.InstanceLayout.MemoryRequirement)
@@ -428,7 +444,8 @@ func parseInstanceLayoutEnvironmentVariables(variables []interface{}, d *schema.
 }
 
 type InstanceLayoutPayload struct {
-	InstanceLayout struct {
+	morpheus.InstanceLayout `json:"instanceTypeLayout"`
+	/*InstanceLayout struct {
 		ID           int64 `json:"id"`
 		InstanceType struct {
 			ID   int64  `json:"id"`
@@ -476,4 +493,6 @@ type InstanceLayoutPayload struct {
 			Masked           bool   `json:"masked"`
 		} `json:"environmentVariables"`
 	} `json:"instanceTypeLayout"`
+
+	*/
 }
