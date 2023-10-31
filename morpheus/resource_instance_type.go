@@ -46,6 +46,13 @@ func resourceInstanceType() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 			},
+			"labels": {
+				Type:        schema.TypeSet,
+				Description: "The organization labels associated with the script template (Only supported on Morpheus 5.5.3 or higher)",
+				Optional:    true,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+			},
 			"category": {
 				Type:         schema.TypeString,
 				Description:  "The instance type category (web, sql, nosql, apps, network, messaging, cache, os, cloud, utility)",
@@ -166,12 +173,20 @@ func resourceInstanceTypeCreate(ctx context.Context, d *schema.ResourceData, met
 
 	name := d.Get("name").(string)
 
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"instanceType": map[string]interface{}{
 				"name":                 name,
 				"code":                 d.Get("code").(string),
 				"description":          d.Get("description").(string),
+				"labels":               labelsPayload,
 				"category":             d.Get("category").(string),
 				"visibility":           d.Get("visibility").(string),
 				"optionTypes":          d.Get("option_type_ids"),
@@ -263,6 +278,7 @@ func resourceInstanceTypeRead(ctx context.Context, d *schema.ResourceData, meta 
 	d.Set("name", instanceTypePayload.InstanceType.Name)
 	d.Set("code", instanceTypePayload.InstanceType.Code)
 	d.Set("description", instanceTypePayload.InstanceType.Description)
+	d.Set("labels", instanceTypePayload.Labels)
 	d.Set("category", instanceTypePayload.InstanceType.Category)
 	d.Set("visibility", instanceTypePayload.InstanceType.Visibility)
 	d.Set("environment_prefix", instanceTypePayload.InstanceType.EnvironmentPrefix)
@@ -308,12 +324,21 @@ func resourceInstanceTypeUpdate(ctx context.Context, d *schema.ResourceData, met
 	id := d.Id()
 
 	name := d.Get("name").(string)
+
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"instanceType": map[string]interface{}{
 				"name":                 name,
 				"code":                 d.Get("code").(string),
 				"description":          d.Get("description").(string),
+				"labels":               labelsPayload,
 				"category":             d.Get("category").(string),
 				"visibility":           d.Get("visibility").(string),
 				"optionTypes":          d.Get("option_type_ids"),
