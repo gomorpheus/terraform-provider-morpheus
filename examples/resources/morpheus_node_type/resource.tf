@@ -5,6 +5,7 @@ data "morpheus_virtual_image" "example_virtual_image" {
 resource "morpheus_node_type" "tf_example_node" {
   name             = "tf_example_node_type"
   short_name       = "tfexamplenodetype"
+  labels           = ["demo", "nodeType", "terraform"]
   technology       = "vmware"
   version          = "2.0"
   category         = "tfexample"
