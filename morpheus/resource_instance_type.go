@@ -46,6 +46,13 @@ func resourceInstanceType() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 			},
+			"labels": {
+				Type:        schema.TypeSet,
+				Description: "The organization labels associated with the script template (Only supported on Morpheus 5.5.3 or higher)",
+				Optional:    true,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+			},
 			"category": {
 				Type:         schema.TypeString,
 				Description:  "The instance type category (web, sql, nosql, apps, network, messaging, cache, os, cloud, utility)",
@@ -166,12 +173,20 @@ func resourceInstanceTypeCreate(ctx context.Context, d *schema.ResourceData, met
 
 	name := d.Get("name").(string)
 
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"instanceType": map[string]interface{}{
 				"name":                 name,
 				"code":                 d.Get("code").(string),
 				"description":          d.Get("description").(string),
+				"labels":               labelsPayload,
 				"category":             d.Get("category").(string),
 				"visibility":           d.Get("visibility").(string),
 				"optionTypes":          d.Get("option_type_ids"),
@@ -263,6 +278,7 @@ func resourceInstanceTypeRead(ctx context.Context, d *schema.ResourceData, meta 
 	d.Set("name", instanceTypePayload.InstanceType.Name)
 	d.Set("code", instanceTypePayload.InstanceType.Code)
 	d.Set("description", instanceTypePayload.InstanceType.Description)
+	d.Set("labels", instanceTypePayload.Labels)
 	d.Set("category", instanceTypePayload.InstanceType.Category)
 	d.Set("visibility", instanceTypePayload.InstanceType.Visibility)
 	d.Set("environment_prefix", instanceTypePayload.InstanceType.EnvironmentPrefix)
@@ -308,12 +324,21 @@ func resourceInstanceTypeUpdate(ctx context.Context, d *schema.ResourceData, met
 	id := d.Id()
 
 	name := d.Get("name").(string)
+
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"instanceType": map[string]interface{}{
 				"name":                 name,
 				"code":                 d.Get("code").(string),
 				"description":          d.Get("description").(string),
+				"labels":               labelsPayload,
 				"category":             d.Get("category").(string),
 				"visibility":           d.Get("visibility").(string),
 				"optionTypes":          d.Get("option_type_ids"),
@@ -413,107 +438,5 @@ func parseInstanceTypeEnvironmentVariables(variables []interface{}, d *schema.Re
 }
 
 type InstanceTypePayload struct {
-	InstanceType struct {
-		ID      int `json:"id"`
-		Account struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"account"`
-		Name                string      `json:"name"`
-		Code                string      `json:"code"`
-		Description         string      `json:"description"`
-		ProvisionTypeCode   string      `json:"provisionTypeCode"`
-		Category            string      `json:"category"`
-		Active              bool        `json:"active"`
-		HasProvisioningStep bool        `json:"hasProvisioningStep"`
-		HasDeployment       bool        `json:"hasDeployment"`
-		HasConfig           bool        `json:"hasConfig"`
-		HasSettings         bool        `json:"hasSettings"`
-		HasAutoscale        bool        `json:"hasAutoScale"`
-		ProxyType           interface{} `json:"proxyType"`
-		ProxyPort           interface{} `json:"proxyPort"`
-		ProxyProtocol       interface{} `json:"proxyProtocol"`
-		EnvironmentPrefix   string      `json:"environmentPrefix"`
-		BackupType          interface{} `json:"backupType"`
-		Config              struct {
-		} `json:"config"`
-		Visibility          string   `json:"visibility"`
-		Featured            bool     `json:"featured"`
-		Versions            []string `json:"versions"`
-		InstanceTypeLayouts []struct {
-			ID           int `json:"id"`
-			InstanceType struct {
-				ID   int    `json:"id"`
-				Name string `json:"name"`
-				Code string `json:"code"`
-			} `json:"instanceType"`
-			Account struct {
-				ID   int    `json:"id"`
-				Name string `json:"name"`
-			} `json:"account"`
-			Code                     string      `json:"code"`
-			Name                     string      `json:"name"`
-			InstanceVersion          string      `json:"instanceVersion"`
-			Description              interface{} `json:"description"`
-			Creatable                bool        `json:"creatable"`
-			MemoryRequirement        interface{} `json:"memoryRequirement"`
-			SortOrder                int         `json:"sortOrder"`
-			SupportsConvertToManaged bool        `json:"supportsConvertToManaged"`
-		} `json:"instanceTypeLayouts"`
-		OptionTypes []struct {
-			ID                 int         `json:"id"`
-			Name               string      `json:"name"`
-			Description        interface{} `json:"description"`
-			Code               string      `json:"code"`
-			FieldName          string      `json:"fieldName"`
-			FieldLabel         string      `json:"fieldLabel"`
-			FieldCode          interface{} `json:"fieldCode"`
-			FieldContext       string      `json:"fieldContext"`
-			FieldGroup         interface{} `json:"fieldGroup"`
-			FieldClass         interface{} `json:"fieldClass"`
-			FieldAddon         interface{} `json:"fieldAddOn"`
-			FieldComponent     interface{} `json:"fieldComponent"`
-			FieldInput         interface{} `json:"fieldInput"`
-			Placeholder        interface{} `json:"placeHolder"`
-			VerifyPattern      interface{} `json:"verifyPattern"`
-			HelpBlock          interface{} `json:"helpBlock"`
-			HelpBlockFieldCode interface{} `json:"helpBlockFieldCode"`
-			DefaultValue       interface{} `json:"defaultValue"`
-			OptionSource       string      `json:"optionSource"`
-			OptionSourceType   interface{} `json:"optionSourceType"`
-			OptionList         struct {
-				ID   int    `json:"id"`
-				Name string `json:"name"`
-			} `json:"optionList"`
-			Type       string `json:"type"`
-			Advanced   bool   `json:"advanced"`
-			Required   bool   `json:"required"`
-			ExportMeta bool   `json:"exportMeta"`
-			Editable   bool   `json:"editable"`
-			Creatable  bool   `json:"creatable"`
-			Config     struct {
-			} `json:"config"`
-			DisplayOrder          int         `json:"displayOrder"`
-			WrapperClass          interface{} `json:"wrapperClass"`
-			Enabled               bool        `json:"enabled"`
-			NoBlank               bool        `json:"noBlank"`
-			DependsOnCode         interface{} `json:"dependsOnCode"`
-			VisibleOnCode         interface{} `json:"visibleOnCode"`
-			RequireOnCode         interface{} `json:"requireOnCode"`
-			ContextualDefault     bool        `json:"contextualDefault"`
-			DisplayValueOnDetails bool        `json:"displayValueOnDetails"`
-			ShowOnCreate          bool        `json:"showOnCreate"`
-			ShowOnEdit            bool        `json:"showOnEdit"`
-			LocalCredential       interface{} `json:"localCredential"`
-		} `json:"optionTypes"`
-		EnvironmentVariables []struct {
-			EvarName         string `json:"evarName"`
-			Name             string `json:"name"`
-			DefaultValue     string `json:"defaultValue"`
-			DefaultValueHash string `json:"defaultValueHash"`
-			ValueType        string `json:"valueType"`
-			Export           bool   `json:"export"`
-			Masked           bool   `json:"masked"`
-		} `json:"environmentVariables"`
-	} `json:"instanceType"`
+	morpheus.InstanceType `json:"instanceType"`
 }

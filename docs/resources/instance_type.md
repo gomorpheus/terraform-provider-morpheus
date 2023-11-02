@@ -16,6 +16,7 @@ resource "morpheus_instance_type" "tf_example_instance_type" {
   name               = "tf_example_instance"
   code               = "tf_example_instance"
   description        = "Terraform Example Instance Type"
+  labels             = ["demo", "instance", "terraform"]
   category           = "web"
   visibility         = "private"
   image_path         = "tfexample.png"
@@ -62,6 +63,7 @@ resource "morpheus_instance_type" "tf_example_instance_type" {
 - `featured` (Boolean) Whether the instance type is marked as featured
 - `image_name` (String) The file name of the instance type logo image
 - `image_path` (String) The file path of the instance type logo image including the file name
+- `labels` (Set of String) The organization labels associated with the script template (Only supported on Morpheus 5.5.3 or higher)
 - `option_type_ids` (List of Number) The IDs of the inputs to associate with the instance type
 
 ### Read-Only
