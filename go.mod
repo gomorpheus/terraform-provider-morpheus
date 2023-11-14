@@ -3,7 +3,7 @@ module github.com/gomorpheus/terraform-provider-morpheus
 go 1.20
 
 require (
-	github.com/gomorpheus/morpheus-go-sdk v0.3.4
+	github.com/gomorpheus/morpheus-go-sdk v0.3.6
 	github.com/hashicorp/terraform-plugin-docs v0.16.0
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.29.0
 )

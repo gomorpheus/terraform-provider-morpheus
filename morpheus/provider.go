@@ -76,6 +76,8 @@ func Provider() *schema.Provider {
 			"morpheus_contact":                          resourceContact(),
 			"morpheus_credential":                       resourceCredential(),
 			"morpheus_cypher_access_policy":             resourceCypherAccessPolicy(),
+			"morpheus_cypher_secret":                    resourceCypherSecret(),
+			"morpheus_cypher_tfvars":                    resourceCypherTFVars(),
 			"morpheus_delayed_delete_policy":            resourceDelayedDeletePolicy(),
 			"morpheus_delete_approval_policy":           resourceDeleteApprovalPolicy(),
 			"morpheus_docker_registry_integration":      resourceDockerRegistryIntegration(),

@@ -51,7 +51,7 @@ func resourceLibraryTemplateTask() *schema.Resource {
 			},
 			"file_template": {
 				Type:        schema.TypeString,
-				Description: "The library file template in Morpheus",
+				Description: "The name of the library file template in Morpheus",
 				Optional:    true,
 				Computed:    true,
 			},
@@ -165,7 +165,6 @@ func resourceLibraryTemplateTaskCreate(ctx context.Context, d *schema.ResourceDa
 	task := result.Task
 	// Successfully created resource, now set id
 	d.SetId(int64ToString(task.ID))
-	log.Printf("Task ID: %s", int64ToString(task.ID))
 
 	resourceLibraryTemplateTaskRead(ctx, d, meta)
 	return diags
@@ -195,7 +194,8 @@ func resourceLibraryTemplateTaskRead(ctx context.Context, d *schema.ResourceData
 		// 404 is ok?
 		if resp != nil && resp.StatusCode == 404 {
 			log.Printf("API 404: %s - %s", resp, err)
-			return diag.FromErr(err)
+			d.SetId("")
+			return diags
 		} else {
 			log.Printf("API FAILURE: %s - %s", resp, err)
 			return diag.FromErr(err)

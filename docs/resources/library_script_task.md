@@ -49,7 +49,7 @@ resource "morpheus_library_script_task" "tf_example_library_script_task" {
 - `retry_count` (Number) The number of times to retry the library task if there is a failure
 - `retry_delay_seconds` (Number) The number of seconds to wait between retry attempts
 - `retryable` (Boolean) Whether to retry the library task if there is a failure
-- `script_template` (String) The library script template in Morpheus
+- `script_template` (String) The name of the library script template in Morpheus
 - `script_template_id` (String) The library script template id in Morpheus
 - `visibility` (String) The visibility of the task (private or public)
 
