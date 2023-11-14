@@ -225,20 +225,14 @@ func resourceProvisionApprovalPolicyRead(ctx context.Context, d *schema.Resource
 	d.Set("name", provisionApprovalPolicy.Name)
 	d.Set("description", provisionApprovalPolicy.Description)
 	d.Set("enabled", provisionApprovalPolicy.Enabled)
-	if provisionApprovalPolicy.Config.AccountIntegrationId == "-100" {
+	if provisionApprovalPolicy.Config.AccountIntegrationId == -100 {
 		d.Set("use_internal_approvals", true)
 	} else {
 		//	d.Set("use_internal_approvals", false)
-		integration_number, err := strconv.Atoi(provisionApprovalPolicy.Config.AccountIntegrationId)
-		if err != nil {
-			return diag.FromErr(err)
-		}
+		integration_number := int(provisionApprovalPolicy.Config.AccountIntegrationId)
 		d.Set("integration_id", integration_number)
 
-		workflow_number, err := strconv.Atoi(provisionApprovalPolicy.Config.WorkflowID.(string))
-		if err != nil {
-			return diag.FromErr(err)
-		}
+		workflow_number := int(provisionApprovalPolicy.Config.WorkflowID)
 		d.Set("workflow_id", workflow_number)
 	}
 

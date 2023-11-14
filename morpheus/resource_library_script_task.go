@@ -49,12 +49,6 @@ func resourceLibraryScriptTask() *schema.Resource {
 				Optional:     true,
 				Computed:     true,
 			},
-			"script_template": {
-				Type:        schema.TypeString,
-				Description: "The library script template in Morpheus",
-				Optional:    true,
-				Computed:    true,
-			},
 			"script_template_id": {
 				Type:        schema.TypeString,
 				Description: "The library script template id in Morpheus",
@@ -125,9 +119,6 @@ func resourceLibraryScriptTaskCreate(ctx context.Context, d *schema.ResourceData
 	if d.Get("script_template_id") != "" {
 		taskOptions["containerScriptId"] = d.Get("script_template_id")
 	}
-	if d.Get("script_template") != "" {
-		taskOptions["containerScript"] = d.Get("script_template")
-	}
 
 	labelsPayload := make([]string, 0)
 	if attr, ok := d.GetOk("labels"); ok {
@@ -195,6 +186,7 @@ func resourceLibraryScriptTaskRead(ctx context.Context, d *schema.ResourceData, 
 		// 404 is ok?
 		if resp != nil && resp.StatusCode == 404 {
 			log.Printf("API 404: %s - %s", resp, err)
+			d.SetId("")
 			return diag.FromErr(err)
 		} else {
 			log.Printf("API FAILURE: %s - %s", resp, err)
@@ -212,7 +204,6 @@ func resourceLibraryScriptTaskRead(ctx context.Context, d *schema.ResourceData, 
 	d.Set("code", libraryScriptTask.Code)
 	d.Set("labels", libraryScriptTask.Labels)
 	d.Set("result_type", libraryScriptTask.ResultType)
-	d.Set("script_template", libraryScriptTask.TaskOptions.ContainerScript)
 	d.Set("script_template_id", libraryScriptTask.TaskOptions.ContainerScriptId)
 	d.Set("execute_target", libraryScriptTask.ExecuteTarget)
 	d.Set("retryable", libraryScriptTask.Retryable)
@@ -238,9 +229,6 @@ func resourceLibraryScriptTaskUpdate(ctx context.Context, d *schema.ResourceData
 
 	if d.Get("script_template_id") != "" {
 		taskOptions["containerScriptId"] = d.Get("script_template_id")
-	}
-	if d.Get("script_template") != "" {
-		taskOptions["containerScript"] = d.Get("script_template")
 	}
 
 	labelsPayload := make([]string, 0)

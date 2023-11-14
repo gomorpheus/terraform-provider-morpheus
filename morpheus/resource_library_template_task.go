@@ -49,12 +49,6 @@ func resourceLibraryTemplateTask() *schema.Resource {
 				Optional:     true,
 				Computed:     true,
 			},
-			"file_template": {
-				Type:        schema.TypeString,
-				Description: "The library file template in Morpheus",
-				Optional:    true,
-				Computed:    true,
-			},
 			"file_template_id": {
 				Type:        schema.TypeString,
 				Description: "The library file template id in Morpheus",
@@ -125,9 +119,6 @@ func resourceLibraryTemplateTaskCreate(ctx context.Context, d *schema.ResourceDa
 	if d.Get("file_template_id") != "" {
 		taskOptions["containerTemplateId"] = d.Get("file_template_id")
 	}
-	if d.Get("file_template") != "" {
-		taskOptions["containerTemplate"] = d.Get("file_template")
-	}
 
 	labelsPayload := make([]string, 0)
 	if attr, ok := d.GetOk("labels"); ok {
@@ -195,6 +186,7 @@ func resourceLibraryTemplateTaskRead(ctx context.Context, d *schema.ResourceData
 		// 404 is ok?
 		if resp != nil && resp.StatusCode == 404 {
 			log.Printf("API 404: %s - %s", resp, err)
+			d.SetId("")
 			return diag.FromErr(err)
 		} else {
 			log.Printf("API FAILURE: %s - %s", resp, err)
@@ -212,7 +204,6 @@ func resourceLibraryTemplateTaskRead(ctx context.Context, d *schema.ResourceData
 	d.Set("code", libraryTemplateTask.Code)
 	d.Set("labels", libraryTemplateTask.Labels)
 	d.Set("result_type", libraryTemplateTask.ResultType)
-	d.Set("file_template", libraryTemplateTask.TaskOptions.ContainerTemplate)
 	d.Set("file_template_id", libraryTemplateTask.TaskOptions.ContainerTemplateId)
 	d.Set("execute_target", libraryTemplateTask.ExecuteTarget)
 	d.Set("retryable", libraryTemplateTask.Retryable)
@@ -238,9 +229,6 @@ func resourceLibraryTemplateTaskUpdate(ctx context.Context, d *schema.ResourceDa
 
 	if d.Get("file_template_id") != "" {
 		taskOptions["containerTemplateId"] = d.Get("file_template_id")
-	}
-	if d.Get("file_template") != "" {
-		taskOptions["containerTemplate"] = d.Get("file_template")
 	}
 
 	labelsPayload := make([]string, 0)

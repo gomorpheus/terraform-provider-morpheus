@@ -23,7 +23,6 @@ resource "morpheus_library_template_task" "tf_example_library_template_task" {
   code                = "tf-example-library-template-task"
   labels              = ["demo", "library", "terraform"]
   execute_target      = "resource"
-  file_template       = data.morpheus_file_template.example_file_template.name
   file_template_id    = data.morpheus_file_template.example_file_template.id
   retryable           = true
   retry_count         = 1
@@ -44,7 +43,6 @@ resource "morpheus_library_template_task" "tf_example_library_template_task" {
 - `allow_custom_config` (Boolean) Custom configuration data to pass during the execution of the library template
 - `code` (String) The code of the library template task
 - `execute_target` (String) The target for the library template
-- `file_template` (String) The library file template in Morpheus
 - `file_template_id` (String) The library file template id in Morpheus
 - `labels` (Set of String) The organization labels associated with the library template task (Only supported on Morpheus 5.5.3 or higher)
 - `result_type` (String) The expected result type (value, keyValue, json)

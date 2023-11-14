@@ -225,20 +225,14 @@ func resourceDeleteApprovalPolicyRead(ctx context.Context, d *schema.ResourceDat
 	d.Set("name", deleteApprovalPolicy.Name)
 	d.Set("description", deleteApprovalPolicy.Description)
 	d.Set("enabled", deleteApprovalPolicy.Enabled)
-	if deleteApprovalPolicy.Config.AccountIntegrationId == "-100" {
+	if deleteApprovalPolicy.Config.AccountIntegrationId == -100 {
 		d.Set("use_internal_approvals", true)
 	} else {
 		//	d.Set("use_internal_approvals", false)
-		integration_number, err := strconv.Atoi(deleteApprovalPolicy.Config.AccountIntegrationId)
-		if err != nil {
-			return diag.FromErr(err)
-		}
+		integration_number := int(deleteApprovalPolicy.Config.AccountIntegrationId)
 		d.Set("integration_id", integration_number)
 
-		workflow_number, err := strconv.Atoi(deleteApprovalPolicy.Config.WorkflowID.(string))
-		if err != nil {
-			return diag.FromErr(err)
-		}
+		workflow_number := int(deleteApprovalPolicy.Config.WorkflowID)
 		d.Set("workflow_id", workflow_number)
 	}
 

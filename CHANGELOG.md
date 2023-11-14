@@ -1,7 +1,12 @@
 ## UNRELEASED
 
+## 0.9.6 (November 14, 2023)
+
 NOTES:
 
+* Add initial support for properly reconciling missing resources that are managed with Terraform.
+* Updated the `morpheus-go-sdk` library from v0.3.4 to v0.3.6
+* Add support for labels on `morpheus_node_type`, `morpheus_instance_layout`, and `morpheus_instance_type` resources.
 * Updated authentication documentation to properly document the use of the subtenant domain setting when using environment variables when authenticating.
 * Updated the `morpheus_ansible_tower_integration` resource to fix an issue with the password continually indicating a change.
 * Added support for utilizing credentials to the `morpheus_ansible_tower_integration` resource.
@@ -9,6 +14,10 @@ NOTES:
 FEATURES:
 
 * **New Resource:** `morpheus_credential`
+* **New Resource:** `morpheus_cypher_secret`
+* **New Resource:** `morpheus_cypher_tfvars`
+* **New Resource:** `morpheus_library_script_task`
+* **New Resource:** `morpheus_library_template_task`
 
 ## 0.9.5 (October 6, 2023)
 
