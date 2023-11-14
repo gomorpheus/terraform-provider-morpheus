@@ -7,6 +7,7 @@ resource "morpheus_library_script_task" "tf_example_library_script_task" {
   code                = "tf-example-library-script-task"
   labels              = ["demo", "library", "terraform"]
   execute_target      = "resource"
+  script_template     = data.morpheus_script_template.example_script_template.name
   script_template_id  = data.morpheus_script_template.example_script_template.id
   retryable           = true
   retry_count         = 1
