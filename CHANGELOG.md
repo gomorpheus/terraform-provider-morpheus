@@ -3,6 +3,7 @@
 FEATURES:
 
 * **New Resource:** `morpheus_vsphere_cloud_datastore_configuration`
+* **New Resource:** `morpheus_standard_cloud`
 
 ## 0.9.6 (November 14, 2023)
 

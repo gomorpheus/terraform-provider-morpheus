@@ -145,6 +145,7 @@ func Provider() *schema.Provider {
 			"morpheus_service_plan":                          resourceServicePlan(),
 			"morpheus_servicenow_integration":                resourceServiceNowIntegration(),
 			"morpheus_shell_script_task":                     resourceShellScriptTask(),
+			"morpheus_standard_cloud":                        resourceStandardCloud(),
 			"morpheus_tag_policy":                            resourceTagPolicy(),
 			"morpheus_task_job":                              resourceTaskJob(),
 			"morpheus_tenant":                                resourceTenant(),
