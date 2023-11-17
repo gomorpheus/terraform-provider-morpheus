@@ -110,6 +110,12 @@ func resourceWorkflowCatalogItem() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 			},
+			"visibility": {
+				Type:         schema.TypeString,
+				Description:  "The visibility of the workflow catalog item (public or private)",
+				Required:     true,
+				ValidateFunc: validation.StringInSlice([]string{"public", "private"}, false),
+			},
 		},
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
@@ -134,6 +140,7 @@ func resourceWorkflowCatalogItemCreate(ctx context.Context, d *schema.ResourceDa
 	catalogItem["context"] = d.Get("context_type").(string)
 	catalogItem["optionTypes"] = d.Get("option_type_ids")
 	catalogItem["content"] = d.Get("content").(string)
+	catalogItem["visibility"] = d.Get("visibility").(string)
 
 	catalogItem["workflow"] = map[string]interface{}{
 		"id": d.Get("workflow_id").(int),
@@ -256,6 +263,7 @@ func resourceWorkflowCatalogItemRead(ctx context.Context, d *schema.ResourceData
 	d.Set("option_type_ids", optionTypes)
 	d.Set("content", catalogItem.Content)
 	d.Set("context_type", catalogItem.Context)
+	d.Set("visibility", catalogItem.Visibility)
 
 	// Parse workflow ID
 	var data map[string]interface{}
@@ -297,6 +305,7 @@ func resourceWorkflowCatalogItemUpdate(ctx context.Context, d *schema.ResourceDa
 	catalogItem["context"] = d.Get("context_type").(string)
 	catalogItem["optionTypes"] = d.Get("option_type_ids")
 	catalogItem["content"] = d.Get("content").(string)
+	catalogItem["visibility"] = d.Get("visibility").(string)
 
 	catalogItem["workflow"] = map[string]interface{}{
 		"id": d.Get("workflow_id").(int),

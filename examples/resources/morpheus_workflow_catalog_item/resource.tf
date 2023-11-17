@@ -12,4 +12,5 @@ resource "morpheus_workflow_catalog_item" "tfexample_workflow_catalog_item" {
   option_type_ids      = [2056, 2006]
   context_type         = "appliance"
   content              = file("${path.module}/catalog-data.md")
+  visibility           = "public"
 }
