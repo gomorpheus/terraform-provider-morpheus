@@ -197,12 +197,13 @@ func resourceVSphereCloudDatastoreConfigurationRead(ctx context.Context, d *sche
 	var diags diag.Diagnostics
 
 	name := d.Get("name").(string)
+	cloudId := d.Get("cloud_id").(int)
 	// lookup by name if we do not have an id yet
 	var resp *morpheus.Response
 	var err error
 
 	// Find by name, then get by ID
-	resp, err = client.ListCloudDatastores(4, &morpheus.Request{
+	resp, err = client.ListCloudDatastores(int64(cloudId), &morpheus.Request{
 		QueryParams: map[string]string{
 			"name": name,
 		},
