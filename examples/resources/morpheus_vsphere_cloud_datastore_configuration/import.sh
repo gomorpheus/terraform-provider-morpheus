@@ -1,0 +1,1 @@
+terraform import morpheus_vsphere_cloud_datastore_configuration.tf_example_vsphere_cloud_datastore_configuration 1
