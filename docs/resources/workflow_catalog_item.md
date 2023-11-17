@@ -26,6 +26,7 @@ resource "morpheus_workflow_catalog_item" "tfexample_workflow_catalog_item" {
   option_type_ids      = [2056, 2006]
   context_type         = "appliance"
   content              = file("${path.module}/catalog-data.md")
+  visibility           = "public"
 }
 ```
 
@@ -35,6 +36,7 @@ resource "morpheus_workflow_catalog_item" "tfexample_workflow_catalog_item" {
 ### Required
 
 - `name` (String) The name of the workflow catalog item
+- `visibility` (String) The visibility of the workflow catalog item (public or private)
 - `workflow_id` (Number) The id of the workflow associated with the workflow catalog item
 
 ### Optional

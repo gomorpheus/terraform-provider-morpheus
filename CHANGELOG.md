@@ -1,5 +1,9 @@
 ## UNRELEASED
 
+NOTES:
+
+* Add support for setting visibility to the `morpheus_workflow_catalog_item` resource [175](https://github.com/gomorpheus/terraform-provider-morpheus/issues/175).
+
 FEATURES:
 
 * **New Resource:** `morpheus_vsphere_cloud_datastore_configuration`
