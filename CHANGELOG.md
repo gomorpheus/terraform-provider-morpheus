@@ -3,10 +3,13 @@
 NOTES:
 
 * Add support for setting visibility to the `morpheus_workflow_catalog_item` resource [175](https://github.com/gomorpheus/terraform-provider-morpheus/issues/175).
+* Updated the `morpheus-go-sdk` library from v0.3.6 to v0.3.7
+
 
 FEATURES:
 
 * **New Resource:** `morpheus_vsphere_cloud_datastore_configuration`
+* **New Resource:** `morpheus_cluster_package`
 * **New Resource:** `morpheus_standard_cloud`
 
 ## 0.9.6 (November 14, 2023)
