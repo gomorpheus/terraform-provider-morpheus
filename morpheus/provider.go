@@ -72,6 +72,7 @@ func Provider() *schema.Provider {
 			"morpheus_cloud_formation_app_blueprint":         resourceCloudFormationAppBlueprint(),
 			"morpheus_cloud_formation_spec_template":         resourceCloudFormationSpecTemplate(),
 			"morpheus_cluster_layout":                        resourceClusterLayout(),
+			"morpheus_cluster_package":                       resourceClusterPackage(),
 			"morpheus_cluster_resource_name_policy":          resourceClusterResourceNamePolicy(),
 			"morpheus_contact":                               resourceContact(),
 			"morpheus_credential":                            resourceCredential(),
