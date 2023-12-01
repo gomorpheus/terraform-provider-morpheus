@@ -197,11 +197,14 @@ func resourceAppBlueprintCatalogItemCreate(ctx context.Context, d *schema.Resour
 		filePayloads = append(filePayloads, darkLogoPayload)
 	}
 
-	response, err := client.UpdateCatalogItemLogo(catalogItemResult.ID, filePayloads, &morpheus.Request{})
-	if err != nil {
-		log.Printf("API FAILURE: %s - %s", response, err)
+	// any payloads
+	if len(filePayloads) > 0 {
+		response, err := client.UpdateCatalogItemLogo(catalogItemResult.ID, filePayloads, &morpheus.Request{})
+		if err != nil {
+			log.Printf("API FAILURE: %s - %s", response, err)
+		}
+		log.Printf("API RESPONSE: %s", response)
 	}
-	log.Printf("API RESPONSE: %s", response)
 
 	// Successfully created resource, now set id
 	d.SetId(int64ToString(catalogItemResult.ID))
@@ -319,7 +322,7 @@ func resourceAppBlueprintCatalogItemUpdate(ctx context.Context, d *schema.Resour
 
 	var filePayloads []*morpheus.FilePayload
 
-	if d.HasChange("logo_image_path") || d.HasChange("logo_image_name") {
+	if d.Get("logo_image_path") != "" && d.Get("logo_image_name") != "" {
 		data, err := os.ReadFile(d.Get("logo_image_path").(string))
 		if err != nil {
 			return diag.FromErr(err)
@@ -332,7 +335,8 @@ func resourceAppBlueprintCatalogItemUpdate(ctx context.Context, d *schema.Resour
 		}
 		filePayloads = append(filePayloads, filePayload)
 	}
-	if d.HasChange("dark_logo_image_path") || d.HasChange("dark_logo_image_name") {
+
+	if d.Get("dark_logo_image_path") != "" && d.Get("dark_logo_image_name") != "" {
 		darkLogoData, err := os.ReadFile(d.Get("dark_logo_image_path").(string))
 		if err != nil {
 			return diag.FromErr(err)
@@ -346,11 +350,13 @@ func resourceAppBlueprintCatalogItemUpdate(ctx context.Context, d *schema.Resour
 		filePayloads = append(filePayloads, darkLogoPayload)
 	}
 
-	response, err := client.UpdateCatalogItemLogo(catalogItemResult.ID, filePayloads, &morpheus.Request{})
-	if err != nil {
-		log.Printf("API FAILURE: %s - %s", response, err)
+	if len(filePayloads) > 0 {
+		response, err := client.UpdateCatalogItemLogo(catalogItemResult.ID, filePayloads, &morpheus.Request{})
+		if err != nil {
+			log.Printf("API FAILURE: %s - %s", response, err)
+		}
+		log.Printf("API RESPONSE: %s", response)
 	}
-	log.Printf("API RESPONSE: %s", response)
 
 	// Successfully updated resource, now set id
 	// err, it should not have changed though..
