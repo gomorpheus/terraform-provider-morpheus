@@ -249,6 +249,7 @@ func resourceCredentialRead(ctx context.Context, d *schema.ResourceData, meta in
 	if err != nil {
 		if resp != nil && resp.StatusCode == 404 {
 			log.Printf("API 404: %s - %s", resp, err)
+			log.Printf("Forcing recreation of resource")
 			d.SetId("")
 			return diags
 		} else {

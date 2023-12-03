@@ -173,7 +173,9 @@ func resourceCloudFormationSpecTemplateRead(ctx context.Context, d *schema.Resou
 		// 404 is ok?
 		if resp != nil && resp.StatusCode == 404 {
 			log.Printf("API 404: %s - %s", resp, err)
-			return diag.FromErr(err)
+			log.Printf("Forcing recreation of resource")
+			d.SetId("")
+			return diags
 		} else {
 			log.Printf("API FAILURE: %s - %s", resp, err)
 			return diag.FromErr(err)
