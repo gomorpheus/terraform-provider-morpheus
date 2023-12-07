@@ -97,7 +97,7 @@ resource "morpheus_vsphere_instance" "tf_example_vsphere_instance" {
 - `interfaces` (Block List) The instance network interfaces to create (see [below for nested schema](#nestedblock--interfaces))
 - `labels` (List of String) The list of labels to add to the instance
 - `name` (String) The name of the instance
-- `nested_virtualization` (Boolean) Whether to skip installation of the Morpheus agent
+- `nested_virtualization` (Boolean) Whether to skip configuration of nested virtualization
 - `resource_pool_id` (Number) The ID of the resource pool to provision the instance to
 - `skip_agent_install` (Boolean) Whether to skip installation of the Morpheus agent
 - `tags` (Map of String) Tags to assign to the instance
