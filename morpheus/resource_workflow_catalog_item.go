@@ -84,7 +84,8 @@ func resourceWorkflowCatalogItem() *schema.Resource {
 				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
 					return new == old
 				},
-				Computed: true,
+				Computed:      true,
+				ConflictsWith: []string{"form_id"},
 			},
 			"logo_image_name": {
 				Type:        schema.TypeString,
@@ -115,6 +116,12 @@ func resourceWorkflowCatalogItem() *schema.Resource {
 				Description:  "The visibility of the workflow catalog item (public or private)",
 				Required:     true,
 				ValidateFunc: validation.StringInSlice([]string{"public", "private"}, false),
+			},
+			"form_id": {
+				Type:          schema.TypeInt,
+				Description:   "The id of the form associated with the workflow catalog item",
+				Optional:      true,
+				ConflictsWith: []string{"option_type_ids"},
 			},
 		},
 		Importer: &schema.ResourceImporter{
@@ -153,6 +160,13 @@ func resourceWorkflowCatalogItemCreate(ctx context.Context, d *schema.ResourceDa
 		}
 	}
 	catalogItem["labels"] = labelsPayload
+
+	if d.Get("form_id").(int) > 0 {
+		catalogItem["formType"] = "form"
+		catalogItem["form"] = map[string]interface{}{
+			"id": d.Get("form_id").(int),
+		}
+	}
 
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
@@ -264,7 +278,7 @@ func resourceWorkflowCatalogItemRead(ctx context.Context, d *schema.ResourceData
 	d.Set("content", catalogItem.Content)
 	d.Set("context_type", catalogItem.Context)
 	d.Set("visibility", catalogItem.Visibility)
-
+	d.Set("form_id", catalogItem.Form.ID)
 	// Parse workflow ID
 	var data map[string]interface{}
 	err = json.Unmarshal([]byte(resp.Body), &data)
@@ -309,6 +323,13 @@ func resourceWorkflowCatalogItemUpdate(ctx context.Context, d *schema.ResourceDa
 
 	catalogItem["workflow"] = map[string]interface{}{
 		"id": d.Get("workflow_id").(int),
+	}
+
+	if d.Get("form_id").(int) > 0 {
+		catalogItem["formType"] = "form"
+		catalogItem["form"] = map[string]interface{}{
+			"id": d.Get("form_id").(int),
+		}
 	}
 
 	req := &morpheus.Request{
