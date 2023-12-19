@@ -149,7 +149,7 @@ func resourceVsphereInstance() *schema.Resource {
 				Computed:    true,
 			},
 			"nested_virtualization": {
-				Description: "Whether to skip installation of the Morpheus agent",
+				Description: "Whether to skip configuration of nested virtualization",
 				Type:        schema.TypeBool,
 				ForceNew:    true,
 				Optional:    true,
