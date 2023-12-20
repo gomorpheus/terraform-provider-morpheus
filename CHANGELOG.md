@@ -1,5 +1,7 @@
 ## UNRELEASED
 
+## 0.9.7 (December 20, 2023)
+
 NOTES:
 
 * Add support for forms [180](https://github.com/gomorpheus/terraform-provider-morpheus/issues/180).
