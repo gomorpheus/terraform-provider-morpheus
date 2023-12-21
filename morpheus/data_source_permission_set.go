@@ -17,6 +17,11 @@ func dataSourceMorpheusPermissionSet() *schema.Resource {
 		Description: "Provides a Morpheus permission set data source.",
 		ReadContext: dataSourceMorpheusPermissionSetRead,
 		Schema: map[string]*schema.Schema{
+			"name": {
+				Type:        schema.TypeString,
+				Description: "The name of the permission set",
+				Optional:    true,
+			},
 			"json": {
 				Type:        schema.TypeString,
 				Description: "JSON permission set rendered based on the arguments defined",
@@ -681,7 +686,6 @@ func dataSourceMorpheusPermissionSetRead(ctx context.Context, d *schema.Resource
 		return diag.Errorf("writing permission set: formatting JSON: %s", err)
 	}
 	jsonString := string(jsonDoc)
-
 	d.Set("json", jsonString)
 	d.SetId(strconv.Itoa(1))
 	return diags

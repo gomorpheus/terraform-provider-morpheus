@@ -1,5 +1,9 @@
 ## UNRELEASED
 
+NOTES:
+
+* Add support for setting a `name` attribute for the `morpheus_permission_set` data source.
+
 ## 0.9.7 (December 20, 2023)
 
 NOTES:
