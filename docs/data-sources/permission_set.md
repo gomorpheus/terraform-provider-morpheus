@@ -148,6 +148,7 @@ data "morpheus_permission_set" "override_set" {
 - `feature_permission` (Block List) The feature permissions associated with the user role (see [below for nested schema](#nestedblock--feature_permission))
 - `group_permission` (Block List) The group permissions associated with the user role (see [below for nested schema](#nestedblock--group_permission))
 - `instance_type_permission` (Block List) The instance type permissions associated with the user role (see [below for nested schema](#nestedblock--instance_type_permission))
+- `name` (String) The name of the permission set
 - `override_permission_sets` (List of String) List of permission sets that are merged together into the exported json. In merging, the last permission applied in the list order is used. Non-overriding permissions will be added to the exported json.
 - `persona_permission` (Block List) The persona permissions associated with the user role (see [below for nested schema](#nestedblock--persona_permission))
 - `report_type_permission` (Block List) The report type permissions associated with the user role (see [below for nested schema](#nestedblock--report_type_permission))
