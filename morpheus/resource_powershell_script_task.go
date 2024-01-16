@@ -71,6 +71,9 @@ func resourcePowerShellScriptTask() *schema.Resource {
 				Description: "The content of the powershell script. Used when the local source type is specified",
 				Optional:    true,
 				Computed:    true,
+				StateFunc: func(val interface{}) string {
+					return strings.TrimSuffix(val.(string), "\n")
+				},
 			},
 			"script_path": {
 				Type:        schema.TypeString,

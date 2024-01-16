@@ -3,6 +3,7 @@ package morpheus
 import (
 	"context"
 	"encoding/json"
+	"strings"
 
 	"log"
 
@@ -76,6 +77,9 @@ func resourceCloudFormationAppBlueprint() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The content of the cloud formation app blueprint. Used when the yaml or json source types are specified",
 				Optional:    true,
+				StateFunc: func(val interface{}) string {
+					return strings.TrimSuffix(val.(string), "\n")
+				},
 			},
 			"working_path": {
 				Type:        schema.TypeString,

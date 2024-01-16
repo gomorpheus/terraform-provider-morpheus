@@ -3,6 +3,7 @@ package morpheus
 import (
 	"context"
 	"encoding/json"
+	"strings"
 	"time"
 
 	"log"
@@ -42,6 +43,9 @@ func resourceCloudFormationSpecTemplate() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The content of the cloud formation spec template. Used when the local source type is specified",
 				Optional:    true,
+				StateFunc: func(val interface{}) string {
+					return strings.TrimSuffix(val.(string), "\n")
+				},
 			},
 			"spec_path": {
 				Type:        schema.TypeString,

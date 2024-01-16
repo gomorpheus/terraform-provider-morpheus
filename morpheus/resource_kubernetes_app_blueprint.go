@@ -3,6 +3,7 @@ package morpheus
 import (
 	"context"
 	"encoding/json"
+	"strings"
 
 	"log"
 
@@ -51,6 +52,9 @@ func resourceKubernetesAppBlueprint() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The content of the kubernetes app blueprint. Used when the yaml source type is specified",
 				Optional:    true,
+				StateFunc: func(val interface{}) string {
+					return strings.TrimSuffix(val.(string), "\n")
+				},
 			},
 			"working_path": {
 				Type:        schema.TypeString,

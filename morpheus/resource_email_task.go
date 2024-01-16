@@ -2,6 +2,7 @@ package morpheus
 
 import (
 	"context"
+	"strings"
 
 	"log"
 
@@ -86,6 +87,9 @@ func resourceEmailTask() *schema.Resource {
 				Description: "The body of the email is HTML. Morpheus automation variables can be injected into the email body when needed. Used with a source type of local",
 				Optional:    true,
 				Computed:    true,
+				StateFunc: func(val interface{}) string {
+					return strings.TrimSuffix(val.(string), "\n")
+				},
 			},
 			"skip_wrapped_email_template": {
 				Type:        schema.TypeBool,

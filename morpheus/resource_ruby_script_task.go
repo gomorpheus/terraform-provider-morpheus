@@ -2,6 +2,7 @@ package morpheus
 
 import (
 	"context"
+	"strings"
 
 	"log"
 
@@ -58,6 +59,9 @@ func resourceRubyScriptTask() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The content of the ruby script. Used when the local source type is specified",
 				Optional:    true,
+				StateFunc: func(val interface{}) string {
+					return strings.TrimSuffix(val.(string), "\n")
+				},
 			},
 			"script_path": {
 				Type:        schema.TypeString,

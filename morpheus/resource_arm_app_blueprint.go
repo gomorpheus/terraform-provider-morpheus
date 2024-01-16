@@ -3,6 +3,7 @@ package morpheus
 import (
 	"context"
 	"encoding/json"
+	"strings"
 
 	"log"
 
@@ -69,6 +70,9 @@ func resourceArmAppBlueprint() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The content of the arm app blueprint. Used when the json source type is specified",
 				Optional:    true,
+				StateFunc: func(val interface{}) string {
+					return strings.TrimSuffix(val.(string), "\n")
+				},
 			},
 			"working_path": {
 				Type:        schema.TypeString,
