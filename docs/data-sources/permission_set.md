@@ -133,10 +133,12 @@ data "morpheus_permission_set" "override_set" {
 
 ### Optional
 
-- `blueprint_permission` (Block List) The blueprint permissions associated with the user role (see [below for nested schema](#nestedblock--blueprint_permission))
-- `catalog_item_type_permission` (Block List) The catalog item type permissions associated with the user role (see [below for nested schema](#nestedblock--catalog_item_type_permission))
+- `blueprint_permission` (Block List) The blueprint permissions associated with the role (see [below for nested schema](#nestedblock--blueprint_permission))
+- `catalog_item_type_permission` (Block List) The catalog item type permissions associated with the role (see [below for nested schema](#nestedblock--catalog_item_type_permission))
+- `cloud_permission` (Block List) The cloud permissions associated with the role (see [below for nested schema](#nestedblock--cloud_permission))
 - `default_blueprint_permission` (String) The default role permission for blueprints (none, full)
 - `default_catalog_item_type_permission` (String) The default role permission for catalog item types (none, full)
+- `default_cloud_permission` (String) The default role permission for clouds (none, read, full)
 - `default_group_permission` (String) The default role permission for groups (none, read, full)
 - `default_instance_type_permission` (String) The default role permission for instance types (none, full)
 - `default_persona` (String) The default role persona (standard, serviceCatalog, vdi)
@@ -145,16 +147,16 @@ data "morpheus_permission_set" "override_set" {
 - `default_task_permission` (String) The default role permission for tasks (none, full)
 - `default_vdi_pool_permission` (String) The default role permission for vdi pools (none, full)
 - `default_workflow_permission` (String) The default role permission for workflows (none, full)
-- `feature_permission` (Block List) The feature permissions associated with the user role (see [below for nested schema](#nestedblock--feature_permission))
-- `group_permission` (Block List) The group permissions associated with the user role (see [below for nested schema](#nestedblock--group_permission))
-- `instance_type_permission` (Block List) The instance type permissions associated with the user role (see [below for nested schema](#nestedblock--instance_type_permission))
+- `feature_permission` (Block List) The feature permissions associated with the role (see [below for nested schema](#nestedblock--feature_permission))
+- `group_permission` (Block List) The group permissions associated with the role (see [below for nested schema](#nestedblock--group_permission))
+- `instance_type_permission` (Block List) The instance type permissions associated with the role (see [below for nested schema](#nestedblock--instance_type_permission))
 - `name` (String) The name of the permission set
 - `override_permission_sets` (List of String) List of permission sets that are merged together into the exported json. In merging, the last permission applied in the list order is used. Non-overriding permissions will be added to the exported json.
-- `persona_permission` (Block List) The persona permissions associated with the user role (see [below for nested schema](#nestedblock--persona_permission))
-- `report_type_permission` (Block List) The report type permissions associated with the user role (see [below for nested schema](#nestedblock--report_type_permission))
-- `task_permission` (Block List) The task permissions associated with the user role (see [below for nested schema](#nestedblock--task_permission))
-- `vdi_pool_permission` (Block List) The vdi pool permissions associated with the user role (see [below for nested schema](#nestedblock--vdi_pool_permission))
-- `workflow_permission` (Block List) The workflow permissions associated with the user role (see [below for nested schema](#nestedblock--workflow_permission))
+- `persona_permission` (Block List) The persona permissions associated with the role (see [below for nested schema](#nestedblock--persona_permission))
+- `report_type_permission` (Block List) The report type permissions associated with the role (see [below for nested schema](#nestedblock--report_type_permission))
+- `task_permission` (Block List) The task permissions associated with the role (see [below for nested schema](#nestedblock--task_permission))
+- `vdi_pool_permission` (Block List) The vdi pool permissions associated with the role (see [below for nested schema](#nestedblock--vdi_pool_permission))
+- `workflow_permission` (Block List) The workflow permissions associated with the role (see [below for nested schema](#nestedblock--workflow_permission))
 
 ### Read-Only
 
@@ -177,6 +179,15 @@ Optional:
 
 - `access` (String) The level of access granted to the catalog item type (default, full, none)
 - `id` (Number) The id of the catalog item type
+
+
+<a id="nestedblock--cloud_permission"></a>
+### Nested Schema for `cloud_permission`
+
+Optional:
+
+- `access` (String) The level of access granted to the cloud (default, full, read, none)
+- `id` (Number) The id of the cloud
 
 
 <a id="nestedblock--feature_permission"></a>
