@@ -27,6 +27,13 @@ func dataSourceMorpheusPermissionSet() *schema.Resource {
 				Description: "JSON permission set rendered based on the arguments defined",
 				Computed:    true,
 			},
+			"default_cloud_permission": {
+				Type:         schema.TypeString,
+				Description:  "The default role permission for clouds (none, read, full)",
+				Optional:     true,
+				Computed:     true,
+				ValidateFunc: validation.StringInSlice([]string{"none", "read", "full"}, true),
+			},
 			"default_group_permission": {
 				Type:         schema.TypeString,
 				Description:  "The default role permission for groups (none, read, full)",
@@ -99,7 +106,7 @@ func dataSourceMorpheusPermissionSet() *schema.Resource {
 			},
 			"feature_permission": {
 				Type:        schema.TypeList,
-				Description: "The feature permissions associated with the user role",
+				Description: "The feature permissions associated with the role",
 				Optional:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -117,9 +124,28 @@ func dataSourceMorpheusPermissionSet() *schema.Resource {
 					},
 				},
 			},
+			"cloud_permission": {
+				Type:        schema.TypeList,
+				Description: "The cloud permissions associated with the role",
+				Optional:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"id": {
+							Type:        schema.TypeInt,
+							Description: "The id of the cloud",
+							Optional:    true,
+						},
+						"access": {
+							Type:        schema.TypeString,
+							Description: "The level of access granted to the cloud (default, full, read, none)",
+							Optional:    true,
+						},
+					},
+				},
+			},
 			"group_permission": {
 				Type:        schema.TypeList,
-				Description: "The group permissions associated with the user role",
+				Description: "The group permissions associated with the role",
 				Optional:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -138,7 +164,7 @@ func dataSourceMorpheusPermissionSet() *schema.Resource {
 			},
 			"instance_type_permission": {
 				Type:        schema.TypeList,
-				Description: "The instance type permissions associated with the user role",
+				Description: "The instance type permissions associated with the role",
 				Optional:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -157,7 +183,7 @@ func dataSourceMorpheusPermissionSet() *schema.Resource {
 			},
 			"blueprint_permission": {
 				Type:        schema.TypeList,
-				Description: "The blueprint permissions associated with the user role",
+				Description: "The blueprint permissions associated with the role",
 				Optional:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -176,7 +202,7 @@ func dataSourceMorpheusPermissionSet() *schema.Resource {
 			},
 			"report_type_permission": {
 				Type:        schema.TypeList,
-				Description: "The report type permissions associated with the user role",
+				Description: "The report type permissions associated with the role",
 				Optional:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -195,7 +221,7 @@ func dataSourceMorpheusPermissionSet() *schema.Resource {
 			},
 			"persona_permission": {
 				Type:        schema.TypeList,
-				Description: "The persona permissions associated with the user role",
+				Description: "The persona permissions associated with the role",
 				Optional:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -214,7 +240,7 @@ func dataSourceMorpheusPermissionSet() *schema.Resource {
 			},
 			"catalog_item_type_permission": {
 				Type:        schema.TypeList,
-				Description: "The catalog item type permissions associated with the user role",
+				Description: "The catalog item type permissions associated with the role",
 				Optional:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -233,7 +259,7 @@ func dataSourceMorpheusPermissionSet() *schema.Resource {
 			},
 			"vdi_pool_permission": {
 				Type:        schema.TypeList,
-				Description: "The vdi pool permissions associated with the user role",
+				Description: "The vdi pool permissions associated with the role",
 				Optional:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -252,7 +278,7 @@ func dataSourceMorpheusPermissionSet() *schema.Resource {
 			},
 			"workflow_permission": {
 				Type:        schema.TypeList,
-				Description: "The workflow permissions associated with the user role",
+				Description: "The workflow permissions associated with the role",
 				Optional:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -271,7 +297,7 @@ func dataSourceMorpheusPermissionSet() *schema.Resource {
 			},
 			"task_permission": {
 				Type:        schema.TypeList,
-				Description: "The task permissions associated with the user role",
+				Description: "The task permissions associated with the role",
 				Optional:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -307,6 +333,7 @@ func dataSourceMorpheusPermissionSetRead(ctx context.Context, d *schema.Resource
 	var diags diag.Diagnostics
 
 	var permissionData PermissionSet
+	permissionData.DefaultCloudPermission = d.Get("default_cloud_permission").(string)
 	permissionData.DefaultGroupPermission = d.Get("default_group_permission").(string)
 	permissionData.DefaultInstanceTypePermission = d.Get("default_instance_type_permission").(string)
 	permissionData.DefaultBlueprintPermission = d.Get("default_blueprint_permission").(string)
@@ -333,6 +360,22 @@ func dataSourceMorpheusPermissionSetRead(ctx context.Context, d *schema.Resource
 	}
 	sort.Slice(features, func(i, j int) bool { return features[i].Code < features[j].Code })
 	permissionData.FeaturePermissions = features
+
+	// Cloud Permissions
+	var clouds []cloudPermission
+	if d.Get("cloud_permission") != nil {
+		cloudList := d.Get("cloud_permission").([]interface{})
+		// iterate over the array of clouds
+		for i := 0; i < len(cloudList); i++ {
+			var row cloudPermission
+			cloudConfig := cloudList[i].(map[string]interface{})
+			row.Id = cloudConfig["id"].(int)
+			row.Access = cloudConfig["access"].(string)
+			clouds = append(clouds, row)
+		}
+	}
+	sort.Slice(clouds, func(i, j int) bool { return clouds[i].Id < clouds[j].Id })
+	permissionData.CloudPermissions = clouds
 
 	// Group Permissions
 	var groups []groupPermission
@@ -486,6 +529,9 @@ func dataSourceMorpheusPermissionSetRead(ctx context.Context, d *schema.Resource
 			}
 			overridePayload := &PermissionSet{}
 			json.Unmarshal([]byte(overrideJSON.(string)), overridePayload)
+			if overridePayload.DefaultCloudPermission != "" {
+				permissionData.DefaultCloudPermission = overridePayload.DefaultCloudPermission
+			}
 			if overridePayload.DefaultGroupPermission != "" {
 				permissionData.DefaultGroupPermission = overridePayload.DefaultGroupPermission
 			}
@@ -531,6 +577,22 @@ func dataSourceMorpheusPermissionSetRead(ctx context.Context, d *schema.Resource
 			permissionData.FeaturePermissions = removeDuplicate(permissionData.FeaturePermissions)
 			sort.Slice(permissionData.FeaturePermissions, func(i, j int) bool {
 				return permissionData.FeaturePermissions[i].Code < permissionData.FeaturePermissions[j].Code
+			})
+
+			// Cloud Permissions
+			if len(overridePayload.CloudPermissions) > 0 {
+				for indx, perm := range permissionData.CloudPermissions {
+					for _, overperm := range overridePayload.CloudPermissions {
+						if perm.Id == overperm.Id {
+							permissionData.CloudPermissions[indx].Access = overperm.Access
+						}
+					}
+				}
+			}
+			permissionData.CloudPermissions = append(permissionData.CloudPermissions, overridePayload.CloudPermissions...)
+			permissionData.CloudPermissions = removeDuplicate(permissionData.CloudPermissions)
+			sort.Slice(permissionData.CloudPermissions, func(i, j int) bool {
+				return permissionData.CloudPermissions[i].Id < permissionData.CloudPermissions[j].Id
 			})
 
 			// Group Permissions
@@ -692,8 +754,8 @@ func dataSourceMorpheusPermissionSetRead(ctx context.Context, d *schema.Resource
 }
 
 type PermissionSet struct {
-	DefaultGroupPermission           string                      `json:"default_group_permission,omitempty"`
 	DefaultCloudPermission           string                      `json:"default_cloud_permission,omitempty"`
+	DefaultGroupPermission           string                      `json:"default_group_permission,omitempty"`
 	DefaultInstanceTypePermission    string                      `json:"default_instance_type_permission,omitempty"`
 	DefaultBlueprintPermission       string                      `json:"default_blueprint_permission,omitempty"`
 	DefaultReportTypePermission      string                      `json:"default_report_type_permission,omitempty"`
@@ -704,6 +766,7 @@ type PermissionSet struct {
 	DefaultTaskPermission            string                      `json:"default_task_permission,omitempty"`
 	DefaultPersona                   string                      `json:"default_persona,omitempty"`
 	FeaturePermissions               []featurePermission         `json:"feature_permissions,omitempty"`
+	CloudPermissions                 []cloudPermission           `json:"cloud_permissions,omitempty"`
 	GroupPermissions                 []groupPermission           `json:"group_permissions,omitempty"`
 	InstanceTypePermissions          []instanceTypePermission    `json:"instance_type_permissions,omitempty"`
 	BlueprintPermissions             []blueprintPermission       `json:"blueprint_permissions,omitempty"`
@@ -717,6 +780,11 @@ type PermissionSet struct {
 
 type featurePermission struct {
 	Code   string `json:"code"`
+	Access string `json:"access"`
+}
+
+type cloudPermission struct {
+	Id     int    `json:"id"`
 	Access string `json:"access"`
 }
 
