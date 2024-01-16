@@ -2,6 +2,9 @@
 
 NOTES:
 
+* Added support for defining `price_set_ids` for the `morpheus_instance_type` and `morpheus_instance_layout` resources.
+* Updated the `morpheus-go-sdk` library from v0.3.7 to v0.3.8 to fix a security vulnerability.
+* Fix an issue with the `minimum_memory` attribute for the `morpheus_instance_layout` resource that did not properly convert the provided values to match the value returned by the API [197](https://github.com/gomorpheus/terraform-provider-morpheus/issues/197).
 * Add support for setting a `name` attribute for the `morpheus_permission_set` data source.
 
 ## 0.9.7 (December 20, 2023)
