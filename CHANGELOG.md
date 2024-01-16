@@ -2,6 +2,7 @@
 
 NOTES:
 
+* Updated resources that include multiline text fields such as catalog items, automation tasks, options lists and more to properly handle heredoc syntax. This change stops resources from continually wanting to apply changes because of a trailing newline character [193](https://github.com/gomorpheus/terraform-provider-morpheus/issues/193).
 * Added support for managing tenant user roles with the addition of the `morpheus_tenant_role` resource [190](https://github.com/gomorpheus/terraform-provider-morpheus/issues/190).
 * Added support for instance type layouts as a selectable option for the `morpheus_api_option_list` resource [196](https://github.com/gomorpheus/terraform-provider-morpheus/issues/196).
 * Added support for defining `price_set_ids` for the `morpheus_instance_type` and `morpheus_instance_layout` resources.
