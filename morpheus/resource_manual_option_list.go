@@ -2,6 +2,7 @@ package morpheus
 
 import (
 	"context"
+	"strings"
 
 	"log"
 
@@ -46,14 +47,16 @@ func resourceManualOptionList() *schema.Resource {
 				Type:         schema.TypeString,
 				Description:  "Whether the option list is visible in sub-tenants or not",
 				Optional:     true,
-				ValidateFunc: validation.StringInSlice([]string{"private", "public", ""}, false),
-				Default:      "private",
+				ValidateFunc: validation.StringInSlice([]string{"private", "public"}, false),
+				Computed:     true,
 			},
 			"dataset": {
-				Type:             schema.TypeString,
-				Description:      "The dataset for the manual option list",
-				Optional:         true,
-				DiffSuppressFunc: suppressEquivalentJsonDiffs,
+				Type:        schema.TypeString,
+				Description: "The dataset for the manual option list",
+				Optional:    true,
+				StateFunc: func(val interface{}) string {
+					return strings.TrimSuffix(val.(string), "\n")
+				},
 			},
 			"real_time": {
 				Type:        schema.TypeBool,
@@ -66,6 +69,7 @@ func resourceManualOptionList() *schema.Resource {
 				Description:      "A js script to translate the result data object into an Array containing objects with properties 'name’ and 'value’.",
 				DiffSuppressFunc: supressOptionListScripts,
 				Optional:         true,
+				Computed:         true,
 			},
 		},
 		Importer: &schema.ResourceImporter{
@@ -88,6 +92,7 @@ func resourceManualOptionListCreate(ctx context.Context, d *schema.ResourceData,
 			labelsPayload = append(labelsPayload, s.(string))
 		}
 	}
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"optionTypeList": map[string]interface{}{

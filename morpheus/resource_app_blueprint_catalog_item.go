@@ -54,6 +54,9 @@ func resourceAppBlueprintCatalogItem() *schema.Resource {
 				Description: "The markdown content associated with the app blueprint catalog item",
 				Optional:    true,
 				Computed:    true,
+				StateFunc: func(val interface{}) string {
+					return strings.TrimSuffix(val.(string), "\n")
+				},
 			},
 			"labels": {
 				Type:        schema.TypeSet,

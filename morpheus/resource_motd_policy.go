@@ -2,6 +2,7 @@ package morpheus
 
 import (
 	"context"
+	"strings"
 
 	"log"
 
@@ -52,6 +53,9 @@ func resourceMotdPolicy() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The message of the message of the day",
 				Required:    true,
+				StateFunc: func(val interface{}) string {
+					return strings.TrimSuffix(val.(string), "\n")
+				},
 			},
 			"type": {
 				Type:         schema.TypeString,

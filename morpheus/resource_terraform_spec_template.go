@@ -3,6 +3,7 @@ package morpheus
 import (
 	"context"
 	"encoding/json"
+	"strings"
 	"time"
 
 	"log"
@@ -43,6 +44,9 @@ func resourceTerraformSpecTemplate() *schema.Resource {
 				Description: "The content of the terraform spec template. Used when the local source type is specified",
 				Optional:    true,
 				Computed:    true,
+				StateFunc: func(val interface{}) string {
+					return strings.TrimSuffix(val.(string), "\n")
+				},
 			},
 			"spec_path": {
 				Type:        schema.TypeString,
