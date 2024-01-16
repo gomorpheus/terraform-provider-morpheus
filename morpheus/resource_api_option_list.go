@@ -51,8 +51,8 @@ func resourceApiOptionList() *schema.Resource {
 			},
 			"option_list": {
 				Type:         schema.TypeString,
-				Description:  "The Morpheus object option list (clouds, instanceTypeClouds, environments, groups, instances, instance-wiki, networks, instanceNetworks, servicePlans, resourcePools, securityGroups, servers, server-wiki)",
-				ValidateFunc: validation.StringInSlice([]string{"clouds", "instanceTypeClouds", "environments", "groups", "instances", "instance-wiki", "networks", "instanceNetworks", "servicePlans", "resourcePools", "securityGroups", "servers", "server-wiki"}, false),
+				Description:  "The Morpheus object option list (clouds, instanceTypeClouds, instanceTypeLayouts, environments, groups, instances, instance-wiki, networks, instanceNetworks, servicePlans, resourcePools, securityGroups, servers, server-wiki)",
+				ValidateFunc: validation.StringInSlice([]string{"clouds", "instanceTypeClouds", "instanceTypeLayouts", "environments", "groups", "instances", "instance-wiki", "networks", "instanceNetworks", "servicePlans", "resourcePools", "securityGroups", "servers", "server-wiki"}, false),
 				Optional:     true,
 				Computed:     true,
 			},
