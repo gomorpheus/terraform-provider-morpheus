@@ -2,11 +2,16 @@
 
 NOTES:
 
-* Add support for instance type layouts as a selectable option for the `morpheus_api_option_list` resource [196](https://github.com/gomorpheus/terraform-provider-morpheus/issues/196).
+* Added support for managing tenant user roles with the addition of the `morpheus_tenant_role` resource [190](https://github.com/gomorpheus/terraform-provider-morpheus/issues/190).
+* Added support for instance type layouts as a selectable option for the `morpheus_api_option_list` resource [196](https://github.com/gomorpheus/terraform-provider-morpheus/issues/196).
 * Added support for defining `price_set_ids` for the `morpheus_instance_type` and `morpheus_instance_layout` resources.
 * Updated the `morpheus-go-sdk` library from v0.3.7 to v0.3.8 to fix a security vulnerability.
 * Fix an issue with the `minimum_memory` attribute for the `morpheus_instance_layout` resource that did not properly convert the provided values to match the value returned by the API [197](https://github.com/gomorpheus/terraform-provider-morpheus/issues/197).
 * Add support for setting a `name` attribute for the `morpheus_permission_set` data source.
+
+FEATURES:
+
+* **New Resource:** `morpheus_tenant_role`
 
 ## 0.9.7 (December 20, 2023)
 

@@ -150,6 +150,7 @@ func Provider() *schema.Provider {
 			"morpheus_standard_cloud":                        resourceStandardCloud(),
 			"morpheus_tag_policy":                            resourceTagPolicy(),
 			"morpheus_task_job":                              resourceTaskJob(),
+			"morpheus_tenant_role":                           resourceTenantRole(),
 			"morpheus_tenant":                                resourceTenant(),
 			"morpheus_terraform_app_blueprint":               resourceTerraformAppBlueprint(),
 			"morpheus_terraform_spec_template":               resourceTerraformSpecTemplate(),
