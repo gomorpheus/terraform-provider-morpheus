@@ -158,6 +158,16 @@ func resourceInstanceType() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 			},
+			"price_set_ids": {
+				Type:        schema.TypeList,
+				Description: "A list of price set ids associated with the instance type",
+				Optional:    true,
+				Elem:        &schema.Schema{Type: schema.TypeInt},
+				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+					return new == old
+				},
+				Computed: true,
+			},
 		},
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
@@ -180,6 +190,18 @@ func resourceInstanceTypeCreate(ctx context.Context, d *schema.ResourceData, met
 		}
 	}
 
+	// priceSets
+	var priceSets []map[string]interface{}
+	if d.Get("price_set_ids") != nil {
+		priceSetList := d.Get("price_set_ids").([]interface{})
+		// iterate over the array of tasks
+		for i := 0; i < len(priceSetList); i++ {
+			row := make(map[string]interface{})
+			row["id"] = priceSetList[i]
+			priceSets = append(priceSets, row)
+		}
+	}
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"instanceType": map[string]interface{}{
@@ -196,6 +218,7 @@ func resourceInstanceTypeCreate(ctx context.Context, d *schema.ResourceData, met
 				"hasAutoScale":         d.Get("enable_scaling").(bool),
 				"hasDeployment":        d.Get("enable_deployments").(bool),
 				"featured":             d.Get("featured").(bool),
+				"priceSets":            priceSets,
 			},
 		},
 	}
@@ -288,6 +311,20 @@ func resourceInstanceTypeRead(ctx context.Context, d *schema.ResourceData, meta 
 	d.Set("enable_scaling", instanceTypePayload.InstanceType.HasAutoscale)
 	d.Set("enable_deployments", instanceTypePayload.InstanceType.HasDeployment)
 	d.Set("featured", instanceTypePayload.InstanceType.Featured)
+
+	// priceSets
+	var priceSets []int64
+	if instanceTypePayload.InstanceType.PriceSets != nil {
+		// iterate over the array of price sets
+		for i := 0; i < len(instanceTypePayload.InstanceType.PriceSets); i++ {
+			priceSet := instanceTypePayload.InstanceType.PriceSets[i]
+			priceSets = append(priceSets, int64(priceSet.ID))
+		}
+	}
+
+	priceSetData := matchTemplatesWithSchema(priceSets, d.Get("price_set_ids").([]interface{}))
+	d.Set("price_set_ids", priceSetData)
+
 	// inputs
 	var inputs []int64
 	if instanceTypePayload.InstanceType.OptionTypes != nil {
@@ -334,6 +371,18 @@ func resourceInstanceTypeUpdate(ctx context.Context, d *schema.ResourceData, met
 		}
 	}
 
+	// priceSets
+	var priceSets []map[string]interface{}
+	if d.Get("price_set_ids") != nil {
+		priceSetList := d.Get("price_set_ids").([]interface{})
+		// iterate over the array of tasks
+		for i := 0; i < len(priceSetList); i++ {
+			row := make(map[string]interface{})
+			row["id"] = priceSetList[i]
+			priceSets = append(priceSets, row)
+		}
+	}
+
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"instanceType": map[string]interface{}{
@@ -350,6 +399,7 @@ func resourceInstanceTypeUpdate(ctx context.Context, d *schema.ResourceData, met
 				"hasAutoScale":         d.Get("enable_scaling").(bool),
 				"hasDeployment":        d.Get("enable_deployments").(bool),
 				"featured":             d.Get("featured").(bool),
+				"priceSets":            priceSets,
 			},
 		},
 	}

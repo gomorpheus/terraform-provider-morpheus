@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"strconv"
 	"strings"
 
 	"log"
@@ -167,6 +168,16 @@ func resourceInstanceLayout() *schema.Resource {
 				},
 				Computed: true,
 			},
+			"price_set_ids": {
+				Type:        schema.TypeList,
+				Description: "A list of price set ids associated with the instance layout",
+				Optional:    true,
+				Elem:        &schema.Schema{Type: schema.TypeInt},
+				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+					return new == old
+				},
+				Computed: true,
+			},
 		},
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
@@ -186,7 +197,8 @@ func resourceInstanceLayoutCreate(ctx context.Context, d *schema.ResourceData, m
 	instanceLayout["description"] = d.Get("description").(string)
 	instanceLayout["creatable"] = d.Get("creatable").(bool)
 	instanceLayout["provisionTypeCode"] = d.Get("technology").(string)
-	instanceLayout["memoryRequirement"] = d.Get("minimum_memory").(int)
+	memoryRequirement := strconv.Itoa(d.Get("minimum_memory").(int))
+	instanceLayout["memoryRequirement"] = memoryRequirement
 	instanceLayout["taskSetId"] = d.Get("workflow_id").(int)
 	instanceLayout["supportsConvertToManaged"] = d.Get("support_convert_to_managed").(bool)
 	//instanceLayout["hasAutoScale"] = d.Get("enable_scaling").(bool)
@@ -209,6 +221,19 @@ func resourceInstanceLayoutCreate(ctx context.Context, d *schema.ResourceData, m
 		}
 	}
 	instanceLayout["labels"] = labelsPayload
+
+	// priceSets
+	var priceSets []map[string]interface{}
+	if d.Get("price_set_ids") != nil {
+		priceSetList := d.Get("price_set_ids").([]interface{})
+		// iterate over the array of tasks
+		for i := 0; i < len(priceSetList); i++ {
+			row := make(map[string]interface{})
+			row["id"] = priceSetList[i]
+			priceSets = append(priceSets, row)
+		}
+	}
+	instanceLayout["priceSets"] = priceSets
 
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
@@ -249,7 +274,7 @@ func resourceInstanceLayoutRead(ctx context.Context, d *schema.ResourceData, met
 	} else if id != "" {
 		resp, err = client.GetInstanceLayout(toInt64(id), &morpheus.Request{})
 	} else {
-		return diag.Errorf("Node type cannot be read without name or id")
+		return diag.Errorf("Instance type cannot be read without name or id")
 	}
 
 	if err != nil {
@@ -278,7 +303,8 @@ func resourceInstanceLayoutRead(ctx context.Context, d *schema.ResourceData, met
 	d.Set("labels", instanceLayout.Labels)
 	d.Set("technology", instanceLayout.InstanceLayout.ProvisionType.Code)
 	d.Set("creatable", instanceLayout.InstanceLayout.Creatable)
-	d.Set("minimum_memory", instanceLayout.InstanceLayout.MemoryRequirement)
+	memory_requirement := instanceLayout.InstanceLayout.MemoryRequirement / 1024 / 1024
+	d.Set("minimum_memory", memory_requirement)
 	if len(instanceLayout.InstanceLayout.TaskSets) > 0 {
 		d.Set("workflow_id", instanceLayout.InstanceLayout.TaskSets[0].ID)
 	}
@@ -342,6 +368,19 @@ func resourceInstanceLayoutRead(ctx context.Context, d *schema.ResourceData, met
 		d.Set("node_type_ids", stateNodeTypes)
 	}
 
+	// priceSets
+	var priceSets []int64
+	if instanceLayout.PriceSets != nil {
+		// iterate over the array of price sets
+		for i := 0; i < len(instanceLayout.PriceSets); i++ {
+			priceSet := instanceLayout.PriceSets[i]
+			priceSets = append(priceSets, int64(priceSet.ID))
+		}
+	}
+
+	priceSetData := matchTemplatesWithSchema(priceSets, d.Get("price_set_ids").([]interface{}))
+	d.Set("price_set_ids", priceSetData)
+
 	return diags
 }
 
@@ -355,7 +394,8 @@ func resourceInstanceLayoutUpdate(ctx context.Context, d *schema.ResourceData, m
 	instanceLayout["description"] = d.Get("description").(string)
 	instanceLayout["creatable"] = d.Get("creatable").(bool)
 	instanceLayout["provisionTypeCode"] = d.Get("technology").(string)
-	instanceLayout["memoryRequirement"] = d.Get("minimum_memory").(int)
+	memoryRequirement := strconv.Itoa(d.Get("minimum_memory").(int))
+	instanceLayout["memoryRequirement"] = memoryRequirement
 	instanceLayout["taskSetId"] = d.Get("workflow_id").(int)
 	instanceLayout["supportsConvertToManaged"] = d.Get("support_convert_to_managed").(bool)
 	//instanceLayout["hasAutoScale"] = d.Get("enable_scaling").(bool)
@@ -370,6 +410,27 @@ func resourceInstanceLayoutUpdate(ctx context.Context, d *schema.ResourceData, m
 	case "workflow":
 		break
 	}
+
+	labelsPayload := make([]string, 0)
+	if attr, ok := d.GetOk("labels"); ok {
+		for _, s := range attr.(*schema.Set).List() {
+			labelsPayload = append(labelsPayload, s.(string))
+		}
+	}
+	instanceLayout["labels"] = labelsPayload
+
+	// priceSets
+	var priceSets []map[string]interface{}
+	if d.Get("price_set_ids") != nil {
+		priceSetList := d.Get("price_set_ids").([]interface{})
+		// iterate over the array of tasks
+		for i := 0; i < len(priceSetList); i++ {
+			row := make(map[string]interface{})
+			row["id"] = priceSetList[i]
+			priceSets = append(priceSets, row)
+		}
+	}
+	instanceLayout["priceSets"] = priceSets
 
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
