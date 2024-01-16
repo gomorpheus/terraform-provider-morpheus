@@ -108,6 +108,12 @@ func resourceTextOptionType() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 			},
+			"default_checked": {
+				Type:        schema.TypeBool,
+				Description: "The default value of the option type",
+				Optional:    true,
+				Computed:    true,
+			},
 			"help_block": {
 				Type:        schema.TypeString,
 				Description: "Text that provides additional details about the use of the option type",
