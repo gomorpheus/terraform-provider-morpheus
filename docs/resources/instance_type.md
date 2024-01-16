@@ -65,6 +65,7 @@ resource "morpheus_instance_type" "tf_example_instance_type" {
 - `image_path` (String) The file path of the instance type logo image including the file name
 - `labels` (Set of String) The organization labels associated with the script template (Only supported on Morpheus 5.5.3 or higher)
 - `option_type_ids` (List of Number) The IDs of the inputs to associate with the instance type
+- `price_set_ids` (List of Number) A list of price set ids associated with the instance type
 
 ### Read-Only
 

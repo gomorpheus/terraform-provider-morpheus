@@ -44,6 +44,7 @@ resource "morpheus_instance_layout" "tf_example_instance_layout" {
 - `minimum_memory` (Number) The memory requirement in megabytes
 - `node_type_ids` (List of Number) A list of node type ids associated with the instance layout
 - `option_type_ids` (List of Number) A list of option type ids associated with the instance layout
+- `price_set_ids` (List of Number) A list of price set ids associated with the instance layout
 - `spec_template_ids` (List of Number) A list of spec template ids associated with the instance layout
 - `support_convert_to_managed` (Boolean) Whether the instance layout supports deployed instances to be converted to managed
 - `workflow_id` (Number) The id of the provisioning workflow associated with the instance layout
