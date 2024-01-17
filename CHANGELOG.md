@@ -1,7 +1,10 @@
 ## UNRELEASED
 
+## 0.9.8 (January 17, 2024)
+
 NOTES:
 
+* Added support for network groups and domain attribute for the `morpheus_vsphere_instance` resource [75](https://github.com/gomorpheus/terraform-provider-morpheus/issues/75).
 * Added support for managing local user accounts with the addition of the `morpheus_user` resource [187](https://github.com/gomorpheus/terraform-provider-morpheus/issues/187).
 * Updated resources that include multiline text fields such as catalog items, automation tasks, options lists and more to properly handle heredoc syntax. This change stops resources from continually wanting to apply changes because of a trailing newline character [193](https://github.com/gomorpheus/terraform-provider-morpheus/issues/193).
 * Added support for managing tenant user roles with the addition of the `morpheus_tenant_role` resource [190](https://github.com/gomorpheus/terraform-provider-morpheus/issues/190).

@@ -78,6 +78,13 @@ func resourceVsphereInstance() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 			},
+			"domain_id": {
+				Description: "The ID of the network domain to provision the instance to",
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Computed:    true,
+				ForceNew:    true,
+			},
 			"environment": {
 				Description: "The environment to assign the instance to",
 				Type:        schema.TypeString,
@@ -239,6 +246,12 @@ func resourceVsphereInstance() *schema.Resource {
 							Optional:    true,
 							Computed:    true,
 						},
+						"network_group": {
+							Description: "Whether the network id provided is for a network group or not",
+							Type:        schema.TypeBool,
+							Optional:    true,
+							Computed:    true,
+						},
 						"ip_address": {
 							Description: "",
 							Type:        schema.TypeString,
@@ -352,6 +365,9 @@ func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, 
 			"id":   instanceLayout.ID,
 			"code": instanceLayout.Code,
 			"name": instanceLayout.Name,
+		},
+		"networkDomain": map[string]interface{}{
+			"id": d.Get("domain_id").(int),
 		},
 	}
 
@@ -539,6 +555,7 @@ func resourceVsphereInstanceRead(ctx context.Context, d *schema.ResourceData, me
 		d.Set("nested_virtualization", true)
 	}
 	d.Set("custom_options", instance.Config["customOptions"])
+	d.Set("domain_id", instance.NetworkDomain.Id)
 	return diags
 }
 
@@ -630,8 +647,14 @@ func parseNetworkInterfaces(interfaces []interface{}) []map[string]interface{} {
 		row := make(map[string]interface{})
 		item := (interfaces)[i].(map[string]interface{})
 		if item["network_id"] != nil {
-			row["network"] = map[string]interface{}{
-				"id": fmt.Sprintf("network-%d", item["network_id"].(int)),
+			if item["network_group"].(bool) {
+				row["network"] = map[string]interface{}{
+					"id": fmt.Sprintf("networkGroup-%d", item["network_id"].(int)),
+				}
+			} else {
+				row["network"] = map[string]interface{}{
+					"id": fmt.Sprintf("network-%d", item["network_id"].(int)),
+				}
 			}
 		}
 		if item["ip_address"] != nil {
