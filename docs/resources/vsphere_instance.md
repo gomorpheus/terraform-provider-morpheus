@@ -92,6 +92,7 @@ resource "morpheus_vsphere_instance" "tf_example_vsphere_instance" {
 - `create_user` (Boolean) Whether to create a user account on the instance that is associated with the provisioning user account
 - `custom_options` (Map of String) Custom options to pass to the instance
 - `description` (String) The user friendly description of the instance
+- `domain_id` (Number) The ID of the network domain to provision the instance to
 - `environment` (String) The environment to assign the instance to
 - `evar` (Block List) The environment variables to create (see [below for nested schema](#nestedblock--evar))
 - `interfaces` (Block List) The instance network interfaces to create (see [below for nested schema](#nestedblock--interfaces))
@@ -129,6 +130,7 @@ Optional:
 
 - `ip_address` (String)
 - `ip_mode` (String)
+- `network_group` (Boolean) Whether the network id provided is for a network group or not
 - `network_id` (Number) The network to assign the network interface to
 - `network_interface_type_id` (Number) The network interface type
 
