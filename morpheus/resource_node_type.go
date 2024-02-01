@@ -100,6 +100,18 @@ func resourceNodeType() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 			},
+			"stat_type_code": {
+				Type:         schema.TypeString,
+				Description:  "The technology of the node type (alibaba, amazon, azure, maas, esxi, fusion, google, huawei, hyperv, kvm, nutanix, opentelekom, openstack, oraclecloud, oraclevm, scvmm, upcloud, vcd.vapp, vcd, vmware, xen)",
+				Optional:     true,
+				ValidateFunc: validation.StringInSlice([]string{"alibaba", "amazon", "azure", "maas", "esxi", "fusion", "google", "huawei", "hyperv", "kvm", "nutanix", "opentelekom", "openstack", "oraclecloud", "oraclevm", "scvmm", "upcloud", "vcd.vapp", "vcd", "vmware", "xen"}, false),
+			},
+			"log_type_code": {
+				Type:         schema.TypeString,
+				Description:  "The technology of the node type (alibaba, amazon, azure, maas, esxi, fusion, google, huawei, hyperv, kvm, nutanix, opentelekom, openstack, oraclecloud, oraclevm, scvmm, upcloud, vcd.vapp, vcd, vmware, xen)",
+				Optional:     true,
+				ValidateFunc: validation.StringInSlice([]string{"alibaba", "amazon", "azure", "maas", "esxi", "fusion", "google", "huawei", "hyperv", "kvm", "nutanix", "opentelekom", "openstack", "oraclecloud", "oraclevm", "scvmm", "upcloud", "vcd.vapp", "vcd", "vmware", "xen"}, false),
+			},
 			/* AWAITING API SUPPORT
 			"logs_folder": {
 				Type:        schema.TypeString,
@@ -195,7 +207,8 @@ func resourceNodeTypeCreate(ctx context.Context, d *schema.ResourceData, meta in
 	var diags diag.Diagnostics
 
 	name := d.Get("name").(string)
-
+	statTypeCode := d.Get("stat_type_code").(string)
+	logTypeCode := d.Get("log_type_code").(string)
 	// extra options
 	config := make(map[string]interface{})
 	if d.Get("extra_options") != nil {
@@ -218,6 +231,14 @@ func resourceNodeTypeCreate(ctx context.Context, d *schema.ResourceData, meta in
 	containerType["containerTemplates"] = d.Get("file_template_ids")
 	containerType["category"] = d.Get("category").(string)
 	containerType["serverType"] = "vm"
+	containerType["statTypeCode"] = d.Get("technology").(string)
+	containerType["logTypeCode"] = d.Get("technology").(string)
+	if statTypeCode != "" {
+		containerType["statTypeCode"] = statTypeCode
+	}
+	if logTypeCode != "" {
+		containerType["logTypeCode"] = logTypeCode
+	}
 
 	labelsPayload := make([]string, 0)
 	if attr, ok := d.GetOk("labels"); ok {
@@ -343,6 +364,15 @@ func resourceNodeTypeUpdate(ctx context.Context, d *schema.ResourceData, meta in
 
 	name := d.Get("name").(string)
 
+	statTypeCode := d.Get("technology").(string)
+	logTypeCode := d.Get("technology").(string)
+	if d.Get("stat_type_code").(string) != "" {
+		statTypeCode = d.Get("stat_type_code").(string)
+	}
+	if d.Get("log_type_code").(string) != "" {
+		logTypeCode = d.Get("log_type_code").(string)
+	}
+
 	// extra options
 	config := make(map[string]interface{})
 	if d.Get("extra_options") != nil {
@@ -364,6 +394,8 @@ func resourceNodeTypeUpdate(ctx context.Context, d *schema.ResourceData, meta in
 				"containerTemplates": d.Get("file_template_ids"),
 				"category":           d.Get("category").(string),
 				"serverType":         "vm",
+				"statTypeCode":       statTypeCode,
+				"logTypeCode":        logTypeCode,
 			},
 		},
 	}
