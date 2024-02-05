@@ -102,15 +102,15 @@ func resourceNodeType() *schema.Resource {
 			},
 			"stat_type_code": {
 				Type:         schema.TypeString,
-				Description:  "The technology of the node type (alibaba, amazon, azure, maas, esxi, fusion, google, huawei, hyperv, kvm, nutanix, opentelekom, openstack, oraclecloud, oraclevm, scvmm, upcloud, vcd.vapp, vcd, vmware, xen)",
+				Description:  "Supported technology of the node type (server,container,amazon, azure, esxi, google, hyperv, nutanix, openstack, scvmm, vmware, xen, docker, virtualbox, vm)",
 				Optional:     true,
-				ValidateFunc: validation.StringInSlice([]string{"alibaba", "amazon", "azure", "maas", "esxi", "fusion", "google", "huawei", "hyperv", "kvm", "nutanix", "opentelekom", "openstack", "oraclecloud", "oraclevm", "scvmm", "upcloud", "vcd.vapp", "vcd", "vmware", "xen"}, false),
+				ValidateFunc: validation.StringInSlice([]string{"server", "container", "amazon", "azure", "esxi", "google", "hyperv", "nutanix", "openstack", "scvmm", "vmware", "xen", "docker", "virtualbox", "vm"}, false),
 			},
 			"log_type_code": {
 				Type:         schema.TypeString,
-				Description:  "The technology of the node type (alibaba, amazon, azure, maas, esxi, fusion, google, huawei, hyperv, kvm, nutanix, opentelekom, openstack, oraclecloud, oraclevm, scvmm, upcloud, vcd.vapp, vcd, vmware, xen)",
+				Description:  "Supported technology of the node type (server,amazon, azure, esxi, google, hyperv, nutanix, openstack, scvmm, vmware, xen, docker, virtualbox, vm)",
 				Optional:     true,
-				ValidateFunc: validation.StringInSlice([]string{"alibaba", "amazon", "azure", "maas", "esxi", "fusion", "google", "huawei", "hyperv", "kvm", "nutanix", "opentelekom", "openstack", "oraclecloud", "oraclevm", "scvmm", "upcloud", "vcd.vapp", "vcd", "vmware", "xen"}, false),
+				ValidateFunc: validation.StringInSlice([]string{"server", "amazon", "azure", "esxi", "google", "hyperv", "nutanix", "openstack", "scvmm", "vmware", "xen", "docker", "virtualbox", "vm"}, false),
 			},
 			/* AWAITING API SUPPORT
 			"logs_folder": {
@@ -231,8 +231,8 @@ func resourceNodeTypeCreate(ctx context.Context, d *schema.ResourceData, meta in
 	containerType["containerTemplates"] = d.Get("file_template_ids")
 	containerType["category"] = d.Get("category").(string)
 	containerType["serverType"] = "vm"
-	containerType["statTypeCode"] = d.Get("technology").(string)
-	containerType["logTypeCode"] = d.Get("technology").(string)
+	containerType["statTypeCode"] = "vm"
+	containerType["logTypeCode"] = "vm"
 	if statTypeCode != "" {
 		containerType["statTypeCode"] = statTypeCode
 	}
@@ -364,8 +364,8 @@ func resourceNodeTypeUpdate(ctx context.Context, d *schema.ResourceData, meta in
 
 	name := d.Get("name").(string)
 
-	statTypeCode := d.Get("technology").(string)
-	logTypeCode := d.Get("technology").(string)
+	statTypeCode := "vm"
+	logTypeCode := "vm"
 	if d.Get("stat_type_code").(string) != "" {
 		statTypeCode = d.Get("stat_type_code").(string)
 	}
