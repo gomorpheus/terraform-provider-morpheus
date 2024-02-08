@@ -1,5 +1,9 @@
 ## UNRELEASED
 
+NOTES:
+
+* Updated the logic for the `morpheus_node_type` resource to properly set the maxDisks attribute when 0 is used to define an unlimited value [209](https://github.com/gomorpheus/terraform-provider-morpheus/issues/209).
+
 ## 0.9.8 (January 17, 2024)
 
 NOTES:

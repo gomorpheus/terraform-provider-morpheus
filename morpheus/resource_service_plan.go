@@ -258,14 +258,22 @@ func resourceServicePlanCreate(ctx context.Context, d *schema.ResourceData, meta
 		servicePlan["customMaxStorage"] = d.Get("customize_root_volume").(bool)
 		servicePlan["customMaxDataStorage"] = d.Get("customize_extra_volumes").(bool)
 		servicePlan["addVolumes"] = d.Get("add_volumes").(bool)
-		servicePlan["maxDisks"] = d.Get("max_disks_allowed").(int)
+		if d.Get("max_disks_allowed").(int) > 0 {
+			servicePlan["maxDisks"] = d.Get("max_disks_allowed").(int)
+		} else {
+			servicePlan["maxDisks"] = nil
+		}
 		servicePlan["coresPerSocket"] = d.Get("cores_per_socket").(int)
 	// No cores per socket
 	case "xen", "vcloudair", "scvmm", "oraclevm", "oraclecloud", "kvm", "hyperv", "fusion", "esxi":
 		servicePlan["customMaxStorage"] = d.Get("customize_root_volume").(bool)
 		servicePlan["customMaxDataStorage"] = d.Get("customize_extra_volumes").(bool)
 		servicePlan["addVolumes"] = d.Get("add_volumes").(bool)
-		servicePlan["maxDisks"] = d.Get("max_disks_allowed").(int)
+		if d.Get("max_disks_allowed").(int) > 0 {
+			servicePlan["maxDisks"] = d.Get("max_disks_allowed").(int)
+		} else {
+			servicePlan["maxDisks"] = nil
+		}
 	// Customize root volume
 	case "docker", "swarm":
 		servicePlan["customMaxStorage"] = d.Get("customize_root_volume").(bool)
@@ -473,14 +481,22 @@ func resourceServicePlanUpdate(ctx context.Context, d *schema.ResourceData, meta
 		servicePlan["customMaxStorage"] = d.Get("customize_root_volume").(bool)
 		servicePlan["customMaxDataStorage"] = d.Get("customize_extra_volumes").(bool)
 		servicePlan["addVolumes"] = d.Get("add_volumes").(bool)
-		servicePlan["maxDisks"] = d.Get("max_disks_allowed").(int)
+		if d.Get("max_disks_allowed").(int) > 0 {
+			servicePlan["maxDisks"] = d.Get("max_disks_allowed").(int)
+		} else {
+			servicePlan["maxDisks"] = nil
+		}
 		servicePlan["coresPerSocket"] = d.Get("cores_per_socket").(int)
 	// No cores per socket
 	case "xen", "vcloudair", "scvmm", "oraclevm", "oraclecloud", "kvm", "hyperv", "fusion", "esxi":
 		servicePlan["customMaxStorage"] = d.Get("customize_root_volume").(bool)
 		servicePlan["customMaxDataStorage"] = d.Get("customize_extra_volumes").(bool)
 		servicePlan["addVolumes"] = d.Get("add_volumes").(bool)
-		servicePlan["maxDisks"] = d.Get("max_disks_allowed").(int)
+		if d.Get("max_disks_allowed").(int) > 0 {
+			servicePlan["maxDisks"] = d.Get("max_disks_allowed").(int)
+		} else {
+			servicePlan["maxDisks"] = nil
+		}
 	// Customize root volume
 	case "docker", "swarm":
 		servicePlan["customMaxStorage"] = d.Get("customize_root_volume").(bool)
