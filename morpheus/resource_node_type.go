@@ -233,6 +233,7 @@ func resourceNodeTypeCreate(ctx context.Context, d *schema.ResourceData, meta in
 	containerType["serverType"] = "vm"
 	containerType["statTypeCode"] = "vm"
 	containerType["logTypeCode"] = "vm"
+
 	if statTypeCode != "" {
 		containerType["statTypeCode"] = statTypeCode
 	}
@@ -366,6 +367,7 @@ func resourceNodeTypeUpdate(ctx context.Context, d *schema.ResourceData, meta in
 
 	statTypeCode := "vm"
 	logTypeCode := "vm"
+
 	if d.Get("stat_type_code").(string) != "" {
 		statTypeCode = d.Get("stat_type_code").(string)
 	}
