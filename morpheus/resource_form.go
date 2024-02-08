@@ -83,8 +83,8 @@ func resourceForm() *schema.Resource {
 						},
 						"type": {
 							Type:         schema.TypeString,
-							Description:  "The id of the option type to add to the form (checkbox, hidden, number, password, radio, text)",
-							ValidateFunc: validation.StringInSlice([]string{"checkbox", "hidden", "number", "password", "radio", "text"}, false),
+							Description:  "The id of the option type to add to the form (checkbox, hidden, number, password, radio, select, text, textarea, byteSize, code-editor, fileContent, logoSelector, textArray, environment)",
+							ValidateFunc: validation.StringInSlice([]string{"checkbox", "hidden", "number", "password", "radio", "select", "text", "textarea", "byteSize", "code-editor", "fileContent", "logoSelector", "textArray", "environment"}, false),
 							Optional:     true,
 						},
 						"option_list_id": {
@@ -171,7 +171,44 @@ func resourceForm() *schema.Resource {
 							Optional:    true,
 							Computed:    true,
 						},
+						"text_rows": {
+							Type:        schema.TypeInt,
+							Description: "The field or code used to trigger the reloading of the field",
+							Optional:    true,
+							Computed:    true,
+						},
+						"display": {
+							Type:         schema.TypeString,
+							Description:  "The field or code used to trigger the reloading of the field (GB or MB)",
+							ValidateFunc: validation.StringInSlice([]string{"GB", "MB"}, false),
+							Optional:     true,
+							Computed:     true,
+						},
+						"lock_display": {
+							Type:        schema.TypeBool,
+							Description: "The field or code used to trigger the reloading of the field",
+							Optional:    true,
+							Computed:    true,
+						},
+						"code_language": {
+							Type:        schema.TypeString,
+							Description: "The field or code used to trigger the reloading of the field",
+							Optional:    true,
+							Computed:    true,
+						},
+						"show_line_numbers": {
+							Type:        schema.TypeBool,
+							Description: "The field or code used to trigger the reloading of the field",
+							Optional:    true,
+							Computed:    true,
+						},
 						"dependent_field": {
+							Type:        schema.TypeString,
+							Description: "The field or code used to trigger the reloading of the field",
+							Optional:    true,
+							Computed:    true,
+						},
+						"delimiter": {
 							Type:        schema.TypeString,
 							Description: "The field or code used to trigger the reloading of the field",
 							Optional:    true,
@@ -316,6 +353,16 @@ func resourceFormCreate(ctx context.Context, d *schema.ResourceData, meta interf
 				row["placeHolder"] = optionTypeConfig["placeholder"]
 				row["helpBlock"] = optionTypeConfig["help_block"]
 				switch optionTypeConfig["type"] {
+				case "byteSize":
+					config := make(map[string]interface{})
+					config["display"] = optionTypeConfig["display"]
+					config["lockDisplay"] = optionTypeConfig["lock_display"]
+					row["config"] = config
+				case "code-editor":
+					config := make(map[string]interface{})
+					config["lang"] = optionTypeConfig["code_language"]
+					config["showLineNumbers"] = optionTypeConfig["show_line_numbers"]
+					row["config"] = config
 				case "checkbox":
 					row["defaultValue"] = optionTypeConfig["default_checked"]
 				case "number":
@@ -328,6 +375,15 @@ func resourceFormCreate(ctx context.Context, d *schema.ResourceData, meta interf
 					configStep := make(map[string]interface{})
 					configStep["canPeek"] = optionTypeConfig["allow_password_peek"]
 					row["config"] = configStep
+				case "textArray":
+					config := make(map[string]interface{})
+					config["separator"] = optionTypeConfig["delimiter"]
+					row["config"] = config
+				case "textarea":
+					configRows := make(map[string]interface{})
+					configRows["rows"] = optionTypeConfig["text_rows"]
+					row["config"] = configRows
+					row["defaultValue"] = optionTypeConfig["default_value"]
 				default:
 					row["defaultValue"] = optionTypeConfig["default_value"]
 				}
@@ -474,12 +530,25 @@ func resourceFormRead(ctx context.Context, d *schema.ResourceData, meta interfac
 
 	var optionTypes []map[string]interface{}
 	if len(form.Options) != 0 {
+		optionTypeList := d.Get("option_type").([]interface{})
 		for _, optionType := range form.Options {
 			row := make(map[string]interface{})
 			switch optionType.Type {
+			case "byteSize":
+				row["display"] = optionType.Config.Display
+				row["lock_display"] = optionType.Config.LockDisplay
+			case "code-editor":
+				row["show_line_numbers"] = optionType.Config.ShowLineNumbers
+				row["code_language"] = optionType.Config.Lang
 			case "number":
 				row["min_value"] = optionType.MinVal
 				row["max_value"] = optionType.MaxVal
+			case "select":
+				row["option_list_id"] = optionType.OptionList.ID
+			case "textarea":
+				row["text_rows"] = optionType.Config.Rows
+			case "textArray":
+				row["delimiter"] = optionType.Config.Separator
 			}
 			row["id"] = optionType.ID
 			row["name"] = optionType.Name
@@ -500,6 +569,8 @@ func resourceFormRead(ctx context.Context, d *schema.ResourceData, meta interfac
 			optionTypes = append(optionTypes, row)
 		}
 	}
+	log.Printf("OPTION TYPES: %s", optionTypes)
+
 	d.Set("option_type", optionTypes)
 
 	// Field Groups
