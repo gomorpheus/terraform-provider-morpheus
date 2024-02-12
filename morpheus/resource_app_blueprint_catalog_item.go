@@ -37,6 +37,12 @@ func resourceAppBlueprintCatalogItem() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 			},
+			"category": {
+				Type:        schema.TypeString,
+				Description: "The category of the app blueprint catalog item",
+				Optional:    true,
+				Computed:    true,
+			},
 			"enabled": {
 				Type:        schema.TypeBool,
 				Description: "Whether the app blueprint catalog item is enabled",
@@ -141,6 +147,7 @@ func resourceAppBlueprintCatalogItemCreate(ctx context.Context, d *schema.Resour
 
 	catalogItem["name"] = d.Get("name").(string)
 	catalogItem["description"] = d.Get("description").(string)
+	catalogItem["category"] = d.Get("category").(string)
 	catalogItem["enabled"] = d.Get("enabled").(bool)
 	catalogItem["featured"] = d.Get("featured").(bool)
 	catalogItem["type"] = "blueprint"
@@ -268,6 +275,7 @@ func resourceAppBlueprintCatalogItemRead(ctx context.Context, d *schema.Resource
 	d.SetId(intToString(int(catalogItem.ID)))
 	d.Set("name", catalogItem.Name)
 	d.Set("description", catalogItem.Description)
+	d.Set("category", catalogItem.Category)
 	d.Set("enabled", catalogItem.Enabled)
 	d.Set("featured", catalogItem.Featured)
 	// option types
@@ -303,6 +311,7 @@ func resourceAppBlueprintCatalogItemUpdate(ctx context.Context, d *schema.Resour
 
 	catalogItem["name"] = d.Get("name").(string)
 	catalogItem["description"] = d.Get("description").(string)
+	catalogItem["category"] = d.Get("category").(string)
 	catalogItem["enabled"] = d.Get("enabled").(bool)
 	catalogItem["featured"] = d.Get("featured").(bool)
 	catalogItem["type"] = "blueprint"

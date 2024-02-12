@@ -46,6 +46,12 @@ func resourceWorkflowCatalogItem() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 			},
+			"category": {
+				Type:        schema.TypeString,
+				Description: "The category of the workflow catalog item",
+				Optional:    true,
+				Computed:    true,
+			},
 			"enabled": {
 				Type:        schema.TypeBool,
 				Description: "Whether the workflow catalog item is enabled",
@@ -143,6 +149,7 @@ func resourceWorkflowCatalogItemCreate(ctx context.Context, d *schema.ResourceDa
 
 	catalogItem["name"] = d.Get("name").(string)
 	catalogItem["description"] = d.Get("description").(string)
+	catalogItem["category"] = d.Get("category").(string)
 	catalogItem["enabled"] = d.Get("enabled").(bool)
 	catalogItem["featured"] = d.Get("featured").(bool)
 	catalogItem["type"] = "workflow"
@@ -267,6 +274,7 @@ func resourceWorkflowCatalogItemRead(ctx context.Context, d *schema.ResourceData
 	d.Set("name", catalogItem.Name)
 	d.Set("labels", catalogItem.Labels)
 	d.Set("description", catalogItem.Description)
+	d.Set("category", catalogItem.Category)
 	d.Set("enabled", catalogItem.Enabled)
 	d.Set("featured", catalogItem.Featured)
 	// option types
@@ -318,6 +326,7 @@ func resourceWorkflowCatalogItemUpdate(ctx context.Context, d *schema.ResourceDa
 	}
 	catalogItem["labels"] = labelsPayload
 	catalogItem["description"] = d.Get("description").(string)
+	catalogItem["category"] = d.Get("category").(string)
 	catalogItem["enabled"] = d.Get("enabled").(bool)
 	catalogItem["featured"] = d.Get("featured").(bool)
 	catalogItem["type"] = "workflow"
