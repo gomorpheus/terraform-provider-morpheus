@@ -40,6 +40,7 @@ resource "morpheus_app_blueprint_catalog_item" "tf_example_app_blueprint_catalog
 
 ### Optional
 
+- `category` (String) The category of the app blueprint catalog item
 - `content` (String) The markdown content associated with the app blueprint catalog item
 - `dark_logo_image_name` (String) The file name of the app blueprint catalog item dark mode logo image
 - `dark_logo_image_path` (String) The file path of the app blueprint catalog item dark mode logo image including the file name
