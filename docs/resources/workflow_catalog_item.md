@@ -41,6 +41,7 @@ resource "morpheus_workflow_catalog_item" "tfexample_workflow_catalog_item" {
 
 ### Optional
 
+- `category` (String) The category of the workflow catalog item
 - `content` (String) The markdown content associated with the workflow catalog item
 - `context_type` (String) The Morpheus context type of the operational workflow
 - `dark_logo_image_name` (String) The file name of the workflow catalog item dark mode logo image

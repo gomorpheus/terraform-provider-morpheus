@@ -40,6 +40,7 @@ resource "morpheus_instance_catalog_item" "tf_example_instance_catalog_item" {
 
 ### Optional
 
+- `category` (String) The category of the instance catalog item
 - `content` (String) The markdown content associated with the instance catalog item
 - `description` (String) The description of the instance catalog item
 - `enabled` (Boolean) Whether the instance catalog item is enabled
