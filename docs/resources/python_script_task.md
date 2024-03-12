@@ -92,7 +92,7 @@ resource "morpheus_python_script_task" "tfexample_python_git" {
 - `labels` (Set of String) The organization labels associated with the task (Only supported on Morpheus 5.5.3 or higher)
 - `python_binary` (String) The system path of the python binary to execute
 - `repository_id` (Number) The ID of the git repository integration
-- `result_type` (String) The expected result type (single value, key pairs, json)
+- `result_type` (String) The expected result type (value, keyValue, json)
 - `retry_count` (Number) The number of times to retry the task if there is a failure
 - `retry_delay_seconds` (Number) The number of seconds to wait between retry attempts
 - `retryable` (Boolean) Whether to retry the task if there is a failure

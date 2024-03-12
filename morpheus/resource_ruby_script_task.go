@@ -45,7 +45,7 @@ func resourceRubyScriptTask() *schema.Resource {
 			},
 			"result_type": {
 				Type:         schema.TypeString,
-				Description:  "The expected result type (single value, key pairs, json)",
+				Description:  "The expected result type (value, keyValue, json)",
 				ValidateFunc: validation.StringInSlice([]string{"value", "keyValue", "json"}, false),
 				Optional:     true,
 			},
@@ -59,6 +59,11 @@ func resourceRubyScriptTask() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The content of the ruby script. Used when the local source type is specified",
 				Optional:    true,
+				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+					oldPayload := strings.TrimSuffix(old, "\n")
+					newPayload := strings.TrimSuffix(new, "\n")
+					return oldPayload == newPayload
+				},
 				StateFunc: func(val interface{}) string {
 					return strings.TrimSuffix(val.(string), "\n")
 				},
