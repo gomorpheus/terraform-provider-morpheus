@@ -79,7 +79,7 @@ resource "morpheus_groovy_script_task" "tfexample_groovy_git" {
 - `code` (String) The code of the groovy script task
 - `labels` (Set of String) The organization labels associated with the task (Only supported on Morpheus 5.5.3 or higher)
 - `repository_id` (Number) The ID of the git repository integration
-- `result_type` (String) The expected result type (single value, key pairs, json)
+- `result_type` (String) The expected result type (value, keyValue, json)
 - `retry_count` (Number) The number of times to retry the task if there is a failure
 - `retry_delay_seconds` (Number) The number of seconds to wait between retry attempts
 - `retryable` (Boolean) Whether to retry the task if there is a failure

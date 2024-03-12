@@ -47,7 +47,7 @@ func resourceGroovyScriptTask() *schema.Resource {
 			},
 			"result_type": {
 				Type:         schema.TypeString,
-				Description:  "The expected result type (single value, key pairs, json)",
+				Description:  "The expected result type (value, keyValue, json)",
 				ValidateFunc: validation.StringInSlice([]string{"value", "keyValue", "json"}, false),
 				Optional:     true,
 				Computed:     true,
@@ -63,6 +63,11 @@ func resourceGroovyScriptTask() *schema.Resource {
 				Description: "The content of the groovy script. Used when the local source type is specified",
 				Optional:    true,
 				Computed:    true,
+				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+					oldPayload := strings.TrimSuffix(old, "\n")
+					newPayload := strings.TrimSuffix(new, "\n")
+					return oldPayload == newPayload
+				},
 				StateFunc: func(val interface{}) string {
 					return strings.TrimSuffix(val.(string), "\n")
 				},

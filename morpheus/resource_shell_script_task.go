@@ -70,6 +70,11 @@ func resourceShellScriptTask() *schema.Resource {
 				Description: "The content of the shell script. Used when the local source type is specified",
 				Optional:    true,
 				Computed:    true,
+				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+					oldPayload := strings.TrimSuffix(old, "\n")
+					newPayload := strings.TrimSuffix(new, "\n")
+					return oldPayload == newPayload
+				},
 				StateFunc: func(val interface{}) string {
 					return strings.TrimSuffix(val.(string), "\n")
 				},

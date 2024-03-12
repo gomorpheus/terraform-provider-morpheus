@@ -2,6 +2,7 @@
 
 NOTES:
 
+* Updated various automation tasks to fix an issue with the script_content attribute constantly indicating that there are planned changes.
 * Updated the logic for the `morpheus_node_type` resource to properly set the maxDisks attribute when 0 is used to define an unlimited value [209](https://github.com/gomorpheus/terraform-provider-morpheus/issues/209).
 * Added support for a `category` setting to the `morpheus_app_blueprint_catalog_item`, `morpheus_instance_catalog_item` and `morpheus_workflow_catalog_item` resources [207](https://github.com/gomorpheus/terraform-provider-morpheus/issues/207).
 
