@@ -20,7 +20,6 @@ func resourceForm() *schema.Resource {
 		ReadContext:   resourceFormRead,
 		UpdateContext: resourceFormUpdate,
 		DeleteContext: resourceFormDelete,
-
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Type:        schema.TypeString,
@@ -34,18 +33,18 @@ func resourceForm() *schema.Resource {
 			},
 			"code": {
 				Type:        schema.TypeString,
-				Description: "The code of the form",
+				Description: "The form code used for API/CLI automation",
 				Required:    true,
 			},
 			"description": {
 				Type:        schema.TypeString,
-				Description: "The description of the form",
+				Description: "A description of the form",
 				Optional:    true,
 				Computed:    true,
 			},
 			"labels": {
 				Type:        schema.TypeSet,
-				Description: "The organization labels associated with the file template (Only supported on Morpheus 5.5.3 or higher)",
+				Description: "The organization labels associated with the form (Only supported on Morpheus 5.5.3 or higher)",
 				Optional:    true,
 				Computed:    true,
 				Elem:        &schema.Schema{Type: schema.TypeString},
@@ -58,22 +57,24 @@ func resourceForm() *schema.Resource {
 					Schema: map[string]*schema.Schema{
 						"id": {
 							Type:        schema.TypeInt,
-							Description: "The id of the option type to add to the form",
+							Description: "The id of an existing option type to add to the form. This is the only attribute that needs to be defined when using an existing option type.",
 							Optional:    true,
+							Computed:    true,
 						},
 						"code": {
 							Type:        schema.TypeString,
-							Description: "The id of the option type to add to the form",
+							Description: "The code of the option type to add to the form",
 							Optional:    true,
+							Computed:    true,
 						},
 						"name": {
 							Type:        schema.TypeString,
-							Description: "The id of the option type to add to the form",
+							Description: "The name of the option type to add to the form",
 							Optional:    true,
 						},
 						"description": {
 							Type:        schema.TypeString,
-							Description: "The id of the option type to add to the form",
+							Description: "A description of the option type to add to the form",
 							Optional:    true,
 						},
 						"field_name": {
@@ -83,69 +84,81 @@ func resourceForm() *schema.Resource {
 						},
 						"type": {
 							Type:         schema.TypeString,
-							Description:  "The id of the option type to add to the form (checkbox, hidden, number, password, radio, select, text, textarea, byteSize, code-editor, fileContent, logoSelector, textArray, environment)",
-							ValidateFunc: validation.StringInSlice([]string{"checkbox", "hidden", "number", "password", "radio", "select", "text", "textarea", "byteSize", "code-editor", "fileContent", "logoSelector", "textArray", "environment"}, false),
+							Description:  "The id of the option type to add to the form (checkbox, hidden, number, password, radio, select, text, textarea, byteSize, code-editor, fileContent, logoSelector, textArray, typeahead, environment)",
+							ValidateFunc: validation.StringInSlice([]string{"checkbox", "hidden", "number", "password", "radio", "select", "text", "textarea", "byteSize", "code-editor", "fileContent", "logoSelector", "textArray", "typeahead", "environment"}, false),
 							Optional:     true,
 						},
 						"option_list_id": {
 							Type:        schema.TypeInt,
 							Description: "The id of the option type to add to the form",
 							Optional:    true,
+							Computed:    true,
 						},
 						"field_label": {
 							Type:        schema.TypeString,
 							Description: "The id of the option type to add to the form",
 							Optional:    true,
+							Computed:    true,
 						},
 						"default_value": {
 							Type:        schema.TypeString,
 							Description: "The id of the option type to add to the form",
 							Optional:    true,
+							Computed:    true,
+						},
+						"default_checked": {
+							Type:        schema.TypeBool,
+							Description: "The id of the option type to add to the form",
+							Optional:    true,
+							Computed:    true,
 						},
 						"placeholder": {
 							Type:        schema.TypeString,
 							Description: "The id of the option type to add to the form",
 							Optional:    true,
+							Computed:    true,
 						},
 						"help_block": {
 							Type:        schema.TypeString,
 							Description: "The id of the option type to add to the form",
 							Optional:    true,
+							Computed:    true,
 						},
 						"required": {
 							Type:        schema.TypeBool,
 							Description: "The id of the option type to add to the form",
 							Optional:    true,
+							Computed:    true,
 						},
 						"export_meta": {
 							Type:        schema.TypeBool,
 							Description: "Whether to export the text option type as a tag",
 							Optional:    true,
-							Default:     false,
+							Computed:    true,
 						},
 						"display_value_on_details": {
 							Type:        schema.TypeBool,
 							Description: "Display the selected value of the text option type on the associated resource's details page",
 							Optional:    true,
-							Default:     false,
+							Computed:    true,
 						},
 						"locked": {
 							Type:        schema.TypeBool,
 							Description: "Display the selected value of the text option type on the associated resource's details page",
 							Optional:    true,
-							Default:     false,
+							Computed:    true,
 						},
 						"hidden": {
 							Type:        schema.TypeBool,
 							Description: "Display the selected value of the text option type on the associated resource's details page",
 							Optional:    true,
-							Default:     false,
+							Computed:    true,
 						},
 						"exclude_from_search": {
 							Type:        schema.TypeBool,
 							Description: "Display the selected value of the text option type on the associated resource's details page",
 							Optional:    true,
-							Default:     false,
+							Computed:    true,
 						},
 						"allow_password_peek": {
 							Type:        schema.TypeBool,
@@ -202,6 +215,30 @@ func resourceForm() *schema.Resource {
 							Optional:    true,
 							Computed:    true,
 						},
+						"sortable": {
+							Type:        schema.TypeBool,
+							Description: "The field or code used to trigger the reloading of the field",
+							Optional:    true,
+							Computed:    true,
+						},
+						"allow_multiple_selections": {
+							Type:        schema.TypeBool,
+							Description: "The field or code used to trigger the reloading of the field",
+							Optional:    true,
+							Computed:    true,
+						},
+						"allow_duplicates": {
+							Type:        schema.TypeBool,
+							Description: "The field or code used to trigger the reloading of the field",
+							Optional:    true,
+							Computed:    true,
+						},
+						"custom_data": {
+							Type:        schema.TypeString,
+							Description: "Custom JSON data payload to pass (Must be a JSON string)",
+							Optional:    true,
+							Computed:    true,
+						},
 						"dependent_field": {
 							Type:        schema.TypeString,
 							Description: "The field or code used to trigger the reloading of the field",
@@ -248,69 +285,248 @@ func resourceForm() *schema.Resource {
 						},
 						"description": {
 							Type:        schema.TypeString,
-							Description: "Whether to mark the cloud datastore as a default store for this tenant",
+							Description: "A description of the field group",
 							Optional:    true,
 							Computed:    true,
 						},
 						"collapsible": {
 							Type:        schema.TypeBool,
-							Description: "Whether to mark the cloud datastore as an image target for this tenant",
+							Description: "Whether the field group can be collapsed",
 							Optional:    true,
 							Computed:    true,
 						},
 						"collapsed_by_deafult": {
 							Type:        schema.TypeBool,
-							Description: "Whether to mark the cloud datastore as an image target for this tenant",
+							Description: "Whether the field group is collapsed by default",
 							Optional:    true,
 							Computed:    true,
 						},
 						"visibility_field": {
 							Type:        schema.TypeString,
-							Description: "Whether to mark the cloud datastore as an image target for this tenant",
+							Description: "The field or code used to trigger the visibility of the field group",
 							Optional:    true,
 							Computed:    true,
 						},
 						"option_type": {
 							Type:        schema.TypeList,
-							Description: "Form option type",
+							Description: "Field group option type",
 							Optional:    true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"id": {
 										Type:        schema.TypeInt,
-										Description: "The id of the option type to add to the form",
+										Description: "The id of an existing option type to add to the field group. This is the only attribute that needs to be defined when using an existing option type.",
 										Optional:    true,
 										Computed:    true,
 									},
 									"code": {
 										Type:        schema.TypeString,
-										Description: "The id of the option type to add to the form",
+										Description: "The code of the option type to add to the field group",
 										Optional:    true,
+										Computed:    true,
 									},
 									"name": {
 										Type:        schema.TypeString,
-										Description: "The id of the option type to add to the form",
+										Description: "The name of the option type to add to the field group",
 										Optional:    true,
 									},
 									"description": {
 										Type:        schema.TypeString,
-										Description: "The id of the option type to add to the form",
+										Description: "A description of the option type to add to the field group",
 										Optional:    true,
+										Computed:    true,
 									},
 									"field_name": {
 										Type:        schema.TypeString,
-										Description: "The id of the option type to add to the form",
+										Description: "The field name of the option type to add to the field group",
 										Optional:    true,
 									},
 									"type": {
-										Type:        schema.TypeString,
-										Description: "The id of the option type to add to the form",
-										Optional:    true,
+										Type:         schema.TypeString,
+										Description:  "The type of option type to add to the field group (checkbox, hidden, number, password, radio, select, text, textarea, byteSize, code-editor, fileContent, logoSelector, textArray, typeahead, environment)",
+										ValidateFunc: validation.StringInSlice([]string{"checkbox", "hidden", "number", "password", "radio", "select", "text", "textarea", "byteSize", "code-editor", "fileContent", "logoSelector", "textArray", "typeahead", "environment"}, false),
+										Optional:     true,
 									},
-									"label": {
-										Type:        schema.TypeString,
-										Description: "The id of the option type to add to the form",
+									"option_list_id": {
+										Type:        schema.TypeInt,
+										Description: "The id of the option list to add to the field group",
 										Optional:    true,
+										Computed:    true,
+									},
+									"field_label": {
+										Type:        schema.TypeString,
+										Description: "The label of the option type",
+										Optional:    true,
+										Computed:    true,
+									},
+									"default_value": {
+										Type:        schema.TypeString,
+										Description: "The default value of the option type",
+										Optional:    true,
+										Computed:    true,
+									},
+									"default_checked": {
+										Type:        schema.TypeBool,
+										Description: "Whether the checkbox option type is checked by default",
+										Optional:    true,
+										Computed:    true,
+									},
+									"placeholder": {
+										Type:        schema.TypeString,
+										Description: "The placeholder text for the option type",
+										Optional:    true,
+										Computed:    true,
+									},
+									"help_block": {
+										Type:        schema.TypeString,
+										Description: "The help block text for the option type",
+										Optional:    true,
+										Computed:    true,
+									},
+									"required": {
+										Type:        schema.TypeBool,
+										Description: "Whether the option type is required or not",
+										Optional:    true,
+										Computed:    true,
+									},
+									"export_meta": {
+										Type:        schema.TypeBool,
+										Description: "Whether to export the option type as a tag",
+										Optional:    true,
+										Default:     false,
+									},
+									"display_value_on_details": {
+										Type:        schema.TypeBool,
+										Description: "Display the selected value of the option type on the associated resource's details page",
+										Optional:    true,
+										Default:     false,
+									},
+									"locked": {
+										Type:        schema.TypeBool,
+										Description: "Whether the option type is locked or not",
+										Optional:    true,
+										Computed:    true,
+									},
+									"hidden": {
+										Type:        schema.TypeBool,
+										Description: "Whether the option type is hidden or not",
+										Optional:    true,
+										Computed:    true,
+									},
+									"exclude_from_search": {
+										Type:        schema.TypeBool,
+										Description: "Whether the option type should be execluded from search or not",
+										Optional:    true,
+										Computed:    true,
+									},
+									"allow_password_peek": {
+										Type:        schema.TypeBool,
+										Description: "Whether the value of the password option type can be revealed by the user to ensure they correctly entered the password",
+										Optional:    true,
+										Computed:    true,
+									},
+									"min_value": {
+										Type:        schema.TypeInt,
+										Description: "The minimum value that can be provided for a number option type",
+										Optional:    true,
+										Computed:    true,
+									},
+									"max_value": {
+										Type:        schema.TypeInt,
+										Description: "The maximum value that can be provided for a number option type",
+										Optional:    true,
+										Computed:    true,
+									},
+									"step": {
+										Type:        schema.TypeInt,
+										Description: "The incrementation number used for the number option type (i.e. - 5s, 10s, 100s, etc.)",
+										Optional:    true,
+										Computed:    true,
+									},
+									"text_rows": {
+										Type:        schema.TypeInt,
+										Description: "The number of rows to display for a text area",
+										Optional:    true,
+										Computed:    true,
+									},
+									"display": {
+										Type:         schema.TypeString,
+										Description:  "The memory or storage value to use (GB or MB)",
+										ValidateFunc: validation.StringInSlice([]string{"GB", "MB"}, false),
+										Optional:     true,
+										Computed:     true,
+									},
+									"lock_display": {
+										Type:        schema.TypeBool,
+										Description: "Whether to lock the display or not",
+										Optional:    true,
+										Computed:    true,
+									},
+									"code_language": {
+										Type:        schema.TypeString,
+										Description: "The coding language used for highlighting code syntax",
+										Optional:    true,
+										Computed:    true,
+									},
+									"show_line_numbers": {
+										Type:        schema.TypeBool,
+										Description: "Whether or not to show line numbers for coding",
+										Optional:    true,
+										Computed:    true,
+									},
+									"sortable": {
+										Type:        schema.TypeBool,
+										Description: "Whether the selected options can be sorted or not",
+										Optional:    true,
+										Computed:    true,
+									},
+									"allow_multiple_selections": {
+										Type:        schema.TypeBool,
+										Description: "Whether multiple options can be selected",
+										Optional:    true,
+										Computed:    true,
+									},
+									"allow_duplicates": {
+										Type:        schema.TypeBool,
+										Description: "Whether duplicate selections are allowed",
+										Optional:    true,
+										Computed:    true,
+									},
+									"custom_data": {
+										Type:        schema.TypeString,
+										Description: "Custom JSON data payload to pass (Must be a JSON string)",
+										Optional:    true,
+										Computed:    true,
+									},
+									"dependent_field": {
+										Type:        schema.TypeString,
+										Description: "The field or code used to trigger the reloading of the field",
+										Optional:    true,
+										Computed:    true,
+									},
+									"delimiter": {
+										Type:        schema.TypeString,
+										Description: "The delimiter used to separate text array input values",
+										Optional:    true,
+										Computed:    true,
+									},
+									"visibility_field": {
+										Type:        schema.TypeString,
+										Description: "The field or code used to trigger the visibility of the field",
+										Optional:    true,
+										Computed:    true,
+									},
+									"verify_pattern": {
+										Type:        schema.TypeString,
+										Description: "The regex pattern used to validate the entered value",
+										Optional:    true,
+										Computed:    true,
+									},
+									"require_field": {
+										Type:        schema.TypeString,
+										Description: "The field or code used to determine whether the field is required or not",
+										Optional:    true,
+										Computed:    true,
 									},
 								},
 							},
@@ -333,7 +549,7 @@ func resourceFormCreate(ctx context.Context, d *schema.ResourceData, meta interf
 
 	name := d.Get("name").(string)
 
-	// optiontypes
+	// create the payload for option types not in a field group
 	var optionTypes []map[string]interface{}
 	if d.Get("option_type") != nil {
 		optionTypeList := d.Get("option_type").([]interface{})
@@ -341,6 +557,7 @@ func resourceFormCreate(ctx context.Context, d *schema.ResourceData, meta interf
 		for i := 0; i < len(optionTypeList); i++ {
 			row := make(map[string]interface{})
 			optionTypeConfig := optionTypeList[i].(map[string]interface{})
+			// Check if an existing option type is provided
 			if optionTypeConfig["id"].(int) > 0 {
 				row["id"] = optionTypeConfig["id"]
 			} else {
@@ -352,13 +569,16 @@ func resourceFormCreate(ctx context.Context, d *schema.ResourceData, meta interf
 				row["fieldLabel"] = optionTypeConfig["field_label"]
 				row["placeHolder"] = optionTypeConfig["placeholder"]
 				row["helpBlock"] = optionTypeConfig["help_block"]
+				// Evaluate the option type selected
 				switch optionTypeConfig["type"] {
 				case "byteSize":
+					row["defaultValue"] = optionTypeConfig["default_value"]
 					config := make(map[string]interface{})
 					config["display"] = optionTypeConfig["display"]
 					config["lockDisplay"] = optionTypeConfig["lock_display"]
 					row["config"] = config
 				case "code-editor":
+					row["defaultValue"] = optionTypeConfig["default_value"]
 					config := make(map[string]interface{})
 					config["lang"] = optionTypeConfig["code_language"]
 					config["showLineNumbers"] = optionTypeConfig["show_line_numbers"]
@@ -366,46 +586,63 @@ func resourceFormCreate(ctx context.Context, d *schema.ResourceData, meta interf
 				case "checkbox":
 					row["defaultValue"] = optionTypeConfig["default_checked"]
 				case "number":
-					n, err := strconv.Atoi(optionTypeConfig["default_value"].(string))
+					number, err := strconv.Atoi(optionTypeConfig["default_value"].(string))
 					if err != nil {
 						return diag.Errorf("The default_value attribute must be a number string when the type attribute is set to number")
 					}
-					row["defaultValue"] = n
+					row["defaultValue"] = number
+					row["minVal"] = optionTypeConfig["min_value"]
+					row["maxVal"] = optionTypeConfig["max_value"]
+					if optionTypeConfig["step"].(int) > 0 {
+						configStep := make(map[string]interface{})
+						configStep["step"] = optionTypeConfig["step"]
+						row["config"] = configStep
+					}
+				case "radio":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+					row["optionList"] = optionTypeConfig["option_list_id"]
+				case "select":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+					row["optionList"] = optionTypeConfig["option_list_id"]
+					config := make(map[string]interface{})
+					config["multiSelect"] = optionTypeConfig["allow_multiple_selections"]
+					config["sortable"] = optionTypeConfig["sortable"]
+					row["config"] = config
 				case "password":
-					configStep := make(map[string]interface{})
-					configStep["canPeek"] = optionTypeConfig["allow_password_peek"]
-					row["config"] = configStep
+					config := make(map[string]interface{})
+					config["canPeek"] = optionTypeConfig["allow_password_peek"]
+					row["config"] = config
 				case "textArray":
+					row["defaultValue"] = optionTypeConfig["default_value"]
 					config := make(map[string]interface{})
 					config["separator"] = optionTypeConfig["delimiter"]
 					row["config"] = config
 				case "textarea":
-					configRows := make(map[string]interface{})
-					configRows["rows"] = optionTypeConfig["text_rows"]
-					row["config"] = configRows
 					row["defaultValue"] = optionTypeConfig["default_value"]
-				default:
+					config := make(map[string]interface{})
+					config["rows"] = optionTypeConfig["text_rows"]
+					row["config"] = config
+				case "typeahead":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+					config := make(map[string]interface{})
+					config["sortable"] = optionTypeConfig["sortable"]
+					config["allowDuplicates"] = optionTypeConfig["allow_duplicates"]
+					config["multiSelect"] = optionTypeConfig["allow_multiple_selections"]
+					config["customData"] = optionTypeConfig["custom_data"]
+					row["optionList"] = optionTypeConfig["option_list_id"]
+					row["config"] = config
+				case "hidden":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+				case "text":
 					row["defaultValue"] = optionTypeConfig["default_value"]
 				}
 				row["required"] = optionTypeConfig["required"]
 				row["exportMeta"] = optionTypeConfig["export_meta"]
 				row["editable"] = optionTypeConfig["editable"]
-				if optionTypeConfig["option_list_id"].(int) > 0 {
-					optionList := make(map[string]interface{})
-					optionList["id"] = optionTypeConfig["option_list_id"]
-					row["optionList"] = optionList
-				}
 				row["displayValueOnDetails"] = optionTypeConfig["display_value_on_details"]
 				row["isLocked"] = optionTypeConfig["locked"]
 				row["isHidden"] = optionTypeConfig["hidden"]
 				row["excludeFromSearch"] = optionTypeConfig["exclude_from_search"]
-				row["minVal"] = optionTypeConfig["min_value"]
-				row["maxVal"] = optionTypeConfig["max_value"]
-				if optionTypeConfig["step"].(int) > 0 {
-					configStep := make(map[string]interface{})
-					configStep["step"] = optionTypeConfig["step"]
-					row["config"] = configStep
-				}
 				row["dependsOnCode"] = optionTypeConfig["dependent_field"]
 				row["visibleOnCode"] = optionTypeConfig["visibility_field"]
 				row["verifyPattern"] = optionTypeConfig["verify_pattern"]
@@ -428,19 +665,109 @@ func resourceFormCreate(ctx context.Context, d *schema.ResourceData, meta interf
 			row["collapsible"] = fieldGroupConfig["collapsible"]
 			row["defaultCollapsed"] = fieldGroupConfig["collapsed_by_deafult"]
 			row["visibleOnCode"] = fieldGroupConfig["visibility_field"]
-			// optiontypes
-			var optionTypes []map[string]interface{}
 			if fieldGroupConfig["option_type"] != nil {
+				// optiontypes
+				var optionTypes []map[string]interface{}
 				optionTypeList := fieldGroupConfig["option_type"].([]interface{})
 				// iterate over the array of optionTypes
 				for i := 0; i < len(optionTypeList); i++ {
 					row := make(map[string]interface{})
 					optionTypeConfig := optionTypeList[i].(map[string]interface{})
-					row["id"] = optionTypeConfig["id"]
+					// Check if an existing option type is provided
+					if optionTypeConfig["id"].(int) > 0 {
+						row["id"] = optionTypeConfig["id"]
+					} else {
+						row["name"] = optionTypeConfig["name"]
+						row["code"] = optionTypeConfig["code"]
+						row["type"] = optionTypeConfig["type"]
+						row["description"] = optionTypeConfig["description"]
+						row["fieldName"] = optionTypeConfig["field_name"]
+						row["fieldLabel"] = optionTypeConfig["field_label"]
+						row["placeHolder"] = optionTypeConfig["placeholder"]
+						row["helpBlock"] = optionTypeConfig["help_block"]
+						// Evaluate the option type selected
+						switch optionTypeConfig["type"] {
+						case "byteSize":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+							config := make(map[string]interface{})
+							config["display"] = optionTypeConfig["display"]
+							config["lockDisplay"] = optionTypeConfig["lock_display"]
+							row["config"] = config
+						case "code-editor":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+							config := make(map[string]interface{})
+							config["lang"] = optionTypeConfig["code_language"]
+							config["showLineNumbers"] = optionTypeConfig["show_line_numbers"]
+							row["config"] = config
+						case "checkbox":
+							row["defaultValue"] = optionTypeConfig["default_checked"]
+						case "number":
+							number, err := strconv.Atoi(optionTypeConfig["default_value"].(string))
+							if err != nil {
+								return diag.Errorf("The default_value attribute must be a number string when the type attribute is set to number")
+							}
+							row["defaultValue"] = number
+							row["minVal"] = optionTypeConfig["min_value"]
+							row["maxVal"] = optionTypeConfig["max_value"]
+							if optionTypeConfig["step"].(int) > 0 {
+								configStep := make(map[string]interface{})
+								configStep["step"] = optionTypeConfig["step"]
+								row["config"] = configStep
+							}
+						case "radio":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+							row["optionList"] = optionTypeConfig["option_list_id"]
+						case "select":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+							row["optionList"] = optionTypeConfig["option_list_id"]
+							config := make(map[string]interface{})
+							config["multiSelect"] = optionTypeConfig["allow_multiple_selections"]
+							config["sortable"] = optionTypeConfig["sortable"]
+							row["config"] = config
+						case "password":
+							config := make(map[string]interface{})
+							config["canPeek"] = optionTypeConfig["allow_password_peek"]
+							row["config"] = config
+						case "textArray":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+							config := make(map[string]interface{})
+							config["separator"] = optionTypeConfig["delimiter"]
+							row["config"] = config
+						case "textarea":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+							config := make(map[string]interface{})
+							config["rows"] = optionTypeConfig["text_rows"]
+							row["config"] = config
+						case "typeahead":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+							config := make(map[string]interface{})
+							config["sortable"] = optionTypeConfig["sortable"]
+							config["allowDuplicates"] = optionTypeConfig["allow_duplicates"]
+							config["multiSelect"] = optionTypeConfig["allow_multiple_selections"]
+							config["customData"] = optionTypeConfig["custom_data"]
+							row["optionList"] = optionTypeConfig["option_list_id"]
+							row["config"] = config
+						case "hidden":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+						case "text":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+						}
+						row["required"] = optionTypeConfig["required"]
+						row["exportMeta"] = optionTypeConfig["export_meta"]
+						row["editable"] = optionTypeConfig["editable"]
+						row["displayValueOnDetails"] = optionTypeConfig["display_value_on_details"]
+						row["isLocked"] = optionTypeConfig["locked"]
+						row["isHidden"] = optionTypeConfig["hidden"]
+						row["excludeFromSearch"] = optionTypeConfig["exclude_from_search"]
+						row["dependsOnCode"] = optionTypeConfig["dependent_field"]
+						row["visibleOnCode"] = optionTypeConfig["visibility_field"]
+						row["verifyPattern"] = optionTypeConfig["verify_pattern"]
+						row["requireOnCode"] = optionTypeConfig["require_field"]
+					}
 					optionTypes = append(optionTypes, row)
 				}
+				row["options"] = optionTypes
 			}
-			row["options"] = optionTypes
 			fieldGroups = append(fieldGroups, row)
 		}
 	}
@@ -527,50 +854,63 @@ func resourceFormRead(ctx context.Context, d *schema.ResourceData, meta interfac
 	d.Set("labels", form.Labels)
 
 	// Option Types
-
 	var optionTypes []map[string]interface{}
 	if len(form.Options) != 0 {
-		optionTypeList := d.Get("option_type").([]interface{})
+		//optionTypeList := d.Get("option_type").([]interface{})
 		for _, optionType := range form.Options {
 			row := make(map[string]interface{})
-			switch optionType.Type {
-			case "byteSize":
-				row["display"] = optionType.Config.Display
-				row["lock_display"] = optionType.Config.LockDisplay
-			case "code-editor":
-				row["show_line_numbers"] = optionType.Config.ShowLineNumbers
-				row["code_language"] = optionType.Config.Lang
-			case "number":
-				row["min_value"] = optionType.MinVal
-				row["max_value"] = optionType.MaxVal
-			case "select":
-				row["option_list_id"] = optionType.OptionList.ID
-			case "textarea":
-				row["text_rows"] = optionType.Config.Rows
-			case "textArray":
-				row["delimiter"] = optionType.Config.Separator
+			// Check if the input uses an existing input or not
+			if optionType.FormField {
+				switch optionType.Type {
+				case "byteSize":
+					row["display"] = optionType.Config.Display
+					row["lock_display"] = optionType.Config.LockDisplay
+				case "checkbox":
+					//optionType.DefaultValue
+					row["default_checked"] = true
+				case "code-editor":
+					row["show_line_numbers"] = optionType.Config.ShowLineNumbers
+					row["code_language"] = optionType.Config.Lang
+				case "number":
+					row["step"] = optionType.Config.Step
+					row["min_value"] = optionType.MinVal
+					row["max_value"] = optionType.MaxVal
+				case "radio":
+					row["option_list_id"] = optionType.OptionList.ID
+				case "select":
+					row["option_list_id"] = optionType.OptionList.ID
+				case "textarea":
+					row["text_rows"] = optionType.Config.Rows
+				case "textArray":
+					row["delimiter"] = optionType.Config.Separator
+				case "typeahead":
+					row["sortable"] = optionType.Config.Sortable
+					row["allow_duplicates"] = optionType.Config.AllowDuplicates
+					row["custom_data"] = optionType.Config.CustomData
+					row["allow_multiple_selections"] = optionType.Config.MultiSelect
+					row["option_list_id"] = optionType.OptionList.ID
+				}
+				row["name"] = optionType.Name
+				row["description"] = optionType.Description
+				row["code"] = optionType.Code
+				row["type"] = optionType.Type
+				row["field_label"] = optionType.FieldLabel
+				row["field_name"] = optionType.FieldName
+				row["default_value"] = optionType.DefaultValue
+				row["placeholder"] = optionType.PlaceHolder
+				row["help_block"] = optionType.HelpBlock
+				row["required"] = optionType.Required
+				row["export_meta"] = optionType.ExportMeta
+				row["display_value_on_details"] = optionType.DisplayValueOnDetails
+				row["locked"] = optionType.IsLocked
+				row["hidden"] = optionType.IsHidden
+				row["exclude_from_search"] = optionType.ExcludeFromSearch
+			} else {
+				row["id"] = optionType.ID
 			}
-			row["id"] = optionType.ID
-			row["name"] = optionType.Name
-			row["code"] = optionType.Code
-			row["type"] = optionType.Type
-			row["field_label"] = optionType.FieldLabel
-			row["field_name"] = optionType.FieldName
-			row["default_value"] = optionType.DefaultValue
-			row["placeholder"] = optionType.PlaceHolder
-			row["help_block"] = optionType.HelpBlock
-			row["required"] = optionType.Required
-			row["export_meta"] = optionType.ExportMeta
-			row["display_value_on_details"] = optionType.DisplayValueOnDetails
-			row["locked"] = optionType.IsLocked
-			row["hidden"] = optionType.IsHidden
-			row["exclude_from_search"] = optionType.ExcludeFromSearch
-
 			optionTypes = append(optionTypes, row)
 		}
 	}
-	log.Printf("OPTION TYPES: %s", optionTypes)
-
 	d.Set("option_type", optionTypes)
 
 	// Field Groups
@@ -583,6 +923,63 @@ func resourceFormRead(ctx context.Context, d *schema.ResourceData, meta interfac
 			row["collapsible"] = fieldGroup.Collapsible
 			row["collapsed_by_deafult"] = fieldGroup.DefaultCollapsed
 			row["visibility_field"] = fieldGroup.VisibleOnCode
+			var fgOptionTypes []map[string]interface{}
+			if len(fieldGroup.Options) != 0 {
+				for _, optionType := range fieldGroup.Options {
+					optionTypeRow := make(map[string]interface{})
+					// Check if the input uses an existing input or not
+					if optionType.FormField {
+						switch optionType.Type {
+						case "byteSize":
+							optionTypeRow["display"] = optionType.Config.Display
+							optionTypeRow["lock_display"] = optionType.Config.LockDisplay
+						case "checkbox":
+							optionTypeRow["default_checked"] = true
+						case "code-editor":
+							optionTypeRow["show_line_numbers"] = optionType.Config.ShowLineNumbers
+							optionTypeRow["code_language"] = optionType.Config.Lang
+						case "number":
+							optionTypeRow["step"] = optionType.Config.Step
+							optionTypeRow["min_value"] = optionType.MinVal
+							optionTypeRow["max_value"] = optionType.MaxVal
+						case "radio":
+							optionTypeRow["option_list_id"] = optionType.OptionList.ID
+						case "select":
+							optionTypeRow["option_list_id"] = optionType.OptionList.ID
+						case "textarea":
+							optionTypeRow["text_rows"] = optionType.Config.Rows
+						case "textArray":
+							optionTypeRow["delimiter"] = optionType.Config.Separator
+						case "typeahead":
+							optionTypeRow["sortable"] = optionType.Config.Sortable
+							optionTypeRow["allow_duplicates"] = optionType.Config.AllowDuplicates
+							optionTypeRow["custom_data"] = optionType.Config.CustomData
+							optionTypeRow["allow_multiple_selections"] = optionType.Config.MultiSelect
+							optionTypeRow["option_list_id"] = optionType.OptionList.ID
+						}
+						optionTypeRow["name"] = optionType.Name
+						optionTypeRow["description"] = optionType.Description
+						optionTypeRow["code"] = optionType.Code
+						optionTypeRow["type"] = optionType.Type
+						optionTypeRow["field_label"] = optionType.FieldLabel
+						optionTypeRow["field_name"] = optionType.FieldName
+						optionTypeRow["default_value"] = optionType.DefaultValue
+						optionTypeRow["placeholder"] = optionType.PlaceHolder
+						optionTypeRow["help_block"] = optionType.HelpBlock
+						optionTypeRow["required"] = optionType.Required
+						optionTypeRow["export_meta"] = optionType.ExportMeta
+						optionTypeRow["display_value_on_details"] = optionType.DisplayValueOnDetails
+						optionTypeRow["locked"] = optionType.IsLocked
+						optionTypeRow["hidden"] = optionType.IsHidden
+						optionTypeRow["exclude_from_search"] = optionType.ExcludeFromSearch
+					} else {
+						optionTypeRow["id"] = optionType.ID
+					}
+
+					fgOptionTypes = append(fgOptionTypes, optionTypeRow)
+				}
+			}
+			row["option_type"] = fgOptionTypes
 			fieldGroups = append(fieldGroups, row)
 		}
 	}
@@ -594,7 +991,109 @@ func resourceFormRead(ctx context.Context, d *schema.ResourceData, meta interfac
 func resourceFormUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*morpheus.Client)
 	id := d.Id()
-	name := d.Get("name").(string)
+
+	// create the payload for option types not in a field group
+	var optionTypes []map[string]interface{}
+	if d.Get("option_type") != nil {
+		optionTypeList := d.Get("option_type").([]interface{})
+		// iterate over the array of optionTypes
+		for i := 0; i < len(optionTypeList); i++ {
+			row := make(map[string]interface{})
+			optionTypeConfig := optionTypeList[i].(map[string]interface{})
+			// Check if an existing option type is provided
+			if optionTypeConfig["id"].(int) > 0 {
+				row["id"] = optionTypeConfig["id"]
+			} else {
+				row["name"] = optionTypeConfig["name"]
+				row["code"] = optionTypeConfig["code"]
+				row["type"] = optionTypeConfig["type"]
+				row["description"] = optionTypeConfig["description"]
+				row["fieldName"] = optionTypeConfig["field_name"]
+				row["fieldLabel"] = optionTypeConfig["field_label"]
+				row["placeHolder"] = optionTypeConfig["placeholder"]
+				row["helpBlock"] = optionTypeConfig["help_block"]
+				// Evaluate the option type selected
+				switch optionTypeConfig["type"] {
+				case "byteSize":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+					config := make(map[string]interface{})
+					config["display"] = optionTypeConfig["display"]
+					config["lockDisplay"] = optionTypeConfig["lock_display"]
+					row["config"] = config
+				case "code-editor":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+					config := make(map[string]interface{})
+					config["lang"] = optionTypeConfig["code_language"]
+					config["showLineNumbers"] = optionTypeConfig["show_line_numbers"]
+					row["config"] = config
+				case "checkbox":
+					row["defaultValue"] = optionTypeConfig["default_checked"]
+				case "number":
+					number, err := strconv.Atoi(optionTypeConfig["default_value"].(string))
+					if err != nil {
+						return diag.Errorf("The default_value attribute must be a number string when the type attribute is set to number")
+					}
+					row["defaultValue"] = number
+					row["minVal"] = optionTypeConfig["min_value"]
+					row["maxVal"] = optionTypeConfig["max_value"]
+					if optionTypeConfig["step"].(int) > 0 {
+						configStep := make(map[string]interface{})
+						configStep["step"] = optionTypeConfig["step"]
+						row["config"] = configStep
+					}
+				case "radio":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+					row["optionList"] = optionTypeConfig["option_list_id"]
+				case "select":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+					row["optionList"] = optionTypeConfig["option_list_id"]
+					config := make(map[string]interface{})
+					config["multiSelect"] = optionTypeConfig["allow_multiple_selections"]
+					config["sortable"] = optionTypeConfig["sortable"]
+					row["config"] = config
+				case "password":
+					config := make(map[string]interface{})
+					config["canPeek"] = optionTypeConfig["allow_password_peek"]
+					row["config"] = config
+				case "textArray":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+					config := make(map[string]interface{})
+					config["separator"] = optionTypeConfig["delimiter"]
+					row["config"] = config
+				case "textarea":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+					config := make(map[string]interface{})
+					config["rows"] = optionTypeConfig["text_rows"]
+					row["config"] = config
+				case "typeahead":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+					config := make(map[string]interface{})
+					config["sortable"] = optionTypeConfig["sortable"]
+					config["allowDuplicates"] = optionTypeConfig["allow_duplicates"]
+					config["multiSelect"] = optionTypeConfig["allow_multiple_selections"]
+					config["customData"] = optionTypeConfig["custom_data"]
+					row["optionList"] = optionTypeConfig["option_list_id"]
+					row["config"] = config
+				case "hidden":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+				case "text":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+				}
+				row["required"] = optionTypeConfig["required"]
+				row["exportMeta"] = optionTypeConfig["export_meta"]
+				row["editable"] = optionTypeConfig["editable"]
+				row["displayValueOnDetails"] = optionTypeConfig["display_value_on_details"]
+				row["isLocked"] = optionTypeConfig["locked"]
+				row["isHidden"] = optionTypeConfig["hidden"]
+				row["excludeFromSearch"] = optionTypeConfig["exclude_from_search"]
+				row["dependsOnCode"] = optionTypeConfig["dependent_field"]
+				row["visibleOnCode"] = optionTypeConfig["visibility_field"]
+				row["verifyPattern"] = optionTypeConfig["verify_pattern"]
+				row["requireOnCode"] = optionTypeConfig["require_field"]
+			}
+			optionTypes = append(optionTypes, row)
+		}
+	}
 
 	// fieldGroups
 	var fieldGroups []map[string]interface{}
@@ -609,6 +1108,109 @@ func resourceFormUpdate(ctx context.Context, d *schema.ResourceData, meta interf
 			row["collapsible"] = fieldGroupConfig["collapsible"]
 			row["defaultCollapsed"] = fieldGroupConfig["collapsed_by_deafult"]
 			row["visibleOnCode"] = fieldGroupConfig["visibility_field"]
+			if fieldGroupConfig["option_type"] != nil {
+				// optiontypes
+				var optionTypes []map[string]interface{}
+				optionTypeList := fieldGroupConfig["option_type"].([]interface{})
+				// iterate over the array of optionTypes
+				for i := 0; i < len(optionTypeList); i++ {
+					row := make(map[string]interface{})
+					optionTypeConfig := optionTypeList[i].(map[string]interface{})
+					// Check if an existing option type is provided
+					if optionTypeConfig["id"].(int) > 0 {
+						row["id"] = optionTypeConfig["id"]
+					} else {
+						row["name"] = optionTypeConfig["name"]
+						row["code"] = optionTypeConfig["code"]
+						row["type"] = optionTypeConfig["type"]
+						row["description"] = optionTypeConfig["description"]
+						row["fieldName"] = optionTypeConfig["field_name"]
+						row["fieldLabel"] = optionTypeConfig["field_label"]
+						row["placeHolder"] = optionTypeConfig["placeholder"]
+						row["helpBlock"] = optionTypeConfig["help_block"]
+						// Evaluate the option type selected
+						switch optionTypeConfig["type"] {
+						case "byteSize":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+							config := make(map[string]interface{})
+							config["display"] = optionTypeConfig["display"]
+							config["lockDisplay"] = optionTypeConfig["lock_display"]
+							row["config"] = config
+						case "code-editor":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+							config := make(map[string]interface{})
+							config["lang"] = optionTypeConfig["code_language"]
+							config["showLineNumbers"] = optionTypeConfig["show_line_numbers"]
+							row["config"] = config
+						case "checkbox":
+							row["defaultValue"] = optionTypeConfig["default_checked"]
+						case "number":
+							number, err := strconv.Atoi(optionTypeConfig["default_value"].(string))
+							if err != nil {
+								return diag.Errorf("The default_value attribute must be a number string when the type attribute is set to number")
+							}
+							row["defaultValue"] = number
+							row["minVal"] = optionTypeConfig["min_value"]
+							row["maxVal"] = optionTypeConfig["max_value"]
+							if optionTypeConfig["step"].(int) > 0 {
+								configStep := make(map[string]interface{})
+								configStep["step"] = optionTypeConfig["step"]
+								row["config"] = configStep
+							}
+						case "radio":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+							row["optionList"] = optionTypeConfig["option_list_id"]
+						case "select":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+							row["optionList"] = optionTypeConfig["option_list_id"]
+							config := make(map[string]interface{})
+							config["multiSelect"] = optionTypeConfig["allow_multiple_selections"]
+							config["sortable"] = optionTypeConfig["sortable"]
+							row["config"] = config
+						case "password":
+							config := make(map[string]interface{})
+							config["canPeek"] = optionTypeConfig["allow_password_peek"]
+							row["config"] = config
+						case "textArray":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+							config := make(map[string]interface{})
+							config["separator"] = optionTypeConfig["delimiter"]
+							row["config"] = config
+						case "textarea":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+							config := make(map[string]interface{})
+							config["rows"] = optionTypeConfig["text_rows"]
+							row["config"] = config
+						case "typeahead":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+							config := make(map[string]interface{})
+							config["sortable"] = optionTypeConfig["sortable"]
+							config["allowDuplicates"] = optionTypeConfig["allow_duplicates"]
+							config["multiSelect"] = optionTypeConfig["allow_multiple_selections"]
+							config["customData"] = optionTypeConfig["custom_data"]
+							row["optionList"] = optionTypeConfig["option_list_id"]
+							row["config"] = config
+						case "hidden":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+						case "text":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+						}
+						row["required"] = optionTypeConfig["required"]
+						row["exportMeta"] = optionTypeConfig["export_meta"]
+						row["editable"] = optionTypeConfig["editable"]
+						row["displayValueOnDetails"] = optionTypeConfig["display_value_on_details"]
+						row["isLocked"] = optionTypeConfig["locked"]
+						row["isHidden"] = optionTypeConfig["hidden"]
+						row["excludeFromSearch"] = optionTypeConfig["exclude_from_search"]
+						row["dependsOnCode"] = optionTypeConfig["dependent_field"]
+						row["visibleOnCode"] = optionTypeConfig["visibility_field"]
+						row["verifyPattern"] = optionTypeConfig["verify_pattern"]
+						row["requireOnCode"] = optionTypeConfig["require_field"]
+					}
+					optionTypes = append(optionTypes, row)
+				}
+				row["options"] = optionTypes
+			}
 			fieldGroups = append(fieldGroups, row)
 		}
 	}
@@ -623,11 +1225,12 @@ func resourceFormUpdate(ctx context.Context, d *schema.ResourceData, meta interf
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
 			"optionTypeForm": map[string]interface{}{
-				"name":        name,
+				"name":        d.Get("name").(string),
 				"code":        d.Get("code").(string),
 				"description": d.Get("description").(string),
 				"labels":      labelsPayload,
 				"fieldGroups": fieldGroups,
+				"options":     optionTypes,
 			},
 		},
 	}
@@ -654,6 +1257,34 @@ func resourceFormDelete(ctx context.Context, d *schema.ResourceData, meta interf
 
 	id := d.Id()
 	req := &morpheus.Request{}
+
+	// Check if the form is already in use
+	var inUseCatalogItems []string
+	catalogItemsResp, err := client.ListCatalogItems(&morpheus.Request{
+		QueryParams: map[string]string{
+			"max": "300",
+		},
+	})
+	if err != nil {
+		if catalogItemsResp != nil && catalogItemsResp.StatusCode == 404 {
+			log.Printf("API 404: %s - %s", catalogItemsResp, err)
+			return diag.FromErr(err)
+		} else {
+			log.Printf("API FAILURE: %s - %s", catalogItemsResp, err)
+			return diag.FromErr(err)
+		}
+	}
+	result := catalogItemsResp.Result.(*morpheus.ListCatalogItemsResult)
+	catalogItems := result.CatalogItems
+	for _, catalogItem := range *catalogItems {
+		if catalogItem.Form.ID == toInt64(id) {
+			inUseCatalogItems = append(inUseCatalogItems, catalogItem.Name)
+		}
+	}
+	if len(inUseCatalogItems) > 0 {
+		return diag.Errorf("The %s morpheus_form resource is currently associated with the following catalog items and must be disassociated before being deleted: %s", d.Get("name"), inUseCatalogItems)
+	}
+
 	resp, err := client.DeleteForm(toInt64(id), req)
 	if err != nil {
 		if resp != nil && resp.StatusCode == 404 {
@@ -665,7 +1296,6 @@ func resourceFormDelete(ctx context.Context, d *schema.ResourceData, meta interf
 		}
 	}
 	log.Printf("API RESPONSE: %s", resp)
-
 	d.SetId("")
 	return diags
 }

@@ -2,6 +2,7 @@
 
 NOTES:
 
+* Add support for forms [180](https://github.com/gomorpheus/terraform-provider-morpheus/issues/180).
 * Add support for setting visibility to the `morpheus_workflow_catalog_item` resource [175](https://github.com/gomorpheus/terraform-provider-morpheus/issues/175).
 * Updated the `morpheus-go-sdk` library from v0.3.6 to v0.3.7
 
