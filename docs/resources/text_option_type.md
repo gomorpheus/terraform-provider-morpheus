@@ -42,7 +42,6 @@ resource "morpheus_text_option_type" "tf_example_text_option_type" {
 
 ### Optional
 
-- `default_checked` (Boolean) The default value of the option type
 - `default_value` (String) The default value of the option type
 - `dependent_field` (String) The field or code used to trigger the reloading of the field
 - `description` (String) The description of the text option type

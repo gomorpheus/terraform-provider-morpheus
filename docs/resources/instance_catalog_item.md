@@ -44,6 +44,7 @@ resource "morpheus_instance_catalog_item" "tf_example_instance_catalog_item" {
 - `description` (String) The description of the instance catalog item
 - `enabled` (Boolean) Whether the instance catalog item is enabled
 - `featured` (Boolean) Whether the instance catalog item is featured
+- `form_id` (Number) The id of the form associated with the workflow catalog item
 - `image_name` (String) The file name of the instance catalog item logo image
 - `image_path` (String) The file path of the instance catalog item logo image including the file name
 - `labels` (Set of String) The organization labels associated with the catalog item (Only supported on Morpheus 5.5.3 or higher)
