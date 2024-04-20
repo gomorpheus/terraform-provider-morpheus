@@ -33,6 +33,8 @@ resource "morpheus_user" "tf_example_user" {
 ### Required
 
 - `email` (String) The email address of the user account
+- `password` (String, Sensitive) The Morpheus password for the user account (external password changes are not detected)
+- `role_ids` (List of Number) A list of user role ids associated with the user account
 - `username` (String) The username of the user account
 
 ### Optional
@@ -42,9 +44,7 @@ resource "morpheus_user" "tf_example_user" {
 - `linux_keypair_id` (Number) The private key pair id associated with the user account for accessing linux instances
 - `linux_password` (String) The password assigned to linux instances for this user account (external password changes are not detected)
 - `linux_username` (String) The username assigned to linux instances for this user account
-- `password` (String, Sensitive) The Morpheus password for the user account (external password changes are not detected)
 - `receive_notifications` (Boolean) Whether notification emails will be sent to the email address associated with the user account or not
-- `role_ids` (List of Number) A list of user role ids associated with the user account
 - `tenant_id` (Number) The ID of the tenant to create the user account in
 - `windows_password` (String, Sensitive) The password assigned to windows instances for this user account (external password changes are not detected)
 - `windows_username` (String) The username assigned to windows instances for this user account

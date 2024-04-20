@@ -56,7 +56,7 @@ func resourceMorpheusUser() *schema.Resource {
 			"password": {
 				Description: "The Morpheus password for the user account (external password changes are not detected)",
 				Type:        schema.TypeString,
-				Optional:    true,
+				Required:    true,
 				Sensitive:   true,
 			},
 			"receive_notifications": {
@@ -67,7 +67,7 @@ func resourceMorpheusUser() *schema.Resource {
 			"role_ids": {
 				Description: "A list of user role ids associated with the user account",
 				Type:        schema.TypeList,
-				Optional:    true,
+				Required:    true,
 				Elem:        &schema.Schema{Type: schema.TypeInt},
 			},
 			"linux_username": {
