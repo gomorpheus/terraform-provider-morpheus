@@ -2,6 +2,7 @@
 
 NOTES:
 
+* Added the `morpheus_user_role` data source [217](https://github.com/gomorpheus/terraform-provider-morpheus/issues/217).
 * Updated the password and role_ids attributes for the `morpheus_user` resource to now be properly designated as required [218](https://github.com/gomorpheus/terraform-provider-morpheus/issues/218).
 * Updated various automation tasks to fix an issue with the script_content attribute constantly indicating that there are planned changes.
 * Updated the logic for the `morpheus_node_type` resource to properly set the maxDisks attribute when 0 is used to define an unlimited value [209](https://github.com/gomorpheus/terraform-provider-morpheus/issues/209).
@@ -10,6 +11,7 @@ NOTES:
 FEATURES:
 
 * **New Data Source:** `morpheus_cypher_secret`
+* **New Data Source:** `morpheus_user_role`
 
 ## 0.9.8 (January 17, 2024)
 
