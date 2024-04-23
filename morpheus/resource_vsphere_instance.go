@@ -366,9 +366,6 @@ func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, 
 			"code": instanceLayout.Code,
 			"name": instanceLayout.Name,
 		},
-		"networkDomain": map[string]interface{}{
-			"id": d.Get("domain_id").(int),
-		},
 	}
 
 	// Description
@@ -387,6 +384,13 @@ func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, 
 			"id": d.Get("user_group_id").(int),
 		}
 		instancePayload["userGroup"] = userGroupPayload
+	}
+
+	// Network Domain
+	if d.Get("domain_id") != 0 {
+		domainConfig := make(map[string]interface{})
+		domainConfig["id"] = d.Get("domain_id").(int)
+		instancePayload["networkDomain"] = domainConfig
 	}
 
 	payload := map[string]interface{}{

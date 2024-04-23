@@ -2,6 +2,7 @@
 
 NOTES:
 
+* Fixed an issue in which if the network domain ID was not provided for the `morpheus_vsphere_instance` resource then the terraform apply would fail. The network domain ID is an optional field and shouldn't cause the provisioning to fail. [215](https://github.com/gomorpheus/terraform-provider-morpheus/issues/217).
 * Added the `morpheus_user_role` data source [217](https://github.com/gomorpheus/terraform-provider-morpheus/issues/217).
 * Updated the password and role_ids attributes for the `morpheus_user` resource to now be properly designated as required [218](https://github.com/gomorpheus/terraform-provider-morpheus/issues/218).
 * Updated various automation tasks to fix an issue with the script_content attribute constantly indicating that there are planned changes.
