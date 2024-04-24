@@ -1,7 +1,8 @@
 ## UNRELEASED
 
-NOTES:
+## 0.9.9 (April 24, 2024)
 
+NOTES:
 
 * Added the `morpheus_network_subnet` data source. [224](https://github.com/gomorpheus/terraform-provider-morpheus/issues/224)
 * Added support for managing `morpheus_user_group` resources using the Terraform provider. [216](https://github.com/gomorpheus/terraform-provider-morpheus/issues/216)
