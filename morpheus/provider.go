@@ -196,6 +196,7 @@ func Provider() *schema.Provider {
 			"morpheus_key_pair":                   dataSourceMorpheusKeyPair(),
 			"morpheus_network":                    dataSourceMorpheusNetwork(),
 			"morpheus_network_group":              dataSourceMorpheusNetworkGroup(),
+			"morpheus_network_subnet":             dataSourceMorpheusNetworkSubnet(),
 			"morpheus_node_type":                  dataSourceMorpheusNodeType(),
 			"morpheus_option_list":                dataSourceMorpheusOptionList(),
 			"morpheus_option_type":                dataSourceMorpheusOptionType(),
