@@ -3,6 +3,7 @@
 NOTES:
 
 
+* Added the `morpheus_network_subnet` data source. [224](https://github.com/gomorpheus/terraform-provider-morpheus/issues/224)
 * Added support for managing `morpheus_user_group` resources using the Terraform provider. [216](https://github.com/gomorpheus/terraform-provider-morpheus/issues/216)
 * Fixed an issue in which if the network domain ID was not provided for the `morpheus_vsphere_instance` resource then the terraform apply would fail. The network domain ID is an optional field and shouldn't cause the provisioning to fail. [215](https://github.com/gomorpheus/terraform-provider-morpheus/issues/217).
 * Added the `morpheus_user_role` data source [217](https://github.com/gomorpheus/terraform-provider-morpheus/issues/217).
@@ -14,6 +15,7 @@ NOTES:
 FEATURES:
 
 * **New Data Source:** `morpheus_cypher_secret`
+* **New Data Source:** `morpheus_network_subnet`
 * **New Data Source:** `morpheus_user_role`
 * **New Resource:** `morpheus_user_group`
 
