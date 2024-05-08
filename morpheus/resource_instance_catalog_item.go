@@ -87,7 +87,14 @@ func resourceInstanceCatalogItem() *schema.Resource {
 				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
 					return new == old
 				},
-				Computed: true,
+				Computed:      true,
+				ConflictsWith: []string{"form_id"},
+			},
+			"form_id": {
+				Type:          schema.TypeInt,
+				Description:   "The id of the form associated with the workflow catalog item",
+				Optional:      true,
+				ConflictsWith: []string{"option_type_ids"},
 			},
 			"image_name": {
 				Type:        schema.TypeString,
@@ -146,6 +153,13 @@ func resourceInstanceCatalogItemCreate(ctx context.Context, d *schema.ResourceDa
 		}
 	}
 	catalogItem["labels"] = labelsPayload
+
+	if d.Get("form_id").(int) > 0 {
+		catalogItem["formType"] = "form"
+		catalogItem["form"] = map[string]interface{}{
+			"id": d.Get("form_id").(int),
+		}
+	}
 
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
@@ -242,6 +256,7 @@ func resourceInstanceCatalogItemRead(ctx context.Context, d *schema.ResourceData
 		}
 	}
 	d.Set("option_type_ids", optionTypes)
+	d.Set("form_id", catalogItem.Form.ID)
 	d.Set("content", catalogItem.Content)
 	configJson, _ := json.Marshal(catalogItem.Config.(map[string]interface{}))
 	d.Set("config", string(configJson))
@@ -283,6 +298,13 @@ func resourceInstanceCatalogItemUpdate(ctx context.Context, d *schema.ResourceDa
 		}
 	}
 	catalogItem["labels"] = labelsPayload
+
+	if d.Get("form_id").(int) > 0 {
+		catalogItem["formType"] = "form"
+		catalogItem["form"] = map[string]interface{}{
+			"id": d.Get("form_id").(int),
+		}
+	}
 
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
