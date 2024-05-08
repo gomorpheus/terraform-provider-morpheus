@@ -10,6 +10,7 @@ import (
 	"github.com/gomorpheus/morpheus-go-sdk"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAppBlueprintCatalogItem() *schema.Resource {
@@ -122,14 +123,12 @@ func resourceAppBlueprintCatalogItem() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 			},
-			/* AWAITING API SUPPORT
 			"visibility": {
-							Type:         schema.TypeString,
-							Description:  "The visibility of the app blueprint catalog item (public or private)",
-							Required:     true,
-							ValidateFunc: validation.StringInSlice([]string{"public", "private"}, false),
-						},
-			*/
+				Type:         schema.TypeString,
+				Description:  "The visibility of the app blueprint catalog item (public or private)",
+				Required:     true,
+				ValidateDiagFunc: validation.ToDiagFunc(validation.StringInSlice([]string{"public", "private"}, false)),
+			},
 		},
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
@@ -154,7 +153,7 @@ func resourceAppBlueprintCatalogItemCreate(ctx context.Context, d *schema.Resour
 	catalogItem["iconPath"] = "custom"
 	catalogItem["optionTypes"] = d.Get("option_type_ids")
 	catalogItem["content"] = d.Get("content").(string)
-	//catalogItem["visibility"] = d.Get("visibility").(string)
+	catalogItem["visibility"] = d.Get("visibility").(string)
 
 	blueprint := make(map[string]interface{})
 	blueprint["id"] = d.Get("blueprint_id").(int)
@@ -318,7 +317,7 @@ func resourceAppBlueprintCatalogItemUpdate(ctx context.Context, d *schema.Resour
 	catalogItem["iconPath"] = "custom"
 	catalogItem["optionTypes"] = d.Get("option_type_ids")
 	catalogItem["content"] = d.Get("content").(string)
-	//catalogItem["visibility"] = d.Get("visibility").(string)
+	catalogItem["visibility"] = d.Get("visibility").(string)
 
 	blueprint := make(map[string]interface{})
 	blueprint["id"] = d.Get("blueprint_id").(int)
