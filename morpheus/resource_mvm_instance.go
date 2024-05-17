@@ -2,6 +2,7 @@ package morpheus
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"time"
@@ -71,9 +72,10 @@ func resourceMVMInstance() *schema.Resource {
 				Type:        schema.TypeInt,
 				Required:    true,
 			},
-			"resource_pool_id": {
-				Description: "The ID of the resource pool to provision the instance to",
-				Type:        schema.TypeInt,
+			"resource_pool_name": {
+				Description: "The name of the resource pool (cluster) to provision the instance to",
+				Type:        schema.TypeString,
+				ForceNew:    true,
 				Optional:    true,
 				Computed:    true,
 			},
@@ -132,6 +134,7 @@ func resourceMVMInstance() *schema.Resource {
 				ForceNew:    true,
 				Optional:    true,
 				Computed:    true,
+				Default:     "",
 			},
 			"user_group_id": {
 				Description: "The id of the user group associated with the instance",
@@ -344,13 +347,25 @@ func resourceMVMInstanceCreate(ctx context.Context, d *schema.ResourceData, meta
 	config := make(map[string]interface{})
 
 	// Resource Pool
-	resourcePoolResp, err := client.GetResourcePool(int64(cloud), int64(d.Get("resource_pool_id").(int)), &morpheus.Request{})
+	resourcePoolResp, err := client.Execute(&morpheus.Request{
+		Method:      "GET",
+		Path:        fmt.Sprintf("/api/options/zonePools?layoutId=%d", d.Get("instance_layout_id").(int)),
+		QueryParams: map[string]string{},
+	})
 	if err != nil {
 		diag.FromErr(err)
 	}
-	resourcePoolResult := resourcePoolResp.Result.(*morpheus.GetResourcePoolResult)
-	resourcePool := resourcePoolResult.ResourcePool
-	config["resourcePoolId"] = fmt.Sprintf("pool-%d", resourcePool.ID)
+
+	var itemResponsePayload ResourcePoolOptions
+	json.Unmarshal(resourcePoolResp.Body, &itemResponsePayload)
+	var resourcePoolId int
+	for _, v := range itemResponsePayload.Data {
+		if v.ProviderType == "mvm" {
+			resourcePoolId = v.Id
+		}
+	}
+
+	config["resourcePoolId"] = resourcePoolId
 	config["poolProviderType"] = "mvm"
 
 	// Custom Options
@@ -563,7 +578,26 @@ func resourceMVMInstanceRead(ctx context.Context, d *schema.ResourceData, meta i
 	d.Set("instance_type_id", instance.InstanceType.ID)
 	d.Set("instance_layout_id", instance.Layout.ID)
 	d.Set("plan_id", instance.Plan.ID)
-	d.Set("resource_pool_id", instance.Config["resourcePoolId"])
+
+	// Resource Pool
+	resourcePoolResp, err := client.Execute(&morpheus.Request{
+		Method:      "GET",
+		Path:        fmt.Sprintf("/api/options/zonePools?layoutId=%d", instance.Layout.ID),
+		QueryParams: map[string]string{},
+	})
+	if err != nil {
+		diag.FromErr(err)
+	}
+
+	var itemResponsePayload ResourcePoolOptions
+	json.Unmarshal(resourcePoolResp.Body, &itemResponsePayload)
+	var resourcePoolName string
+	for _, v := range itemResponsePayload.Data {
+		if v.ProviderType == "mvm" {
+			resourcePoolName = v.Name
+		}
+	}
+	d.Set("resource_pool_name", resourcePoolName)
 	d.Set("environment", instance.Environment)
 	d.Set("labels", instance.Labels)
 	d.Set("evar", instance.EnvironmentVariables)
@@ -678,4 +712,18 @@ func resourceMVMInstanceDelete(ctx context.Context, d *schema.ResourceData, meta
 	log.Printf("API RESPONSE: %s", resp)
 	d.SetId("")
 	return diags
+}
+
+type ResourcePoolOptions struct {
+	Success bool `json:"success"`
+	Data    []struct {
+		Id           int    `json:"id"`
+		Name         string `json:"name"`
+		IsGroup      bool   `json:"isGroup"`
+		Group        string `json:"group"`
+		IsDefault    bool   `json:"isDefault"`
+		Type         string `json:"type"`
+		ProviderType string `json:"providerType"`
+		Value        string `json:"value"`
+	} `json:"data"`
 }

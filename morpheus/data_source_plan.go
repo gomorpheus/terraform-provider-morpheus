@@ -3,6 +3,7 @@ package morpheus
 import (
 	"context"
 	"log"
+	"strconv"
 
 	"github.com/gomorpheus/morpheus-go-sdk"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -36,6 +37,11 @@ func dataSourceMorpheusPlan() *schema.Resource {
 				Description: "The description of the plan",
 				Computed:    true,
 			},
+			"provision_type": {
+				Type:        schema.TypeString,
+				Description: "The description of the plan",
+				Required:    true,
+			},
 		},
 	}
 }
@@ -53,7 +59,35 @@ func dataSourceMorpheusPlanRead(ctx context.Context, d *schema.ResourceData, met
 	var resp *morpheus.Response
 	var err error
 	if id == 0 && name != "" {
-		resp, err = client.FindPlanByName(name)
+
+		// Find the provision type to filter service plans
+		resp, err = client.FindProvisionTypeByName(d.Get("provision_type").(string))
+		if err != nil {
+			log.Printf("API FAILURE: %s - %v", resp, err)
+			return diag.FromErr(err)
+		}
+		provisionType := resp.Result.(*morpheus.GetProvisionTypeResult)
+
+		// Find the service plan by name and provision type
+		listResp, err := client.ListPlans(&morpheus.Request{
+			QueryParams: map[string]string{
+				"name":            d.Get("name").(string),
+				"provisionTypeId": strconv.Itoa(int(provisionType.ProvisionType.ID)),
+			},
+		})
+		if err != nil {
+			log.Printf("API FAILURE: %s - %v", resp, err)
+			return diag.FromErr(err)
+		}
+
+		listPlan := listResp.Result.(*morpheus.ListPlansResult)
+		plan := (*listPlan.Plans)[0]
+
+		resp, err = client.GetPlan(int64(plan.ID), &morpheus.Request{})
+		if err != nil {
+			log.Printf("API FAILURE: %s - %v", resp, err)
+			return diag.FromErr(err)
+		}
 	} else if id != 0 {
 		resp, err = client.GetPlan(int64(id), &morpheus.Request{})
 	} else {
