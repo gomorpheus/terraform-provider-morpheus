@@ -99,7 +99,7 @@ func resourceShellScriptTask() *schema.Resource {
 			},
 			"execute_target": {
 				Type:         schema.TypeString,
-				Description:  "The source of the shell script (local, url or repository)",
+				Description:  "The execute target of the shell script (local, remote, resource)",
 				ValidateFunc: validation.StringInSlice([]string{"local", "remote", "resource"}, false),
 				Optional:     true,
 				Computed:     true,

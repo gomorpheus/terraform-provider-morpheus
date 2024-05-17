@@ -1,5 +1,9 @@
 ## UNRELEASED
 
+NOTES:
+
+* Fixed the execute_target attribute description for the `morpheus_shell_script_task` resource. [237](https://github.com/gomorpheus/terraform-provider-morpheus/issues/237)
+
 ## 0.9.9 (April 24, 2024)
 
 NOTES:
