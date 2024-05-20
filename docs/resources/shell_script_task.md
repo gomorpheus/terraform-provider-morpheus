@@ -80,7 +80,7 @@ resource "morpheus_shell_script_task" "tfexample_shell_git" {
 
 - `allow_custom_config` (Boolean) Custom configuration data to pass during the execution of the shell script
 - `code` (String) The code of the shell script task
-- `execute_target` (String) The source of the shell script (local, url or repository)
+- `execute_target` (String) The execute target of the shell script (local, remote or resource)
 - `labels` (Set of String) The organization labels associated with the task (Only supported on Morpheus 5.5.3 or higher)
 - `local_repository_id` (String) The ID of the local git repository
 - `local_repository_ref` (String) The git reference of the repository to pull (main, master, etc.)

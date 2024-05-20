@@ -23,6 +23,7 @@ resource "morpheus_app_blueprint_catalog_item" "tf_example_app_blueprint_catalog
   featured             = true
   labels               = ["aws", "demo", "testing"]
   content              = file("${path.module}/catalog-data.md")
+  visibility           = "public"
   blueprint_id         = 5
   option_type_ids      = [2056, 2006, 2058]
   app_spec             = file("${path.module}/appSpec.yaml")
@@ -37,6 +38,7 @@ resource "morpheus_app_blueprint_catalog_item" "tf_example_app_blueprint_catalog
 - `app_spec` (String) The app spec associated with the app blueprint catalog item
 - `blueprint_id` (Number) The id of the blueprint to associate with the app blueprint catalog item
 - `name` (String) The name of the app blueprint catalog item
+- `visibility` (String) The visibility of the app blueprint catalog item (public or private)
 
 ### Optional
 
