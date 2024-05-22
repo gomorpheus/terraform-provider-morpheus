@@ -18,3 +18,27 @@ func jsonBytesEqual(b1, b2 []byte) bool {
 
 	return reflect.DeepEqual(o1, o2)
 }
+
+func parseEnvironmentVariables(variables []interface{}) []map[string]interface{} {
+	var evars []map[string]interface{}
+	// iterate over the array of evars
+	for i := 0; i < len(variables); i++ {
+		row := make(map[string]interface{})
+		evarconfig := variables[i].(map[string]interface{})
+		for k, v := range evarconfig {
+			switch k {
+			case "name":
+				row["name"] = v.(string)
+			case "value":
+				row["value"] = v.(string)
+			case "export":
+				row["export"] = v.(bool)
+			case "masked":
+				row["masked"] = v
+			}
+		}
+		evars = append(evars, row)
+		//log.Printf("evars payload: %s", evars)
+	}
+	return evars
+}

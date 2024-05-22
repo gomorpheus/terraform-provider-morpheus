@@ -10,15 +10,16 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
-func resourceVsphereInstance() *schema.Resource {
+func resourceAwsInstance() *schema.Resource {
 	return &schema.Resource{
 		Description:   "Provides a Morpheus instance resource.",
-		CreateContext: resourceVsphereInstanceCreate,
-		ReadContext:   resourceVsphereInstanceRead,
-		UpdateContext: resourceVsphereInstanceUpdate,
-		DeleteContext: resourceVsphereInstanceDelete,
+		CreateContext: resourceAwsInstanceCreate,
+		ReadContext:   resourceAwsInstanceRead,
+		UpdateContext: resourceAwsInstanceUpdate,
+		DeleteContext: resourceAwsInstanceDelete,
 		Timeouts: &schema.ResourceTimeout{
 			Create: schema.DefaultTimeout(45 * time.Minute),
 			Read:   schema.DefaultTimeout(5 * time.Minute),
@@ -225,12 +226,6 @@ func resourceVsphereInstance() *schema.Resource {
 							Optional:    true,
 							Computed:    true,
 						},
-						"datastore_id": {
-							Description: "The ID of the datastore",
-							Type:        schema.TypeInt,
-							Optional:    true,
-							Computed:    true,
-						},
 					},
 				},
 			},
@@ -264,14 +259,40 @@ func resourceVsphereInstance() *schema.Resource {
 							Optional:    true,
 							Computed:    true,
 						},
-						"network_interface_type_id": {
-							Description: "The network interface type",
-							Type:        schema.TypeInt,
-							Optional:    true,
-							Computed:    true,
-						},
 					},
 				},
+			},
+			// AWS Specific Inputs
+			"security_group_ids": {
+				Description: "The list of security groups associated with the instance",
+				Type:        schema.TypeList,
+				ForceNew:    true,
+				Required:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"public_ip_type": {
+				Description:  "The public IP type to associate with the instance",
+				Type:         schema.TypeString,
+				ForceNew:     true,
+				Optional:     true,
+				Default:      "subnet",
+				ValidateFunc: validation.StringInSlice([]string{"subnet", "elasticIp"}, true),
+			},
+			"instance_profile_id": {
+				Description: "The AWS InstanceProfileId of a Service Profle to associate with the instance",
+				Type:        schema.TypeString,
+				ForceNew:    true,
+				Optional:    true,
+				Computed:    true,
+			},
+			"kms_key_id": {
+				Description: "The AWS KMS Key ID to associate with the instance",
+				Type:        schema.TypeString,
+				ForceNew:    true,
+				Optional:    true,
+				Computed:    true,
 			},
 		},
 		Importer: &schema.ResourceImporter{
@@ -280,7 +301,7 @@ func resourceVsphereInstance() *schema.Resource {
 	}
 }
 
-func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceAwsInstanceCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*morpheus.Client)
 
 	// Warning or errors can be collected in a slice type
@@ -393,11 +414,29 @@ func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, 
 		instancePayload["networkDomain"] = domainConfig
 	}
 
+	// AWS Specific - Public IP Type
+	if d.Get("public_ip_type") != nil {
+		config["publicIpType"] = d.Get("public_ip_type").(string)
+	}
+
+	// AWS Specific - Instance Profile ID
+	if d.Get("instance_profile_id") != nil {
+		config["instanceProfile"] = d.Get("instance_profile_id").(string)
+	}
+
+	// AWS Specific - KMS Key ID
+	if d.Get("kms_key_id") != nil {
+		config["kmsKeyId"] = d.Get("kms_key_id").(string)
+	}
+
 	payload := map[string]interface{}{
 		"zoneId":   cloud,
 		"instance": instancePayload,
 		"config":   config,
 	}
+
+	// AWS Specific - Security Groups
+	payload["securityGroups"] = d.Get("security_group_ids")
 
 	// tags
 	if d.Get("tags") != nil {
@@ -434,12 +473,12 @@ func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, 
 
 	// Network Interfaces
 	if d.Get("interfaces") != nil {
-		payload["networkInterfaces"] = parseNetworkInterfaces(d.Get("interfaces").([]interface{}))
+		payload["networkInterfaces"] = parseAwsNetworkInterfaces(d.Get("interfaces").([]interface{}))
 	}
 
 	// Volumes
 	if d.Get("volumes") != nil {
-		payload["volumes"] = parseStorageVolumes(d.Get("volumes").([]interface{}))
+		payload["volumes"] = parseAwsStorageVolumes(d.Get("volumes").([]interface{}))
 	}
 
 	req := &morpheus.Request{Body: payload}
@@ -478,11 +517,11 @@ func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, 
 
 	// Successfully created resource, now set id
 	d.SetId(int64ToString(instance.ID))
-	resourceVsphereInstanceRead(ctx, d, meta)
+	resourceAwsInstanceRead(ctx, d, meta)
 	return diags
 }
 
-func resourceVsphereInstanceRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceAwsInstanceRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*morpheus.Client)
 
 	// Warning or errors can be collected in a slice type
@@ -560,10 +599,14 @@ func resourceVsphereInstanceRead(ctx context.Context, d *schema.ResourceData, me
 	}
 	d.Set("custom_options", instance.Config["customOptions"])
 	d.Set("domain_id", instance.NetworkDomain.Id)
+	d.Set("security_group_ids", instance.Config["SecurityGroups"])
+	d.Set("public_ip_type", instance.Config["publicIpType"])
+	d.Set("instance_profile_id", instance.Config["instanceProfile"])
+	d.Set("kms_key_id", instance.Config["kmsKeyId"])
 	return diags
 }
 
-func resourceVsphereInstanceUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceAwsInstanceUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*morpheus.Client)
 	id := d.Id()
 	name := d.Get("name").(string)
@@ -614,10 +657,10 @@ func resourceVsphereInstanceUpdate(ctx context.Context, d *schema.ResourceData, 
 	instance := result.Instance
 	// Successfully updated resource, now set id
 	d.SetId(int64ToString(instance.ID))
-	return resourceVsphereInstanceRead(ctx, d, meta)
+	return resourceAwsInstanceRead(ctx, d, meta)
 }
 
-func resourceVsphereInstanceDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceAwsInstanceDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*morpheus.Client)
 
 	// Warning or errors can be collected in a slice type
@@ -645,7 +688,7 @@ func resourceVsphereInstanceDelete(ctx context.Context, d *schema.ResourceData, 
 	return diags
 }
 
-func parseNetworkInterfaces(interfaces []interface{}) []map[string]interface{} {
+func parseAwsNetworkInterfaces(interfaces []interface{}) []map[string]interface{} {
 	var networkInterfaces []map[string]interface{}
 	for i := 0; i < len(interfaces); i++ {
 		row := make(map[string]interface{})
@@ -667,15 +710,12 @@ func parseNetworkInterfaces(interfaces []interface{}) []map[string]interface{} {
 		if item["ip_mode"] != nil {
 			row["ipMode"] = item["ip_mode"] // .(string)
 		}
-		if item["network_interface_type_id"] != nil {
-			row["networkInterfaceTypeId"] = item["network_interface_type_id"] //.(int)
-		}
 		networkInterfaces = append(networkInterfaces, row)
 	}
 	return networkInterfaces
 }
 
-func parseStorageVolumes(volumes []interface{}) []map[string]interface{} {
+func parseAwsStorageVolumes(volumes []interface{}) []map[string]interface{} {
 	var storageVolumes []map[string]interface{}
 	for i := 0; i < len(volumes); i++ {
 		row := make(map[string]interface{})
@@ -694,9 +734,6 @@ func parseStorageVolumes(volumes []interface{}) []map[string]interface{} {
 		}
 		if item["storage_type"] != nil {
 			row["storageType"] = item["storage_type"] // .(int)
-		}
-		if item["datastore_id"] != nil {
-			row["datastoreId"] = item["datastore_id"] // .(int)
 		}
 		storageVolumes = append(storageVolumes, row)
 	}
