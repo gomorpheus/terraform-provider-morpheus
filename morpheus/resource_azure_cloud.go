@@ -164,6 +164,12 @@ func resourceAzureCloud() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 			},
+			"config_management_integration_id": {
+				Type:        schema.TypeString,
+				Description: "The id of the configuration management ingegration associated with the Azure cloud",
+				Optional:    true,
+				Computed:    true,
+			},
 			"guidance": {
 				Type:         schema.TypeString,
 				Description:  "Whether to enable guidance recommendations on the cloud (manual, off)",
@@ -254,6 +260,7 @@ func resourceAzureCloudCreate(ctx context.Context, d *schema.ResourceData, meta 
 	config["applianceUrl"] = d.Get("appliance_url")
 	cloud["timezone"] = d.Get("time_zone").(string)
 	config["datacenterName"] = d.Get("datacenter_id")
+	config["configManagementId"] = d.Get("config_management_integration_id").(string)
 	cloud["guidanceMode"] = d.Get("guidance").(string)
 	cloud["costingMode"] = d.Get("costing").(string)
 	cloud["agentMode"] = d.Get("agent_install_mode").(string)
@@ -382,6 +389,7 @@ func resourceAzureCloudRead(ctx context.Context, d *schema.ResourceData, meta in
 		d.Set("appliance_url", cloud.Config.ApplianceUrl)
 		d.Set("time_zone", cloud.TimeZone)
 		d.Set("datacenter_id", cloud.Config.DatacenterName)
+		d.Set("config_management_integration_id", cloud.Config.ConfigManagementID)
 		d.Set("guidance", cloud.GuidanceMode)
 		d.Set("costing", cloud.CostingMode)
 		d.Set("agent_install_mode", cloud.AgentMode)
@@ -451,6 +459,9 @@ func resourceAzureCloudUpdate(ctx context.Context, d *schema.ResourceData, meta 
 	config["applianceUrl"] = d.Get("appliance_url")
 	cloud["timezone"] = d.Get("time_zone").(string)
 	config["datacenterName"] = d.Get("datacenter_id")
+	if d.HasChange("config_management_integration_id") {
+		config["configManagementId"] = d.Get("config_management_integration_id").(string)
+	}
 	cloud["guidanceMode"] = d.Get("guidance").(string)
 	cloud["costingMode"] = d.Get("costing").(string)
 	cloud["agentMode"] = d.Get("agent_install_mode").(string)

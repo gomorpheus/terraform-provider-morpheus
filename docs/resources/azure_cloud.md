@@ -91,6 +91,7 @@ resource "morpheus_azure_cloud" "tf_example_azure_cloud" {
 - `azure_client_id` (String) The Azure client ID used for authentication
 - `azure_client_secret` (String, Sensitive) The Azure client secret used for authentication
 - `code` (String) Optional code for use with policies
+- `config_management_integration_id` (String) The id of the configuration management ingegration associated with the Azure cloud
 - `costing` (String) Whether to enable costing on the cloud (off, costing, reservations, full)
 - `credential_id` (Number) The ID of the credential store entry used for authentication
 - `datacenter_id` (String) An arbitrary id used to reference the datacenter for the cloud
