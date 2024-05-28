@@ -85,6 +85,7 @@ func resourceAWSCloud() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The AWS region associated with the cloud integration",
 				Required:    true,
+				ForceNew:    true,
 			},
 			"credential_id": {
 				Description: "The ID of the credential store entry used for authentication",
@@ -158,6 +159,12 @@ func resourceAWSCloud() *schema.Resource {
 			"datacenter_id": {
 				Type:        schema.TypeString,
 				Description: "An arbitrary id used to reference the datacenter for the cloud",
+				Optional:    true,
+				Computed:    true,
+			},
+			"config_management_integration_id": {
+				Type:        schema.TypeString,
+				Description: "The id of the configuration management integration associated with the AWS cloud",
 				Optional:    true,
 				Computed:    true,
 			},
@@ -249,11 +256,10 @@ func resourceAWSCloudCreate(ctx context.Context, d *schema.ResourceData, meta in
 	config["applianceUrl"] = d.Get("appliance_url")
 	cloud["timezone"] = d.Get("time_zone").(string)
 	config["datacenterName"] = d.Get("datacenter_id")
+	config["configManagementId"] = d.Get("config_management_integration_id").(string)
 	cloud["guidanceMode"] = d.Get("guidance").(string)
 	cloud["costingMode"] = d.Get("costing").(string)
 	cloud["agentMode"] = d.Get("agent_install_mode").(string)
-
-	//	config["useHostCredentials"] = d.Get("use_host_iam_credentials").(bool)
 
 	cloud["config"] = config
 
@@ -375,6 +381,7 @@ func resourceAWSCloudRead(ctx context.Context, d *schema.ResourceData, meta inte
 		d.Set("appliance_url", cloud.Config.ApplianceUrl)
 		d.Set("time_zone", cloud.TimeZone)
 		d.Set("datacenter_id", cloud.Config.DatacenterName)
+		d.Set("config_management_integration_id", cloud.Config.ConfigManagementID)
 		d.Set("guidance", cloud.GuidanceMode)
 		d.Set("costing", cloud.CostingMode)
 		d.Set("agent_install_mode", cloud.AgentMode)
@@ -387,73 +394,105 @@ func resourceAWSCloudUpdate(ctx context.Context, d *schema.ResourceData, meta in
 	client := meta.(*morpheus.Client)
 	id := d.Id()
 	cloud := make(map[string]interface{})
-	cloud["name"] = d.Get("name").(string)
-	cloud["code"] = d.Get("code").(string)
-	cloud["location"] = d.Get("location").(string)
-	cloud["visibility"] = d.Get("visibility").(string)
+	if d.HasChange("name") {
+		cloud["name"] = d.Get("name").(string)
+	}
+	if d.HasChange("code") {
+		cloud["code"] = d.Get("code").(string)
+	}
+	if d.HasChange("location") {
+		cloud["location"] = d.Get("location").(string)
+	}
+	if d.HasChange("visibility") {
+		cloud["visibility"] = d.Get("visibility").(string)
+	}
+	if d.HasChange("tenant_id") {
+		account := make(map[string]interface{})
+		account["id"] = d.Get("tenant_id").(string)
+		cloud["account"] = account
+		cloud["accountId"] = d.Get("tenant_id").(string)
+	}
 
-	account := make(map[string]interface{})
-	account["id"] = d.Get("tenant_id").(string)
-	cloud["account"] = account
-	cloud["accountId"] = d.Get("tenant_id").(string)
-
-	cloud["enabled"] = d.Get("enabled").(bool)
-	cloud["autoRecoverPowerState"] = d.Get("automatically_power_on_vms").(bool)
+	if d.HasChange("enabled") {
+		cloud["enabled"] = d.Get("enabled").(bool)
+	}
+	if d.HasChange("automatically_power_on_vms") {
+		cloud["autoRecoverPowerState"] = d.Get("automatically_power_on_vms").(bool)
+	}
 
 	config := make(map[string]interface{})
-	region := fmt.Sprintf("ec2.%s.amazonaws.com", d.Get("region").(string))
-	config["endpoint"] = region
 
-	if d.Get("credential_id").(int) != 0 {
+	if d.HasChange("credential_id") {
 		credential := make(map[string]interface{})
 		credential["type"] = "access-key-secret"
 		credential["id"] = d.Get("credential_id").(int)
 		cloud["credential"] = credential
-	} else {
-		credential := make(map[string]interface{})
-		credential["type"] = "local"
-		cloud["credential"] = credential
+	}
+
+	if d.HasChange("access_key") {
 		config["accessKey"] = d.Get("access_key").(string)
+	}
+	if d.HasChange("secret_key") {
 		config["secretKey"] = d.Get("secret_key").(string)
 	}
 
-	if d.Get("use_host_iam_credentials").(bool) {
-		config["useHostCredentials"] = "on"
-	} else {
-		config["useHostCredentials"] = "off"
+	if d.HasChange("use_host_iam_credentials") {
+		if d.Get("use_host_iam_credentials").(bool) {
+			config["useHostCredentials"] = "on"
+		} else {
+			config["useHostCredentials"] = "off"
+		}
 	}
-	config["stsAssumeRole"] = d.Get("role_arn").(string)
 
-	cloud["inventoryLevel"] = d.Get("inventory").(string)
+	if d.HasChange("role_arn") {
+		config["stsAssumeRole"] = d.Get("role_arn").(string)
+	}
+
+	if d.HasChange("inventory") {
+		cloud["inventoryLevel"] = d.Get("inventory").(string)
+	}
+
 	config["isVpc"] = "true"
 
-	if d.Get("vpc").(string) == "all" {
-		config["vpc"] = ""
-	} else {
-		config["vpc"] = d.Get("vpc").(string)
+	if d.HasChange("vpc") {
+		if d.Get("vpc").(string) == "all" {
+			config["vpc"] = ""
+		} else {
+			config["vpc"] = d.Get("vpc").(string)
+		}
 	}
 
-	config["ebsEncryption"] = d.Get("ebs_encryption").(bool)
-	if d.Get("ebs_encryption").(bool) {
-		config["ebsEncryption"] = "on"
-	} else {
-		config["ebsEncryption"] = "off"
+	if d.HasChange("ebs_encryption") {
+		if d.Get("ebs_encryption").(bool) {
+			config["ebsEncryption"] = "on"
+		} else {
+			config["ebsEncryption"] = "off"
+		}
 	}
 
-	config["applianceUrl"] = d.Get("appliance_url")
-	cloud["timezone"] = d.Get("time_zone").(string)
-	config["datacenterName"] = d.Get("datacenter_id")
-	cloud["guidanceMode"] = d.Get("guidance").(string)
-	cloud["costingMode"] = d.Get("costing").(string)
-	cloud["agentMode"] = d.Get("agent_install_mode").(string)
-
-	//	config["useHostCredentials"] = d.Get("use_host_iam_credentials").(bool)
+	if d.HasChange("appliance_url") {
+		config["applianceUrl"] = d.Get("appliance_url")
+	}
+	if d.HasChange("time_zone") {
+		cloud["timezone"] = d.Get("time_zone").(string)
+	}
+	if d.HasChange("datacenter_id") {
+		config["datacenterName"] = d.Get("datacenter_id")
+	}
+	if d.HasChange("guidance") {
+		cloud["guidanceMode"] = d.Get("guidance").(string)
+	}
+	if d.HasChange("costing") {
+		cloud["costingMode"] = d.Get("costing").(string)
+	}
+	if d.HasChange("agent_install_mode") {
+		cloud["agentMode"] = d.Get("agent_install_mode").(string)
+	}
+	if d.HasChange("config_management_integration_id") {
+		config["configManagementId"] = d.Get("config_management_integration_id").(string)
+	}
 
 	cloud["config"] = config
-
-	cloudType := make(map[string]interface{})
-	cloudType["code"] = "amazon"
-	cloud["zoneType"] = cloudType
 
 	payload := map[string]interface{}{
 		"zone": cloud,

@@ -81,6 +81,7 @@ resource "morpheus_aws_cloud" "tf_example_aws_cloud" {
 - `appliance_url` (String) The URL used by workloads provisioned in the cloud for interacting with the Morpheus server
 - `automatically_power_on_vms` (Boolean) Determines whether to automatically power on cloud virtual machines
 - `code` (String) Optional code for use with policies
+- `config_management_integration_id` (String) The id of the configuration management integration associated with the AWS cloud
 - `costing` (String) Whether to enable costing on the cloud (off, costing, full)
 - `credential_id` (Number) The ID of the credential store entry used for authentication
 - `datacenter_id` (String) An arbitrary id used to reference the datacenter for the cloud

@@ -180,6 +180,12 @@ func resourceVsphereCloud() *schema.Resource {
 				Description: "A custom id used to reference the datacenter for the cloud",
 				Optional:    true,
 			},
+			"config_management_integration_id": {
+				Type:        schema.TypeString,
+				Description: "The id of the configuration management integration associated with the vSphere cloud",
+				Optional:    true,
+				Computed:    true,
+			},
 			"guidance": {
 				Type:         schema.TypeString,
 				Description:  "Whether to enable guidance recommendations on the cloud (manual, off)",
@@ -330,6 +336,8 @@ func resourceVsphereCloudCreate(ctx context.Context, d *schema.ResourceData, met
 	cloud["timezone"] = d.Get("time_zone").(string)
 	// Datacenter ID
 	config["datacenterName"] = d.Get("datacenter_id")
+	// Config Management
+	config["configManagementId"] = d.Get("config_management_integration_id").(string)
 	// Network Mode
 	// Local Firewall
 	// Security Server
@@ -496,6 +504,7 @@ func resourceVsphereCloudRead(ctx context.Context, d *schema.ResourceData, meta 
 		d.Set("appliance_url", cloud.Config.ApplianceUrl)
 		d.Set("time_zone", cloud.TimeZone)
 		d.Set("datacenter_id", cloud.Config.DatacenterName)
+		d.Set("config_management_integration_id", cloud.Config.ConfigManagementID)
 		d.Set("guidance", cloud.GuidanceMode)
 		d.Set("costing", cloud.CostingMode)
 		d.Set("agent_install_mode", cloud.AgentMode)
@@ -615,6 +624,10 @@ func resourceVsphereCloudUpdate(ctx context.Context, d *schema.ResourceData, met
 	cloud["timezone"] = d.Get("time_zone").(string)
 	// Datacenter ID
 	config["datacenterName"] = d.Get("datacenter_id")
+	// Config Management
+	if d.HasChange("config_management_integration_id") {
+		config["configManagementId"] = d.Get("config_management_integration_id").(string)
+	}
 	// Network Mode
 	// Local Firewall
 	// Security Server

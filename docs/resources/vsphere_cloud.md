@@ -111,6 +111,7 @@ resource "morpheus_vsphere_cloud" "tf_example_vsphere_cloud" {
 - `automatically_power_on_vms` (Boolean) Determines whether to automatically power on cloud virtual machines
 - `cluster` (String) The name of the vSphere cluster
 - `code` (String) Optional code for use with policies
+- `config_management_integration_id` (String) The id of the configuration management integration associated with the vSphere cloud
 - `costing` (String) Whether to enable costing on the cloud (off, costing)
 - `credential_id` (Number) The ID of the credential store entry used for authentication
 - `datacenter_id` (String) A custom id used to reference the datacenter for the cloud
