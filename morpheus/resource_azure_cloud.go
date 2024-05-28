@@ -166,7 +166,7 @@ func resourceAzureCloud() *schema.Resource {
 			},
 			"config_management_integration_id": {
 				Type:        schema.TypeString,
-				Description: "The id of the configuration management ingegration associated with the Azure cloud",
+				Description: "The id of the configuration management integration associated with the Azure cloud",
 				Optional:    true,
 				Computed:    true,
 			},

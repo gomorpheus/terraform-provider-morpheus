@@ -182,7 +182,7 @@ func resourceVsphereCloud() *schema.Resource {
 			},
 			"config_management_integration_id": {
 				Type:        schema.TypeString,
-				Description: "The id of the configuration management ingegration associated with the vSphere cloud",
+				Description: "The id of the configuration management integration associated with the vSphere cloud",
 				Optional:    true,
 				Computed:    true,
 			},

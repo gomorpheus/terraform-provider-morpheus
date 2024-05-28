@@ -164,7 +164,7 @@ func resourceAWSCloud() *schema.Resource {
 			},
 			"config_management_integration_id": {
 				Type:        schema.TypeString,
-				Description: "The id of the configuration management ingegration associated with the AWS cloud",
+				Description: "The id of the configuration management integration associated with the AWS cloud",
 				Optional:    true,
 				Computed:    true,
 			},
