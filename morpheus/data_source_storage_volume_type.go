@@ -27,6 +27,18 @@ func dataSourceMorpheusStorageVolumeType() *schema.Resource {
 				Optional:      true,
 				ConflictsWith: []string{"id"},
 			},
+			"code": {
+				Type:        schema.TypeString,
+				Description: "The code of the storage volume type",
+				Optional:    true,
+				Computed:    true,
+			},
+			"category": {
+				Type:        schema.TypeString,
+				Description: "The category of the storage volume type",
+				Optional:    true,
+				Computed:    true,
+			},
 		},
 	}
 }
@@ -67,6 +79,8 @@ func dataSourceMorpheusStorageTypeRead(ctx context.Context, d *schema.ResourceDa
 	if storageVolumeType != nil {
 		d.SetId(int64ToString(storageVolumeType.ID))
 		d.Set("name", storageVolumeType.Name)
+		d.Set("code", storageVolumeType.Code)
+		d.Set("category", storageVolumeType.Category)
 	} else {
 		return diag.Errorf("Storage volume type not found in response data.") // should not happen
 	}
