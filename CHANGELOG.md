@@ -6,6 +6,10 @@ NOTES:
 * Added support for configuration management to the `aws_cloud`, `azure_cloud`, and `vsphere_cloud` resources. [236](https://github.com/gomorpheus/terraform-provider-morpheus/issues/236)
 * Fixed the execute_target attribute description for the `morpheus_shell_script_task` resource. [237](https://github.com/gomorpheus/terraform-provider-morpheus/issues/237)
 
+FEATURES:
+
+* **New Data Source:** `morpheus_storage_volume_type`
+
 ## 0.9.9 (April 24, 2024)
 
 NOTES:
