@@ -67,7 +67,6 @@ func resourceSelectListOptionType() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The field or code used to determine whether the field is required or not",
 				Optional:    true,
-				Computed:    true,
 			},
 			"show_on_edit": {
 				Type:        schema.TypeBool,
