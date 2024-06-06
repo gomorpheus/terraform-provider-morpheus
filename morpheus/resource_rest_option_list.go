@@ -120,7 +120,6 @@ func resourceRestOptionList() *schema.Resource {
 				Description:      "A js script to prepare the API request",
 				DiffSuppressFunc: supressOptionListScripts,
 				Optional:         true,
-				Computed:         true,
 			},
 		},
 		Importer: &schema.ResourceImporter{
