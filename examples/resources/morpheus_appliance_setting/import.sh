@@ -1,0 +1,1 @@
+terraform import morpheus_appliance_setting.tf_example_appliance_config 1
