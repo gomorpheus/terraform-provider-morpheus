@@ -13,8 +13,28 @@ Provides a Morpheus appliance setting resource.
 
 ```terraform
 resource "morpheus_appliance_setting" "tf_example_appliance_setting" {
-  appliance_url          = "https://morpheus.test.local"
-  internal_appliance_url = "https://pxemorpheus.test.local"
+  appliance_url             = "https://morpheus.test.local"
+  internal_appliance_url    = "https://pxemorpheus.test.local"
+  api_allowed_origins       = "demo"
+  registration_enabled      = true
+  default_role_id           = 5
+  default_user_role_id      = 10
+  docker_privileged_mode    = false
+  smtp_from_address         = "testemail@test.local"
+  smtp_server               = "smtp01.test.local"
+  smtp_port                 = 465
+  smtp_use_ssl              = true
+  smtp_use_tls              = true
+  smtp_username             = "jsmith"
+  smtp_password             = "Password12"
+  proxy_host                = "10.0.0.100"
+  proxy_port                = 3128
+  proxy_user                = "jsmith"
+  proxy_password            = "Password123456"
+  proxy_domain              = "test.local"
+  proxy_workstation         = "work123"
+  currency_provider         = "fixer"
+  currency_provider_api_key = "5a4b220e-6f9f-43da-a572-390c8f6afed8"
 }
 ```
 
@@ -25,25 +45,25 @@ resource "morpheus_appliance_setting" "tf_example_appliance_setting" {
 
 - `api_allowed_origins` (String) A CORS-related field which specifies the origins that are allowed to access the Morpheus API
 - `appliance_url` (String) The default URL used for Agent install and Agent functionality
-- `currency_provider` (String) The ID of the default user role
-- `currency_provider_api_key` (String) The ID of the default user role
-- `default_role_id` (Number) The ID of the default role
-- `default_user_role_id` (Number) The ID of the default user role
+- `currency_provider` (String) The currency provider (openexchange, fixer)
+- `currency_provider_api_key` (String) The API key for the currency provider
+- `default_role_id` (String) The ID of the default role
+- `default_user_role_id` (String) The ID of the default user role
 - `docker_privileged_mode` (Boolean) Whether Docker privileged mode is enabled
 - `internal_appliance_url` (String) An override for the default appliance URL when PXE boot is utilized
-- `proxy_domain` (String) The ID of the default user role
-- `proxy_host` (String) The ID of the default user role
-- `proxy_password` (String) The ID of the default user role
-- `proxy_port` (String) The ID of the default user role
-- `proxy_user` (String) The ID of the default user role
-- `proxy_workstation` (String) The ID of the default user role
+- `proxy_domain` (String) The proxy domain name
+- `proxy_host` (String) The hostname or IP address of the proxy host
+- `proxy_password` (String, Sensitive) The password for authenticating to the proxy
+- `proxy_port` (String) The proxy host port
+- `proxy_user` (String) The username for authenticating to the proxy
+- `proxy_workstation` (String) The proxy workstation
 - `registration_enabled` (Boolean) Whether tenant registration is enabled
-- `smtp_from_address` (String) The SMTP from address
-- `smtp_password` (String) The password for the user account used to authenticate to the SMTP server
-- `smtp_port` (String) The SMTP from address
-- `smtp_server` (String) The SMTP from address
-- `smtp_use_ssl` (Boolean) The SMTP from address
-- `smtp_use_tls` (Boolean) The SMTP from address
+- `smtp_from_address` (String) The email address to send system emails from
+- `smtp_password` (String, Sensitive) The password for the user account used to authenticate to the SMTP server
+- `smtp_port` (String) The SMTP server port
+- `smtp_server` (String) The hostname or IP address of the SMTP server
+- `smtp_use_ssl` (Boolean) Whether to use SSL or not when connecting to the SMTP server
+- `smtp_use_tls` (Boolean) Whether to use TLS or not when connecting to the SMTP server
 - `smtp_username` (String) The username for the user account used to authenticate to the SMTP server
 - `stats_retainment_period` (Number) The number of days that incident data is stored
 

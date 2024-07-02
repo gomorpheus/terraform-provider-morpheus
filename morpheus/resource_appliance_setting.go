@@ -146,13 +146,13 @@ func resourceApplianceSetting() *schema.Resource {
 			*/
 			"smtp_from_address": {
 				Type:        schema.TypeString,
-				Description: "The SMTP from address",
+				Description: "The email address to send system emails from",
 				Optional:    true,
 				Computed:    true,
 			},
 			"smtp_server": {
 				Type:        schema.TypeString,
-				Description: "The SMTP server",
+				Description: "The hostname or IP address of the SMTP server",
 				Optional:    true,
 				Computed:    true,
 			},
@@ -164,13 +164,13 @@ func resourceApplianceSetting() *schema.Resource {
 			},
 			"smtp_use_ssl": {
 				Type:        schema.TypeBool,
-				Description: "Whether to use SSL or not",
+				Description: "Whether to use SSL or not when connecting to the SMTP server",
 				Optional:    true,
 				Computed:    true,
 			},
 			"smtp_use_tls": {
 				Type:        schema.TypeBool,
-				Description: "Whether to use TLS or not",
+				Description: "Whether to use TLS or not when connecting to the SMTP server",
 				Optional:    true,
 				Computed:    true,
 			},
@@ -195,7 +195,7 @@ func resourceApplianceSetting() *schema.Resource {
 			},
 			"proxy_host": {
 				Type:        schema.TypeString,
-				Description: "The proxy host",
+				Description: "The hostname or IP address of the proxy host",
 				Optional:    true,
 				Computed:    true,
 			},
@@ -249,13 +249,15 @@ func resourceApplianceSetting() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 			},
-			"enabled_cloud_ids": {
-				Type:        schema.TypeList,
-				Description: "The ids of the cloud types to enable",
-				Optional:    true,
-				Computed:    true,
-				Elem:        &schema.Schema{Type: schema.TypeInt},
-			},
+			/*
+				"enabled_cloud_ids": {
+					Type:        schema.TypeList,
+					Description: "The ids of the cloud types to enable",
+					Optional:    true,
+					Computed:    true,
+					Elem:        &schema.Schema{Type: schema.TypeInt},
+				},
+			*/
 		},
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
@@ -377,8 +379,8 @@ func resourceApplianceSettingCreate(ctx context.Context, d *schema.ResourceData,
 		applianceSettings["currencyKey"] = currencyKey
 	}
 
-	applianceSettings["enableZoneTypes"] = d.Get("enabled_cloud_ids")
-	applianceSettings["disableAllZoneTypes"] = true
+	//applianceSettings["enableZoneTypes"] = d.Get("enabled_cloud_ids")
+	//applianceSettings["disableAllZoneTypes"] = true
 
 	req := &morpheus.Request{
 		Body: map[string]interface{}{
@@ -452,13 +454,13 @@ func resourceApplianceSettingRead(ctx context.Context, d *schema.ResourceData, m
 	d.Set("proxy_workstation", applianceSetting.ProxyWorkstation)
 	d.Set("currency_provider", applianceSetting.CurrencyProvider)
 	d.Set("currency_provider_api_key", applianceSetting.CurrencyKey)
-	var enabledClouds []int
-	for _, cloud := range applianceSetting.EnabledZoneTypes {
-		enabledClouds = append(enabledClouds, int(cloud.ID))
-	}
+	//var enabledClouds []int
+	//for _, cloud := range applianceSetting.EnabledZoneTypes {
+	//	enabledClouds = append(enabledClouds, int(cloud.ID))
+	//}
 
-	cloudIdPayload := matchCloudIdsWithSchema(enabledClouds, d.Get("enabled_cloud_ids").([]interface{}))
-	d.Set("enabled_cloud_ids", cloudIdPayload)
+	//cloudIdPayload := matchCloudIdsWithSchema(enabledClouds, d.Get("enabled_cloud_ids").([]interface{}))
+	//d.Set("enabled_cloud_ids", cloudIdPayload)
 	return diags
 }
 
@@ -539,9 +541,9 @@ func resourceApplianceSettingUpdate(ctx context.Context, d *schema.ResourceData,
 		applianceSettings["currencyKey"] = d.Get("currency_provider_api_key")
 	}
 
-	if d.HasChange("enableZoneTypes") {
-		applianceSettings["enableZoneTypes"] = d.Get("enabled_cloud_ids")
-	}
+	//if d.HasChange("enableZoneTypes") {
+	//	applianceSettings["enableZoneTypes"] = d.Get("enabled_cloud_ids")
+	//}
 
 	req := &morpheus.Request{
 		Body: map[string]interface{}{

@@ -113,7 +113,7 @@ func dataSourceMorpheusNetworkSubnetRead(ctx context.Context, d *schema.Resource
 		}
 		firstRecord := (*listResult.NetworkSubnets)[0]
 		networkSubnetID := firstRecord.ID
-		resp, _ = client.GetNetworkSubnet(networkSubnetID, &morpheus.Request{})
+		resp, err = client.GetNetworkSubnet(networkSubnetID, &morpheus.Request{})
 		if err != nil {
 			errorPrefix := "API FAILURE"
 			if resp != nil && resp.StatusCode == 404 {
