@@ -51,7 +51,7 @@ func dataSourceMorpheusCatalogItemTypeRead(ctx context.Context, d *schema.Resour
 				"name": name,
 			},
 		})
-		if err != nil {
+		if listErr != nil {
 			return diag.FromErr(listErr)
 		}
 		listResult := listResp.Result.(*morpheus.ListCatalogItemTypesResult)
