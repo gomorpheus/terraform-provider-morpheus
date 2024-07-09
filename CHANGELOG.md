@@ -11,6 +11,7 @@ FEATURES:
 * **New Data Source:** `morpheus_cloud_type`
 * **New Data Source:** `morpheus_storage_volume_type`
 * **New Resource:** `morpheus_appliance_setting`
+* **New Resource:** `morpheus_mvm_instance`
 
 ## 0.9.9 (April 24, 2024)
 

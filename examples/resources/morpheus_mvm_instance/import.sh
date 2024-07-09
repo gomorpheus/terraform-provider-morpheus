@@ -1,0 +1,1 @@
+terraform import moprheus_mvm_instance.tf_example_motd_policy 1
