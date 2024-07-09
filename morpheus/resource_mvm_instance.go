@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"strconv"
 	"time"
 
 	"github.com/gomorpheus/morpheus-go-sdk"
@@ -38,6 +39,12 @@ func resourceMVMInstance() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 			},
+			"display_name": {
+				Description: "The display name of the instance",
+				Type:        schema.TypeString,
+				Optional:    true,
+				Computed:    true,
+			},
 			"description": {
 				Description: "The user friendly description of the instance",
 				Type:        schema.TypeString,
@@ -56,13 +63,13 @@ func resourceMVMInstance() *schema.Resource {
 				Required:    true,
 			},
 			"instance_type_id": {
-				Description: "The type of instance to provision",
+				Description: "The ID of the instance type to provision the instance from",
 				Type:        schema.TypeInt,
 				ForceNew:    true,
 				Required:    true,
 			},
 			"instance_layout_id": {
-				Description: "The layout to provision the instance from",
+				Description: "The ID of the instance layout to provision the instance from",
 				Type:        schema.TypeInt,
 				ForceNew:    true,
 				Required:    true,
@@ -134,17 +141,16 @@ func resourceMVMInstance() *schema.Resource {
 				ForceNew:    true,
 				Optional:    true,
 				Computed:    true,
-				Default:     "",
 			},
 			"user_group_id": {
-				Description: "The id of the user group associated with the instance",
+				Description: "The ID of the user group associated with the instance",
 				Type:        schema.TypeInt,
 				ForceNew:    true,
 				Optional:    true,
 				Computed:    true,
 			},
 			"image_id": {
-				Description: "The id of the image associated with the instance",
+				Description: "The ID of the image associated with the instance (Only neccessary when using the default MVM instance type that requires specifying a virtual image)",
 				Type:        schema.TypeInt,
 				ForceNew:    true,
 				Optional:    true,
@@ -172,7 +178,7 @@ func resourceMVMInstance() *schema.Resource {
 				Computed:    true,
 			},
 			"nested_virtualization": {
-				Description: "Whether to skip configuration of nested virtualization",
+				Description: "Whether to enable nested virtualization",
 				Type:        schema.TypeBool,
 				ForceNew:    true,
 				Optional:    true,
@@ -214,12 +220,18 @@ func resourceMVMInstance() *schema.Resource {
 					},
 				},
 			},
-			"volumes": {
+			"storage_volume": {
 				Description: "The instance volumes to create",
 				Type:        schema.TypeList,
 				Optional:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
+						"uuid": {
+							Description: "The storage volume uuid",
+							Type:        schema.TypeString,
+							Optional:    true,
+							Computed:    true,
+						},
 						"root": {
 							Description: "Whether the volume is the root volume of the instance",
 							Type:        schema.TypeBool,
@@ -236,14 +248,8 @@ func resourceMVMInstance() *schema.Resource {
 							Optional:    true,
 							Computed:    true,
 						},
-						"size_id": {
-							Description: "The ID of an existing LV to assign to the instance",
-							Type:        schema.TypeInt,
-							Optional:    true,
-							Computed:    true,
-						},
 						"storage_type": {
-							Description: "The ID of the LV type",
+							Description: "The storage volume type ID",
 							Type:        schema.TypeInt,
 							Optional:    true,
 							Computed:    true,
@@ -257,7 +263,7 @@ func resourceMVMInstance() *schema.Resource {
 					},
 				},
 			},
-			"interfaces": {
+			"network_interface": {
 				Description: "The instance network interfaces to create",
 				Type:        schema.TypeList,
 				Optional:    true,
@@ -269,20 +275,22 @@ func resourceMVMInstance() *schema.Resource {
 							Optional:    true,
 							Computed:    true,
 						},
+						/* AWAITING PLATFORM SUPPORT
 						"network_group": {
 							Description: "Whether the network id provided is for a network group or not",
 							Type:        schema.TypeBool,
 							Optional:    true,
 							Computed:    true,
 						},
+						*/
 						"ip_address": {
-							Description: "",
+							Description: "The IP address to assign to the instance",
 							Type:        schema.TypeString,
 							Optional:    true,
 							Computed:    true,
 						},
 						"ip_mode": {
-							Description: "",
+							Description: "The IP address assignment mode",
 							Type:        schema.TypeString,
 							Optional:    true,
 							Computed:    true,
@@ -296,8 +304,8 @@ func resourceMVMInstance() *schema.Resource {
 					},
 				},
 			},
-			"ip_address": {
-				Description: "The instance IP address",
+			"primary_ip_address": {
+				Description: "The instance primary IP address",
 				Type:        schema.TypeString,
 				Optional:    true,
 				Computed:    true,
@@ -318,6 +326,7 @@ func resourceMVMInstanceCreate(ctx context.Context, d *schema.ResourceData, meta
 	group := d.Get("group_id").(int)
 	cloud := d.Get("cloud_id").(int)
 	name := d.Get("name").(string)
+	displayName := d.Get("display_name").(string)
 
 	// Service Plan
 	planResp, err := client.GetPlan(int64(d.Get("plan_id").(int)), &morpheus.Request{})
@@ -360,7 +369,7 @@ func resourceMVMInstanceCreate(ctx context.Context, d *schema.ResourceData, meta
 	json.Unmarshal(resourcePoolResp.Body, &itemResponsePayload)
 	var resourcePoolId int
 	for _, v := range itemResponsePayload.Data {
-		if v.ProviderType == "mvm" {
+		if v.ProviderType == "mvm" && v.Name == d.Get("resource_pool_name").(string) {
 			resourcePoolId = v.Id
 		}
 	}
@@ -398,8 +407,9 @@ func resourceMVMInstanceCreate(ctx context.Context, d *schema.ResourceData, meta
 	config["nestedVirtualization"] = d.Get("nested_virtualization").(bool)
 
 	instancePayload := map[string]interface{}{
-		"name": name,
-		"type": instanceTypeCode,
+		"name":        name,
+		"displayName": displayName,
+		"type":        instanceTypeCode,
 		"site": map[string]interface{}{
 			"id": group,
 		},
@@ -480,16 +490,14 @@ func resourceMVMInstanceCreate(ctx context.Context, d *schema.ResourceData, meta
 	}
 
 	// Network Interfaces
-	if d.Get("interfaces") != nil {
-		payload["networkInterfaces"] = parseNetworkInterfaces(d.Get("interfaces").([]interface{}))
+	if d.Get("network_interface") != nil {
+		payload["networkInterfaces"] = generateMVMInstanceCreatePayload(d.Get("network_interface").([]interface{}))
 	}
 
 	// Volumes
-	if d.Get("volumes") != nil {
-		payload["volumes"] = parseStorageVolumes(d.Get("volumes").([]interface{}))
+	if d.Get("storage_volume") != nil {
+		payload["volumes"] = parseStorageVolumes(d.Get("storage_volume").([]interface{}))
 	}
-
-	log.Printf("API Request: %s", payload)
 
 	req := &morpheus.Request{Body: payload}
 	resp, err := client.CreateInstance(req)
@@ -500,6 +508,7 @@ func resourceMVMInstanceCreate(ctx context.Context, d *schema.ResourceData, meta
 	log.Printf("API RESPONSE: %s", resp)
 	result := resp.Result.(*morpheus.CreateInstanceResult)
 	instance := result.Instance
+	instanceStatus := "provisioning"
 
 	stateConf := &resource.StateChangeConf{
 		Pending: []string{"provisioning", "starting", "stopping", "pending"},
@@ -511,6 +520,7 @@ func resourceMVMInstanceCreate(ctx context.Context, d *schema.ResourceData, meta
 			}
 			result := instanceDetails.Result.(*morpheus.GetInstanceResult)
 			instance := result.Instance
+			instanceStatus = instance.Status
 			return result, instance.Status, nil
 		},
 		Timeout:      3 * time.Hour,
@@ -528,6 +538,12 @@ func resourceMVMInstanceCreate(ctx context.Context, d *schema.ResourceData, meta
 	// Successfully created resource, now set id
 	d.SetId(int64ToString(instance.ID))
 	resourceMVMInstanceRead(ctx, d, meta)
+
+	// Fail the instance deployment if the
+	// instance status is in a failed state
+	if instanceStatus == "failed" {
+		return diag.Errorf("error creating instance: failed to create server")
+	}
 	return diags
 }
 
@@ -578,29 +594,21 @@ func resourceMVMInstanceRead(ctx context.Context, d *schema.ResourceData, meta i
 	d.Set("instance_type_id", instance.InstanceType.ID)
 	d.Set("instance_layout_id", instance.Layout.ID)
 	d.Set("plan_id", instance.Plan.ID)
-
-	// Resource Pool
-	resourcePoolResp, err := client.Execute(&morpheus.Request{
-		Method:      "GET",
-		Path:        fmt.Sprintf("/api/options/zonePools?layoutId=%d", instance.Layout.ID),
-		QueryParams: map[string]string{},
-	})
-	if err != nil {
-		diag.FromErr(err)
-	}
-
-	var itemResponsePayload ResourcePoolOptions
-	json.Unmarshal(resourcePoolResp.Body, &itemResponsePayload)
-	var resourcePoolName string
-	for _, v := range itemResponsePayload.Data {
-		if v.ProviderType == "mvm" {
-			resourcePoolName = v.Name
-		}
-	}
-	d.Set("resource_pool_name", resourcePoolName)
 	d.Set("environment", instance.Environment)
 	d.Set("labels", instance.Labels)
-	d.Set("evar", instance.EnvironmentVariables)
+
+	var evars []map[string]interface{}
+	for i := 0; i < len(instance.EnvironmentVariables); i++ {
+		evar := instance.EnvironmentVariables[i]
+		row := make(map[string]interface{})
+		row["name"] = evar.Name
+		row["value"] = fmt.Sprintf("%v", evar.Value)
+		row["export"] = evar.Export
+		row["masked"] = evar.Masked
+		evars = append(evars, row)
+	}
+	d.Set("evar", evars)
+
 	// Tags
 	tags := make(map[string]interface{})
 	if instance.Tags != nil {
@@ -614,6 +622,7 @@ func resourceMVMInstanceRead(ctx context.Context, d *schema.ResourceData, meta i
 		}
 	}
 	d.Set("tags", tags)
+
 	if instance.Config["userGroup"] != nil {
 		userGroup := instance.Config["userGroup"].(map[string]interface{})
 		d.Set("user_group_id", userGroup["id"])
@@ -628,15 +637,76 @@ func resourceMVMInstanceRead(ctx context.Context, d *schema.ResourceData, meta i
 	}
 	d.Set("custom_options", instance.Config["customOptions"])
 	d.Set("domain_id", instance.NetworkDomain.Id)
-	d.Set("ip_address", instance.ConnectionInfo[0].Ip)
+	d.Set("primary_ip_address", instance.ConnectionInfo[0].Ip)
+
+	var volumes []map[string]interface{}
+	// iterate over the array of svcports
+	for i := 0; i < len(instance.Volumes); i++ {
+		row := make(map[string]interface{})
+		volume := instance.Volumes[i]
+		row["uuid"] = volume.Uuid
+		row["root"] = volume.RootVolume.(bool)
+		row["name"] = volume.Name
+		row["size"] = volume.Size.(float64)
+		row["storage_type"] = volume.StorageType.(float64)
+		n, err := strconv.Atoi(volume.DatastoreId)
+		if err != nil {
+			log.Printf("API FAILURE: %s - %s", resp, err)
+			return diag.FromErr(err)
+		}
+		row["datastore_id"] = n
+		volumes = append(volumes, row)
+	}
+	d.Set("storage_volume", volumes)
+
+	var networkInterfaces []map[string]interface{}
+	// iterate over the array of svcports
+	for i := 0; i < len(instance.Interfaces); i++ {
+		row := make(map[string]interface{})
+		networkInterface := instance.Interfaces[i]
+		row["network_id"] = int(networkInterface.Network.ID)
+		row["ip_address"] = networkInterface.IpAddress
+		row["ip_mode"] = networkInterface.IpMode
+		row["network_interface_type_id"] = networkInterface.NetworkInterfaceTypeId
+		networkInterfaces = append(networkInterfaces, row)
+	}
+	d.Set("network_interface", networkInterfaces)
+
 	return diags
 }
 
 func resourceMVMInstanceUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*morpheus.Client)
 	id := d.Id()
-	name := d.Get("name").(string)
-	description := d.Get("description").(string)
+
+	instanceGetResp, err := client.GetInstance(toInt64(id), &morpheus.Request{})
+	result := instanceGetResp.Result.(*morpheus.GetInstanceResult)
+	fetchInstance := result.Instance
+
+	var instance *morpheus.Instance
+
+	instancePayload := make(map[string]interface{})
+	baseInstanceConfigUpdate := false
+
+	if d.HasChange("name") {
+		instancePayload["name"] = d.Get("name").(string)
+		baseInstanceConfigUpdate = true
+	}
+
+	if d.HasChange("description") {
+		instancePayload["description"] = d.Get("description").(string)
+		baseInstanceConfigUpdate = true
+	}
+
+	if d.HasChange("display_name") {
+		instancePayload["displayName"] = d.Get("display_name").(string)
+		baseInstanceConfigUpdate = true
+	}
+
+	if d.HasChange("environment") {
+		instancePayload["instanceContext"] = d.Get("environment").(string)
+		baseInstanceConfigUpdate = true
+	}
 
 	// Tags
 	var tags []map[string]interface{}
@@ -648,6 +718,8 @@ func resourceMVMInstanceUpdate(ctx context.Context, d *schema.ResourceData, meta
 			tag["value"] = value.(string)
 			tags = append(tags, tag)
 		}
+		baseInstanceConfigUpdate = true
+		instancePayload["tags"] = tags
 	}
 	config := make(map[string]interface{})
 
@@ -659,28 +731,86 @@ func resourceMVMInstanceUpdate(ctx context.Context, d *schema.ResourceData, meta
 			customOptions[key] = value.(string)
 		}
 		config["customOptions"] = customOptions
+		baseInstanceConfigUpdate = true
 	}
 
-	instancePayload := map[string]interface{}{
-		"name":            name,
-		"description":     description,
-		"labels":          d.Get("labels"),
-		"tags":            tags,
-		"instanceContext": d.Get("environment"),
-		"config":          config,
+	if d.HasChanges("labels") {
+		instancePayload["labels"] = d.Get("labels")
+		baseInstanceConfigUpdate = true
 	}
-	payload := map[string]interface{}{
-		"instance": instancePayload,
+
+	if baseInstanceConfigUpdate {
+		payload := map[string]interface{}{
+			"instance": instancePayload,
+		}
+		req := &morpheus.Request{Body: payload}
+		resp, err := client.UpdateInstance(toInt64(id), req)
+		if err != nil {
+			log.Printf("API FAILURE: %s - %s", resp, err)
+			return diag.FromErr(err)
+		}
+		log.Printf("API RESPONSE: %s", resp)
+		result := resp.Result.(*morpheus.UpdateInstanceResult)
+		instance = result.Instance
 	}
-	req := &morpheus.Request{Body: payload}
-	resp, err := client.UpdateInstance(toInt64(id), req)
+
+	// Resize Instance Configuration
+	var resizeChanges bool = false
+
+	resizeInstancePayload := make(map[string]interface{})
+
+	if d.HasChange("plan_id") {
+		resizeChanges = true
+		resizeInstancePayload["instance"] = map[string]interface{}{
+			"plan": map[string]interface{}{
+				"id": d.Get("plan_id"),
+			},
+		}
+	}
+
+	if d.HasChange("storage_volume") || d.HasChange("network_interface") {
+		resizeChanges = true
+		resizeInstancePayload["networkInterfaces"] = parseMVMNetworkInterfaces(d.Get("network_interface").([]interface{}), fetchInstance.Interfaces)
+		resizeInstancePayload["volumes"] = parseMVMStorageVolumes(d.Get("storage_volume").([]interface{}), fetchInstance.Volumes)
+		resizeInstancePayload["deleteOriginalVolumes"] = true
+	}
+
+	// Check if plan, storage, or nics have changed
+	if resizeChanges {
+		resizeReq := &morpheus.Request{Body: resizeInstancePayload}
+		resizeResp, err := client.ResizeInstance(toInt64(id), resizeReq)
+		if err != nil {
+			log.Printf("API FAILURE: %s - %s", resizeResp, err)
+			return diag.FromErr(err)
+		}
+		result := resizeResp.Result.(*morpheus.UpdateInstanceResult)
+		instance = result.Instance
+	}
+
+	stateConf := &resource.StateChangeConf{
+		Pending: []string{"resizing", "pending"},
+		Target:  []string{"running"},
+		Refresh: func() (interface{}, string, error) {
+			instanceDetails, err := client.GetInstance(toInt64(id), &morpheus.Request{})
+			if err != nil {
+				return "", "", err
+			}
+			result := instanceDetails.Result.(*morpheus.GetInstanceResult)
+			instance := result.Instance
+			return result, instance.Status, nil
+		},
+		Timeout:      30 * time.Minute,
+		MinTimeout:   1 * time.Minute,
+		Delay:        1 * time.Minute,
+		PollInterval: 30 * time.Second,
+	}
+
+	// Wait, catching any errors
+	_, err = stateConf.WaitForStateContext(ctx)
 	if err != nil {
-		log.Printf("API FAILURE: %s - %s", resp, err)
-		return diag.FromErr(err)
+		return diag.Errorf("error updating instance: %s", err)
 	}
-	log.Printf("API RESPONSE: %s", resp)
-	result := resp.Result.(*morpheus.UpdateInstanceResult)
-	instance := result.Instance
+
 	// Successfully updated resource, now set id
 	d.SetId(int64ToString(instance.ID))
 	return resourceMVMInstanceRead(ctx, d, meta)
@@ -710,6 +840,34 @@ func resourceMVMInstanceDelete(ctx context.Context, d *schema.ResourceData, meta
 		}
 	}
 	log.Printf("API RESPONSE: %s", resp)
+
+	stateConf := &resource.StateChangeConf{
+		Pending: []string{"removing", "pendingRemoval", "stopping", "pending"},
+		Target:  []string{"removed"},
+		Refresh: func() (interface{}, string, error) {
+			instanceDetails, err := client.GetInstance(toInt64(id), &morpheus.Request{})
+			if instanceDetails.StatusCode == 404 {
+				return "", "removed", nil
+			}
+			if err != nil {
+				return "", "", err
+			}
+			result := instanceDetails.Result.(*morpheus.GetInstanceResult)
+			instance := result.Instance
+			return result, instance.Status, nil
+		},
+		Timeout:      30 * time.Minute,
+		MinTimeout:   1 * time.Minute,
+		Delay:        1 * time.Minute,
+		PollInterval: 30 * time.Second,
+	}
+
+	// Wait, catching any errors
+	_, err = stateConf.WaitForStateContext(ctx)
+	if err != nil {
+		return diag.Errorf("error deleting instance: %s", err)
+	}
+
 	d.SetId("")
 	return diags
 }
@@ -726,4 +884,105 @@ type ResourcePoolOptions struct {
 		ProviderType string `json:"providerType"`
 		Value        string `json:"value"`
 	} `json:"data"`
+}
+
+func generateMVMInstanceCreatePayload(interfaces []interface{}) []map[string]interface{} {
+	var networkInterfaces []map[string]interface{}
+	for i := 0; i < len(interfaces); i++ {
+		row := make(map[string]interface{})
+		item := (interfaces)[i].(map[string]interface{})
+		if item["network_id"] != nil {
+			row["network"] = map[string]interface{}{
+				"id": fmt.Sprintf("network-%d", item["network_id"].(int)),
+			}
+		}
+		if item["ip_address"] != nil {
+			row["ipAddress"] = item["ip_address"] //.(string)
+		}
+		if item["ip_mode"] != nil {
+			row["ipMode"] = item["ip_mode"] // .(string)
+		}
+		if item["network_interface_type_id"] != nil {
+			row["networkInterfaceTypeId"] = item["network_interface_type_id"] //.(int)
+		}
+		networkInterfaces = append(networkInterfaces, row)
+	}
+	return networkInterfaces
+}
+
+func parseMVMNetworkInterfaces(interfaces []interface{}, existingInterfaces []morpheus.NetworkInterface) []map[string]interface{} {
+	var networkInterfaces []map[string]interface{}
+	//var existingNetworkInterfaceIDs []string
+
+	for i := 0; i < len(interfaces); i++ {
+		row := make(map[string]interface{})
+		item := (interfaces)[i].(map[string]interface{})
+
+		for _, nic := range existingInterfaces {
+			if nic.ID == item["id"] {
+				row["id"] = nic.ID
+			}
+		}
+		if item["network_id"] != nil {
+			row["network"] = map[string]interface{}{
+				"id": fmt.Sprintf("network-%d", item["network_id"].(int)),
+			}
+		}
+		if item["ip_address"] != nil {
+			row["ipAddress"] = item["ip_address"] //.(string)
+		}
+		if item["ip_mode"] != nil {
+			row["ipMode"] = item["ip_mode"] // .(string)
+		}
+		if item["network_interface_type_id"] != nil {
+			row["networkInterfaceTypeId"] = item["network_interface_type_id"] //.(int)
+		}
+		networkInterfaces = append(networkInterfaces, row)
+	}
+	return networkInterfaces
+}
+
+func parseMVMStorageVolumes(volumes []interface{}, existingVolumes []morpheus.StorageVolume) []map[string]interface{} {
+	var storageVolumes []map[string]interface{}
+	var existingVolumeUUIDs []string
+
+	// Iterate through the existing storage volumes and fetch the UUID to identify
+	// which defined volumes already exist on the instance
+	for _, vol := range existingVolumes {
+		existingVolumeUUIDs = append(existingVolumeUUIDs, vol.Uuid)
+	}
+
+	for i := 0; i < len(volumes); i++ {
+		row := make(map[string]interface{})
+		item := (volumes)[i].(map[string]interface{})
+
+		for _, vol := range existingVolumes {
+			if vol.Uuid == item["uuid"] {
+				row["id"] = vol.ID
+			}
+		}
+
+		// If the defined disk does not already existing
+		if !containsString(existingVolumeUUIDs, item["uuid"].(string)) {
+			row["id"] = -1
+		}
+
+		if item["root"] != nil {
+			row["rootVolume"] = item["root"]
+		}
+		if item["name"] != nil {
+			row["name"] = item["name"] // .(string)
+		}
+		if item["size"] != nil {
+			row["size"] = item["size"] // .(int)
+		}
+		if item["storage_type"] != nil {
+			row["storageType"] = item["storage_type"] // .(int)
+		}
+		if item["datastore_id"] != nil {
+			row["datastoreId"] = item["datastore_id"] // .(int)
+		}
+		storageVolumes = append(storageVolumes, row)
+	}
+	return storageVolumes // .([]map[string]interface{})
 }

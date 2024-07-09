@@ -12,13 +12,65 @@ Provides a Morpheus instance resource.
 ## Example Usage
 
 ```terraform
-resource "morpheus_mvm_instance" "test" {
-  name               = "demo"
-  cloud_id           = 4
-  group_id           = 4
-  plan_id            = 2
-  instance_layout_id = 2
-  instance_type_id   = 4
+data "morpheus_group" "morpheus_lab" {
+  name = "platform engineering"
+}
+
+data "morpheus_cloud" "morpheus_cloud" {
+  name = "MVM Cloud"
+}
+
+data "morpheus_instance_type" "ubuntu" {
+  name = "Ubuntu"
+}
+
+data "morpheus_instance_layout" "ubuntu" {
+  name    = "Single KVM VM"
+  version = "22.04"
+}
+
+data "morpheus_network" "vmnetwork" {
+  name = "Compute"
+}
+
+data "morpheus_plan" "mvm" {
+  name           = "2 CPU, 16GB Memory"
+  provision_type = "KVM"
+}
+
+resource "morpheus_mvm_instance" "tf_example_mvm_instance" {
+  for_each = toset([
+    "tfdemo",
+  ])
+  name               = each.key
+  description        = "Terraform instance example"
+  cloud_id           = data.morpheus_cloud.morpheus_cloud.id
+  group_id           = data.morpheus_group.morpheus_lab.id
+  instance_type_id   = data.morpheus_instance_type.ubuntu.id
+  instance_layout_id = data.morpheus_instance_layout.ubuntu.id
+  plan_id            = data.morpheus_plan.mvm.id
+  environment        = "dev"
+  resource_pool_name = "mvmcluster01"
+  labels             = ["demo", "terraform"]
+  create_user        = true
+  skip_agent_install = true
+  workflow_name      = "Nginx Install"
+  interfaces {
+    network_id                = data.morpheus_network.vmnetwork.id
+    network_interface_type_id = 5
+  }
+
+  volumes {
+    root         = true
+    size         = 30
+    name         = "root"
+    storage_type = 1
+    datastore_id = 36
+  }
+
+  tags = {
+    name = "ubuntutf"
+  }
 }
 ```
 
@@ -29,8 +81,8 @@ resource "morpheus_mvm_instance" "test" {
 
 - `cloud_id` (Number) The ID of the cloud associated with the instance
 - `group_id` (Number) The ID of the group associated with the instance
-- `instance_layout_id` (Number) The layout to provision the instance from
-- `instance_type_id` (Number) The type of instance to provision
+- `instance_layout_id` (Number) The ID of the instance layout to provision the instance from
+- `instance_type_id` (Number) The ID of the instance type to provision the instance from
 - `plan_id` (Number) The service plan associated with the instance
 
 ### Optional
@@ -40,22 +92,23 @@ resource "morpheus_mvm_instance" "test" {
 - `create_user` (Boolean) Whether to create a user account on the instance that is associated with the provisioning user account
 - `custom_options` (Map of String) Custom options to pass to the instance
 - `description` (String) The user friendly description of the instance
+- `display_name` (String) The display name of the instance
 - `domain_id` (Number) The ID of the network domain to provision the instance to
 - `environment` (String) The environment to assign the instance to
 - `evar` (Block List) The environment variables to create (see [below for nested schema](#nestedblock--evar))
-- `image_id` (Number) The id of the image associated with the instance
-- `interfaces` (Block List) The instance network interfaces to create (see [below for nested schema](#nestedblock--interfaces))
-- `ip_address` (String) The instance IP address
+- `image_id` (Number) The ID of the image associated with the instance (Only neccessary when using the default MVM instance type that requires specifying a virtual image)
 - `labels` (List of String) The list of labels to add to the instance
 - `name` (String) The name of the instance
-- `nested_virtualization` (Boolean) Whether to skip configuration of nested virtualization
+- `nested_virtualization` (Boolean) Whether to enable nested virtualization
+- `network_interface` (Block List) The instance network interfaces to create (see [below for nested schema](#nestedblock--network_interface))
+- `primary_ip_address` (String) The instance primary IP address
 - `qemu_arguments` (String) The qemu arguments to add to the instance
 - `resource_pool_name` (String) The name of the resource pool (cluster) to provision the instance to
 - `skip_agent_install` (Boolean) Whether to skip installation of the Morpheus agent
+- `storage_volume` (Block List) The instance volumes to create (see [below for nested schema](#nestedblock--storage_volume))
 - `tags` (Map of String) Tags to assign to the instance
 - `timeouts` (Block, Optional) (see [below for nested schema](#nestedblock--timeouts))
-- `user_group_id` (Number) The id of the user group associated with the instance
-- `volumes` (Block List) The instance volumes to create (see [below for nested schema](#nestedblock--volumes))
+- `user_group_id` (Number) The ID of the user group associated with the instance
 - `workflow_id` (Number) The ID of the provisioning workflow to execute (`workflow_name` can be used alternatively, only one is needed)
 - `workflow_name` (String) The name of the provisioning workflow to execute (`workflow_id` can be used alternatively, only one is needed)
 
@@ -74,16 +127,28 @@ Optional:
 - `value` (String) The value of the environment variable
 
 
-<a id="nestedblock--interfaces"></a>
-### Nested Schema for `interfaces`
+<a id="nestedblock--network_interface"></a>
+### Nested Schema for `network_interface`
 
 Optional:
 
-- `ip_address` (String)
-- `ip_mode` (String)
-- `network_group` (Boolean) Whether the network id provided is for a network group or not
+- `ip_address` (String) The IP address to assign to the instance
+- `ip_mode` (String) The IP address assignment mode
 - `network_id` (Number) The network to assign the network interface to
 - `network_interface_type_id` (Number) The network interface type
+
+
+<a id="nestedblock--storage_volume"></a>
+### Nested Schema for `storage_volume`
+
+Optional:
+
+- `datastore_id` (Number) The ID of the datastore
+- `name` (String) The name/type of the LV being created
+- `root` (Boolean) Whether the volume is the root volume of the instance
+- `size` (Number) The size of the LV being created
+- `storage_type` (Number) The storage volume type ID
+- `uuid` (String) The storage volume uuid
 
 
 <a id="nestedblock--timeouts"></a>
@@ -95,19 +160,6 @@ Optional:
 - `delete` (String)
 - `read` (String)
 - `update` (String)
-
-
-<a id="nestedblock--volumes"></a>
-### Nested Schema for `volumes`
-
-Optional:
-
-- `datastore_id` (Number) The ID of the datastore
-- `name` (String) The name/type of the LV being created
-- `root` (Boolean) Whether the volume is the root volume of the instance
-- `size` (Number) The size of the LV being created
-- `size_id` (Number) The ID of an existing LV to assign to the instance
-- `storage_type` (Number) The ID of the LV type
 
 ## Import
 

@@ -680,6 +680,9 @@ func parseStorageVolumes(volumes []interface{}) []map[string]interface{} {
 	for i := 0; i < len(volumes); i++ {
 		row := make(map[string]interface{})
 		item := (volumes)[i].(map[string]interface{})
+		if item["id"] != nil {
+			row["id"] = item["id"]
+		}
 		if item["root"] != nil {
 			row["rootVolume"] = item["root"]
 		}
