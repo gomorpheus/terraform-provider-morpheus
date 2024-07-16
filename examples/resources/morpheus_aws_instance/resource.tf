@@ -25,7 +25,8 @@ data "morpheus_network" "vmnetwork" {
 }
 
 data "morpheus_plan" "aws" {
-  name = "T3 Small - 2 Core, 2GB Memory"
+  name           = "T3 Small - 2 Core, 2GB Memory"
+  provision_type = "Amazon EC2"
 }
 
 resource "morpheus_aws_instance" "tf_example_aws_instance" {
@@ -39,7 +40,7 @@ resource "morpheus_aws_instance" "tf_example_aws_instance" {
   environment        = "dev"
   resource_pool_id   = data.morpheus_resource_pool.aws_resource_pool.id
   labels             = ["demo", "terraform"]
-
+  security_group_ids = [1]
   interfaces {
     network_id = data.morpheus_network.vmnetwork.id
   }

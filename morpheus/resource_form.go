@@ -44,7 +44,7 @@ func resourceForm() *schema.Resource {
 			},
 			"labels": {
 				Type:        schema.TypeSet,
-				Description: "The organization labels associated with the form (Only supported on Morpheus 5.5.3 or higher)",
+				Description: "The organization labels associated with the form",
 				Optional:    true,
 				Computed:    true,
 				Elem:        &schema.Schema{Type: schema.TypeString},
@@ -84,152 +84,152 @@ func resourceForm() *schema.Resource {
 						},
 						"type": {
 							Type:         schema.TypeString,
-							Description:  "The id of the option type to add to the form (checkbox, hidden, number, password, radio, select, text, textarea, byteSize, code-editor, fileContent, logoSelector, textArray, typeahead, environment)",
+							Description:  "The type of option type to add to the form (checkbox, hidden, number, password, radio, select, text, textarea, byteSize, code-editor, fileContent, logoSelector, textArray, typeahead, environment)",
 							ValidateFunc: validation.StringInSlice([]string{"checkbox", "hidden", "number", "password", "radio", "select", "text", "textarea", "byteSize", "code-editor", "fileContent", "logoSelector", "textArray", "typeahead", "environment"}, false),
 							Optional:     true,
 						},
 						"option_list_id": {
 							Type:        schema.TypeInt,
-							Description: "The id of the option type to add to the form",
+							Description: "The id of the option list for option types such as a typeahead or select list",
 							Optional:    true,
 							Computed:    true,
 						},
 						"field_label": {
 							Type:        schema.TypeString,
-							Description: "The id of the option type to add to the form",
+							Description: "The label used for the option type",
 							Optional:    true,
 							Computed:    true,
 						},
 						"default_value": {
 							Type:        schema.TypeString,
-							Description: "The id of the option type to add to the form",
+							Description: "The default value of the option type",
 							Optional:    true,
 							Computed:    true,
 						},
 						"default_checked": {
 							Type:        schema.TypeBool,
-							Description: "The id of the option type to add to the form",
+							Description: "Whether the checkbox option type is checked by default",
 							Optional:    true,
 							Computed:    true,
 						},
 						"placeholder": {
 							Type:        schema.TypeString,
-							Description: "The id of the option type to add to the form",
+							Description: "The placeholder text used for the option type",
 							Optional:    true,
 							Computed:    true,
 						},
 						"help_block": {
 							Type:        schema.TypeString,
-							Description: "The id of the option type to add to the form",
+							Description: "The help message displayed below the option type",
 							Optional:    true,
 							Computed:    true,
 						},
 						"required": {
 							Type:        schema.TypeBool,
-							Description: "The id of the option type to add to the form",
+							Description: "Whether the option type is required or not",
 							Optional:    true,
 							Computed:    true,
 						},
 						"export_meta": {
 							Type:        schema.TypeBool,
-							Description: "Whether to export the text option type as a tag",
+							Description: "Whether to export the option type as a tag",
 							Optional:    true,
 							Computed:    true,
 						},
 						"display_value_on_details": {
 							Type:        schema.TypeBool,
-							Description: "Display the selected value of the text option type on the associated resource's details page",
+							Description: "Display the selected value of the option type on the associated resource's details page",
 							Optional:    true,
 							Computed:    true,
 						},
 						"locked": {
 							Type:        schema.TypeBool,
-							Description: "Display the selected value of the text option type on the associated resource's details page",
+							Description: "Whether the option type is locked or not",
 							Optional:    true,
 							Computed:    true,
 						},
 						"hidden": {
 							Type:        schema.TypeBool,
-							Description: "Display the selected value of the text option type on the associated resource's details page",
+							Description: "Whether to display the option type to the user",
 							Optional:    true,
 							Computed:    true,
 						},
 						"exclude_from_search": {
 							Type:        schema.TypeBool,
-							Description: "Display the selected value of the text option type on the associated resource's details page",
+							Description: "Whether the option type should be execluded from search or not",
 							Optional:    true,
 							Computed:    true,
 						},
 						"allow_password_peek": {
 							Type:        schema.TypeBool,
-							Description: "The field or code used to trigger the reloading of the field",
+							Description: "Whether the value of the password option type can be revealed by the user to ensure they correctly entered the password",
 							Optional:    true,
 							Computed:    true,
 						},
 						"min_value": {
 							Type:        schema.TypeInt,
-							Description: "The field or code used to trigger the reloading of the field",
+							Description: "The minimum number that can be selected for a number option type",
 							Optional:    true,
 							Computed:    true,
 						},
 						"max_value": {
 							Type:        schema.TypeInt,
-							Description: "The field or code used to trigger the reloading of the field",
+							Description: "The maximum value that can be provided for a number option type",
 							Optional:    true,
 							Computed:    true,
 						},
 						"step": {
 							Type:        schema.TypeInt,
-							Description: "The field or code used to trigger the reloading of the field",
+							Description: "The incrementation number used for the number option type (i.e. - 5s, 10s, 100s, etc.)",
 							Optional:    true,
 							Computed:    true,
 						},
 						"text_rows": {
 							Type:        schema.TypeInt,
-							Description: "The field or code used to trigger the reloading of the field",
+							Description: "The number of lines to show for a code editor or text area option type",
 							Optional:    true,
 							Computed:    true,
 						},
 						"display": {
 							Type:         schema.TypeString,
-							Description:  "The field or code used to trigger the reloading of the field (GB or MB)",
+							Description:  "The memory or storage value to use (GB or MB)",
 							ValidateFunc: validation.StringInSlice([]string{"GB", "MB"}, false),
 							Optional:     true,
 							Computed:     true,
 						},
 						"lock_display": {
 							Type:        schema.TypeBool,
-							Description: "The field or code used to trigger the reloading of the field",
+							Description: "Whether to lock the display or not",
 							Optional:    true,
 							Computed:    true,
 						},
 						"code_language": {
 							Type:        schema.TypeString,
-							Description: "The field or code used to trigger the reloading of the field",
+							Description: "The coding language used for highlighting code syntax",
 							Optional:    true,
 							Computed:    true,
 						},
 						"show_line_numbers": {
 							Type:        schema.TypeBool,
-							Description: "The field or code used to trigger the reloading of the field",
+							Description: "Whether to show the line numbers for the code editor option type",
 							Optional:    true,
 							Computed:    true,
 						},
 						"sortable": {
 							Type:        schema.TypeBool,
-							Description: "The field or code used to trigger the reloading of the field",
+							Description: "Whether the selected options can be sorted or not",
 							Optional:    true,
 							Computed:    true,
 						},
 						"allow_multiple_selections": {
 							Type:        schema.TypeBool,
-							Description: "The field or code used to trigger the reloading of the field",
+							Description: "Whether to allow multiple items to be selected when using a select list or type ahead option type",
 							Optional:    true,
 							Computed:    true,
 						},
 						"allow_duplicates": {
 							Type:        schema.TypeBool,
-							Description: "The field or code used to trigger the reloading of the field",
+							Description: "Whether duplicate selections are allowed",
 							Optional:    true,
 							Computed:    true,
 						},
@@ -247,7 +247,7 @@ func resourceForm() *schema.Resource {
 						},
 						"delimiter": {
 							Type:        schema.TypeString,
-							Description: "The field or code used to trigger the reloading of the field",
+							Description: "The delimiter used to separate text array input values",
 							Optional:    true,
 							Computed:    true,
 						},
@@ -259,7 +259,7 @@ func resourceForm() *schema.Resource {
 						},
 						"verify_pattern": {
 							Type:        schema.TypeString,
-							Description: "The regex pattern used to validate the entered",
+							Description: "The regex pattern used to validate the entered text",
 							Optional:    true,
 							Computed:    true,
 						},
@@ -349,7 +349,7 @@ func resourceForm() *schema.Resource {
 									},
 									"option_list_id": {
 										Type:        schema.TypeInt,
-										Description: "The id of the option list to add to the field group",
+										Description: "The id of the option list for option types such as a typeahead or select list",
 										Optional:    true,
 										Computed:    true,
 									},
@@ -427,7 +427,7 @@ func resourceForm() *schema.Resource {
 									},
 									"min_value": {
 										Type:        schema.TypeInt,
-										Description: "The minimum value that can be provided for a number option type",
+										Description: "The minimum number that can be selected for a number option type",
 										Optional:    true,
 										Computed:    true,
 									},
@@ -470,7 +470,7 @@ func resourceForm() *schema.Resource {
 									},
 									"show_line_numbers": {
 										Type:        schema.TypeBool,
-										Description: "Whether or not to show line numbers for coding",
+										Description: "Whether to show the line numbers for the code editor option type",
 										Optional:    true,
 										Computed:    true,
 									},
@@ -482,7 +482,7 @@ func resourceForm() *schema.Resource {
 									},
 									"allow_multiple_selections": {
 										Type:        schema.TypeBool,
-										Description: "Whether multiple options can be selected",
+										Description: "Whether to allow multiple items to be selected when using a select list or type ahead option type",
 										Optional:    true,
 										Computed:    true,
 									},
@@ -518,7 +518,7 @@ func resourceForm() *schema.Resource {
 									},
 									"verify_pattern": {
 										Type:        schema.TypeString,
-										Description: "The regex pattern used to validate the entered value",
+										Description: "The regex pattern used to validate the entered text",
 										Optional:    true,
 										Computed:    true,
 									},
@@ -866,8 +866,12 @@ func resourceFormRead(ctx context.Context, d *schema.ResourceData, meta interfac
 					row["display"] = optionType.Config.Display
 					row["lock_display"] = optionType.Config.LockDisplay
 				case "checkbox":
-					//optionType.DefaultValue
-					row["default_checked"] = true
+					// convert string text to boolean
+					if optionType.DefaultValue == "true" {
+						row["default_checked"] = true
+					} else {
+						row["default_checked"] = false
+					}
 				case "code-editor":
 					row["show_line_numbers"] = optionType.Config.ShowLineNumbers
 					row["code_language"] = optionType.Config.Lang
@@ -934,7 +938,12 @@ func resourceFormRead(ctx context.Context, d *schema.ResourceData, meta interfac
 							optionTypeRow["display"] = optionType.Config.Display
 							optionTypeRow["lock_display"] = optionType.Config.LockDisplay
 						case "checkbox":
-							optionTypeRow["default_checked"] = true
+							// convert string text to boolean
+							if optionType.DefaultValue == "true" {
+								row["default_checked"] = true
+							} else {
+								row["default_checked"] = false
+							}
 						case "code-editor":
 							optionTypeRow["show_line_numbers"] = optionType.Config.ShowLineNumbers
 							optionTypeRow["code_language"] = optionType.Config.Lang
@@ -975,7 +984,6 @@ func resourceFormRead(ctx context.Context, d *schema.ResourceData, meta interfac
 					} else {
 						optionTypeRow["id"] = optionType.ID
 					}
-
 					fgOptionTypes = append(fgOptionTypes, optionTypeRow)
 				}
 			}
@@ -1262,7 +1270,7 @@ func resourceFormDelete(ctx context.Context, d *schema.ResourceData, meta interf
 	var inUseCatalogItems []string
 	catalogItemsResp, err := client.ListCatalogItems(&morpheus.Request{
 		QueryParams: map[string]string{
-			"max": "300",
+			"max": "500",
 		},
 	})
 	if err != nil {

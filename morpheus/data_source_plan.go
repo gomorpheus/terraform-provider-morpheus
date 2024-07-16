@@ -39,7 +39,7 @@ func dataSourceMorpheusPlan() *schema.Resource {
 			},
 			"provision_type": {
 				Type:        schema.TypeString,
-				Description: "The description of the plan",
+				Description: "The name of the service plan provisiong type (i.e. - Amazon EC2, Azure, Google, Nutanix, VMware, etc.)",
 				Required:    true,
 			},
 		},

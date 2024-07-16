@@ -680,6 +680,10 @@ func resourceMVMInstanceUpdate(ctx context.Context, d *schema.ResourceData, meta
 	id := d.Id()
 
 	instanceGetResp, err := client.GetInstance(toInt64(id), &morpheus.Request{})
+	if err != nil {
+		log.Printf("API FAILURE: %s - %s", instanceGetResp, err)
+		return diag.FromErr(err)
+	}
 	result := instanceGetResp.Result.(*morpheus.GetInstanceResult)
 	fetchInstance := result.Instance
 
@@ -842,7 +846,7 @@ func resourceMVMInstanceDelete(ctx context.Context, d *schema.ResourceData, meta
 	log.Printf("API RESPONSE: %s", resp)
 
 	stateConf := &resource.StateChangeConf{
-		Pending: []string{"removing", "pendingRemoval", "stopping", "pending"},
+		Pending: []string{"removing", "pendingRemoval", "stopping", "pending", "warning"},
 		Target:  []string{"removed"},
 		Refresh: func() (interface{}, string, error) {
 			instanceDetails, err := client.GetInstance(toInt64(id), &morpheus.Request{})

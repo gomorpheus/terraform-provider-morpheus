@@ -572,29 +572,3 @@ func resourceApplianceSettingDelete(ctx context.Context, d *schema.ResourceData,
 	d.SetId("")
 	return diags
 }
-
-// This cannot currently be handled efficiently by a DiffSuppressFunc.
-// See: https://github.com/hashicorp/terraform-plugin-sdk/issues/477
-func matchCloudIdsWithSchema(cloudIds []int, declaredcloudIds []interface{}) []int {
-	result := make([]int, len(declaredcloudIds))
-
-	rMap := make(map[int]int, len(cloudIds))
-	for _, cloudId := range cloudIds {
-		rMap[cloudId] = cloudId
-	}
-
-	for i, declaredcloudId := range declaredcloudIds {
-		declaredcloudId := declaredcloudId.(int)
-
-		if v, ok := rMap[declaredcloudId]; ok {
-			// matched recipient declared by ID
-			result[i] = v
-			delete(rMap, v)
-		}
-	}
-	// append unmatched price sets to the result
-	for _, rcpt := range rMap {
-		result = append(result, rcpt)
-	}
-	return result
-}
