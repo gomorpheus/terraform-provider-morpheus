@@ -75,9 +75,9 @@ func resourceShellScriptTask() *schema.Resource {
 					newPayload := strings.TrimSuffix(new, "\n")
 					return oldPayload == newPayload
 				},
-				//StateFunc: func(val interface{}) string {
-				//	return strings.TrimSuffix(val.(string), "\n")
-				//},
+				StateFunc: func(val interface{}) string {
+					return strings.TrimSuffix(val.(string), "\n")
+				},
 			},
 			"script_path": {
 				Type:        schema.TypeString,
