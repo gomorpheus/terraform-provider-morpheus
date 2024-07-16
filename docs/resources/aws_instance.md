@@ -56,6 +56,7 @@ resource "morpheus_aws_instance" "tf_example_aws_instance" {
   resource_pool_id   = data.morpheus_resource_pool.aws_resource_pool.id
   labels             = ["demo", "terraform"]
   security_group_ids = [1]
+
   interfaces {
     network_id = data.morpheus_network.vmnetwork.id
   }
