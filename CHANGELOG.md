@@ -1,7 +1,9 @@
 ## UNRELEASED
 
-NOTES:
 
+## 0.9.10 (July 16, 2024)
+
+NOTES:
 
 * Added support to use forms for the `morpheus_workflow_catalog_item`, `morpheus_app_blueprint_catalog_item`, and `morpheus_instance_catalog_item` resources.
 * Added support for configuration management to the `aws_cloud`, `azure_cloud`, and `vsphere_cloud` resources. [236](https://github.com/gomorpheus/terraform-provider-morpheus/issues/236)
