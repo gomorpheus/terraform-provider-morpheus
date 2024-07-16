@@ -25,7 +25,8 @@ data "morpheus_network" "vmnetwork" {
 }
 
 data "morpheus_plan" "vmware" {
-  name = "1 CPU, 4GB Memory"
+  name           = "1 CPU, 4GB Memory"
+  provision_type = "vmware"
 }
 
 resource "morpheus_vsphere_instance" "tf_example_vsphere_instance" {

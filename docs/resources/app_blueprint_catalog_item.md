@@ -49,6 +49,7 @@ resource "morpheus_app_blueprint_catalog_item" "tf_example_app_blueprint_catalog
 - `description` (String) The description of the app blueprint catalog item
 - `enabled` (Boolean) Whether the app blueprint catalog item is enabled
 - `featured` (Boolean) Whether the app blueprint catalog item is featured
+- `form_id` (Number) The id of the form associated with the workflow catalog item
 - `labels` (Set of String) The organization labels associated with the catalog item (Only supported on Morpheus 5.5.3 or higher)
 - `logo_image_name` (String) The file name of the app blueprint catalog item logo image
 - `logo_image_path` (String) The file path of the app blueprint catalog item logo image including the file name

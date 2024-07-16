@@ -49,6 +49,7 @@ resource "morpheus_workflow_catalog_item" "tfexample_workflow_catalog_item" {
 - `description` (String) The description of the workflow catalog item
 - `enabled` (Boolean) Whether the workflow catalog item is enabled
 - `featured` (Boolean) Whether the workflow catalog item is featured
+- `form_id` (Number) The id of the form associated with the workflow catalog item
 - `labels` (Set of String) The organization labels associated with the catalog item (Only supported on Morpheus 5.5.3 or higher)
 - `logo_image_name` (String) The file name of the workflow catalog item logo image
 - `logo_image_path` (String) The file path of the workflow catalog item logo image including the file name

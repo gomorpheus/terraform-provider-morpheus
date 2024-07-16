@@ -22,7 +22,7 @@ data "morpheus_plan" "vmware" {
 
 ### Required
 
-- `provision_type` (String) The description of the plan
+- `provision_type` (String) The name of the service plan provisiong type (i.e. - Amazon EC2, Azure, Google, Nutanix, VMware, etc.)
 
 ### Optional
 
