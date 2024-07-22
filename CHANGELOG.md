@@ -1,5 +1,8 @@
 ## UNRELEASED
 
+NOTES:
+
+* Fixed an issue in which the `role_ids` attribute for the `morpheus_user` resource was indicating a change when a change should not have been detected. [250](https://github.com/gomorpheus/terraform-provider-morpheus/issues/250)
 
 ## 0.9.10 (July 16, 2024)
 

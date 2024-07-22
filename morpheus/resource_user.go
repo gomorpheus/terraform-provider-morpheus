@@ -214,7 +214,7 @@ func resourceMorpheusUserRead(ctx context.Context, d *schema.ResourceData, meta 
 		for _, role := range user.Roles {
 			roleIds = append(roleIds, int(role.ID))
 		}
-		d.Set("role_ids", roleIds)
+		d.Set("role_ids", matchUserRoleIdsWithSchema(roleIds, d.Get("role_ids").([]interface{})))
 		d.Set("linux_keypair_id", user.LinuxKeyPairID)
 		d.Set("linux_username", user.LinuxUsername)
 		d.Set("windows_username", user.WindowsUsername)
@@ -295,4 +295,30 @@ func resourceMorpheusUserDelete(ctx context.Context, d *schema.ResourceData, met
 	log.Printf("API RESPONSE: %s", resp)
 	d.SetId("")
 	return diags
+}
+
+// This cannot currently be handled efficiently by a DiffSuppressFunc.
+// See: https://github.com/hashicorp/terraform-plugin-sdk/issues/477
+func matchUserRoleIdsWithSchema(roleIds []int, declaredRoleIds []interface{}) []int {
+	result := make([]int, len(declaredRoleIds))
+
+	rMap := make(map[int]int, len(roleIds))
+	for _, roleId := range roleIds {
+		rMap[roleId] = roleId
+	}
+
+	for i, declaredPrice := range declaredRoleIds {
+		declaredPrice := declaredPrice.(int)
+
+		if v, ok := rMap[declaredPrice]; ok {
+			// matched price declared by ID
+			result[i] = v
+			delete(rMap, v)
+		}
+	}
+	// append unmatched price set to the result
+	for _, rcpt := range rMap {
+		result = append(result, rcpt)
+	}
+	return result
 }
