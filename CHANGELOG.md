@@ -2,6 +2,9 @@
 
 NOTES:
 
+* Updated the required version of Go from 1.20 to 1.21.
+* Updated the `terraform-plugin-docs` library from v0.16.0 to v0.19.4
+* Updated the `terraform-plugin-sdk` library from v2.31.0 to v2.34.0
 * Fixed an issue in which the `role_ids` attribute for the `morpheus_user` resource was indicating a change when a change should not have been detected. [250](https://github.com/gomorpheus/terraform-provider-morpheus/issues/250)
 
 ## 0.9.10 (July 16, 2024)
