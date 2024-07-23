@@ -2,12 +2,12 @@
 page_title: "morpheus_mvm_instance Resource - terraform-provider-morpheus"
 subcategory: ""
 description: |-
-  Provides a Morpheus instance resource.
+  Provides a Morpheus MVM instance resource.
 ---
 
 # morpheus_mvm_instance
 
-Provides a Morpheus instance resource.
+Provides a Morpheus MVM instance resource.
 
 ## Example Usage
 
@@ -39,10 +39,7 @@ data "morpheus_plan" "mvm" {
 }
 
 resource "morpheus_mvm_instance" "tf_example_mvm_instance" {
-  for_each = toset([
-    "tfdemo",
-  ])
-  name               = each.key
+  name               = "mvmdemo"
   description        = "Terraform instance example"
   cloud_id           = data.morpheus_cloud.morpheus_cloud.id
   group_id           = data.morpheus_group.morpheus_lab.id
@@ -51,16 +48,17 @@ resource "morpheus_mvm_instance" "tf_example_mvm_instance" {
   plan_id            = data.morpheus_plan.mvm.id
   environment        = "dev"
   resource_pool_name = "mvmcluster01"
-  labels             = ["demo", "terraform"]
+  labels             = ["demo", "terraform-managed"]
   create_user        = true
   skip_agent_install = true
   workflow_name      = "Nginx Install"
-  interfaces {
+
+  network_interface {
     network_id                = data.morpheus_network.vmnetwork.id
     network_interface_type_id = 5
   }
 
-  volumes {
+  storage_volume {
     root         = true
     size         = 30
     name         = "root"
@@ -69,7 +67,7 @@ resource "morpheus_mvm_instance" "tf_example_mvm_instance" {
   }
 
   tags = {
-    name = "ubuntutf"
+    name = "mvmdemo"
   }
 }
 ```
@@ -84,6 +82,7 @@ resource "morpheus_mvm_instance" "tf_example_mvm_instance" {
 - `instance_layout_id` (Number) The ID of the instance layout to provision the instance from
 - `instance_type_id` (Number) The ID of the instance type to provision the instance from
 - `plan_id` (Number) The service plan associated with the instance
+- `resource_pool_name` (String) The name of the resource pool (cluster) to provision the instance to
 
 ### Optional
 
@@ -101,9 +100,7 @@ resource "morpheus_mvm_instance" "tf_example_mvm_instance" {
 - `name` (String) The name of the instance
 - `nested_virtualization` (Boolean) Whether to enable nested virtualization
 - `network_interface` (Block List) The instance network interfaces to create (see [below for nested schema](#nestedblock--network_interface))
-- `primary_ip_address` (String) The instance primary IP address
 - `qemu_arguments` (String) The qemu arguments to add to the instance
-- `resource_pool_name` (String) The name of the resource pool (cluster) to provision the instance to
 - `skip_agent_install` (Boolean) Whether to skip installation of the Morpheus agent
 - `storage_volume` (Block List) The instance volumes to create (see [below for nested schema](#nestedblock--storage_volume))
 - `tags` (Map of String) Tags to assign to the instance
@@ -115,6 +112,7 @@ resource "morpheus_mvm_instance" "tf_example_mvm_instance" {
 ### Read-Only
 
 - `id` (String) The ID of the instance
+- `primary_ip_address` (String) The instance primary IP address
 
 <a id="nestedblock--evar"></a>
 ### Nested Schema for `evar`
@@ -130,24 +128,30 @@ Optional:
 <a id="nestedblock--network_interface"></a>
 ### Nested Schema for `network_interface`
 
+Required:
+
+- `network_id` (Number) The network to assign the network interface to
+- `network_interface_type_id` (Number) The id of the network interface type
+
 Optional:
 
 - `ip_address` (String) The IP address to assign to the instance
 - `ip_mode` (String) The IP address assignment mode
-- `network_id` (Number) The network to assign the network interface to
-- `network_interface_type_id` (Number) The network interface type
 
 
 <a id="nestedblock--storage_volume"></a>
 ### Nested Schema for `storage_volume`
 
-Optional:
+Required:
 
 - `datastore_id` (Number) The ID of the datastore
-- `name` (String) The name/type of the LV being created
+- `name` (String) The name of the volume
 - `root` (Boolean) Whether the volume is the root volume of the instance
-- `size` (Number) The size of the LV being created
+- `size` (Number) The size of the volume in GB
 - `storage_type` (Number) The storage volume type ID
+
+Optional:
+
 - `uuid` (String) The storage volume uuid
 
 
