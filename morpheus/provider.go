@@ -182,6 +182,7 @@ func Provider() *schema.Provider {
 			"morpheus_blueprint":                  dataSourceMorpheusBlueprint(),
 			"morpheus_budget":                     dataSourceMorpheusBudget(),
 			"morpheus_catalog_item_type":          dataSourceMorpheusCatalogItemType(),
+			"morpheus_cloud_datastore":            dataSourceMorpheusCloudDatastore(),
 			"morpheus_cloud":                      dataSourceMorpheusCloud(),
 			"morpheus_cloud_type":                 dataSourceMorpheusCloudType(),
 			"morpheus_cluster_type":               dataSourceMorpheusClusterType(),
