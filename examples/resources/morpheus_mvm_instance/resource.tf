@@ -25,10 +25,7 @@ data "morpheus_plan" "mvm" {
 }
 
 resource "morpheus_mvm_instance" "tf_example_mvm_instance" {
-  for_each = toset([
-    "tfdemo",
-  ])
-  name               = each.key
+  name               = "mvmdemo"
   description        = "Terraform instance example"
   cloud_id           = data.morpheus_cloud.morpheus_cloud.id
   group_id           = data.morpheus_group.morpheus_lab.id
@@ -37,16 +34,17 @@ resource "morpheus_mvm_instance" "tf_example_mvm_instance" {
   plan_id            = data.morpheus_plan.mvm.id
   environment        = "dev"
   resource_pool_name = "mvmcluster01"
-  labels             = ["demo", "terraform"]
+  labels             = ["demo", "terraform-managed"]
   create_user        = true
   skip_agent_install = true
   workflow_name      = "Nginx Install"
-  interfaces {
+
+  network_interface {
     network_id                = data.morpheus_network.vmnetwork.id
     network_interface_type_id = 5
   }
 
-  volumes {
+  storage_volume {
     root         = true
     size         = 30
     name         = "root"
@@ -55,6 +53,6 @@ resource "morpheus_mvm_instance" "tf_example_mvm_instance" {
   }
 
   tags = {
-    name = "ubuntutf"
+    name = "mvmdemo"
   }
 }

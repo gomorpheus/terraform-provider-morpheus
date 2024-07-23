@@ -2,6 +2,7 @@
 
 NOTES:
 
+* Updated the examples and documentation for the `mvm_instance` resource.
 * Updated the required version of Go from 1.20 to 1.21.
 * Updated the `terraform-plugin-docs` library from v0.16.0 to v0.19.4
 * Updated the `terraform-plugin-sdk` library from v2.31.0 to v2.34.0

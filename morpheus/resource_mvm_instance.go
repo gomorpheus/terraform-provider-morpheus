@@ -16,7 +16,7 @@ import (
 
 func resourceMVMInstance() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Provides a Morpheus instance resource.",
+		Description:   "Provides a Morpheus MVM instance resource.",
 		CreateContext: resourceMVMInstanceCreate,
 		ReadContext:   resourceMVMInstanceRead,
 		UpdateContext: resourceMVMInstanceUpdate,
@@ -83,8 +83,7 @@ func resourceMVMInstance() *schema.Resource {
 				Description: "The name of the resource pool (cluster) to provision the instance to",
 				Type:        schema.TypeString,
 				ForceNew:    true,
-				Optional:    true,
-				Computed:    true,
+				Required:    true,
 			},
 			"domain_id": {
 				Description: "The ID of the network domain to provision the instance to",
@@ -235,30 +234,27 @@ func resourceMVMInstance() *schema.Resource {
 						"root": {
 							Description: "Whether the volume is the root volume of the instance",
 							Type:        schema.TypeBool,
-							Optional:    true,
+							Required:    true,
 						},
 						"name": {
-							Description: "The name/type of the LV being created",
+							Description: "The name of the volume",
 							Type:        schema.TypeString,
-							Optional:    true,
+							Required:    true,
 						},
 						"size": {
-							Description: "The size of the LV being created",
+							Description: "The size of the volume in GB",
 							Type:        schema.TypeInt,
-							Optional:    true,
-							Computed:    true,
+							Required:    true,
 						},
 						"storage_type": {
 							Description: "The storage volume type ID",
 							Type:        schema.TypeInt,
-							Optional:    true,
-							Computed:    true,
+							Required:    true,
 						},
 						"datastore_id": {
 							Description: "The ID of the datastore",
 							Type:        schema.TypeInt,
-							Optional:    true,
-							Computed:    true,
+							Required:    true,
 						},
 					},
 				},
@@ -272,8 +268,7 @@ func resourceMVMInstance() *schema.Resource {
 						"network_id": {
 							Description: "The network to assign the network interface to",
 							Type:        schema.TypeInt,
-							Optional:    true,
-							Computed:    true,
+							Required:    true,
 						},
 						/* AWAITING PLATFORM SUPPORT
 						"network_group": {
@@ -296,10 +291,9 @@ func resourceMVMInstance() *schema.Resource {
 							Computed:    true,
 						},
 						"network_interface_type_id": {
-							Description: "The network interface type",
+							Description: "The id of the network interface type",
 							Type:        schema.TypeInt,
-							Optional:    true,
-							Computed:    true,
+							Required:    true,
 						},
 					},
 				},
@@ -307,7 +301,6 @@ func resourceMVMInstance() *schema.Resource {
 			"primary_ip_address": {
 				Description: "The instance primary IP address",
 				Type:        schema.TypeString,
-				Optional:    true,
 				Computed:    true,
 			},
 		},
