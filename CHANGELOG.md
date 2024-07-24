@@ -9,11 +9,13 @@ NOTES:
 * Fixed an issue in which the `role_ids` attribute for the `morpheus_user` resource was indicating a change when a change should not have been detected. [250](https://github.com/gomorpheus/terraform-provider-morpheus/issues/250)
 * Added support for the `morpheus_cloud_datastore` data source to lookup a cloud's datastore. [231](https://github.com/gomorpheus/terraform-provider-morpheus/issues/231)
 * Added support for the `morpheus_storage_volume` data source to lookup storage volumes. [230](https://github.com/gomorpheus/terraform-provider-morpheus/issues/230)
+* Added support for the `morpheus_environments` data source to lookup environments and return a list of environment ids. [233](https://github.com/gomorpheus/terraform-provider-morpheus/issues/233)
 
 FEATURES:
 
 * **New Data Source:** `morpheus_cloud_datastore`
 * **New Data Source:** `morpheus_storage_volume`
+* **New Data Source:** `morpheus_environments`
 
 ## 0.9.10 (July 16, 2024)
 

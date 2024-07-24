@@ -191,6 +191,7 @@ func Provider() *schema.Provider {
 			"morpheus_cypher_secret":              dataSourceMorpheusCypherSecret(),
 			"morpheus_domain":                     dataSourceMorpheusDomain(),
 			"morpheus_environment":                dataSourceMorpheusEnvironment(),
+			"morpheus_environments":               dataSourceMorpheusEnvironments(),
 			"morpheus_execute_schedule":           dataSourceMorpheusExecuteSchedule(),
 			"morpheus_file_template":              dataSourceMorpheusFileTemplate(),
 			"morpheus_git_integration":            dataSourceMorpheusGitIntegration(),
