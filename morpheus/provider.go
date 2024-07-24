@@ -220,6 +220,7 @@ func Provider() *schema.Provider {
 			"morpheus_spec_template":              dataSourceMorpheusSpecTemplate(),
 			"morpheus_storage_bucket":             dataSourceMorpheusStorageBucket(),
 			"morpheus_storage_volume_type":        dataSourceMorpheusStorageVolumeType(),
+			"morpheus_storage_volume":             dataSourceMorpheusStorageVolume(),
 			"morpheus_task":                       dataSourceMorpheusTask(),
 			"morpheus_tenant_role":                dataSourceMorpheusTenantRole(),
 			"morpheus_tenant":                     dataSourceMorpheusTenant(),
