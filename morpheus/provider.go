@@ -196,6 +196,7 @@ func Provider() *schema.Provider {
 			"morpheus_file_template":              dataSourceMorpheusFileTemplate(),
 			"morpheus_git_integration":            dataSourceMorpheusGitIntegration(),
 			"morpheus_group":                      dataSourceMorpheusGroup(),
+			"morpheus_groups":                     dataSourceMorpheusGroups(),
 			"morpheus_instance_layout":            dataSourceMorpheusInstanceLayout(),
 			"morpheus_instance_type":              dataSourceMorpheusInstanceType(),
 			"morpheus_integration":                dataSourceMorpheusIntegration(),
