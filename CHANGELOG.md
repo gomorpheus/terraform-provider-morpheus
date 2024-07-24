@@ -8,10 +8,12 @@ NOTES:
 * Updated the `terraform-plugin-sdk` library from v2.31.0 to v2.34.0
 * Fixed an issue in which the `role_ids` attribute for the `morpheus_user` resource was indicating a change when a change should not have been detected. [250](https://github.com/gomorpheus/terraform-provider-morpheus/issues/250)
 * Added support for the `morpheus_cloud_datastore` data source to lookup a cloud's datastore. [231](https://github.com/gomorpheus/terraform-provider-morpheus/issues/231)
+* Added support for the `morpheus_storage_volume` data source to lookup storage volumes. [230](https://github.com/gomorpheus/terraform-provider-morpheus/issues/230)
 
 FEATURES:
 
 * **New Data Source:** `morpheus_cloud_datastore`
+* **New Data Source:** `morpheus_storage_volume`
 
 ## 0.9.10 (July 16, 2024)
 
