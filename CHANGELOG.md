@@ -10,6 +10,7 @@ NOTES:
 * Added support for the `morpheus_cloud_datastore` data source to lookup a cloud's datastore. [231](https://github.com/gomorpheus/terraform-provider-morpheus/issues/231)
 * Added support for the `morpheus_storage_volume` data source to lookup storage volumes. [230](https://github.com/gomorpheus/terraform-provider-morpheus/issues/230)
 * Added support for the `morpheus_environments` data source to lookup environments and return a list of environment ids. [233](https://github.com/gomorpheus/terraform-provider-morpheus/issues/233)
+* Added support for the `morpheus_groups` data source to lookup groups and return a list of group ids. [233](https://github.com/gomorpheus/terraform-provider-morpheus/issues/233)
 
 FEATURES:
 
