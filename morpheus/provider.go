@@ -228,6 +228,7 @@ func Provider() *schema.Provider {
 			"morpheus_tasks":                      dataSourceMorpheusTasks(),
 			"morpheus_tenant_role":                dataSourceMorpheusTenantRole(),
 			"morpheus_tenant":                     dataSourceMorpheusTenant(),
+			"morpheus_tenants":                    dataSourceMorpheusTenants(),
 			"morpheus_user_group":                 dataSourceMorpheusUserGroup(),
 			"morpheus_user_groups":                dataSourceMorpheusUserGroups(),
 			"morpheus_user_role":                  dataSourceMorpheusUserRole(),
