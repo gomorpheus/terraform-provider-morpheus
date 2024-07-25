@@ -12,7 +12,7 @@ NOTES:
 * Added support for the `morpheus_environments` data source to lookup environments and return a list of environment ids. [233](https://github.com/gomorpheus/terraform-provider-morpheus/issues/233)
 * Added support for the `morpheus_groups` data source to lookup groups and return a list of group ids. [233](https://github.com/gomorpheus/terraform-provider-morpheus/issues/233)
 * Added support for the `morpheus_tasks` data source to lookup tasks and return a list of task ids. [233](https://github.com/gomorpheus/terraform-provider-morpheus/issues/233)
-
+* Added support for the `morpheus_policies` data source to lookup policies and return a list of policy ids. [233](https://github.com/gomorpheus/terraform-provider-morpheus/issues/233)
 
 FEATURES:
 

@@ -1,4 +1,4 @@
-data "morpheus_tasks" "example_tasks" {
+data "morpheus_policies" "example_policies" {
   sort_ascending = true
 
   filter {
@@ -8,6 +8,6 @@ data "morpheus_tasks" "example_tasks" {
 
   filter {
     name   = "type"
-    values = ["Shell Script", "Python Script"]
+    values = ["Max VMs", "Workflow"]
   }
 }

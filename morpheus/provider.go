@@ -211,6 +211,7 @@ func Provider() *schema.Provider {
 			"morpheus_permission_set":             dataSourceMorpheusPermissionSet(),
 			"morpheus_plan":                       dataSourceMorpheusPlan(),
 			"morpheus_policy":                     dataSourceMorpheusPolicy(),
+			"morpheus_policies":                   dataSourceMorpheusPolicies(),
 			"morpheus_power_schedule":             dataSourceMorpheusPowerSchedule(),
 			"morpheus_price_set":                  dataSourceMorpheusPriceSet(),
 			"morpheus_price":                      dataSourceMorpheusPrice(),
