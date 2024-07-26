@@ -15,6 +15,8 @@ NOTES:
 * Added support for the `morpheus_policies` data source to lookup policies and return a list of policy ids. [233](https://github.com/gomorpheus/terraform-provider-morpheus/issues/233)
 * Added support for the `morpheus_user_groups` data source to lookup user groups and return a list of user group ids. [233](https://github.com/gomorpheus/terraform-provider-morpheus/issues/233)
 * Added support for the `morpheus_tenants` data source to lookup tenants and return a list of tenant ids. [233](https://github.com/gomorpheus/terraform-provider-morpheus/issues/233)
+* Added support for the `morpheus_virtual_images` data source to lookup virtual images and return a list of virtual image ids. [233](https://github.com/gomorpheus/terraform-provider-morpheus/issues/233)
+
 
 FEATURES:
 
@@ -26,6 +28,7 @@ FEATURES:
 * **New Data Source:** `morpheus_policies`
 * **New Data Source:** `morpheus_user_groups`
 * **New Data Source:** `morpheus_tenants`
+* **New Data Source:** `morpheus_virtual_images`
 
 ## 0.9.10 (July 16, 2024)
 

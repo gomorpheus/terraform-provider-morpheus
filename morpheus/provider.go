@@ -234,6 +234,7 @@ func Provider() *schema.Provider {
 			"morpheus_user_role":                  dataSourceMorpheusUserRole(),
 			"morpheus_vdi_pool":                   dataSourceMorpheusVDIPool(),
 			"morpheus_virtual_image":              dataSourceMorpheusVirtualImage(),
+			"morpheus_virtual_images":             dataSourceMorpheusVirtualImages(),
 			"morpheus_vro_workflow":               dataSourceMorpheusVrealizeOrchestratorWorkflow(),
 			"morpheus_workflow":                   dataSourceMorpheusWorkflow(),
 		},
