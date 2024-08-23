@@ -4,6 +4,7 @@
 
 NOTES:
 
+* Updated the GitHub Actions release workflow to use go 1.21 instead of 1.20.
 * Fixed an issue with not being able to import an existing AWS cloud integration. The issue also applied to the Azure cloud integration resource as well. [266](https://github.com/gomorpheus/terraform-provider-morpheus/issues/266)
 * Updated the examples and documentation for the `mvm_instance` resource.
 * Updated the required version of Go from 1.20 to 1.21.
