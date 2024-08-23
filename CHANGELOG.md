@@ -1,7 +1,10 @@
 ## UNRELEASED
 
+## 0.10.0 (August 23, 2024)
+
 NOTES:
 
+* Fixed an issue with not being able to import an existing AWS cloud integration. The issue also applied to the Azure cloud integration resource as well. [266](https://github.com/gomorpheus/terraform-provider-morpheus/issues/266)
 * Updated the examples and documentation for the `mvm_instance` resource.
 * Updated the required version of Go from 1.20 to 1.21.
 * Updated the `terraform-plugin-docs` library from v0.16.0 to v0.19.4
