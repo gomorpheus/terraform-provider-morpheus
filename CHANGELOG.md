@@ -1,5 +1,14 @@
 ## UNRELEASED
 
+NOTES:
+
+* Added support for managing the Chef bootstrap task. [269](https://github.com/gomorpheus/terraform-provider-morpheus/issues/269)
+
+FEATURES:
+
+* **New Data Source:** `morpheus_chef_server`
+* **New Resource:** `morpheus_chef_bootstrap_task`
+
 ## 0.10.0 (August 23, 2024)
 
 NOTES:
