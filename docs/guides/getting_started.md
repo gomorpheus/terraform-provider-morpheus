@@ -25,7 +25,7 @@ terraform {
   required_providers {
     morpheus = {
       source  = "gomorpheus/morpheus"
-      version = "0.10.0"
+      version = "0.11.0"
     }
   }
 }
@@ -59,9 +59,9 @@ $ terraform init
 Initializing the backend...
 
 Initializing provider plugins...
-- Finding morpheusdata.com/gomorpheus/morpheus versions matching "0.10.0"...
-- Installing morpheusdata.com/gomorpheus/morpheus v0.10.0...
-- Installed morpheusdata.com/gomorpheus/morpheus v0.10.0 (unauthenticated)
+- Finding morpheusdata.com/gomorpheus/morpheus versions matching "0.11.0"...
+- Installing morpheusdata.com/gomorpheus/morpheus v0.11.0...
+- Installed morpheusdata.com/gomorpheus/morpheus v0.11.0 (unauthenticated)
 
 Terraform has created a lock file .terraform.lock.hcl to record the provider
 selections it made above. Include this file in your version control repository
