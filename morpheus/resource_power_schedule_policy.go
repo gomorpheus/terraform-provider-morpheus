@@ -43,18 +43,19 @@ func resourcePowerSchedulePolicy() *schema.Resource {
 				Default:     true,
 			},
 			"enforcement_type": {
-				Type:        schema.TypeString,
-				Description: "The ID of the user group",
-				Required:    true,
+				Type:         schema.TypeString,
+				Description:  "The enforcement type of the policy (fixed, user)",
+				ValidateFunc: validation.StringInSlice([]string{"fixed", "user"}, false),
+				Required:     true,
 			},
 			"power_schedule_id": {
-				Type:        schema.TypeString,
-				Description: "The ID of the user group",
+				Type:        schema.TypeInt,
+				Description: "The ID of the power schedule to associate with the policy",
 				Required:    true,
 			},
 			"hide_power_schedule_if_fixed": {
 				Type:        schema.TypeBool,
-				Description: "The ID of the user group",
+				Description: "Whether to hide the power schedule option on the instance provisioning wizard if the enforcement type is fixed",
 				Optional:    true,
 				Computed:    true,
 			},
@@ -126,11 +127,12 @@ func resourcePowerSchedulePolicyCreate(ctx context.Context, d *schema.ResourceDa
 	policy["enabled"] = d.Get("enabled").(bool)
 
 	policy["config"] = map[string]interface{}{
-		"userGroup": d.Get("user_group_id").(int),
+		"powerSchedule":          d.Get("power_schedule_id").(int),
+		"powerScheduleType":      d.Get("enforcement_type").(string),
+		"powerScheduleHideFixed": d.Get("hide_power_schedule_if_fixed").(bool),
 	}
 	policy["policyType"] = map[string]interface{}{
-		"code": "createUserGroup",
-		"name": "User Group Creation",
+		"code": "powerSchedule",
 	}
 	policy["accounts"] = d.Get("tenant_ids")
 
@@ -224,6 +226,10 @@ func resourcePowerSchedulePolicyRead(ctx context.Context, d *schema.ResourceData
 	d.Set("name", powerSchedulePolicy.Name)
 	d.Set("description", powerSchedulePolicy.Description)
 	d.Set("enabled", powerSchedulePolicy.Enabled)
+	d.Set("power_schedule_id", powerSchedulePolicy.Config.PowerSchedule)
+	d.Set("enforcement_type", powerSchedulePolicy.Config.PowerScheduleType)
+	d.Set("hide_power_schedule_if_fixed", powerSchedulePolicy.Config.PowerScheduleHideFixed)
+
 	switch powerSchedulePolicy.RefType {
 	case "ComputeSite":
 		d.Set("scope", "group")
@@ -265,12 +271,14 @@ func resourcePowerSchedulePolicyUpdate(ctx context.Context, d *schema.ResourceDa
 	policy["enabled"] = d.Get("enabled").(bool)
 
 	policy["config"] = map[string]interface{}{
-		"userGroup": d.Get("user_group_id").(int),
+		"powerSchedule":          d.Get("power_schedule_id").(int),
+		"powerScheduleType":      d.Get("enforcement_type").(string),
+		"powerScheduleHideFixed": d.Get("hide_power_schedule_if_fixed").(bool),
 	}
 	policy["policyType"] = map[string]interface{}{
-		"code": "createUserGroup",
-		"name": "User Group Creation",
+		"code": "powerSchedule",
 	}
+
 	policy["accounts"] = d.Get("tenant_ids")
 
 	switch d.Get("scope") {
