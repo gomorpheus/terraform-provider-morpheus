@@ -141,7 +141,7 @@ data "morpheus_permission_set" "override_set" {
 - `default_cloud_permission` (String) The default role permission for clouds (none, read, full)
 - `default_group_permission` (String) The default role permission for groups (none, read, full)
 - `default_instance_type_permission` (String) The default role permission for instance types (none, full)
-- `default_persona` (String) The default role persona (standard, serviceCatalog, vdi)
+- `default_persona` (String) The default role persona (standard, serviceCatalog, vdi, api)
 - `default_persona_permission` (String) The default role permission for personas (none, full)
 - `default_report_type_permission` (String) The default role permission for report types (none, full)
 - `default_task_permission` (String) The default role permission for tasks (none, full)
@@ -223,7 +223,7 @@ Optional:
 Optional:
 
 - `access` (String) The level of access granted to the persona (default, full, none)
-- `code` (String) The code of the persona (standard, vdi, serviceCatalog)
+- `code` (String) The code of the persona (standard, vdi, serviceCatalog, api)
 
 
 <a id="nestedblock--report_type_permission"></a>
