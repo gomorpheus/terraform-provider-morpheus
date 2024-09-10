@@ -2,6 +2,7 @@
 
 NOTES:
 
+* Added support for the new API persona to the `morpheus_permission_set` data source. [264](https://github.com/gomorpheus/terraform-provider-morpheus/issues/264)
 * Fixed the `morpheus_power_schedule_policy` from throwing an error when applying the resource due to an issue with the code. [272](https://github.com/gomorpheus/terraform-provider-morpheus/issues/272)
 * Added support for managing the Chef server integration. [270](https://github.com/gomorpheus/terraform-provider-morpheus/issues/270)
 * Added support for managing the Chef bootstrap task. [269](https://github.com/gomorpheus/terraform-provider-morpheus/issues/269)

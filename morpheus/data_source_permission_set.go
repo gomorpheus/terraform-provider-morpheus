@@ -71,10 +71,10 @@ func dataSourceMorpheusPermissionSet() *schema.Resource {
 			},
 			"default_persona": {
 				Type:         schema.TypeString,
-				Description:  "The default role persona (standard, serviceCatalog, vdi)",
+				Description:  "The default role persona (standard, serviceCatalog, vdi, api)",
 				Optional:     true,
 				Computed:     true,
-				ValidateFunc: validation.StringInSlice([]string{"standard", "serviceCatalog", "vdi"}, true),
+				ValidateFunc: validation.StringInSlice([]string{"standard", "serviceCatalog", "vdi", "api"}, true),
 			},
 			"default_catalog_item_type_permission": {
 				Type:         schema.TypeString,
@@ -227,7 +227,7 @@ func dataSourceMorpheusPermissionSet() *schema.Resource {
 					Schema: map[string]*schema.Schema{
 						"code": {
 							Type:        schema.TypeString,
-							Description: "The code of the persona (standard, vdi, serviceCatalog)",
+							Description: "The code of the persona (standard, vdi, serviceCatalog, api)",
 							Optional:    true,
 						},
 						"access": {
