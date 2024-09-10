@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"strconv"
 	"time"
 
 	"github.com/gomorpheus/morpheus-go-sdk"
@@ -642,12 +641,7 @@ func resourceMVMInstanceRead(ctx context.Context, d *schema.ResourceData, meta i
 		row["name"] = volume.Name
 		row["size"] = volume.Size.(float64)
 		row["storage_type"] = volume.StorageType.(float64)
-		n, err := strconv.Atoi(volume.DatastoreId)
-		if err != nil {
-			log.Printf("API FAILURE: %s - %s", resp, err)
-			return diag.FromErr(err)
-		}
-		row["datastore_id"] = n
+		row["datastore_id"] = volume.DatastoreId.(int)
 		volumes = append(volumes, row)
 	}
 	d.Set("storage_volume", volumes)
@@ -939,7 +933,7 @@ func parseMVMNetworkInterfaces(interfaces []interface{}, existingInterfaces []mo
 	return networkInterfaces
 }
 
-func parseMVMStorageVolumes(volumes []interface{}, existingVolumes []morpheus.StorageVolume) []map[string]interface{} {
+func parseMVMStorageVolumes(volumes []interface{}, existingVolumes Volumes) []map[string]interface{} {
 	var storageVolumes []map[string]interface{}
 	var existingVolumeUUIDs []string
 
@@ -982,4 +976,54 @@ func parseMVMStorageVolumes(volumes []interface{}, existingVolumes []morpheus.St
 		storageVolumes = append(storageVolumes, row)
 	}
 	return storageVolumes // .([]map[string]interface{})
+}
+
+type Volumes []struct {
+	ID                   interface{} `json:"id"`
+	Name                 string      `json:"name"`
+	ShortName            string      `json:"shortName"`
+	Description          string      `json:"description"`
+	ControllerId         int64       `json:"controllerId"`
+	ControllerMountPoint string      `json:"controllerMountPoint"`
+	Resizeable           interface{} `json:"resizeable"`
+	PlanResizable        interface{} `json:"planResizable"`
+	Size                 interface{} `json:"size"`
+	StorageType          interface{} `json:"storageType"`
+	RootVolume           interface{} `json:"rootVolume"`
+	UnitNumber           string      `json:"unitNumber"`
+	DeviceName           string      `json:"deviceName"`
+	DeviceDisplayName    string      `json:"deviceDisplayName"`
+	Type                 struct {
+		ID   int64  `json:"id"`
+		Code string `json:"code"`
+		Name string `json:"name"`
+	} `json:"type"`
+	TypeId           int64  `json:"typeId"`
+	Category         string `json:"category"`
+	Status           string `json:"status"`
+	StatusMessage    string `json:"statusMessage"`
+	ConfigurableIOPS bool   `json:"configurableIOPS"`
+	MaxStorage       int64  `json:"maxStorage"`
+	DisplayOrder     int64  `json:"displayOrder"`
+	MaxIOPS          string `json:"maxIOPS"`
+	Uuid             string `json:"uuid"`
+	Active           bool   `json:"active"`
+	Zone             struct {
+		ID   int64  `json:"id"`
+		Name string `json:"name"`
+	} `json:"zone"`
+	ZoneId    int64 `json:"zoneId"`
+	Datastore struct {
+		ID   int64  `json:"id"`
+		Name string `json:"name"`
+	} `json:"datastore"`
+	DatastoreId   interface{} `json:"datastoreId"`
+	StorageGroup  string      `json:"storageGroup"`
+	Namespace     string      `json:"namespace"`
+	StorageServer string      `json:"storageServer"`
+	Source        string      `json:"source"`
+	Owner         struct {
+		ID   int64  `json:"id"`
+		Name string `json:"name"`
+	} `json:"owner"`
 }
