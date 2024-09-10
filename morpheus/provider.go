@@ -72,6 +72,7 @@ func Provider() *schema.Provider {
 			"morpheus_budget_policy":                    resourceBudgetPolicy(),
 			"morpheus_checkbox_option_type":             resourceCheckboxOptionType(),
 			"morpheus_chef_bootstrap_task":              resourceChefBootstrapTask(),
+			"morpheus_chef_integration":                 resourceChefIntegration(),
 			"morpheus_cloud_formation_app_blueprint":    resourceCloudFormationAppBlueprint(),
 			"morpheus_cloud_formation_spec_template":    resourceCloudFormationSpecTemplate(),
 			"morpheus_cluster_layout":                   resourceClusterLayout(),
