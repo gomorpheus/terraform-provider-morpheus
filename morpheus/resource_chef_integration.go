@@ -63,14 +63,12 @@ func resourceChefIntegration() *schema.Resource {
 				Description: "The chef organization",
 				Optional:    true,
 			},
-			/* AWAITING SDK SUPPORT
 			"use_fqdn_node_name": {
 				Type:        schema.TypeBool,
 				Description: "Whether to use the FQDN of the node instead of the instance name",
 				Optional:    true,
 				Default:     false,
 			},
-			*/
 			"username": {
 				Type:          schema.TypeString,
 				Description:   "The username of the account used to connect to the Chef server",
@@ -142,7 +140,7 @@ func resourceChefIntegrationCreate(ctx context.Context, d *schema.ResourceData, 
 
 	config := make(map[string]interface{})
 	config["windowsInstallUrl"] = d.Get("windows_msi_install_url").(string)
-	//config["useFqdn"] = d.Get("use_fqdn_node_name").(bool)
+	config["useFqdn"] = d.Get("use_fqdn_node_name").(bool)
 	config["org"] = d.Get("organization").(string)
 
 	if d.Get("credential_id").(int) != 0 {
@@ -240,7 +238,7 @@ func resourceChefIntegrationRead(ctx context.Context, d *schema.ResourceData, me
 	d.Set("windows_version", integration.WindowsVersion)
 	d.Set("windows_msi_install_url", integration.Config.WindowsInstallURL)
 	d.Set("organization", integration.Config.Org)
-	//	d.Set("use_fqdn_node_name", integration.Config.UseFQDN)
+	d.Set("use_fqdn_node_name", integration.Config.UseFqdn)
 	if integration.Credential.ID == 0 {
 		d.Set("username", integration.Config.ChefUser)
 		d.Set("private_key", integration.Config.UserKeyHash)
@@ -282,7 +280,7 @@ func resourceChefIntegrationUpdate(ctx context.Context, d *schema.ResourceData, 
 
 	config := make(map[string]interface{})
 	config["windowsInstallUrl"] = d.Get("windows_msi_install_url").(string)
-	//config["useFqdn"] = d.Get("use_fqdn_node_name").(bool)
+	config["useFqdn"] = d.Get("use_fqdn_node_name").(bool)
 	config["org"] = d.Get("organization").(string)
 
 	if d.Get("credential_id").(int) != 0 {

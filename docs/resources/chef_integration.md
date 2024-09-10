@@ -41,6 +41,7 @@ resource "morpheus_chef_integration" "tf_example_chef_integration" {
 - `organization` (String) The chef organization
 - `organization_validator_key` (String, Sensitive) The organization validator key used to connect to the Chef server
 - `private_key` (String, Sensitive) The private key of the account used to connect to the Chef server
+- `use_fqdn_node_name` (Boolean) Whether to use the FQDN of the node instead of the instance name
 - `username` (String) The username of the account used to connect to the Chef server
 - `version` (String) The version of the Chef server
 - `windows_msi_install_url` (String) The URL for the Windows MSI installation package
