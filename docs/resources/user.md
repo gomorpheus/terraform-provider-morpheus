@@ -18,6 +18,7 @@ resource "morpheus_user" "tf_example_user" {
   last_name             = "test"
   email                 = "test@test.local"
   password              = "PmWFEAE#92331"
+  password_expired      = true
   role_ids              = [19, 10]
   receive_notifications = true
   linux_username        = "testuser"
@@ -41,6 +42,7 @@ resource "morpheus_user" "tf_example_user" {
 
 - `first_name` (String) The first name of the user account
 - `last_name` (String) The last name of the user account
+- `password_expired` (Boolean) Set for user password expired. After the first login you will be prompted to install a new one
 - `linux_keypair_id` (Number) The private key pair id associated with the user account for accessing linux instances
 - `linux_password` (String) The password assigned to linux instances for this user account (external password changes are not detected)
 - `linux_username` (String) The username assigned to linux instances for this user account
