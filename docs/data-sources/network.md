@@ -27,6 +27,9 @@ data "morpheus_network" "vmnetwork" {
 ### Read-Only
 
 - `active` (Boolean) Whether the network is active or not
+- `cidr` (String) The cidr of the network
 - `description` (String) The description of the network
+- `display_name` (String) The display or friendly name of the network
 - `id` (Number) The ID of this resource.
+- `labels` (Set of String) The organization labels associated with the network
 - `visibility` (String) Whether the network is visible in sub-tenants or not

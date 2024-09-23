@@ -4,6 +4,7 @@ resource "morpheus_user" "tf_example_user" {
   last_name             = "test"
   email                 = "test@test.local"
   password              = "PmWFEAE#92331"
+  password_expired      = true
   role_ids              = [19, 10]
   receive_notifications = true
   linux_username        = "testuser"

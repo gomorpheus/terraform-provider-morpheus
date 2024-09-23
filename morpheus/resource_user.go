@@ -60,9 +60,10 @@ func resourceMorpheusUser() *schema.Resource {
 				Sensitive:   true,
 			},
 			"password_expired": {
-				Description: "set password expired",
+				Description: "Set user password expiration. After the first login you will be prompted to create a new password. This attribute only works during the initial user creation and will force the user to be deleted and recreated if the attribute is changed.",
 				Type:        schema.TypeBool,
 				Optional:    true,
+				ForceNew:    true,
 			},
 			"receive_notifications": {
 				Description: "Whether notification emails will be sent to the email address associated with the user account or not",
@@ -215,7 +216,6 @@ func resourceMorpheusUserRead(ctx context.Context, d *schema.ResourceData, meta 
 		d.Set("first_name", user.FirstName)
 		d.Set("last_name", user.LastName)
 		d.Set("email", user.Email)
-		//d.Set("password_expired", user.passwordExpired)
 		d.Set("receive_notifications", user.ReceiveNotifications)
 		var roleIds []int
 		for _, role := range user.Roles {
@@ -256,7 +256,7 @@ func resourceMorpheusUserUpdate(ctx context.Context, d *schema.ResourceData, met
 				"username":             d.Get("username").(string),
 				"email":                d.Get("email").(string),
 				"password":             d.Get("password").(string),
-				"passwordExpired": 		d.Get("password_expired").(bool),
+				"passwordExpired":      d.Get("password_expired").(bool),
 				"receiveNotifications": d.Get("receive_notifications").(bool),
 				"linuxUsername":        d.Get("linux_username").(string),
 				"linuxPassword":        d.Get("linux_password").(string),

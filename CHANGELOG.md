@@ -1,5 +1,13 @@
 ## UNRELEASED
 
+NOTES:
+
+* Added support for the `morpheus_networks` data source to lookup networks and return a list of network ids. [280](https://github.com/gomorpheus/terraform-provider-morpheus/issues/280)
+
+FEATURES:
+
+* **New Data Source:** `morpheus_networks`
+
 ## 0.11.0 (September 10, 2024)
 
 NOTES:
