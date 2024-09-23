@@ -26,6 +26,17 @@ func dataSourceMorpheusNetwork() *schema.Resource {
 				Optional:      true,
 				ConflictsWith: []string{"id"},
 			},
+			"display_name": {
+				Type:        schema.TypeString,
+				Description: "The display or friendly name of the network",
+				Computed:    true,
+			},
+			"labels": {
+				Type:        schema.TypeSet,
+				Description: "The organization labels associated with the network",
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+			},
 			"active": {
 				Type:        schema.TypeBool,
 				Description: "Whether the network is active or not",
@@ -34,6 +45,11 @@ func dataSourceMorpheusNetwork() *schema.Resource {
 			"description": {
 				Type:        schema.TypeString,
 				Description: "The description of the network",
+				Computed:    true,
+			},
+			"cidr": {
+				Type:        schema.TypeString,
+				Description: "The cidr of the network",
 				Computed:    true,
 			},
 			"visibility": {
@@ -81,8 +97,11 @@ func dataSourceMorpheusNetworkRead(ctx context.Context, d *schema.ResourceData, 
 	if network != nil {
 		d.SetId(int64ToString(network.ID))
 		d.Set("name", network.Name)
-		d.Set("active", network.Active)
+		d.Set("display_name", network.DisplayName)
+		d.Set("labels", network.Labels)
 		d.Set("description", network.Description)
+		d.Set("active", network.Active)
+		d.Set("cidr", network.Cidr)
 		d.Set("visibility", network.Visibility)
 	} else {
 		return diag.Errorf("Network not found in response data.") // should not happen
