@@ -36,6 +36,43 @@ func dataSourceMorpheusCloud() *schema.Resource {
 				Description: "Optional location for your cloud",
 				Computed:    true,
 			},
+			"external_id": {
+				Type:        schema.TypeString,
+				Description: "The external id of the cloud",
+				Computed:    true,
+			},
+			"inventory_level": {
+				Type:        schema.TypeString,
+				Description: "The inventory level of the cloud",
+				Computed:    true,
+			},
+			"guidance_mode": {
+				Type:        schema.TypeString,
+				Description: "The guidance mode of the cloud",
+				Computed:    true,
+			},
+			"time_zone": {
+				Type:        schema.TypeString,
+				Description: "The time zone of the cloud",
+				Computed:    true,
+			},
+			"costing_mode": {
+				Type:        schema.TypeString,
+				Description: "The costing mode of the cloud",
+				Computed:    true,
+			},
+			"labels": {
+				Type:        schema.TypeSet,
+				Description: "The organization labels associated with the cloud",
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+			},
+			"group_ids": {
+				Type:        schema.TypeSet,
+				Description: "The ids of the groups granted access to the cloud",
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeInt},
+			},
 		},
 	}
 }
@@ -78,6 +115,17 @@ func dataSourceMorpheusCloudRead(ctx context.Context, d *schema.ResourceData, me
 		d.Set("name", cloud.Name)
 		d.Set("code", cloud.Code)
 		d.Set("location", cloud.Location)
+		d.Set("external_id", cloud.ExternalID)
+		d.Set("inventory_level", cloud.InventoryLevel)
+		d.Set("guidance_mode", cloud.GuidanceMode)
+		d.Set("time_zone", cloud.TimeZone)
+		d.Set("costing_mode", cloud.CostingMode)
+		d.Set("labels", cloud.Labels)
+		var groupIds []int
+		for _, group := range cloud.Groups {
+			groupIds = append(groupIds, int(group.ID))
+		}
+		d.Set("group_ids", groupIds)
 	} else {
 		return diag.Errorf("Cloud not found in response data.") // should not happen
 	}
