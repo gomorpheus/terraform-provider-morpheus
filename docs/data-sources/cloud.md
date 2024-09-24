@@ -27,5 +27,12 @@ data "morpheus_cloud" "vspherecloud" {
 ### Read-Only
 
 - `code` (String) Optional code for use with policies
+- `costing_mode` (String) The costing mode of the cloud
+- `external_id` (String) The external id of the cloud
+- `group_ids` (Set of Number) The ids of the groups granted access to the cloud
+- `guidance_mode` (String) The guidance mode of the cloud
 - `id` (Number) The ID of this resource.
+- `inventory_level` (String) The inventory level of the cloud
+- `labels` (Set of String) The organization labels associated with the cloud
 - `location` (String) Optional location for your cloud
+- `time_zone` (String) The time zone of the cloud
