@@ -227,6 +227,12 @@ func resourceForm() *schema.Resource {
 							Optional:    true,
 							Computed:    true,
 						},
+						"remove_select_option": {
+							Type:        schema.TypeBool,
+							Description: "For Select List-type Inputs. When marked, the Input will default to the first item in the list rather than to an empty selection",
+							Optional:    true,
+							Computed:    true,
+						},
 						"allow_duplicates": {
 							Type:        schema.TypeBool,
 							Description: "Whether duplicate selections are allowed",
@@ -486,6 +492,12 @@ func resourceForm() *schema.Resource {
 										Optional:    true,
 										Computed:    true,
 									},
+									"remove_select_option": {
+										Type:        schema.TypeBool,
+										Description: "For Select List-type Inputs. When marked, the Input will default to the first item in the list rather than to an empty selection",
+										Optional:    true,
+										Computed:    true,
+									},
 									"allow_duplicates": {
 										Type:        schema.TypeBool,
 										Description: "Whether duplicate selections are allowed",
@@ -608,6 +620,7 @@ func resourceFormCreate(ctx context.Context, d *schema.ResourceData, meta interf
 					config["multiSelect"] = optionTypeConfig["allow_multiple_selections"]
 					config["sortable"] = optionTypeConfig["sortable"]
 					row["config"] = config
+					row["noBlank"] = optionTypeConfig["remove_select_option"]
 				case "password":
 					config := make(map[string]interface{})
 					config["canPeek"] = optionTypeConfig["allow_password_peek"]
@@ -724,6 +737,7 @@ func resourceFormCreate(ctx context.Context, d *schema.ResourceData, meta interf
 							config["multiSelect"] = optionTypeConfig["allow_multiple_selections"]
 							config["sortable"] = optionTypeConfig["sortable"]
 							row["config"] = config
+							row["noBlank"] = optionTypeConfig["remove_select_option"]
 						case "password":
 							config := make(map[string]interface{})
 							config["canPeek"] = optionTypeConfig["allow_password_peek"]
@@ -894,6 +908,7 @@ func resourceFormRead(ctx context.Context, d *schema.ResourceData, meta interfac
 					row["allow_multiple_selections"] = optionType.Config.MultiSelect
 					row["option_list_id"] = optionType.OptionList.ID
 				}
+				row["remove_select_option"] = optionType.NoBlank
 				row["name"] = optionType.Name
 				row["description"] = optionType.Description
 				row["code"] = optionType.Code
@@ -970,6 +985,7 @@ func resourceFormRead(ctx context.Context, d *schema.ResourceData, meta interfac
 							optionTypeRow["allow_multiple_selections"] = optionType.Config.MultiSelect
 							optionTypeRow["option_list_id"] = optionType.OptionList.ID
 						}
+						optionTypeRow["remove_select_option"] = optionType.NoBlank
 						optionTypeRow["name"] = optionType.Name
 						optionTypeRow["description"] = optionType.Description
 						optionTypeRow["code"] = optionType.Code
@@ -1067,6 +1083,7 @@ func resourceFormUpdate(ctx context.Context, d *schema.ResourceData, meta interf
 					config["multiSelect"] = optionTypeConfig["allow_multiple_selections"]
 					config["sortable"] = optionTypeConfig["sortable"]
 					row["config"] = config
+					row["noBlank"] = optionTypeConfig["remove_select_option"]
 				case "password":
 					config := make(map[string]interface{})
 					config["canPeek"] = optionTypeConfig["allow_password_peek"]
@@ -1183,6 +1200,7 @@ func resourceFormUpdate(ctx context.Context, d *schema.ResourceData, meta interf
 							config["multiSelect"] = optionTypeConfig["allow_multiple_selections"]
 							config["sortable"] = optionTypeConfig["sortable"]
 							row["config"] = config
+							row["noBlank"] = optionTypeConfig["remove_select_option"]
 						case "password":
 							config := make(map[string]interface{})
 							config["canPeek"] = optionTypeConfig["allow_password_peek"]
