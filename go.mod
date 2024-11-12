@@ -2,6 +2,8 @@ module github.com/gomorpheus/terraform-provider-morpheus
 
 go 1.21
 
+replace github.com/gomorpheus/morpheus-go-sdk => github.com/jouve/morpheus-go-sdk v0.0.0-20241112115123-56023684993f
+
 require (
 	github.com/gomorpheus/morpheus-go-sdk v0.5.1
 	github.com/hashicorp/terraform-plugin-docs v0.19.4
@@ -82,6 +84,3 @@ require (
 	gopkg.in/yaml.v2 v2.3.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-
-// voodoo
-//replace github.com/gomorpheus/morpheus-go-sdk => ../morpheus-go-sdk

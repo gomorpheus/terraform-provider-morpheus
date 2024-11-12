@@ -87,6 +87,7 @@ func resourceUserRoleCreate(ctx context.Context, d *schema.ResourceData, meta in
 	roleDefinition.GlobalVDIPoolAccess = data.DefaultVdiPoolPermission
 	roleDefinition.GlobalWorkflowAccess = data.DefaultWorkflowPermission
 	roleDefinition.GlobalTaskAccess = data.DefaultTaskPermission
+	roleDefinition.GlobalPersonaAccess = data.DefaultPersonaPermission
 	roleDefinition.FeaturePermissions = data.FeaturePermissions
 	roleDefinition.GroupPermissions = data.GroupPermissions
 	roleDefinition.InstanceTypePermissions = data.InstanceTypePermissions
@@ -231,6 +232,7 @@ func resourceUserRoleRead(ctx context.Context, d *schema.ResourceData, meta inte
 	permissionSet.DefaultVdiPoolPermission = role.GlobalVDIPoolAccess
 	permissionSet.DefaultWorkflowPermission = role.GlobalTaskSetAccess
 	permissionSet.DefaultTaskPermission = role.GlobalTaskAccess
+	permissionSet.DefaultPersonaPermission = role.GlobalPersonaAccess
 
 	// Feature Permissions
 	var featurePermissions []featurePermission
@@ -405,6 +407,7 @@ func resourceUserRoleUpdate(ctx context.Context, d *schema.ResourceData, meta in
 	roleDefinition.GlobalVDIPoolAccess = data.DefaultVdiPoolPermission
 	roleDefinition.GlobalWorkflowAccess = data.DefaultWorkflowPermission
 	roleDefinition.GlobalTaskAccess = data.DefaultTaskPermission
+	roleDefinition.GlobalPersonaAccess = data.DefaultPersonaPermission
 	roleDefinition.FeaturePermissions = data.FeaturePermissions
 	roleDefinition.GroupPermissions = data.GroupPermissions
 	roleDefinition.InstanceTypePermissions = data.InstanceTypePermissions
