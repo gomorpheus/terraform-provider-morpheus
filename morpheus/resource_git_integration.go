@@ -5,13 +5,17 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strings"
+	"time"
 
 	"log"
 
 	"github.com/gomorpheus/morpheus-go-sdk"
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/retry"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
@@ -150,7 +154,36 @@ func resourceGitIntegrationCreate(ctx context.Context, d *schema.ResourceData, m
 	// Successfully created resource, now set id
 	d.SetId(int64ToString(integrationResult.ID))
 
-	resourceGitIntegrationRead(ctx, d, meta)
+	if err := retry.RetryContext(ctx, 1*time.Minute, func() *retry.RetryError {
+		resp, err := client.Execute(&morpheus.Request{
+			Method:      "GET",
+			Path:        fmt.Sprintf("/api/options/codeRepositories?integrationId=%d", integrationResult.ID),
+			QueryParams: map[string]string{},
+		})
+		if err != nil {
+			tflog.Error(ctx, "API", map[string]any{"resp": resp.String(), "err": err})
+			return retry.NonRetryableError(err)
+		}
+		tflog.Info(ctx, "API", map[string]any{"resp": resp.String()})
+
+		var itemResponsePayload CodeRepositories
+		if err := json.Unmarshal(resp.Body, &itemResponsePayload); err != nil {
+			return retry.NonRetryableError(err)
+		}
+		repo_ids := make(map[string]int)
+		for _, v := range itemResponsePayload.Data {
+			repo_ids[v.Name] = v.Value
+		}
+		if len(repo_ids) == 0 {
+			return retry.RetryableError(errors.New("expected codeRepositories to be created"))
+		}
+		d.Set("repository_ids", repo_ids)
+		return nil
+	}); err != nil {
+		return diag.FromErr(err)
+	}
+
+	diags = append(diags, resourceGitIntegrationRead(ctx, d, meta)...)
 	return diags
 }
 
