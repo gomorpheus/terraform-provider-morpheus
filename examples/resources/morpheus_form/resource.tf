@@ -160,4 +160,80 @@ resource "morpheus_form" "tf_example_form" {
     //    visibility_field     = "testing"
   }
 
+  option_type {
+    name        = "group_name"
+    code        = "group_name"
+    field_name  = "f_group"
+    field_label = "Name of the group"
+    type        = "group"
+    required    = true
+  }
+
+  option_type {
+    name        = "cloud_provider"
+    code        = "cloud_provider"
+    field_name  = "f_cloud"
+    field_label = "Provider of the Cloud"
+    type        = "cloud"
+    required    = true
+    group_code = "group_name"
+  }
+
+  field_group {
+    name        = "Configuration"
+
+    option_type {
+      name        = "debian_layout"
+      code        = "debian_layout"
+      field_name  = "f_layout"
+      field_label = "Template"
+      type        = "layout"
+      instance_type_code = "debian"
+      required    = true
+      group_code = "group_name"
+      cloud_code = "cloud_provider"
+    }
+
+    option_type {
+      name        = "plan_choice"
+      code        = "plan_choice"
+      field_name  = "f_plan"
+      field_label = "Gabarit"
+      help_block = "Gabarit"
+      type        = "plan"
+      required    = true
+      group_code = "group_name"
+      cloud_code = "cloud_provider"
+      layout_code = "debian_layout" 
+    }
+
+    option_type {
+      name        = "labels"
+      code        = "labels"
+      field_name  = "f_tags"
+      field_label = "Labels"
+      help_block = "Labels"
+      type        = "tag"
+      required    = false
+      default_value = "[\n {\n  \"name\": \"lab\",\n  \"value\": \"sandbox\"\n }\n]"
+      
+    }
+  }
+
+  field_group {
+    name        = "Exposition"
+
+    option_type {
+      name        = "network_interface"
+      code        = "network_interface"
+      field_name  = "f_network"
+      field_label = "Network"
+      type        = "networkManager"
+      required    = false
+      group_code = "group_name"
+      cloud_code = "cloud_provider"
+      layout_code = "debian_layout"
+    }
+  }
+
 }
