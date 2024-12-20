@@ -2,11 +2,12 @@ module github.com/gomorpheus/terraform-provider-morpheus
 
 go 1.21
 
-replace github.com/gomorpheus/morpheus-go-sdk => github.com/jouve/morpheus-go-sdk v0.0.0-20241112115123-56023684993f
+replace github.com/gomorpheus/morpheus-go-sdk => github.com/jouve/morpheus-go-sdk v0.0.0-20241220093304-84787ec2a93a
 
 require (
 	github.com/gomorpheus/morpheus-go-sdk v0.5.1
 	github.com/hashicorp/terraform-plugin-docs v0.19.4
+	github.com/hashicorp/terraform-plugin-log v0.9.0
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.34.0
 )
 
@@ -44,7 +45,6 @@ require (
 	github.com/hashicorp/terraform-exec v0.21.0 // indirect
 	github.com/hashicorp/terraform-json v0.22.1 // indirect
 	github.com/hashicorp/terraform-plugin-go v0.23.0 // indirect
-	github.com/hashicorp/terraform-plugin-log v0.9.0 // indirect
 	github.com/hashicorp/terraform-registry-address v0.2.3 // indirect
 	github.com/hashicorp/terraform-svchost v0.1.1 // indirect
 	github.com/hashicorp/yamux v0.1.1 // indirect

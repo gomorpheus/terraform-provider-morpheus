@@ -177,7 +177,6 @@ func resourceGitIntegrationCreate(ctx context.Context, d *schema.ResourceData, m
 		if len(repo_ids) == 0 {
 			return retry.RetryableError(errors.New("expected codeRepositories to be created"))
 		}
-		d.Set("repository_ids", repo_ids)
 		return nil
 	}); err != nil {
 		return diag.FromErr(err)

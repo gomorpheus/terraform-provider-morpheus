@@ -85,7 +85,7 @@ func resourceForm() *schema.Resource {
 						},
 						"type": {
 							Type:         schema.TypeString,
-							Description:  "The type of option type to add to the form (checkbox, hidden, number, password, radio, select, text, textarea, byteSize, code-editor, fileContent, logoSelector, textArray, typeahead, environment)",
+							Description:  "The type of option type to add to the form (checkbox, hidden, number, password, radio, select, text, textarea, byteSize, code-editor, fileContent, logoSelector, textArray, typeahead, environment, group, cloud, layout, plan, tag, networkManager)",
 							ValidateFunc: validation.StringInSlice([]string{"checkbox", "hidden", "number", "password", "radio", "select", "text", "textarea", "byteSize", "code-editor", "fileContent", "logoSelector", "textArray", "typeahead", "environment", "group", "cloud", "layout", "plan", "tag", "networkManager"}, false),
 							Optional:     true,
 						},
