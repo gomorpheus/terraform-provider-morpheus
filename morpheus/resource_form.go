@@ -3,6 +3,7 @@ package morpheus
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"strconv"
 
 	"log"
@@ -85,7 +86,7 @@ func resourceForm() *schema.Resource {
 						"type": {
 							Type:         schema.TypeString,
 							Description:  "The type of option type to add to the form (checkbox, hidden, number, password, radio, select, text, textarea, byteSize, code-editor, fileContent, logoSelector, textArray, typeahead, environment)",
-							ValidateFunc: validation.StringInSlice([]string{"checkbox", "hidden", "number", "password", "radio", "select", "text", "textarea", "byteSize", "code-editor", "fileContent", "logoSelector", "textArray", "typeahead", "environment"}, false),
+							ValidateFunc: validation.StringInSlice([]string{"checkbox", "hidden", "number", "password", "radio", "select", "text", "textarea", "byteSize", "code-editor", "fileContent", "logoSelector", "textArray", "typeahead", "environment", "group", "cloud", "layout", "plan", "tag", "networkManager"}, false),
 							Optional:     true,
 						},
 						"option_list_id": {
@@ -275,6 +276,30 @@ func resourceForm() *schema.Resource {
 							Optional:    true,
 							Computed:    true,
 						},
+						"cloud_code": {
+							Type:        schema.TypeString,
+							Description: "The field name to bind this option type to a cloud",
+							Optional:    true,
+							Computed:    true,
+						},
+						"group_code": {
+							Type:        schema.TypeString,
+							Description: "The field name to bind this option type to a group",
+							Optional:    true,
+							Computed:    true,
+						},
+						"layout_code": {
+							Type:        schema.TypeString,
+							Description: "The field name to bind this option type to a layout",
+							Optional:    true,
+							Computed:    true,
+						},
+						"instance_type_code": {
+							Type:        schema.TypeString,
+							Description: "The instance type code to filter layouts",
+							Optional:    true,
+							Computed:    true,
+						},
 					},
 				},
 			},
@@ -350,7 +375,7 @@ func resourceForm() *schema.Resource {
 									"type": {
 										Type:         schema.TypeString,
 										Description:  "The type of option type to add to the field group (checkbox, hidden, number, password, radio, select, text, textarea, byteSize, code-editor, fileContent, logoSelector, textArray, typeahead, environment)",
-										ValidateFunc: validation.StringInSlice([]string{"checkbox", "hidden", "number", "password", "radio", "select", "text", "textarea", "byteSize", "code-editor", "fileContent", "logoSelector", "textArray", "typeahead", "environment"}, false),
+										ValidateFunc: validation.StringInSlice([]string{"checkbox", "hidden", "number", "password", "radio", "select", "text", "textarea", "byteSize", "code-editor", "fileContent", "logoSelector", "textArray", "typeahead", "environment", "group", "cloud", "layout", "plan", "tag", "networkManager"}, false),
 										Optional:     true,
 									},
 									"option_list_id": {
@@ -540,6 +565,30 @@ func resourceForm() *schema.Resource {
 										Optional:    true,
 										Computed:    true,
 									},
+									"cloud_code": {
+										Type:        schema.TypeString,
+										Description: "The field name to bind this option type to a cloud",
+										Optional:    true,
+										Computed:    true,
+									},
+									"group_code": {
+										Type:        schema.TypeString,
+										Description: "The field name to bind this option type to a group",
+										Optional:    true,
+										Computed:    true,
+									},
+									"layout_code": {
+										Type:        schema.TypeString,
+										Description: "The field name to bind this option type to a layout",
+										Optional:    true,
+										Computed:    true,
+									},
+									"instance_type_code": {
+										Type:        schema.TypeString,
+										Description: "The instance type code to filter layouts",
+										Optional:    true,
+										Computed:    true,
+									},
 								},
 							},
 						},
@@ -648,6 +697,66 @@ func resourceFormCreate(ctx context.Context, d *schema.ResourceData, meta interf
 					row["defaultValue"] = optionTypeConfig["default_value"]
 				case "text":
 					row["defaultValue"] = optionTypeConfig["default_value"]
+				case "group":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+				case "cloud":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+					config := make(map[string]interface{})
+					if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
+						config["groupFieldType"] = "field"
+						config["group"] = optionTypeConfig["group_code"]
+					}
+					row["config"] = config
+				case "layout":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+					config := make(map[string]interface{})
+					if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
+						config["groupFieldType"] = "field"
+						config["groupField"] = optionTypeConfig["group_code"]
+					}
+					if optionTypeConfig["cloud_code"] != nil && optionTypeConfig["cloud_code"].(string) != "" {
+						config["cloudFieldType"] = "field"
+						config["cloudField"] = optionTypeConfig["cloud_code"]
+					}
+					if optionTypeConfig["instance_type_code"] != nil && optionTypeConfig["instance_type_code"].(string) != "" {
+						config["instanceTypeFieldType"] = "value"
+						config["instanceTypeCode"] = optionTypeConfig["instance_type_code"]
+					}
+					row["config"] = config
+				case "plan":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+					config := make(map[string]interface{})
+					if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
+						config["groupFieldType"] = "field"
+						config["groupField"] = optionTypeConfig["group_code"]
+					}
+					if optionTypeConfig["cloud_code"] != nil && optionTypeConfig["cloud_code"].(string) != "" {
+						config["cloudFieldType"] = "field"
+						config["cloudField"] = optionTypeConfig["cloud_code"]
+					}
+					if optionTypeConfig["layout_code"] != nil && optionTypeConfig["layout_code"].(string) != "" {
+						config["layoutFieldType"] = "field"
+						config["layoutField"] = optionTypeConfig["layout_code"]
+					}
+					row["config"] = config
+				case "tag":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+				case "networkManager":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+					config := make(map[string]interface{})
+					if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
+						config["groupFieldType"] = "field"
+						config["groupField"] = optionTypeConfig["group_code"]
+					}
+					if optionTypeConfig["cloud_code"] != nil && optionTypeConfig["cloud_code"].(string) != "" {
+						config["cloudFieldType"] = "field"
+						config["cloudField"] = optionTypeConfig["cloud_code"]
+					}
+					if optionTypeConfig["layout_code"] != nil && optionTypeConfig["layout_code"].(string) != "" {
+						config["layoutFieldType"] = "field"
+						config["layoutField"] = optionTypeConfig["layout_code"]
+					}
+					row["config"] = config
 				}
 				row["required"] = optionTypeConfig["required"]
 				row["exportMeta"] = optionTypeConfig["export_meta"]
@@ -765,6 +874,66 @@ func resourceFormCreate(ctx context.Context, d *schema.ResourceData, meta interf
 							row["defaultValue"] = optionTypeConfig["default_value"]
 						case "text":
 							row["defaultValue"] = optionTypeConfig["default_value"]
+							// case "group":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+						case "cloud":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+							config := make(map[string]interface{})
+							if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
+								config["groupFieldType"] = "field"
+								config["group"] = optionTypeConfig["group_code"]
+							}
+							row["config"] = config
+						case "layout":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+							config := make(map[string]interface{})
+							if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
+								config["groupFieldType"] = "field"
+								config["groupField"] = optionTypeConfig["group_code"]
+							}
+							if optionTypeConfig["cloud_code"] != nil && optionTypeConfig["cloud_code"].(string) != "" {
+								config["cloudFieldType"] = "field"
+								config["cloudField"] = optionTypeConfig["cloud_code"]
+							}
+							if optionTypeConfig["instance_type_code"] != nil && optionTypeConfig["instance_type_code"].(string) != "" {
+								config["instanceTypeFieldType"] = "value"
+								config["instanceTypeCode"] = optionTypeConfig["instance_type_code"]
+							}
+							row["config"] = config
+						case "plan":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+							config := make(map[string]interface{})
+							if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
+								config["groupFieldType"] = "field"
+								config["groupField"] = optionTypeConfig["group_code"]
+							}
+							if optionTypeConfig["cloud_code"] != nil && optionTypeConfig["cloud_code"].(string) != "" {
+								config["cloudFieldType"] = "field"
+								config["cloudField"] = optionTypeConfig["cloud_code"]
+							}
+							if optionTypeConfig["layout_code"] != nil && optionTypeConfig["layout_code"].(string) != "" {
+								config["layoutFieldType"] = "field"
+								config["layoutField"] = optionTypeConfig["layout_code"]
+							}
+							row["config"] = config
+						case "tag":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+						case "networkManager":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+							config := make(map[string]interface{})
+							if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
+								config["groupFieldType"] = "field"
+								config["groupField"] = optionTypeConfig["group_code"]
+							}
+							if optionTypeConfig["cloud_code"] != nil && optionTypeConfig["cloud_code"].(string) != "" {
+								config["cloudFieldType"] = "field"
+								config["cloudField"] = optionTypeConfig["cloud_code"]
+							}
+							if optionTypeConfig["layout_code"] != nil && optionTypeConfig["layout_code"].(string) != "" {
+								config["layoutFieldType"] = "field"
+								config["layoutField"] = optionTypeConfig["layout_code"]
+							}
+							row["config"] = config
 						}
 						row["required"] = optionTypeConfig["required"]
 						row["exportMeta"] = optionTypeConfig["export_meta"]
@@ -907,6 +1076,25 @@ func resourceFormRead(ctx context.Context, d *schema.ResourceData, meta interfac
 					row["custom_data"] = optionType.Config.CustomData
 					row["allow_multiple_selections"] = optionType.Config.MultiSelect
 					row["option_list_id"] = optionType.OptionList.ID
+				//Complex types
+				case "group":
+					//nothing
+				case "cloud":
+					row["group_code"] = optionType.Config.Group
+				case "layout":
+					row["group_code"] = optionType.Config.GroupField
+					row["cloud_code"] = optionType.Config.CloudField
+					row["instance_type_code"] = optionType.Config.InstanceTypeCode
+				case "plan":
+					row["group_code"] = optionType.Config.GroupField
+					row["cloud_code"] = optionType.Config.CloudField
+					row["layout_code"] = optionType.Config.LayoutField
+				case "tag":
+					//nothing
+				case "networkManager":
+					row["group_code"] = optionType.Config.GroupField
+					row["cloud_code"] = optionType.Config.CloudField
+					row["layout_code"] = optionType.Config.LayoutField
 				}
 				row["remove_select_option"] = optionType.NoBlank
 				row["name"] = optionType.Name
@@ -915,7 +1103,11 @@ func resourceFormRead(ctx context.Context, d *schema.ResourceData, meta interfac
 				row["type"] = optionType.Type
 				row["field_label"] = optionType.FieldLabel
 				row["field_name"] = optionType.FieldName
-				row["default_value"] = optionType.DefaultValue
+				if optionType.Config.DefaultValue != "" {
+					row["default_value"] = optionType.Config.DefaultValue
+				} else {
+					row["default_value"] = optionType.DefaultValue
+				}
 				row["placeholder"] = optionType.PlaceHolder
 				row["help_block"] = optionType.HelpBlock
 				row["required"] = optionType.Required
@@ -928,9 +1120,11 @@ func resourceFormRead(ctx context.Context, d *schema.ResourceData, meta interfac
 				row["visibility_field"] = optionType.VisibleOnCode
 				row["verify_pattern"] = optionType.VerifyPattern
 				row["require_field"] = optionType.RequireOnCode
-			} else {
-				row["id"] = optionType.ID
 			}
+			//always save ID from JSON
+			fmt.Printf("%v ---> %v\n", optionType.Name, optionType.ID)
+			row["id"] = optionType.ID
+
 			optionTypes = append(optionTypes, row)
 		}
 	}
@@ -984,6 +1178,25 @@ func resourceFormRead(ctx context.Context, d *schema.ResourceData, meta interfac
 							optionTypeRow["custom_data"] = optionType.Config.CustomData
 							optionTypeRow["allow_multiple_selections"] = optionType.Config.MultiSelect
 							optionTypeRow["option_list_id"] = optionType.OptionList.ID
+						//Complex types
+						case "group":
+							//nothing
+						case "cloud":
+							optionTypeRow["group_code"] = optionType.Config.Group
+						case "layout":
+							optionTypeRow["group_code"] = optionType.Config.GroupField
+							optionTypeRow["cloud_code"] = optionType.Config.CloudField
+							optionTypeRow["instance_type_code"] = optionType.Config.InstanceTypeCode
+						case "plan":
+							optionTypeRow["group_code"] = optionType.Config.GroupField
+							optionTypeRow["cloud_code"] = optionType.Config.CloudField
+							optionTypeRow["layout_code"] = optionType.Config.LayoutField
+						case "tag":
+							//nothing
+						case "networkManager":
+							optionTypeRow["group_code"] = optionType.Config.GroupField
+							optionTypeRow["cloud_code"] = optionType.Config.CloudField
+							optionTypeRow["layout_code"] = optionType.Config.LayoutField
 						}
 						optionTypeRow["remove_select_option"] = optionType.NoBlank
 						optionTypeRow["name"] = optionType.Name
@@ -992,7 +1205,11 @@ func resourceFormRead(ctx context.Context, d *schema.ResourceData, meta interfac
 						optionTypeRow["type"] = optionType.Type
 						optionTypeRow["field_label"] = optionType.FieldLabel
 						optionTypeRow["field_name"] = optionType.FieldName
-						optionTypeRow["default_value"] = optionType.DefaultValue
+						if optionType.Config.DefaultValue != "" {
+							optionTypeRow["default_value"] = optionType.Config.DefaultValue
+						} else {
+							optionTypeRow["default_value"] = optionType.DefaultValue
+						}
 						optionTypeRow["placeholder"] = optionType.PlaceHolder
 						optionTypeRow["help_block"] = optionType.HelpBlock
 						optionTypeRow["required"] = optionType.Required
@@ -1005,9 +1222,10 @@ func resourceFormRead(ctx context.Context, d *schema.ResourceData, meta interfac
 						optionTypeRow["visibility_field"] = optionType.VisibleOnCode
 						optionTypeRow["verify_pattern"] = optionType.VerifyPattern
 						optionTypeRow["require_field"] = optionType.RequireOnCode
-					} else {
-						optionTypeRow["id"] = optionType.ID
 					}
+					//always save ID from JSON
+					optionTypeRow["id"] = optionType.ID
+
 					fgOptionTypes = append(fgOptionTypes, optionTypeRow)
 				}
 			}
@@ -1111,6 +1329,66 @@ func resourceFormUpdate(ctx context.Context, d *schema.ResourceData, meta interf
 					row["defaultValue"] = optionTypeConfig["default_value"]
 				case "text":
 					row["defaultValue"] = optionTypeConfig["default_value"]
+				case "group":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+				case "cloud":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+					config := make(map[string]interface{})
+					if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
+						config["groupFieldType"] = "field"
+						config["group"] = optionTypeConfig["group_code"]
+					}
+					row["config"] = config
+				case "layout":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+					config := make(map[string]interface{})
+					if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
+						config["groupFieldType"] = "field"
+						config["groupField"] = optionTypeConfig["group_code"]
+					}
+					if optionTypeConfig["cloud_code"] != nil && optionTypeConfig["cloud_code"].(string) != "" {
+						config["cloudFieldType"] = "field"
+						config["cloudField"] = optionTypeConfig["cloud_code"]
+					}
+					if optionTypeConfig["instance_type_code"] != nil && optionTypeConfig["instance_type_code"].(string) != "" {
+						config["instanceTypeFieldType"] = "value"
+						config["instanceTypeCode"] = optionTypeConfig["instance_type_code"]
+					}
+					row["config"] = config
+				case "plan":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+					config := make(map[string]interface{})
+					if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
+						config["groupFieldType"] = "field"
+						config["groupField"] = optionTypeConfig["group_code"]
+					}
+					if optionTypeConfig["cloud_code"] != nil && optionTypeConfig["cloud_code"].(string) != "" {
+						config["cloudFieldType"] = "field"
+						config["cloudField"] = optionTypeConfig["cloud_code"]
+					}
+					if optionTypeConfig["layout_code"] != nil && optionTypeConfig["layout_code"].(string) != "" {
+						config["layoutFieldType"] = "field"
+						config["layoutField"] = optionTypeConfig["layout_code"]
+					}
+					row["config"] = config
+				case "tag":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+				case "networkManager":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+					config := make(map[string]interface{})
+					if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
+						config["groupFieldType"] = "field"
+						config["groupField"] = optionTypeConfig["group_code"]
+					}
+					if optionTypeConfig["cloud_code"] != nil && optionTypeConfig["cloud_code"].(string) != "" {
+						config["cloudFieldType"] = "field"
+						config["cloudField"] = optionTypeConfig["cloud_code"]
+					}
+					if optionTypeConfig["layout_code"] != nil && optionTypeConfig["layout_code"].(string) != "" {
+						config["layoutFieldType"] = "field"
+						config["layoutField"] = optionTypeConfig["layout_code"]
+					}
+					row["config"] = config
 				}
 				row["required"] = optionTypeConfig["required"]
 				row["exportMeta"] = optionTypeConfig["export_meta"]
@@ -1228,6 +1506,66 @@ func resourceFormUpdate(ctx context.Context, d *schema.ResourceData, meta interf
 							row["defaultValue"] = optionTypeConfig["default_value"]
 						case "text":
 							row["defaultValue"] = optionTypeConfig["default_value"]
+						case "group":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+						case "cloud":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+							config := make(map[string]interface{})
+							if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
+								config["groupFieldType"] = "field"
+								config["group"] = optionTypeConfig["group_code"]
+							}
+							row["config"] = config
+						case "layout":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+							config := make(map[string]interface{})
+							if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
+								config["groupFieldType"] = "field"
+								config["groupField"] = optionTypeConfig["group_code"]
+							}
+							if optionTypeConfig["cloud_code"] != nil && optionTypeConfig["cloud_code"].(string) != "" {
+								config["cloudFieldType"] = "field"
+								config["cloudField"] = optionTypeConfig["cloud_code"]
+							}
+							if optionTypeConfig["instance_type_code"] != nil && optionTypeConfig["instance_type_code"].(string) != "" {
+								config["instanceTypeFieldType"] = "value"
+								config["instanceTypeCode"] = optionTypeConfig["instance_type_code"]
+							}
+							row["config"] = config
+						case "plan":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+							config := make(map[string]interface{})
+							if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
+								config["groupFieldType"] = "field"
+								config["groupField"] = optionTypeConfig["group_code"]
+							}
+							if optionTypeConfig["cloud_code"] != nil && optionTypeConfig["cloud_code"].(string) != "" {
+								config["cloudFieldType"] = "field"
+								config["cloudField"] = optionTypeConfig["cloud_code"]
+							}
+							if optionTypeConfig["layout_code"] != nil && optionTypeConfig["layout_code"].(string) != "" {
+								config["layoutFieldType"] = "field"
+								config["layoutField"] = optionTypeConfig["layout_code"]
+							}
+							row["config"] = config
+						case "tag":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+						case "networkManager":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+							config := make(map[string]interface{})
+							if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
+								config["groupFieldType"] = "field"
+								config["groupField"] = optionTypeConfig["group_code"]
+							}
+							if optionTypeConfig["cloud_code"] != nil && optionTypeConfig["cloud_code"].(string) != "" {
+								config["cloudFieldType"] = "field"
+								config["cloudField"] = optionTypeConfig["cloud_code"]
+							}
+							if optionTypeConfig["layout_code"] != nil && optionTypeConfig["layout_code"].(string) != "" {
+								config["layoutFieldType"] = "field"
+								config["layoutField"] = optionTypeConfig["layout_code"]
+							}
+							row["config"] = config
 						}
 						row["required"] = optionTypeConfig["required"]
 						row["exportMeta"] = optionTypeConfig["export_meta"]
