@@ -85,8 +85,8 @@ func resourceForm() *schema.Resource {
 						},
 						"type": {
 							Type:         schema.TypeString,
-							Description:  "The type of option type to add to the form (checkbox, hidden, number, password, radio, select, text, textarea, byteSize, code-editor, fileContent, logoSelector, textArray, typeahead, environment, group, cloud, layout, plan, tag, networkManager)",
-							ValidateFunc: validation.StringInSlice([]string{"checkbox", "hidden", "number", "password", "radio", "select", "text", "textarea", "byteSize", "code-editor", "fileContent", "logoSelector", "textArray", "typeahead", "environment", "group", "cloud", "layout", "plan", "tag", "networkManager"}, false),
+							Description:  "The type of option type to add to the form (checkbox, hidden, number, password, radio, select, text, textarea, byteSize, code-editor, fileContent, logoSelector, textArray, typeahead, environment, group, cloud, layout, plan, tag, networkManager, resourcePool)",
+							ValidateFunc: validation.StringInSlice([]string{"checkbox", "hidden", "number", "password", "radio", "select", "text", "textarea", "byteSize", "code-editor", "fileContent", "logoSelector", "textArray", "typeahead", "environment", "group", "cloud", "layout", "plan", "tag", "networkManager", "resourcePool"}, false),
 							Optional:     true,
 						},
 						"option_list_id": {
@@ -300,6 +300,18 @@ func resourceForm() *schema.Resource {
 							Optional:    true,
 							Computed:    true,
 						},
+						"plan_code": {
+							Type:        schema.TypeString,
+							Description: "The instance type code to filter layouts",
+							Optional:    true,
+							Computed:    true,
+						},
+						"pool_code": {
+							Type:        schema.TypeString,
+							Description: "The instance type code to filter layouts",
+							Optional:    true,
+							Computed:    true,
+						},
 					},
 				},
 			},
@@ -375,7 +387,7 @@ func resourceForm() *schema.Resource {
 									"type": {
 										Type:         schema.TypeString,
 										Description:  "The type of option type to add to the field group (checkbox, hidden, number, password, radio, select, text, textarea, byteSize, code-editor, fileContent, logoSelector, textArray, typeahead, environment)",
-										ValidateFunc: validation.StringInSlice([]string{"checkbox", "hidden", "number", "password", "radio", "select", "text", "textarea", "byteSize", "code-editor", "fileContent", "logoSelector", "textArray", "typeahead", "environment", "group", "cloud", "layout", "plan", "tag", "networkManager"}, false),
+										ValidateFunc: validation.StringInSlice([]string{"checkbox", "hidden", "number", "password", "radio", "select", "text", "textarea", "byteSize", "code-editor", "fileContent", "logoSelector", "textArray", "typeahead", "environment", "group", "cloud", "layout", "plan", "tag", "networkManager", "resourcePool"}, false),
 										Optional:     true,
 									},
 									"option_list_id": {
@@ -589,6 +601,18 @@ func resourceForm() *schema.Resource {
 										Optional:    true,
 										Computed:    true,
 									},
+									"plan_code": {
+										Type:        schema.TypeString,
+										Description: "The instance type code to filter layouts",
+										Optional:    true,
+										Computed:    true,
+									},
+									"pool_code": {
+										Type:        schema.TypeString,
+										Description: "The instance type code to filter layouts",
+										Optional:    true,
+										Computed:    true,
+									},
 								},
 							},
 						},
@@ -739,6 +763,26 @@ func resourceFormCreate(ctx context.Context, d *schema.ResourceData, meta interf
 						config["layoutField"] = optionTypeConfig["layout_code"]
 					}
 					row["config"] = config
+				case "resourcePool":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+					config := make(map[string]interface{})
+					if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
+						config["groupFieldType"] = "field"
+						config["groupField"] = optionTypeConfig["group_code"]
+					}
+					if optionTypeConfig["cloud_code"] != nil && optionTypeConfig["cloud_code"].(string) != "" {
+						config["cloudFieldType"] = "field"
+						config["cloudField"] = optionTypeConfig["cloud_code"]
+					}
+					if optionTypeConfig["layout_code"] != nil && optionTypeConfig["layout_code"].(string) != "" {
+						config["layoutFieldType"] = "field"
+						config["layoutField"] = optionTypeConfig["layout_code"]
+					}
+					if optionTypeConfig["plan_code"] != nil && optionTypeConfig["plan_code"].(string) != "" {
+						config["planFieldType"] = "field"
+						config["planField"] = optionTypeConfig["plan_code"]
+					}
+					row["config"] = config
 				case "tag":
 					row["defaultValue"] = optionTypeConfig["default_value"]
 				case "networkManager":
@@ -755,6 +799,10 @@ func resourceFormCreate(ctx context.Context, d *schema.ResourceData, meta interf
 					if optionTypeConfig["layout_code"] != nil && optionTypeConfig["layout_code"].(string) != "" {
 						config["layoutFieldType"] = "field"
 						config["layoutField"] = optionTypeConfig["layout_code"]
+					}
+					if optionTypeConfig["pool_code"] != nil && optionTypeConfig["pool_code"].(string) != "" {
+						config["poolFieldType"] = "field"
+						config["poolField"] = optionTypeConfig["pool_code"]
 					}
 					row["config"] = config
 				}
@@ -916,6 +964,26 @@ func resourceFormCreate(ctx context.Context, d *schema.ResourceData, meta interf
 								config["layoutField"] = optionTypeConfig["layout_code"]
 							}
 							row["config"] = config
+						case "resourcePool":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+							config := make(map[string]interface{})
+							if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
+								config["groupFieldType"] = "field"
+								config["groupField"] = optionTypeConfig["group_code"]
+							}
+							if optionTypeConfig["cloud_code"] != nil && optionTypeConfig["cloud_code"].(string) != "" {
+								config["cloudFieldType"] = "field"
+								config["cloudField"] = optionTypeConfig["cloud_code"]
+							}
+							if optionTypeConfig["layout_code"] != nil && optionTypeConfig["layout_code"].(string) != "" {
+								config["layoutFieldType"] = "field"
+								config["layoutField"] = optionTypeConfig["layout_code"]
+							}
+							if optionTypeConfig["plan_code"] != nil && optionTypeConfig["plan_code"].(string) != "" {
+								config["planFieldType"] = "field"
+								config["planField"] = optionTypeConfig["plan_code"]
+							}
+							row["config"] = config
 						case "tag":
 							row["defaultValue"] = optionTypeConfig["default_value"]
 						case "networkManager":
@@ -932,6 +1000,10 @@ func resourceFormCreate(ctx context.Context, d *schema.ResourceData, meta interf
 							if optionTypeConfig["layout_code"] != nil && optionTypeConfig["layout_code"].(string) != "" {
 								config["layoutFieldType"] = "field"
 								config["layoutField"] = optionTypeConfig["layout_code"]
+							}
+							if optionTypeConfig["pool_code"] != nil && optionTypeConfig["pool_code"].(string) != "" {
+								config["poolFieldType"] = "field"
+								config["poolField"] = optionTypeConfig["pool_code"]
 							}
 							row["config"] = config
 						}
@@ -1089,12 +1161,18 @@ func resourceFormRead(ctx context.Context, d *schema.ResourceData, meta interfac
 					row["group_code"] = optionType.Config.GroupField
 					row["cloud_code"] = optionType.Config.CloudField
 					row["layout_code"] = optionType.Config.LayoutField
+				case "resourcePool":
+					row["group_code"] = optionType.Config.GroupField
+					row["cloud_code"] = optionType.Config.CloudField
+					row["layout_code"] = optionType.Config.LayoutField
+					row["plan_code"] = optionType.Config.PlanField
 				case "tag":
 					//nothing
 				case "networkManager":
 					row["group_code"] = optionType.Config.GroupField
 					row["cloud_code"] = optionType.Config.CloudField
 					row["layout_code"] = optionType.Config.LayoutField
+					row["pool_code"] = optionType.Config.ResourcePoolField
 				}
 				row["remove_select_option"] = optionType.NoBlank
 				row["name"] = optionType.Name
@@ -1191,12 +1269,18 @@ func resourceFormRead(ctx context.Context, d *schema.ResourceData, meta interfac
 							optionTypeRow["group_code"] = optionType.Config.GroupField
 							optionTypeRow["cloud_code"] = optionType.Config.CloudField
 							optionTypeRow["layout_code"] = optionType.Config.LayoutField
+						case "resourcePool":
+							optionTypeRow["group_code"] = optionType.Config.GroupField
+							optionTypeRow["cloud_code"] = optionType.Config.CloudField
+							optionTypeRow["layout_code"] = optionType.Config.LayoutField
+							optionTypeRow["plan_code"] = optionType.Config.PlanField
 						case "tag":
 							//nothing
 						case "networkManager":
 							optionTypeRow["group_code"] = optionType.Config.GroupField
 							optionTypeRow["cloud_code"] = optionType.Config.CloudField
 							optionTypeRow["layout_code"] = optionType.Config.LayoutField
+							optionTypeRow["pool_code"] = optionType.Config.ResourcePoolField
 						}
 						optionTypeRow["remove_select_option"] = optionType.NoBlank
 						optionTypeRow["name"] = optionType.Name
@@ -1371,6 +1455,26 @@ func resourceFormUpdate(ctx context.Context, d *schema.ResourceData, meta interf
 						config["layoutField"] = optionTypeConfig["layout_code"]
 					}
 					row["config"] = config
+				case "resourcePool":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+					config := make(map[string]interface{})
+					if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
+						config["groupFieldType"] = "field"
+						config["groupField"] = optionTypeConfig["group_code"]
+					}
+					if optionTypeConfig["cloud_code"] != nil && optionTypeConfig["cloud_code"].(string) != "" {
+						config["cloudFieldType"] = "field"
+						config["cloudField"] = optionTypeConfig["cloud_code"]
+					}
+					if optionTypeConfig["layout_code"] != nil && optionTypeConfig["layout_code"].(string) != "" {
+						config["layoutFieldType"] = "field"
+						config["layoutField"] = optionTypeConfig["layout_code"]
+					}
+					if optionTypeConfig["plan_code"] != nil && optionTypeConfig["plan_code"].(string) != "" {
+						config["planFieldType"] = "field"
+						config["planField"] = optionTypeConfig["plan_code"]
+					}
+					row["config"] = config
 				case "tag":
 					row["defaultValue"] = optionTypeConfig["default_value"]
 				case "networkManager":
@@ -1387,6 +1491,10 @@ func resourceFormUpdate(ctx context.Context, d *schema.ResourceData, meta interf
 					if optionTypeConfig["layout_code"] != nil && optionTypeConfig["layout_code"].(string) != "" {
 						config["layoutFieldType"] = "field"
 						config["layoutField"] = optionTypeConfig["layout_code"]
+					}
+					if optionTypeConfig["pool_code"] != nil && optionTypeConfig["pool_code"].(string) != "" {
+						config["poolFieldType"] = "field"
+						config["poolField"] = optionTypeConfig["pool_code"]
 					}
 					row["config"] = config
 				}
@@ -1548,6 +1656,26 @@ func resourceFormUpdate(ctx context.Context, d *schema.ResourceData, meta interf
 								config["layoutField"] = optionTypeConfig["layout_code"]
 							}
 							row["config"] = config
+						case "resourcePool":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+							config := make(map[string]interface{})
+							if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
+								config["groupFieldType"] = "field"
+								config["groupField"] = optionTypeConfig["group_code"]
+							}
+							if optionTypeConfig["cloud_code"] != nil && optionTypeConfig["cloud_code"].(string) != "" {
+								config["cloudFieldType"] = "field"
+								config["cloudField"] = optionTypeConfig["cloud_code"]
+							}
+							if optionTypeConfig["layout_code"] != nil && optionTypeConfig["layout_code"].(string) != "" {
+								config["layoutFieldType"] = "field"
+								config["layoutField"] = optionTypeConfig["layout_code"]
+							}
+							if optionTypeConfig["plan_code"] != nil && optionTypeConfig["plan_code"].(string) != "" {
+								config["planFieldType"] = "field"
+								config["planField"] = optionTypeConfig["plan_code"]
+							}
+							row["config"] = config
 						case "tag":
 							row["defaultValue"] = optionTypeConfig["default_value"]
 						case "networkManager":
@@ -1564,6 +1692,10 @@ func resourceFormUpdate(ctx context.Context, d *schema.ResourceData, meta interf
 							if optionTypeConfig["layout_code"] != nil && optionTypeConfig["layout_code"].(string) != "" {
 								config["layoutFieldType"] = "field"
 								config["layoutField"] = optionTypeConfig["layout_code"]
+							}
+							if optionTypeConfig["pool_code"] != nil && optionTypeConfig["pool_code"].(string) != "" {
+								config["poolFieldType"] = "field"
+								config["poolField"] = optionTypeConfig["pool_code"]
 							}
 							row["config"] = config
 						}
