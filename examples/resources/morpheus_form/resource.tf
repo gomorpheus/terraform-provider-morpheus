@@ -215,8 +215,22 @@ resource "morpheus_form" "tf_example_form" {
       help_block = "Labels"
       type        = "tag"
       required    = false
-      default_value = "[\n {\n  \"name\": \"lab\",\n  \"value\": \"sandbox\"\n }\n]"
-      
+      default_value = "[\n {\n  \"name\": \"lab\",\n  \"value\": \"sandbox\"\n }\n]" 
+    }
+
+    option_type {
+      name        = "pool_choice"
+      code        = "pool_choice"
+      field_name  = "f_pool"
+      field_label = "Resource Pool"
+      help_block = "Resource Pool (RAM, CPU...) to use"
+      type        = "resourcePool"
+      required    = true
+      hidden   = true
+      group_code = "group_name"
+      cloud_code = "cloud_provider"
+      layout_code = "debian_layout" 
+      plan_code = "plan_choice"
     }
   }
 
@@ -233,6 +247,7 @@ resource "morpheus_form" "tf_example_form" {
       group_code = "group_name"
       cloud_code = "cloud_provider"
       layout_code = "debian_layout"
+      pool_code = "pool_choice"
     }
   }
 
