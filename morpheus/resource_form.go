@@ -1172,7 +1172,7 @@ func resourceFormRead(ctx context.Context, d *schema.ResourceData, meta interfac
 					row["group_code"] = optionType.Config.GroupField
 					row["cloud_code"] = optionType.Config.CloudField
 					row["layout_code"] = optionType.Config.LayoutField
-					row["pool_code"] = optionType.Config.ResourcePoolField
+					row["pool_code"] = optionType.Config.PoolField
 				}
 				row["remove_select_option"] = optionType.NoBlank
 				row["name"] = optionType.Name
@@ -1280,7 +1280,7 @@ func resourceFormRead(ctx context.Context, d *schema.ResourceData, meta interfac
 							optionTypeRow["group_code"] = optionType.Config.GroupField
 							optionTypeRow["cloud_code"] = optionType.Config.CloudField
 							optionTypeRow["layout_code"] = optionType.Config.LayoutField
-							optionTypeRow["pool_code"] = optionType.Config.ResourcePoolField
+							optionTypeRow["pool_code"] = optionType.Config.PoolField
 						}
 						optionTypeRow["remove_select_option"] = optionType.NoBlank
 						optionTypeRow["name"] = optionType.Name
