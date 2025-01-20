@@ -205,6 +205,7 @@ resource "morpheus_form" "tf_example_form" {
       group_code = "group_name"
       cloud_code = "cloud_provider"
       layout_code = "debian_layout" 
+      pool_code = "pool_choice"
     }
 
     option_type {
