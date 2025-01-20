@@ -762,6 +762,10 @@ func resourceFormCreate(ctx context.Context, d *schema.ResourceData, meta interf
 						config["layoutFieldType"] = "field"
 						config["layoutField"] = optionTypeConfig["layout_code"]
 					}
+					if optionTypeConfig["pool_code"] != nil && optionTypeConfig["pool_code"].(string) != "" {
+						config["poolFieldType"] = "field"
+						config["poolField"] = optionTypeConfig["pool_code"]
+					}
 					row["config"] = config
 				case "resourcePool":
 					row["defaultValue"] = optionTypeConfig["default_value"]
@@ -963,6 +967,10 @@ func resourceFormCreate(ctx context.Context, d *schema.ResourceData, meta interf
 								config["layoutFieldType"] = "field"
 								config["layoutField"] = optionTypeConfig["layout_code"]
 							}
+							if optionTypeConfig["pool_code"] != nil && optionTypeConfig["pool_code"].(string) != "" {
+								config["poolFieldType"] = "field"
+								config["poolField"] = optionTypeConfig["pool_code"]
+							}
 							row["config"] = config
 						case "resourcePool":
 							row["defaultValue"] = optionTypeConfig["default_value"]
@@ -1161,6 +1169,7 @@ func resourceFormRead(ctx context.Context, d *schema.ResourceData, meta interfac
 					row["group_code"] = optionType.Config.GroupField
 					row["cloud_code"] = optionType.Config.CloudField
 					row["layout_code"] = optionType.Config.LayoutField
+					row["pool_code"] = optionType.Config.PoolField
 				case "resourcePool":
 					row["group_code"] = optionType.Config.GroupField
 					row["cloud_code"] = optionType.Config.CloudField
@@ -1269,6 +1278,7 @@ func resourceFormRead(ctx context.Context, d *schema.ResourceData, meta interfac
 							optionTypeRow["group_code"] = optionType.Config.GroupField
 							optionTypeRow["cloud_code"] = optionType.Config.CloudField
 							optionTypeRow["layout_code"] = optionType.Config.LayoutField
+							optionTypeRow["pool_code"] = optionType.Config.PoolField
 						case "resourcePool":
 							optionTypeRow["group_code"] = optionType.Config.GroupField
 							optionTypeRow["cloud_code"] = optionType.Config.CloudField
@@ -1453,6 +1463,10 @@ func resourceFormUpdate(ctx context.Context, d *schema.ResourceData, meta interf
 					if optionTypeConfig["layout_code"] != nil && optionTypeConfig["layout_code"].(string) != "" {
 						config["layoutFieldType"] = "field"
 						config["layoutField"] = optionTypeConfig["layout_code"]
+					}
+					if optionTypeConfig["pool_code"] != nil && optionTypeConfig["pool_code"].(string) != "" {
+						config["poolFieldType"] = "field"
+						config["poolField"] = optionTypeConfig["pool_code"]
 					}
 					row["config"] = config
 				case "resourcePool":
@@ -1654,6 +1668,10 @@ func resourceFormUpdate(ctx context.Context, d *schema.ResourceData, meta interf
 							if optionTypeConfig["layout_code"] != nil && optionTypeConfig["layout_code"].(string) != "" {
 								config["layoutFieldType"] = "field"
 								config["layoutField"] = optionTypeConfig["layout_code"]
+							}
+							if optionTypeConfig["pool_code"] != nil && optionTypeConfig["pool_code"].(string) != "" {
+								config["poolFieldType"] = "field"
+								config["poolField"] = optionTypeConfig["pool_code"]
 							}
 							row["config"] = config
 						case "resourcePool":
