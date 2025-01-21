@@ -27,6 +27,12 @@ func dataSourceMorpheusNodeType() *schema.Resource {
 				Optional:      true,
 				ConflictsWith: []string{"id"},
 			},
+			"provisioning_type": {
+				Type:          schema.TypeString,
+				Description:   "The provisioning type",
+				Optional:      true,
+				ConflictsWith: []string{"id"},
+			},
 		},
 	}
 }
@@ -44,7 +50,7 @@ func dataSourceMorpheusNodeTypeRead(ctx context.Context, d *schema.ResourceData,
 	var resp *morpheus.Response
 	var err error
 	if id == 0 && name != "" {
-		resp, err = client.FindNodeTypeByName(name)
+		resp, err = client.FindNodeType(name, d.Get("provisioning_type").(string))
 	} else if id != 0 {
 		resp, err = client.GetNodeType(int64(id), &morpheus.Request{})
 	} else {
@@ -67,6 +73,7 @@ func dataSourceMorpheusNodeTypeRead(ctx context.Context, d *schema.ResourceData,
 	if nodeType != nil {
 		d.SetId(int64ToString(nodeType.ID))
 		d.Set("name", nodeType.Name)
+		d.Set("provisioning_type", nodeType.ProvisionType.Code)
 	} else {
 		return diag.Errorf("Node type not found in response data.") // should not happen
 	}

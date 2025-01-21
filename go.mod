@@ -2,7 +2,7 @@ module github.com/gomorpheus/terraform-provider-morpheus
 
 go 1.23.4
 
-replace github.com/gomorpheus/morpheus-go-sdk => github.com/jouve/morpheus-go-sdk v0.0.0-20250116124419-a1a21ad99ded
+replace github.com/gomorpheus/morpheus-go-sdk => github.com/jouve/morpheus-go-sdk v0.0.0-20250121120406-7bd2980ff36e
 
 require (
 	github.com/gomorpheus/morpheus-go-sdk v0.5.1
