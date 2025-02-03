@@ -90,7 +90,7 @@ func Provider() *schema.Provider {
 			"morpheus_environment":                      resourceEnvironment(),
 			"morpheus_execute_schedule":                 resourceExecuteSchedule(),
 			"morpheus_file_template":                    resourceFileTemplate(),
-			//"morpheus_form":                                  resourceForm(),
+			"morpheus_form":                                  resourceForm(),
 			"morpheus_git_integration":                       resourceGitIntegration(),
 			"morpheus_groovy_script_task":                    resourceGroovyScriptTask(),
 			"morpheus_group":                                 resourceMorpheusGroup(),
