@@ -909,6 +909,10 @@ func resourceFormRead(ctx context.Context, d *schema.ResourceData, meta interfac
 				row["locked"] = optionType.IsLocked
 				row["hidden"] = optionType.IsHidden
 				row["exclude_from_search"] = optionType.ExcludeFromSearch
+				row["dependent_field"] = optionType.DependsOnCode
+				row["visibility_field"] = optionType.VisibleOnCode
+				row["verify_pattern"] = optionType.VerifyPattern
+				row["require_field"] = optionType.RequireOnCode
 			} else {
 				row["id"] = optionType.ID
 			}
@@ -981,6 +985,10 @@ func resourceFormRead(ctx context.Context, d *schema.ResourceData, meta interfac
 						optionTypeRow["locked"] = optionType.IsLocked
 						optionTypeRow["hidden"] = optionType.IsHidden
 						optionTypeRow["exclude_from_search"] = optionType.ExcludeFromSearch
+						optionTypeRow["dependent_field"] = optionType.DependsOnCode
+						optionTypeRow["visibility_field"] = optionType.VisibleOnCode
+						optionTypeRow["verify_pattern"] = optionType.VerifyPattern
+						optionTypeRow["require_field"] = optionType.RequireOnCode
 					} else {
 						optionTypeRow["id"] = optionType.ID
 					}
