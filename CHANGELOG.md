@@ -1,10 +1,13 @@
 ## UNRELEASED
 
+## 0.11.1 (February 3, 2024)
+
 NOTES:
 
 * Added support for the `morpheus_clouds` data source to lookup clouds and return a list of cloud ids. [233](https://github.com/gomorpheus/terraform-provider-morpheus/issues/233)
 * Update the `morpheus_chef_bootstrap_task` example to fix a typo referencing the server id attribute as `server_id` instead of `chef_server_id`.
 * Added support for the `morpheus_networks` data source to lookup networks and return a list of network ids. [280](https://github.com/gomorpheus/terraform-provider-morpheus/issues/280)
+* Documented the support model for the Terraform provider and where to report issues.
 
 FEATURES:
 
