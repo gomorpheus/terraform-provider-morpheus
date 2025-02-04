@@ -6,12 +6,20 @@
 
 - Website: https://www.morpheusdata.com/
 - Docs: [Morpheus Documentation](https://docs.morpheusdata.com)
-- Support: [Morpheus Support](https://support.morpheusdata.com)
-
 
 This is the Terraform provider for the Morpheus Data Cloud Management Platform (CMP). It interfaces with the [Morpheus API](https://apidocs.morpheusdata.com/) using the morpheus-go-sdk client. Like all [Terraform Providers](https://github.com/terraform-providers/), it is written in Go.
 
 This is being developed in conjunction with [morpheus-go-sdk](https://github.com/gomorpheus/morpheus-go-sdk).  
+
+## Support
+------------
+The Morpheus Terraform provider uses a community support model. Morpheus welcomes pull requests and responds to issues on a best-effort basis.
+
+**Reporting an issue**
+
+If you an encounter an issue with the Terraform provider, create a new issue in this GitHub repository.
+
+https://github.com/gomorpheus/terraform-provider-morpheus/issues
 
 ## Requirements
 ------------
