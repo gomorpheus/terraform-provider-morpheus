@@ -1,5 +1,13 @@
 ## UNRELEASED
 
+## 0.12.0 (February 28, 2024)
+
+* Added support for the `morpheus_vsphere_mks_cluster` to provision MKS clusters running on VMware vSphere.
+
+FEATURES:
+
+* **New Data Source:** `morpheus_vsphere_mks_cluster`
+
 ## 0.11.1 (February 3, 2024)
 
 NOTES:
