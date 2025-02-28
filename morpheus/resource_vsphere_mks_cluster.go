@@ -2,7 +2,7 @@ package morpheus
 
 import (
 	"context"
-	"encoding/json"
+	"fmt"
 	"log"
 	"strconv"
 	"time"
@@ -11,7 +11,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceVsphereMKSCluster() *schema.Resource {
@@ -33,16 +32,14 @@ func resourceVsphereMKSCluster() *schema.Resource {
 				Type:        schema.TypeString,
 				Computed:    true,
 			},
-			"endpoint": {
-				Description: "The ID of the cluster",
+			"api_endpoint": {
+				Description: "The API URL of the cluster",
 				Type:        schema.TypeString,
-				Optional:    true,
 				Computed:    true,
 			},
-			"version": {
-				Description: "The ID of the cluster",
+			"kubernetes_version": {
+				Description: "The Kubernetes version of the cluster",
 				Type:        schema.TypeString,
-				Optional:    true,
 				Computed:    true,
 			},
 			"name": {
@@ -52,14 +49,16 @@ func resourceVsphereMKSCluster() *schema.Resource {
 				Computed:    true,
 			},
 			"resource_prefix": {
-				Description: "The name of the cluster",
+				Description: "The prefix used for the virtual machine name of the master and worker nodes",
 				Type:        schema.TypeString,
+				ForceNew:    true,
 				Optional:    true,
 				Computed:    true,
 			},
 			"hostname_prefix": {
-				Description: "The guest operating system hostname for the master nodes",
+				Description: "The prefix used for the guest operating system hostname of the master and worker nodes",
 				Type:        schema.TypeString,
+				ForceNew:    true,
 				Optional:    true,
 				Computed:    true,
 			},
@@ -90,14 +89,16 @@ func resourceVsphereMKSCluster() *schema.Resource {
 			"api_proxy_id": {
 				Description: "The ID of the api proxy associated with the cluster",
 				Type:        schema.TypeInt,
+				ForceNew:    true,
 				Optional:    true,
 			},
-			"visibility": {
-				Type:         schema.TypeString,
-				Description:  "The visibility of the cluster (public or private)",
-				Required:     true,
-				ValidateFunc: validation.StringInSlice([]string{"public", "private"}, false),
-			},
+			// AWAITING API Support
+			// "visibility": {
+			//	Type:         schema.TypeString,
+			//	Description:  "The visibility of the cluster (public or private)",
+			//	Required:     true,
+			//	ValidateFunc: validation.StringInSlice([]string{"public", "private"}, false),
+			//},
 			"pod_cidr": {
 				Description: "The cluster pod cidr (default - 172.20.0.0/16)",
 				Type:        schema.TypeString,
@@ -106,23 +107,24 @@ func resourceVsphereMKSCluster() *schema.Resource {
 				Default:     "172.20.0.0/16",
 			},
 			"service_cidr": {
-				Description: "The cluster pod cidr (default - 172.30.0.0/16)",
+				Description: "The cluster service cidr (default - 172.30.0.0/16)",
 				Type:        schema.TypeString,
 				Optional:    true,
 				ForceNew:    true,
 				Default:     "172.30.0.0/16",
 			},
-			"labels": {
-				Type:        schema.TypeList,
-				Description: "The list of labels to add to the cluster",
-				Optional:    true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-				Computed: true,
-			},
+			// AWAITING API Support
+			//"labels": {
+			//	Type:        schema.TypeList,
+			//	Description: "The list of labels to add to the cluster",
+			//	Optional:    true,
+			//	Elem: &schema.Schema{
+			//		Type: schema.TypeString,
+			//	},
+			//	Computed: true,
+			//},
 			"cluster_repo_account_id": {
-				Description: "",
+				Description: "The ID of the cluster repo account associated with the cluster",
 				Type:        schema.TypeInt,
 				ForceNew:    true,
 				Optional:    true,
@@ -141,66 +143,74 @@ func resourceVsphereMKSCluster() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"plan_id": {
-							Description: "The service plan associated with the master nodes in the cluster",
+							Description: "The ID of the service plan associated with the master nodes in the cluster",
 							Type:        schema.TypeInt,
 							ForceNew:    true,
 							Required:    true,
 						},
 						"resource_pool_id": {
-							Description: "The ID of the resource pool to provision the instance to",
+							Description: "The ID of the resource pool to provision the cluster master nodes to",
 							Type:        schema.TypeInt,
+							ForceNew:    true,
 							Optional:    true,
 							Computed:    true,
 						},
 						"storage_volume": {
-							Description: "The instance volumes to create",
+							Description: "The storage volumes to create for the cluster master nodes",
 							Type:        schema.TypeList,
+							ForceNew:    true,
 							Optional:    true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"uuid": {
 										Description: "The storage volume uuid",
 										Type:        schema.TypeString,
-										Optional:    true,
 										Computed:    true,
 									},
 									"root": {
 										Description: "Whether the volume is the root volume of the instance",
 										Type:        schema.TypeBool,
+										ForceNew:    true,
 										Required:    true,
 									},
 									"name": {
 										Description: "The name of the volume",
 										Type:        schema.TypeString,
+										ForceNew:    true,
 										Required:    true,
 									},
 									"size": {
 										Description: "The size of the volume in GB",
 										Type:        schema.TypeInt,
+										ForceNew:    true,
 										Required:    true,
 									},
 									"storage_type": {
 										Description: "The storage volume type ID",
 										Type:        schema.TypeInt,
+										ForceNew:    true,
 										Required:    true,
 									},
 									"datastore_id": {
 										Description: "The ID of the datastore",
 										Type:        schema.TypeInt,
+										ForceNew:    true,
 										Required:    true,
 									},
 								},
 							},
 						},
 						"network_interface": {
-							Description: "The instance network interfaces to create",
+							Description: "The network interfaces to create for the cluster master nodes",
 							Type:        schema.TypeList,
 							Optional:    true,
+							ForceNew:    true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"network_id": {
-										Description: "The network to assign the network interface to",
+										Description: "The ID of the network to assign the network interface to",
 										Type:        schema.TypeInt,
+										ForceNew:    true,
 										Required:    true,
 									},
 									/* AWAITING API Support for the master node pool for consistency
@@ -213,42 +223,10 @@ func resourceVsphereMKSCluster() *schema.Resource {
 								},
 							},
 						},
-						"host_id": {
-							Description: "The ID of the resource pool to provision the instance to",
-							Type:        schema.TypeInt,
-							Optional:    true,
-							Computed:    true,
-						},
-						"folder_id": {
-							Description: "The ID of the resource pool to provision the instance to",
-							Type:        schema.TypeInt,
-							Optional:    true,
-							Computed:    true,
-						},
-						"create_user": {
-							Description: "Whether to create a user account on the instance that is associated with the provisioning user account",
-							Type:        schema.TypeBool,
-							ForceNew:    true,
-							Optional:    true,
-							Computed:    true,
-						},
-						"user_group_id": {
-							Description: "The id of the user group associated with the instance",
-							Type:        schema.TypeInt,
-							ForceNew:    true,
-							Optional:    true,
-							Computed:    true,
-						},
-						"domain_id": {
-							Description: "The ID of the network domain to provision the instance to",
-							Type:        schema.TypeInt,
-							Optional:    true,
-							Computed:    true,
-							ForceNew:    true,
-						},
 						"tags": {
-							Description: "Tags to assign to the instance",
+							Description: "Tags to assign to the cluster master nodes",
 							Type:        schema.TypeMap,
+							ForceNew:    true,
 							Optional:    true,
 							Computed:    true,
 							Elem:        &schema.Schema{Type: schema.TypeString},
@@ -260,90 +238,93 @@ func resourceVsphereMKSCluster() *schema.Resource {
 				Type:        schema.TypeList,
 				Description: "Worker node pool configuration",
 				Optional:    true,
+				ForceNew:    true,
+				MaxItems:    1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"plan_id": {
-							Description: "The service plan associated with the master nodes in the cluster",
+						"count": {
+							Description: "The number of worker nodes",
 							Type:        schema.TypeInt,
 							ForceNew:    true,
 							Required:    true,
 						},
-						"create_user": {
-							Description: "Whether to create a user account on the instance that is associated with the provisioning user account",
-							Type:        schema.TypeBool,
-							ForceNew:    true,
-							Optional:    true,
-							Computed:    true,
-						},
-						"user_group_id": {
-							Description: "The id of the user group associated with the instance",
+						"plan_id": {
+							Description: "The ID of the service plan associated with the worker nodes in the cluster",
 							Type:        schema.TypeInt,
 							ForceNew:    true,
-							Optional:    true,
-							Computed:    true,
+							Required:    true,
 						},
 						"resource_pool_id": {
-							Description: "The ID of the resource pool to provision the instance to",
+							Description: "The ID of the resource pool to provision the cluster worker nodes to",
 							Type:        schema.TypeInt,
+							ForceNew:    true,
 							Optional:    true,
 							Computed:    true,
 						},
 						"tags": {
-							Description: "Tags to assign to the instance",
+							Description: "Tags to assign to the cluster worker nodes",
 							Type:        schema.TypeMap,
+							ForceNew:    true,
 							Optional:    true,
 							Computed:    true,
 							Elem:        &schema.Schema{Type: schema.TypeString},
 						},
 						"storage_volume": {
-							Description: "The instance volumes to create",
+							Description: "The storage volumes to create for the cluster worker nodes",
 							Type:        schema.TypeList,
+							ForceNew:    true,
 							Optional:    true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"uuid": {
 										Description: "The storage volume uuid",
 										Type:        schema.TypeString,
-										Optional:    true,
 										Computed:    true,
 									},
 									"root": {
 										Description: "Whether the volume is the root volume of the instance",
 										Type:        schema.TypeBool,
+										ForceNew:    true,
 										Required:    true,
 									},
 									"name": {
 										Description: "The name of the volume",
 										Type:        schema.TypeString,
+										ForceNew:    true,
 										Required:    true,
 									},
 									"size": {
 										Description: "The size of the volume in GB",
 										Type:        schema.TypeInt,
+										ForceNew:    true,
 										Required:    true,
 									},
 									"storage_type": {
 										Description: "The storage volume type ID",
 										Type:        schema.TypeInt,
+										ForceNew:    true,
 										Required:    true,
 									},
 									"datastore_id": {
 										Description: "The ID of the datastore",
 										Type:        schema.TypeInt,
+										ForceNew:    true,
 										Required:    true,
 									},
 								},
 							},
 						},
 						"network_interface": {
-							Description: "The instance network interfaces to create",
+							Description: "The network interfaces to create for the cluster worker nodes",
 							Type:        schema.TypeList,
+							ForceNew:    true,
 							Optional:    true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"network_id": {
 										Description: "The ID of the network to attach the interface to",
 										Type:        schema.TypeInt,
+										ForceNew:    true,
 										Required:    true,
 									},
 									/* AWAITING API Support for the master node pool for consistency
@@ -355,25 +336,6 @@ func resourceVsphereMKSCluster() *schema.Resource {
 									*/
 								},
 							},
-						},
-						"host_id": {
-							Description: "The ID of the resource pool to provision the instance to",
-							Type:        schema.TypeInt,
-							Optional:    true,
-							Computed:    true,
-						},
-						"folder_id": {
-							Description: "The ID of the resource pool to provision the instance to",
-							Type:        schema.TypeInt,
-							Optional:    true,
-							Computed:    true,
-						},
-						"domain_id": {
-							Description: "The ID of the network domain to provision the instance to",
-							Type:        schema.TypeInt,
-							Optional:    true,
-							Computed:    true,
-							ForceNew:    true,
 						},
 					},
 				},
@@ -404,7 +366,7 @@ func resourceVsphereMKSClusterCreate(ctx context.Context, d *schema.ResourceData
 		"id": d.Get("group_id").(int),
 	}
 
-	// Labels
+	// Labels - AWAITING API SUPPORT
 	//if d.Get("labels") != nil {
 	//	clusterPayload["labels"] = d.Get("labels")
 	//}
@@ -420,114 +382,65 @@ func resourceVsphereMKSClusterCreate(ctx context.Context, d *schema.ResourceData
 	}
 
 	// Workflow
-	//clusterPayload["taskSetId"] = d.Get("workflow_id").(int)
-
-	log.Printf("MASTER_DATA::: %s", d.Get("master_node_pool").([]interface{}))
-	//var networkInterfaces []map[string]interface{}
+	clusterPayload["taskSetId"] = d.Get("workflow_id").(int)
 
 	masterpool := d.Get("master_node_pool").([]interface{})[0].(map[string]interface{})
+	workerpool := d.Get("worker_node_pool").([]interface{})[0].(map[string]interface{})
+
 	serverPayload := map[string]interface{}{}
 	serverPayload["config"] = map[string]interface{}{
-		"podCidr":        d.Get("pod_cidr").(string),
-		"serviceCidr":    d.Get("service_cidr").(string),
-		"resourcePoolId": masterpool["resource_pool_id"],
-		//"initConfig":  "",
-		"nodeCount":  4,
-		"createUser": masterpool["create_user"],
+		"podCidr":            d.Get("pod_cidr").(string),
+		"serviceCidr":        d.Get("service_cidr").(string),
+		"resourcePoolId":     masterpool["resource_pool_id"],
+		"nodeCount":          workerpool["count"],
+		"defaultRepoAccount": d.Get("cluster_repo_account_id").(int),
 	}
-	serverPayload["nodeCount"] = 4
-	serverPayload["visibility"] = d.Get("visibility").(string)
-	serverPayload["volumes"] = []map[string]interface{}{
-		{
-			"id":          -1,
-			"rootVolume":  true,
-			"name":        "root",
-			"size":        20,
-			"storageType": 38,
-			"datastoreId": "auto",
-		},
-		{
-			"id":          -1,
-			"rootVolume":  false,
-			"name":        "data",
-			"size":        20,
-			"storageType": 38,
-			"datastoreId": "auto",
-		},
-	}
-	serverPayload["networkInterfaces"] = []map[string]interface{}{
-		{
-			"network": map[string]interface{}{
-				"id": "network-1",
-			},
-			//"networkInterfaceTypeId": 8,
-		},
-		{
-			"network": map[string]interface{}{
-				"id": "network-2",
-			},
-		},
+	serverPayload["nodeCount"] = workerpool["count"]
+	//serverPayload["visibility"] = d.Get("visibility").(string)
+	serverPayload["volumes"] = parseStorageVolumes(masterpool["storage_volume"].([]interface{}))
+	serverPayload["networkInterfaces"] = parseMasterNetworkInterfaces(masterpool["network_interface"].([]interface{}))
+
+	if masterpool["tags"] != nil {
+		serverPayload["tags"] = parseTags(masterpool["tags"].(map[string]interface{}))
 	}
 
 	serverPayload["plan"] = map[string]interface{}{
 		"id": masterpool["plan_id"],
 	}
 
-	serverPayload["hostname"] = d.Get("resource_prefix").(string)
-	serverPayload["name"] = d.Get("resource_prefix").(string)
-	workerPayload := map[string]interface{}{}
-	workerPayload["volumes"] = []map[string]interface{}{
-		{
-			"id":          -1,
-			"rootVolume":  true,
-			"name":        "root",
-			"size":        25,
-			"storageType": 38,
-			"datastoreId": "auto",
-		},
-		{
-			"id":          -1,
-			"rootVolume":  false,
-			"name":        "data",
-			"size":        10,
-			"storageType": 38,
-			"datastoreId": "auto",
-		},
-	}
-	workerPayload["networkInterfaces"] = []map[string]interface{}{
-		{
-			"network": map[string]interface{}{
-				"id": 1,
-			},
-			//	"networkInterfaceTypeId": 8,
-		},
-		{
-			"network": map[string]interface{}{
-				"id": 2,
-			},
-			//	"networkInterfaceTypeId": 8,
-		},
+	serverPayload["apiProxy"] = map[string]interface{}{
+		"id": d.Get("api_proxy_id").(int),
 	}
 
+	serverPayload["hostname"] = d.Get("hostname_prefix").(string)
+	serverPayload["name"] = d.Get("resource_prefix").(string)
+
+	workerPayload := map[string]interface{}{}
+	workerPayload["apiProxy"] = map[string]interface{}{
+		"id": d.Get("api_proxy_id").(int),
+	}
+	workerPayload["volumes"] = parseStorageVolumes(workerpool["storage_volume"].([]interface{}))
+	workerPayload["networkInterfaces"] = parseWorkerNetworkInterfaces(workerpool["network_interface"].([]interface{}))
 	workerPayload["config"] = map[string]interface{}{
-		"resourcePoolId": 395,
+		"resourcePoolId": workerpool["resource_pool_id"],
 	}
 	workerServerPayload := map[string]interface{}{
 		"plan": map[string]interface{}{
-			"id": 231,
+			"id": workerpool["plan_id"],
 		},
 	}
+
+	if workerpool["tags"] != nil {
+		workerPayload["tags"] = parseTags(workerpool["tags"].(map[string]interface{}))
+	}
 	workerPayload["server"] = workerServerPayload
-	log.Println(workerServerPayload)
+
 	clusterPayload["worker"] = workerPayload
 	clusterPayload["server"] = serverPayload
 
 	req := &morpheus.Request{Body: map[string]interface{}{
 		"cluster": clusterPayload,
 	}}
-
-	jsonRequest, _ := json.Marshal(req.Body)
-	log.Printf("API JSON REQUEST: %s", string(jsonRequest))
 
 	resp, err := client.CreateCluster(req)
 	if err != nil {
@@ -562,8 +475,6 @@ func resourceVsphereMKSClusterCreate(ctx context.Context, d *schema.ResourceData
 				}
 				hostsResults := hostsDetails.Result.(*morpheus.ListHostsResult)
 				for _, host := range *hostsResults.Hosts {
-					log.Printf("HOST STATUS: %s - %s", host.Name, host.Status)
-
 					// Override the cluster status if the worker nodes are still provisioning
 					// to avoid a false failure while the cluster is still being deployed. This is
 					// a workaround that has been fixed in 8.0.4 but has been added for legacy support.
@@ -571,9 +482,10 @@ func resourceVsphereMKSClusterCreate(ctx context.Context, d *schema.ResourceData
 						clusterStatus = "provisioning"
 					}
 				}
-				log.Printf("HOST CLUSTER STATUS: %s", clusterStatus)
 			}
-			// Add arbitrary wait period for cluster refresh
+			// Added an arbitrary wait period for cluster refresh.
+			// This should probably trigger a cluster refresh and then poll
+			// the cluster to reach a definitive state.
 			if clusterStatus == "failed" {
 				time.Sleep(3 * time.Minute)
 				clusterStatus = "ok"
@@ -581,10 +493,9 @@ func resourceVsphereMKSClusterCreate(ctx context.Context, d *schema.ResourceData
 
 			return result, clusterStatus, nil
 		},
-		Timeout:    3 * time.Hour,
-		MinTimeout: 1 * time.Minute,
-		//Delay:        3 * time.Minute,
-		Delay:        30 * time.Second,
+		Timeout:      3 * time.Hour,
+		MinTimeout:   1 * time.Minute,
+		Delay:        3 * time.Minute,
 		PollInterval: 1 * time.Minute,
 	}
 
@@ -598,8 +509,7 @@ func resourceVsphereMKSClusterCreate(ctx context.Context, d *schema.ResourceData
 	d.SetId(int64ToString(cluster.ID))
 	resourceVsphereMKSClusterRead(ctx, d, meta)
 
-	// Fail the cluster deployment if the
-	// cluster status is in a failed state
+	// Fail the cluster deployment if the cluster status is in a failed state
 	if clusterStatus == "failed" {
 		return diag.Errorf("error creating cluster: failed to create cluster")
 	}
@@ -649,11 +559,11 @@ func resourceVsphereMKSClusterRead(ctx context.Context, d *schema.ResourceData, 
 	d.Set("name", cluster.Name)
 	d.Set("description", cluster.Description)
 	d.Set("cloud_id", cluster.Zone.Id)
-	d.Set("group_id", cluster.Group["id"])
+	d.Set("group_id", cluster.Site.Id)
 	d.Set("cluster_layout_id", cluster.Layout.Id)
-	d.Set("visibility", cluster.Visibility)
-	d.Set("version", cluster.ServiceVersion)
-	d.Set("endpoint", cluster.ServiceUrl)
+	//d.Set("visibility", cluster.Visibility)
+	d.Set("kubernetes_version", cluster.ServiceVersion)
+	d.Set("api_endpoint", cluster.ServiceUrl)
 	return diags
 }
 
@@ -745,27 +655,51 @@ func resourceVsphereMKSClusterDelete(ctx context.Context, d *schema.ResourceData
 	return diags
 }
 
-func parseMasterNodePools(variables []interface{}) []map[string]interface{} {
-	var nodepools []map[string]interface{}
-	// iterate over the array of nodepools
+func parseMasterNetworkInterfaces(variables []interface{}) []map[string]interface{} {
+	// Master network interfaces passes a string including an integer (network-1) directly passed via the API
+	var networkInterfaces []map[string]interface{}
+
 	for i := 0; i < len(variables); i++ {
-		row := make(map[string]interface{})
-		nodepoolconfig := variables[i].(map[string]interface{})
-		for k, v := range nodepoolconfig {
+		networkInterface := make(map[string]interface{})
+		for k, v := range variables[i].(map[string]interface{}) {
 			switch k {
-			case "create_user":
-				row["nodeCount"] = v.(int)
-			case "domain_id":
-				node_type := make(map[string]interface{})
-				node_type["id"] = v.(int)
-				row["containerType"] = node_type
-			case "folder_id":
-				row["priorityOrder"] = v.(int)
-			case "host_id":
-				row["priorityOrder"] = v.(int)
+			case "network_id":
+				networkId := make(map[string]interface{})
+				networkId["id"] = fmt.Sprintf("network-%d", v.(int))
+				networkInterface["network"] = networkId
 			}
 		}
-		nodepools = append(nodepools, row)
+		networkInterfaces = append(networkInterfaces, networkInterface)
 	}
-	return nodepools
+	return networkInterfaces
+}
+
+func parseWorkerNetworkInterfaces(variables []interface{}) []map[string]interface{} {
+	// Worker network interfaces passes an integer (1) directly passed via the API
+	var networkInterfaces []map[string]interface{}
+
+	for i := 0; i < len(variables); i++ {
+		networkInterface := make(map[string]interface{})
+		for k, v := range variables[i].(map[string]interface{}) {
+			switch k {
+			case "network_id":
+				networkId := make(map[string]interface{})
+				networkId["id"] = v.(int)
+				networkInterface["network"] = networkId
+			}
+		}
+		networkInterfaces = append(networkInterfaces, networkInterface)
+	}
+	return networkInterfaces
+}
+
+func parseTags(variables map[string]interface{}) []map[string]interface{} {
+	var tags []map[string]interface{}
+	for key, value := range variables {
+		tag := make(map[string]interface{})
+		tag["name"] = key
+		tag["value"] = value.(string)
+		tags = append(tags, tag)
+	}
+	return tags
 }

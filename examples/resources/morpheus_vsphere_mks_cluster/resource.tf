@@ -11,46 +11,53 @@ data "morpheus_resource_pool" "vsphere_resource_pool" {
   cloud_id = data.morpheus_cloud.morpheus_vsphere.id
 }
 
-data "morpheus_instance_type" "ubuntu" {
-  name = "Ubuntu"
+data "morpheus_cloud_datastore" "vsphere_datastore" {
+  name     = "datastore01"
+  cloud_id = data.morpheus_cloud.morpheus_vsphere.id
 }
 
-data "morpheus_instance_layout" "ubuntu" {
-  name    = "VMware VM"
-  version = "22.04"
-}
-
-data "morpheus_network" "vmnetwork" {
+data "morpheus_network" "vm_network" {
   name = "VM Network"
 }
 
-data "morpheus_plan" "vmware" {
-  name           = "1 CPU, 4GB Memory"
+data "morpheus_network" "internal_network" {
+  name = "Internal Network"
+}
+
+data "morpheus_plan" "master_nodes" {
+  name           = "2 CPU, 8GB Memory"
   provision_type = "vmware"
 }
 
-resource "morpheus_vsphere_mks_cluster" "tf_example_vsphere_instance" {
-  name          = "tfvsphere"
-  description   = "Terraform instance example"
-  visibility    = "private"
-  labels        = ["demo", "terraform"]
-  cloud_id      = data.morpheus_cloud.morpheus_vsphere.id
-  group_id      = data.morpheus_group.morpheus_lab.id
+data "morpheus_plan" "worker_nodes" {
+  name           = "2 CPU, 16GB Memory"
+  provision_type = "vmware"
+}
 
-  cluster_layout_id = data.morpheus_instance_layout.ubuntu.id
+data "morpheus_workflow" "example_workflow" {
+  name = "Example Workflow"
+}
+
+resource "morpheus_vsphere_mks_cluster" "tf_example_vsphere_instance" {
+  name                    = "tfvsphere"
+  resource_prefix         = "vmpre"
+  hostname_prefix         = "ospre"
+  description             = "Terraform MKS cluster example"
+  cloud_id                = data.morpheus_cloud.morpheus_vsphere.id
+  group_id                = data.morpheus_group.morpheus_lab.id
+  cluster_layout_id       = 244
+  pod_cidr                = "172.20.0.0/16"
+  service_cidr            = "172.30.0.0/16"
+  workflow_id             = data.morpheus_workflow.example_workflow
+  api_proxy_id            = 1
+  cluster_repo_account_id = 1
 
   master_node_pool {
-    plan_id          = data.morpheus_plan.vmware.id
-    resource_pool_id = data.morpheus_resource_pool.vsphere_resource_pool.id
-    host_id          = data.xxx
-    folder_id        = data.xxx
-    create_user      = true
-    user_group_id    = 4
-
+    plan_id          = data.morpheus_plan.master_nodes
+    resource_pool_id = data.morpheus_resource_pool.vsphere_resource_pool
 
     network_interface {
-      network_id                = data.morpheus_network.vmnetwork.id
-      network_interface_type_id = 5
+      network_id = data.morpheus_network.vm_network
     }
 
     storage_volume {
@@ -58,26 +65,25 @@ resource "morpheus_vsphere_mks_cluster" "tf_example_vsphere_instance" {
       size         = 30
       name         = "root"
       storage_type = 1
-      datastore_id = 36
+      datastore_id = data.morpheus_cloud_datastore.vsphere_datastore
     }
 
     tags = {
-      name = "ubuntutf"
+      "app" = "mksmaster"
     }
   }
 
   worker_node_pool {
-    number_of_workers = 3
-    plan_id           = data.morpheus_plan.vmware.id
-    resource_pool_id  = data.morpheus_resource_pool.vsphere_resource_pool.id
-    host_id           = data.xxx
-    folder_id         = data.xxx
-    create_user       = true
-    user_group_id     = 4
+    count            = 3
+    plan_id          = data.morpheus_plan.worker_nodes
+    resource_pool_id = data.morpheus_resource_pool.vsphere_resource_pool
 
     network_interface {
-      network_id                = data.morpheus_network.vmnetwork.id
-      network_interface_type_id = 5
+      network_id = data.morpheus_network.vm_network
+    }
+
+    network_interface {
+      network_id = data.morpheus_network.internal_network
     }
 
     storage_volume {
@@ -85,11 +91,19 @@ resource "morpheus_vsphere_mks_cluster" "tf_example_vsphere_instance" {
       size         = 30
       name         = "root"
       storage_type = 1
-      datastore_id = 36
+      datastore_id = data.morpheus_cloud_datastore.vsphere_datastore
+    }
+
+    storage_volume {
+      root         = false
+      size         = 15
+      name         = "data"
+      storage_type = 1
+      datastore_id = data.morpheus_cloud_datastore.vsphere_datastore
     }
 
     tags = {
-      name = "ubuntutf"
+      "app" = "mksworker"
     }
   }
 }
