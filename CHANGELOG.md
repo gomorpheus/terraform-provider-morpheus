@@ -1,5 +1,17 @@
 ## UNRELEASED
 
+## 0.12.0 (February 28, 2024)
+
+NOTES:
+* Added support for the `morpheus_vsphere_mks_cluster` to provision MKS clusters running on VMware vSphere.
+* Updated the `terraform-plugin-docs` library from v0.19.4 to v0.21.0
+* Updated the required version of Go from 1.21 to 1.22.
+* Beta release of the `morpheus_form` resource.
+
+FEATURES:
+
+* **New Data Source:** `morpheus_vsphere_mks_cluster`
+
 ## 0.11.1 (February 3, 2024)
 
 NOTES:

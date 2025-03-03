@@ -262,6 +262,9 @@ func resourceInstanceCatalogItemRead(ctx context.Context, d *schema.ResourceData
 	d.Set("config", string(configJson))
 	d.Set("visibility", catalogItem.Visibility)
 	d.Set("labels", catalogItem.Labels)
+	imagePath := strings.Split(catalogItem.ImagePath, "/")
+	opt := strings.Replace(imagePath[len(imagePath)-1], "_original", "", 1)
+	d.Set("image_name", opt)
 	return diags
 }
 

@@ -116,9 +116,6 @@ func resourceGitIntegration() *schema.Resource {
 func resourceGitIntegrationCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*morpheus.Client)
 
-	// Warning or errors can be collected in a slice type
-	var diags diag.Diagnostics
-
 	integration := make(map[string]interface{})
 
 	integration["name"] = d.Get("name").(string)
@@ -182,8 +179,7 @@ func resourceGitIntegrationCreate(ctx context.Context, d *schema.ResourceData, m
 		return diag.FromErr(err)
 	}
 
-	diags = append(diags, resourceGitIntegrationRead(ctx, d, meta)...)
-	return diags
+	return resourceGitIntegrationRead(ctx, d, meta)
 }
 
 func resourceGitIntegrationRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {

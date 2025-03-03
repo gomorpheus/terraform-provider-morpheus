@@ -2,7 +2,6 @@ package morpheus
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"strconv"
 
@@ -80,7 +79,7 @@ func resourceForm() *schema.Resource {
 						},
 						"field_name": {
 							Type:        schema.TypeString,
-							Description: "The id of the option type to add to the form",
+							Description: "The name of the option type field to add to the form",
 							Optional:    true,
 						},
 						"type": {
@@ -669,6 +668,10 @@ func resourceFormCreate(ctx context.Context, d *schema.ResourceData, meta interf
 					config["showLineNumbers"] = optionTypeConfig["show_line_numbers"]
 					row["config"] = config
 				case "checkbox":
+					defaultValue := optionTypeConfig["default_value"].(string)
+					if defaultValue != "true" && defaultValue != "false" {
+						return diag.Errorf("The default_value attribute cannot be set when the type attribute is set to checkbox, use the default_checked attribute instead for the %s checkbox resource", optionTypeConfig["name"].(string))
+					}
 					row["defaultValue"] = optionTypeConfig["default_checked"]
 				case "number":
 					number, err := strconv.Atoi(optionTypeConfig["default_value"].(string))
@@ -874,6 +877,10 @@ func resourceFormCreate(ctx context.Context, d *schema.ResourceData, meta interf
 							config["showLineNumbers"] = optionTypeConfig["show_line_numbers"]
 							row["config"] = config
 						case "checkbox":
+							defaultValue := optionTypeConfig["default_value"].(string)
+							if defaultValue != "true" && defaultValue != "false" {
+								return diag.Errorf("The default_value attribute cannot be set when the type attribute is set to checkbox, use the default_checked attribute instead for the %s checkbox resource", optionTypeConfig["name"].(string))
+							}
 							row["defaultValue"] = optionTypeConfig["default_checked"]
 						case "number":
 							number, err := strconv.Atoi(optionTypeConfig["default_value"].(string))
@@ -1054,8 +1061,8 @@ func resourceFormCreate(ctx context.Context, d *schema.ResourceData, meta interf
 			},
 		},
 	}
-	jsonRequest, _ := json.Marshal(req.Body)
-	log.Printf("API JSON REQUEST: %s", string(jsonRequest))
+	//	jsonRequest, _ := json.Marshal(req.Body)
+	//	log.Printf("API JSON REQUEST: %s", string(jsonRequest))
 
 	resp, err := client.CreateForm(req)
 	if err != nil {
@@ -1148,6 +1155,8 @@ func resourceFormRead(ctx context.Context, d *schema.ResourceData, meta interfac
 					row["option_list_id"] = optionType.OptionList.ID
 				case "textarea":
 					row["text_rows"] = optionType.Config.Rows
+				case "hidden":
+					log.Printf("HIDDEN DEFAULT: %v", optionType.DefaultValue)
 				case "textArray":
 					row["delimiter"] = optionType.Config.Separator
 				case "typeahead":
@@ -1371,6 +1380,10 @@ func resourceFormUpdate(ctx context.Context, d *schema.ResourceData, meta interf
 					config["showLineNumbers"] = optionTypeConfig["show_line_numbers"]
 					row["config"] = config
 				case "checkbox":
+					defaultValue := optionTypeConfig["default_value"].(string)
+					if defaultValue != "true" && defaultValue != "false" {
+						return diag.Errorf("The default_value attribute cannot be set when the type attribute is set to checkbox, use the default_checked attribute instead for the %s checkbox resource: %v", optionTypeConfig["name"].(string), defaultValue)
+					}
 					row["defaultValue"] = optionTypeConfig["default_checked"]
 				case "number":
 					number, err := strconv.Atoi(optionTypeConfig["default_value"].(string))
@@ -1576,6 +1589,10 @@ func resourceFormUpdate(ctx context.Context, d *schema.ResourceData, meta interf
 							config["showLineNumbers"] = optionTypeConfig["show_line_numbers"]
 							row["config"] = config
 						case "checkbox":
+							defaultValue := optionTypeConfig["default_value"].(string)
+							if defaultValue != "true" && defaultValue != "false" {
+								return diag.Errorf("The default_value attribute cannot be set when the type attribute is set to checkbox, use the default_checked attribute instead for the %s checkbox resource", optionTypeConfig["name"].(string))
+							}
 							row["defaultValue"] = optionTypeConfig["default_checked"]
 						case "number":
 							number, err := strconv.Atoi(optionTypeConfig["default_value"].(string))
