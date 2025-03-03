@@ -189,7 +189,9 @@ func resourceCloudFormationSpecTemplateRead(ctx context.Context, d *schema.Resou
 
 	// store resource data
 	var cloudFormationSpecTemplate CloudFormationSpecTemplate
-	json.Unmarshal(resp.Body, &cloudFormationSpecTemplate)
+	if err := json.Unmarshal(resp.Body, &cloudFormationSpecTemplate); err != nil {
+		return diag.FromErr(err)
+	}
 	d.SetId(intToString(cloudFormationSpecTemplate.Spectemplate.ID))
 	d.Set("name", cloudFormationSpecTemplate.Spectemplate.Name)
 	d.Set("source_type", cloudFormationSpecTemplate.Spectemplate.File.Sourcetype)

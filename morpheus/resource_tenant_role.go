@@ -58,7 +58,9 @@ func resourceTenantRoleCreate(ctx context.Context, d *schema.ResourceData, meta 
 	var diags diag.Diagnostics
 
 	data := PermissionSet{}
-	json.Unmarshal([]byte(d.Get("permission_set").(string)), &data)
+	if err := json.Unmarshal([]byte(d.Get("permission_set").(string)), &data); err != nil {
+		return diag.FromErr(err)
+	}
 
 	var roleDefinition TenantRolePermissionPayload
 	roleDefinition.Name = d.Get("name").(string)
@@ -101,7 +103,9 @@ func resourceTenantRoleCreate(ctx context.Context, d *schema.ResourceData, meta 
 	log.Printf("API RESPONSE: %s", resp)
 
 	var role CreateRoleResult
-	json.Unmarshal(resp.Body, &role)
+	if err := json.Unmarshal(resp.Body, &role); err != nil {
+		return diag.FromErr(err)
+	}
 
 	// Successfully created resource, now set id
 	d.SetId(int64ToString(role.Role.ID))
@@ -152,7 +156,9 @@ func resourceTenantRoleRead(ctx context.Context, d *schema.ResourceData, meta in
 
 	// Convert the Morpheus API response into the permission set JSON format for comparison
 	data := PermissionSet{}
-	json.Unmarshal([]byte(d.Get("permission_set").(string)), &data)
+	if err := json.Unmarshal([]byte(d.Get("permission_set").(string)), &data); err != nil {
+		return diag.FromErr(err)
+	}
 
 	var featureList []string
 	for _, feature := range data.FeaturePermissions {
@@ -372,7 +378,9 @@ func resourceTenantRoleUpdate(ctx context.Context, d *schema.ResourceData, meta 
 	id := d.Id()
 
 	data := PermissionSet{}
-	json.Unmarshal([]byte(d.Get("permission_set").(string)), &data)
+	if err := json.Unmarshal([]byte(d.Get("permission_set").(string)), &data); err != nil {
+		return diag.FromErr(err)
+	}
 
 	var roleDefinition TenantRolePermissionPayload
 	roleDefinition.Name = d.Get("name").(string)
@@ -411,7 +419,9 @@ func resourceTenantRoleUpdate(ctx context.Context, d *schema.ResourceData, meta 
 	}
 	log.Printf("API RESPONSE: %s", resp)
 	var role CreateRoleResult
-	json.Unmarshal(resp.Body, &role)
+	if err := json.Unmarshal(resp.Body, &role); err != nil {
+		return diag.FromErr(err)
+	}
 
 	// Successfully updated resource, now set id
 	// err, it should not have changed though..

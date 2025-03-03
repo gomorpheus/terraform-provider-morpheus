@@ -334,7 +334,9 @@ func resourceClusterLayoutRead(ctx context.Context, d *schema.ResourceData, meta
 
 	// store resource data
 	var clusterLayout ClusterLayoutPayload
-	json.Unmarshal(resp.Body, &clusterLayout)
+	if err := json.Unmarshal(resp.Body, &clusterLayout); err != nil {
+		return diag.FromErr(err)
+	}
 
 	d.SetId(int64ToString(clusterLayout.ClusterLayout.ID))
 	d.Set("name", clusterLayout.ClusterLayout.Name)

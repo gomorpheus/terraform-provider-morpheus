@@ -358,7 +358,9 @@ func resourceMVMInstanceCreate(ctx context.Context, d *schema.ResourceData, meta
 	}
 
 	var itemResponsePayload ResourcePoolOptions
-	json.Unmarshal(resourcePoolResp.Body, &itemResponsePayload)
+	if err := json.Unmarshal(resourcePoolResp.Body, &itemResponsePayload); err != nil {
+		return diag.FromErr(err)
+	}
 	var resourcePoolId int
 	for _, v := range itemResponsePayload.Data {
 		if v.ProviderType == "mvm" && v.Name == d.Get("resource_pool_name").(string) {

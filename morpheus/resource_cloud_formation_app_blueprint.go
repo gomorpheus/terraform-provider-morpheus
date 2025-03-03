@@ -216,7 +216,9 @@ func resourceCloudFormationAppBlueprintRead(ctx context.Context, d *schema.Resou
 
 	// store resource data
 	var cloudformationBlueprint CloudFormationAppBlueprint
-	json.Unmarshal(resp.Body, &cloudformationBlueprint)
+	if err := json.Unmarshal(resp.Body, &cloudformationBlueprint); err != nil {
+		return diag.FromErr(err)
+	}
 	d.SetId(intToString(cloudformationBlueprint.Blueprint.ID))
 	d.Set("name", cloudformationBlueprint.Blueprint.Name)
 	d.Set("description", cloudformationBlueprint.Blueprint.Description)

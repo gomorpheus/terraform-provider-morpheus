@@ -168,7 +168,9 @@ func resourcePriceSetRead(ctx context.Context, d *schema.ResourceData, meta inte
 
 	// store resource data
 	var priceSet MorpheusPriceSet
-	json.Unmarshal(resp.Body, &priceSet)
+	if err := json.Unmarshal(resp.Body, &priceSet); err != nil {
+		return diag.FromErr(err)
+	}
 
 	// Remove the resource from state if the
 	// price set has

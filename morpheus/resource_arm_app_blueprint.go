@@ -203,7 +203,9 @@ func resourceArmAppBlueprintRead(ctx context.Context, d *schema.ResourceData, me
 
 	// store resource data
 	var armBlueprint ArmAppBlueprint
-	json.Unmarshal(resp.Body, &armBlueprint)
+	if err := json.Unmarshal(resp.Body, &armBlueprint); err != nil {
+		return diag.FromErr(err)
+	}
 	d.SetId(intToString(armBlueprint.Blueprint.ID))
 	d.Set("name", armBlueprint.Blueprint.Name)
 	d.Set("description", armBlueprint.Blueprint.Description)

@@ -242,7 +242,9 @@ func resourcePriceRead(ctx context.Context, d *schema.ResourceData, meta interfa
 
 	// store resource data
 	var price MorpheusPrice
-	json.Unmarshal(resp.Body, &price)
+	if err := json.Unmarshal(resp.Body, &price); err != nil {
+		return diag.FromErr(err)
+	}
 
 	if !price.Price.Active {
 		d.SetId("")

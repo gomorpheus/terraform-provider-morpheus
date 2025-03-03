@@ -159,7 +159,9 @@ func resourceHelmSpecTemplateRead(ctx context.Context, d *schema.ResourceData, m
 
 	// store resource data
 	var helmSpecTemplate HelmSpecTemplate
-	json.Unmarshal(resp.Body, &helmSpecTemplate)
+	if err := json.Unmarshal(resp.Body, &helmSpecTemplate); err != nil {
+		return diag.FromErr(err)
+	}
 	d.SetId(intToString(helmSpecTemplate.Spectemplate.ID))
 	d.Set("name", helmSpecTemplate.Spectemplate.Name)
 	d.Set("source_type", helmSpecTemplate.Spectemplate.File.Sourcetype)

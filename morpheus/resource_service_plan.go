@@ -354,7 +354,9 @@ func resourceServicePlanRead(ctx context.Context, d *schema.ResourceData, meta i
 
 	// store resource data
 	var servicePlan MorpheusPlan
-	json.Unmarshal(resp.Body, &servicePlan)
+	if err := json.Unmarshal(resp.Body, &servicePlan); err != nil {
+		return diag.FromErr(err)
+	}
 
 	d.SetId(intToString(int(servicePlan.ServicePlan.ID)))
 	d.Set("name", servicePlan.ServicePlan.Name)

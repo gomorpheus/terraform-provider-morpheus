@@ -143,7 +143,9 @@ func resourceInstanceCatalogItemCreate(ctx context.Context, d *schema.ResourceDa
 	var outjson map[string]interface{}
 
 	// Unmarshal or Decode the JSON to the interface.
-	json.Unmarshal([]byte(d.Get("config").(string)), &outjson)
+	if err := json.Unmarshal([]byte(d.Get("config").(string)), &outjson); err != nil {
+		return diag.FromErr(err)
+	}
 	catalogItem["config"] = outjson
 
 	labelsPayload := make([]string, 0)
@@ -288,7 +290,9 @@ func resourceInstanceCatalogItemUpdate(ctx context.Context, d *schema.ResourceDa
 	var outjson map[string]interface{}
 
 	// Unmarshal or Decode the JSON to the interface.
-	json.Unmarshal([]byte(d.Get("config").(string)), &outjson)
+	if err := json.Unmarshal([]byte(d.Get("config").(string)), &outjson); err != nil {
+		return diag.FromErr(err)
+	}
 	catalogItem["config"] = outjson
 
 	labelsPayload := make([]string, 0)
@@ -334,7 +338,9 @@ func resourceInstanceCatalogItemUpdate(ctx context.Context, d *schema.ResourceDa
 			FileContent:   data,
 		}
 		filePayloads = append(filePayloads, filePayload)
-		client.UpdateCatalogItemLogo(catalogItemResult.ID, filePayloads, &morpheus.Request{})
+		if _, err := client.UpdateCatalogItemLogo(catalogItemResult.ID, filePayloads, &morpheus.Request{}); err != nil {
+			return diag.FromErr(err)
+		}
 	}
 
 	// Successfully updated resource, now set id
