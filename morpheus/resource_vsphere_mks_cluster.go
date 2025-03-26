@@ -154,6 +154,7 @@ func resourceVsphereMKSCluster() *schema.Resource {
 			"master_node_pool": {
 				Type:        schema.TypeList,
 				Description: "Master node pool configuration",
+				ForceNew:    true,
 				Optional:    true,
 				MaxItems:    1,
 				Elem: &schema.Resource{
@@ -254,14 +255,14 @@ func resourceVsphereMKSCluster() *schema.Resource {
 				Type:        schema.TypeList,
 				Description: "Worker node pool configuration",
 				Optional:    true,
-				ForceNew:    true,
+				ForceNew:    false,
 				MaxItems:    1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"count": {
 							Description:      "The number of worker nodes",
 							Type:             schema.TypeInt,
-							ForceNew:         true,
+							ForceNew:         false,
 							Required:         true,
 							DefaultFunc:      defaultCountFunc,
 							ValidateDiagFunc: validateCountDiagFunc,
@@ -282,7 +283,7 @@ func resourceVsphereMKSCluster() *schema.Resource {
 						"tags": {
 							Description: "Tags to assign to the cluster worker nodes",
 							Type:        schema.TypeMap,
-							ForceNew:    true,
+							ForceNew:    false,
 							Optional:    true,
 							Computed:    true,
 							Elem:        &schema.Schema{Type: schema.TypeString},
