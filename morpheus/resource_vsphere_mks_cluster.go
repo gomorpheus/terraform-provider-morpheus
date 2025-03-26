@@ -243,7 +243,7 @@ func resourceVsphereMKSCluster() *schema.Resource {
 						"tags": {
 							Description: "Tags to assign to the cluster master nodes",
 							Type:        schema.TypeMap,
-							ForceNew:    true,
+							ForceNew:    false,
 							Optional:    true,
 							Computed:    true,
 							Elem:        &schema.Schema{Type: schema.TypeString},
