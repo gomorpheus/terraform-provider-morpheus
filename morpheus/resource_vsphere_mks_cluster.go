@@ -8,10 +8,26 @@ import (
 	"time"
 
 	"github.com/gomorpheus/morpheus-go-sdk"
+	"github.com/hashicorp/go-cty/cty"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
+
+const minimumMKSWorkerNodes = 3
+
+func validateCountDiagFunc(i interface{}, _ cty.Path) diag.Diagnostics {
+	count := i.(int)
+	if count < minimumMKSWorkerNodes {
+		return diag.Errorf("count must be a minimum of %d, count is %d", minimumMKSWorkerNodes, count)
+	}
+
+	return nil
+}
+
+func defaultCountFunc() (interface{}, error) {
+	return minimumMKSWorkerNodes, nil
+}
 
 func resourceVsphereMKSCluster() *schema.Resource {
 	return &schema.Resource{
@@ -243,10 +259,12 @@ func resourceVsphereMKSCluster() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"count": {
-							Description: "The number of worker nodes",
-							Type:        schema.TypeInt,
-							ForceNew:    true,
-							Required:    true,
+							Description:      "The number of worker nodes",
+							Type:             schema.TypeInt,
+							ForceNew:         true,
+							Required:         true,
+							DefaultFunc:      defaultCountFunc,
+							ValidateDiagFunc: validateCountDiagFunc,
 						},
 						"plan_id": {
 							Description: "The ID of the service plan associated with the worker nodes in the cluster",
@@ -396,7 +414,7 @@ func resourceVsphereMKSClusterCreate(ctx context.Context, d *schema.ResourceData
 		"defaultRepoAccount": d.Get("cluster_repo_account_id").(int),
 	}
 	serverPayload["nodeCount"] = workerpool["count"]
-	//serverPayload["visibility"] = d.Get("visibility").(string)
+	// serverPayload["visibility"] = d.Get("visibility").(string)
 	serverPayload["volumes"] = parseStorageVolumes(masterpool["storage_volume"].([]interface{}))
 	serverPayload["networkInterfaces"] = parseMasterNetworkInterfaces(masterpool["network_interface"].([]interface{}))
 
@@ -561,7 +579,7 @@ func resourceVsphereMKSClusterRead(ctx context.Context, d *schema.ResourceData, 
 	d.Set("cloud_id", cluster.Zone.Id)
 	d.Set("group_id", cluster.Site.Id)
 	d.Set("cluster_layout_id", cluster.Layout.Id)
-	//d.Set("visibility", cluster.Visibility)
+	// d.Set("visibility", cluster.Visibility)
 	d.Set("kubernetes_version", cluster.ServiceVersion)
 	d.Set("api_endpoint", cluster.ServiceUrl)
 	return diags
