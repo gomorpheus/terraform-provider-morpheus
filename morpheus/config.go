@@ -2,9 +2,11 @@ package morpheus
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/gomorpheus/morpheus-go-sdk"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/logging"
 )
 
 // Config is the configuration structure used to instantiate the Morpheus
@@ -26,8 +28,11 @@ type Config struct {
 }
 
 func (c *Config) Client() (*morpheus.Client, diag.Diagnostics) {
+
+	debug := logging.IsDebugOrHigher() && os.Getenv("MORPHEUS_API_HTTPTRACE") == "true"
+
 	if c.client == nil {
-		client := morpheus.NewClient(c.Url)
+		client := morpheus.NewClient(c.Url, morpheus.WithDebug(debug))
 		// should validate url here too, and maybe ping it
 		// logging with access token or username and password?
 		if c.Username != "" {
