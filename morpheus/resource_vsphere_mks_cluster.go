@@ -688,14 +688,17 @@ func resourceVsphereMKSClusterUpdate(ctx context.Context, d *schema.ResourceData
 		if !ok {
 			return diag.Errorf("failed to get old worker_node_pool.count")
 		}
+
 		oldCount, ok := oldValues["count"].(int)
 		if !ok {
 			return diag.Errorf("failed to get old worker_node_pool.count as int")
 		}
+
 		newValues, ok := n.([]interface{})[0].(map[string]interface{})
 		if !ok {
 			return diag.Errorf("failed to get new worker_node_pool.count")
 		}
+
 		newCount, ok := newValues["count"].(int)
 		if !ok {
 			return diag.Errorf("failed to get new worker_node_pool.count as int")
@@ -709,7 +712,6 @@ func resourceVsphereMKSClusterUpdate(ctx context.Context, d *schema.ResourceData
 				if err != nil {
 					return diag.Errorf("error adding cluster worker node(s): %s", err)
 				}
-
 			} else {
 				// Make countDelta positive to pass to doClusterWorkerDelete
 				countDelta = -countDelta
@@ -719,7 +721,6 @@ func resourceVsphereMKSClusterUpdate(ctx context.Context, d *schema.ResourceData
 				}
 			}
 		}
-
 	}
 
 	clusterPayload := map[string]interface{}{}
