@@ -2,6 +2,7 @@ package morpheus
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"strconv"
@@ -385,7 +386,7 @@ func resourceVsphereMKSClusterCreate(ctx context.Context, d *schema.ResourceData
 		"id": d.Get("group_id").(int),
 	}
 
-	// Labels - AWAITING API SUPPORT
+	// Labels - AWAITING API support
 	//if d.Get("labels") != nil {
 	//	clusterPayload["labels"] = d.Get("labels")
 	//}
@@ -586,10 +587,143 @@ func resourceVsphereMKSClusterRead(ctx context.Context, d *schema.ResourceData, 
 	return diags
 }
 
+func doClusterWorkerAdd(client *morpheus.Client, clusterId int64, nodeCount int, d *schema.ResourceData) error {
+	// Need to pull out some data from the worker_node_pool to send in the add worker requeset
+	workerpool := d.Get("worker_node_pool").([]interface{})[0].(map[string]interface{})
+
+	serverPayload := map[string]interface{}{}
+	serverPayload["config"] = map[string]interface{}{
+		"podCidr":        d.Get("pod_cidr").(string),
+		"serviceCidr":    d.Get("service_cidr").(string),
+		"nodeCount":      workerpool["count"], // Might need to go in serverPayload.server
+		"resourcePoolId": workerpool["resource_pool_id"],
+		// "vmwareFolderId": workerpool[]
+		"defaultRepoAccount": d.Get("cluster_repo_account_id").(int),
+	}
+
+	// Let Morpheus set the name for us.
+	// Description not supported by update
+	serverPayload["cloud"] = map[string]interface{}{
+		"id": d.Get("cloud_id").(int),
+	}
+	serverPayload["plan"] = map[string]interface{}{
+		"id": workerpool["plan_id"],
+	}
+	// We have the service plan from above, don't set additional servicePlanOptions
+	serverPayload["volumes"] = parseStorageVolumes(workerpool["storage_volume"].([]interface{}))
+	serverPayload["networkInterfaces"] = parseWorkerNetworkInterfaces(workerpool["network_interface"].([]interface{}))
+
+	// NOTE: might not need this
+	// serverPayload["apiProxy"] = map[string]interface{}{
+	// 	"id": d.Get("api_proxy_id").(int),
+	// }
+
+	serverPayload["nodeCount"] = nodeCount
+
+	// NOTE: Needed to fix a bug, fixed in Morpheus 8.05
+	serverPayload["server"] = map[string]interface{}{
+		"network": map[string]interface{}{
+			// "name": "eth0",
+		},
+	}
+	serverPayload["network"] = map[string]interface{}{
+		// "name": "eth0",
+	}
+
+	req := &morpheus.Request{Body: map[string]interface{}{
+		"server": serverPayload,
+	}}
+
+	resp, err := client.AddClusterWorker(clusterId, req)
+	if err != nil {
+		log.Printf("API FAILURE - Error in creating cluster worker node(s): %s - %s", resp, err)
+		return err
+	}
+
+	return nil
+}
+
+func doClusterWorkerDelete(client *morpheus.Client, clusterId int64, nodeCount int) error {
+
+	resp, err := client.ListClusterWorkers(clusterId, &morpheus.Request{})
+	if err != nil {
+		log.Printf("API FAILURE - Error in listing cluster worker nodes: %s - %s", resp, err)
+		return err
+	}
+
+	// Delete the first n cluster workers that come in the response
+	workerResp, ok := resp.Result.(morpheus.ListClusterWorkersResults)
+	if !ok {
+		return errors.New("failed to get cluster workers from response")
+	}
+
+	if workerResp.Workers == nil {
+		if nodeCount > len(*workerResp.Workers) {
+			return errors.New("attempted to delete more workers than exist on the cluster")
+		}
+		return errors.New("cluster has no workers to delete")
+	}
+
+	deleteWorkers := (*workerResp.Workers)[:nodeCount]
+
+	for _, worker := range deleteWorkers {
+		resp, err := client.DeleteClusterWorker(toInt64(clusterId), worker.ID, &morpheus.Request{})
+		if err != nil {
+			log.Printf("API FAILURE - Error in deleting cluster worker node: %s - %s", resp, err)
+			return err
+		}
+	}
+	return nil
+}
+
 func resourceVsphereMKSClusterUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*morpheus.Client)
 	id := d.Id()
+	clusterId := toInt64(id)
+
+	// First check for changes in worker node pool
+	if d.HasChange("worker_node_pool") {
+		o, n := d.GetChange("worker_node_pool")
+		oldValues, ok := o.([]interface{})[0].(map[string]interface{})
+		if !ok {
+			return diag.Errorf("failed to get old worker_node_pool.count")
+		}
+		oldCount, ok := oldValues["count"].(int)
+		if !ok {
+			return diag.Errorf("failed to get old worker_node_pool.count as int")
+		}
+		newValues, ok := n.([]interface{})[0].(map[string]interface{})
+		if !ok {
+			return diag.Errorf("failed to get new worker_node_pool.count")
+		}
+		newCount, ok := newValues["count"].(int)
+		if !ok {
+			return diag.Errorf("failed to get new worker_node_pool.count as int")
+		}
+
+		if newCount != oldCount {
+			countDelta := newCount - oldCount
+			if countDelta > 0 {
+				countDelta := newCount - oldCount
+				err := doClusterWorkerAdd(client, clusterId, countDelta, d)
+				if err != nil {
+					return diag.Errorf("error adding cluster worker node(s): %s", err)
+				}
+
+			} else {
+				// Make countDelta positive to pass to doClusterWorkerDelete
+				countDelta = -countDelta
+				err := doClusterWorkerDelete(client, clusterId, countDelta)
+				if err != nil {
+					return diag.Errorf("error deleting cluster worker node(s): %s", err)
+				}
+			}
+		}
+
+	}
+
 	clusterPayload := map[string]interface{}{}
+
 	if d.HasChange("name") {
 		clusterPayload["name"] = d.Get("name").(string)
 	}
@@ -598,20 +732,19 @@ func resourceVsphereMKSClusterUpdate(ctx context.Context, d *schema.ResourceData
 		clusterPayload["description"] = d.Get("description").(string)
 	}
 
-	req := &morpheus.Request{Body: map[string]interface{}{
-		"cluster": clusterPayload,
-	}}
+	if len(clusterPayload) > 0 {
+		req := &morpheus.Request{Body: map[string]interface{}{
+			"cluster": clusterPayload,
+		}}
 
-	resp, err := client.UpdateCluster(toInt64(id), req)
-	if err != nil {
-		log.Printf("API FAILURE: %s - %s", resp, err)
-		return diag.FromErr(err)
+		resp, err := client.UpdateCluster(toInt64(id), req)
+		if err != nil {
+			log.Printf("API FAILURE: %s - %s", resp, err)
+			return diag.FromErr(err)
+		}
+		log.Printf("API RESPONSE: %s", resp)
 	}
-	log.Printf("API RESPONSE: %s", resp)
-	result := resp.Result.(*morpheus.UpdateClusterResult)
-	cluster := result.Cluster
-	// Successfully updated resource, now set id
-	d.SetId(int64ToString(cluster.ID))
+
 	return resourceVsphereMKSClusterRead(ctx, d, meta)
 }
 
