@@ -690,6 +690,7 @@ func doClusterWorkerAdd(client *morpheus.Client, clusterId int64, nodeCount int,
 	resp, err := client.AddClusterWorker(clusterId, req)
 	if err != nil {
 		log.Printf("API FAILURE - Error in creating cluster worker node(s): %s - %s", resp, err)
+
 		return err
 	}
 
@@ -697,28 +698,27 @@ func doClusterWorkerAdd(client *morpheus.Client, clusterId int64, nodeCount int,
 }
 
 func doClusterWorkerDelete(client *morpheus.Client, clusterId int64, nodeCount int) error {
-
-	resp, err := client.ListClusterWorkers(clusterId, &morpheus.Request{})
+	workers, err := getClusterWorkers(client, clusterId)
 	if err != nil {
 		return err
 	}
 
 	deleteWorkers := (*workers)[:nodeCount]
-
 	for _, worker := range deleteWorkers {
-		resp, err := client.DeleteClusterWorker(toInt64(clusterId), worker.ID, &morpheus.Request{})
+		resp, err := client.DeleteClusterWorker(clusterId, worker.ID, &morpheus.Request{})
 		if err != nil {
 			log.Printf("API FAILURE - Error in deleting cluster worker node: %s - %s", resp, err)
+
 			return err
 		}
 	}
+
 	return nil
 }
 
 func resourceVsphereMKSClusterUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*morpheus.Client)
-	id := d.Id()
-	clusterId := toInt64(id)
+	clusterId := toInt64(d.Id())
 
 	// First check for changes in worker node pool
 	if d.HasChange("worker_node_pool") {
@@ -745,15 +745,13 @@ func resourceVsphereMKSClusterUpdate(ctx context.Context, d *schema.ResourceData
 
 		if newCount != oldCount {
 			countDelta := newCount - oldCount
+
 			if countDelta > 0 {
-				countDelta := newCount - oldCount
 				err := doClusterWorkerAdd(client, clusterId, countDelta, d)
 				if err != nil {
 					return diag.Errorf("error adding cluster worker node(s): %s", err)
 				}
 			} else {
-				// Make countDelta positive to pass to doClusterWorkerDelete
-				countDelta = -countDelta
 				err := doClusterWorkerDelete(client, clusterId, countDelta)
 				if err != nil {
 					return diag.Errorf("error deleting cluster worker node(s): %s", err)
@@ -777,7 +775,7 @@ func resourceVsphereMKSClusterUpdate(ctx context.Context, d *schema.ResourceData
 			"cluster": clusterPayload,
 		}}
 
-		resp, err := client.UpdateCluster(toInt64(id), req)
+		resp, err := client.UpdateCluster(clusterId, req)
 		if err != nil {
 			log.Printf("API FAILURE: %s - %s", resp, err)
 			return diag.FromErr(err)
