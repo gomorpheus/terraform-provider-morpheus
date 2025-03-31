@@ -624,13 +624,22 @@ func resourceVsphereMKSClusterRead(ctx context.Context, d *schema.ResourceData, 
 		volumes = append(volumes, volume)
 	}
 
+	var networks []map[string]interface{}
+	for _, v := range worker.Interfaces {
+		network := map[string]interface{}{
+			"network_id": v.Network.ID,
+		}
+		networks = append(networks, network)
+	}
+
 	workerNodePool := []interface{}{
 		map[string]interface{}{
-			"count":            len(*workers),
-			"plan_id":          worker.Plan.ID,
-			"resource_pool_id": worker.ResourcePoolId,
-			"tags":             tags,
-			"storage_volume":   volumes,
+			"count":             len(*workers),
+			"plan_id":           worker.Plan.ID,
+			"resource_pool_id":  worker.ResourcePoolId,
+			"tags":              tags,
+			"storage_volume":    volumes,
+			"network_interface": networks,
 		},
 	}
 
