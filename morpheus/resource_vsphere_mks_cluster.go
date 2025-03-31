@@ -15,7 +15,27 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-const minimumMKSWorkerNodes = 3
+const (
+	minimumMKSWorkerNodes = 3
+
+	statusCancelled      = "cancelled"
+	statusDenied         = "denied"
+	statusDeprovisioning = "deprovisioning"
+	statusFailed         = "failed"
+	statusOk             = "ok"
+	statusPending        = "pending"
+	statusPendingRemoval = "pendingRemoval"
+	statusProvisioning   = "provisioning"
+	statusProvisioned    = "provisioned"
+	statusRemoved        = "removed"
+	statusRemoving       = "removing"
+	statusRunning        = "running"
+	statusStarting       = "starting"
+	statusStopping       = "stopping"
+	statusSuspended      = "suspended"
+	statusSyncing        = "syncing"
+	statusWarning        = "warning"
+)
 
 func validateCountDiagFunc(i interface{}, _ cty.Path) diag.Diagnostics {
 	count := i.(int)
@@ -367,7 +387,7 @@ func resourceVsphereMKSCluster() *schema.Resource {
 	}
 }
 
-func getClusterWorkers(client *morpheus.Client, clusterId int64) (*[]morpheus.ClusterWorker, error) {
+func getClusterWorkers(client *morpheus.Client, clusterId int64) ([]morpheus.ClusterWorker, error) {
 	resp, err := client.ListClusterWorkers(clusterId, &morpheus.Request{})
 	if err != nil {
 		log.Printf("API FAILURE - Error in listing cluster worker nodes: %s - %s", resp, err)
@@ -379,17 +399,31 @@ func getClusterWorkers(client *morpheus.Client, clusterId int64) (*[]morpheus.Cl
 		return nil, err
 	}
 
-	// Skip deprovisioning workers
-	var workers []morpheus.ClusterWorker
-	for _, worker := range *workerResp.Workers {
-		if worker.Status == "deprovisioning" {
-			continue
-		}
+	return *workerResp.Workers, nil
+}
 
-		workers = append(workers, worker)
+func filterClusterWorkersByStatus(workers []morpheus.ClusterWorker, status string) []morpheus.ClusterWorker {
+	var filteredWorkers []morpheus.ClusterWorker
+
+	for _, worker := range workers {
+		if worker.Status == status {
+			filteredWorkers = append(filteredWorkers, worker)
+		}
 	}
 
-	return &workers, nil
+	return filteredWorkers
+}
+
+func filterOutClusterWorkersByStatus(workers []morpheus.ClusterWorker, status string) []morpheus.ClusterWorker {
+	var filteredWorkers []morpheus.ClusterWorker
+
+	for _, worker := range workers {
+		if worker.Status != status {
+			filteredWorkers = append(filteredWorkers, worker)
+		}
+	}
+
+	return filteredWorkers
 }
 
 func resourceVsphereMKSClusterCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
@@ -495,11 +529,11 @@ func resourceVsphereMKSClusterCreate(ctx context.Context, d *schema.ResourceData
 	log.Printf("API RESPONSE: %s", resp)
 	result := resp.Result.(*morpheus.CreateClusterResult)
 	cluster := result.Cluster
-	clusterStatus := "provisioning"
+	clusterStatus := statusProvisioning
 
 	stateConf := &resource.StateChangeConf{
-		Pending: []string{"provisioning", "starting", "stopping", "pending", "syncing"},
-		Target:  []string{"running", "failed", "warning", "denied", "cancelled", "suspended", "ok"},
+		Pending: []string{statusProvisioning, statusStarting, statusStopping, statusPending, statusSyncing},
+		Target:  []string{statusRunning, statusFailed, statusWarning, statusDenied, statusCancelled, statusSuspended, statusOk},
 		Refresh: func() (interface{}, string, error) {
 			clusterDetails, err := client.GetCluster(cluster.ID, &morpheus.Request{})
 			if err != nil {
@@ -509,7 +543,7 @@ func resourceVsphereMKSClusterCreate(ctx context.Context, d *schema.ResourceData
 			result := clusterDetails.Result.(*morpheus.GetClusterResult)
 			cluster := result.Cluster
 			clusterStatus = cluster.Status
-			if clusterStatus == "failed" {
+			if clusterStatus == statusFailed {
 				hostsDetails, err := client.ListHosts(&morpheus.Request{
 					QueryParams: map[string]string{
 						"clusterId": strconv.Itoa(int(cluster.ID)),
@@ -523,17 +557,17 @@ func resourceVsphereMKSClusterCreate(ctx context.Context, d *schema.ResourceData
 					// Override the cluster status if the worker nodes are still provisioning
 					// to avoid a false failure while the cluster is still being deployed. This is
 					// a workaround that has been fixed in 8.0.4 but has been added for legacy support.
-					if host.Status == "provisioning" {
-						clusterStatus = "provisioning"
+					if host.Status == statusProvisioning {
+						clusterStatus = statusProvisioning
 					}
 				}
 			}
 			// Added an arbitrary wait period for cluster refresh.
 			// This should probably trigger a cluster refresh and then poll
 			// the cluster to reach a definitive state.
-			if clusterStatus == "failed" {
+			if clusterStatus == statusFailed {
 				time.Sleep(3 * time.Minute)
-				clusterStatus = "ok"
+				clusterStatus = statusOk
 			}
 
 			return result, clusterStatus, nil
@@ -555,7 +589,7 @@ func resourceVsphereMKSClusterCreate(ctx context.Context, d *schema.ResourceData
 	resourceVsphereMKSClusterRead(ctx, d, meta)
 
 	// Fail the cluster deployment if the cluster status is in a failed state
-	if clusterStatus == "failed" {
+	if clusterStatus == statusFailed {
 		return diag.Errorf("error creating cluster: failed to create cluster")
 	}
 	return diags
@@ -613,7 +647,8 @@ func resourceVsphereMKSClusterRead(ctx context.Context, d *schema.ResourceData, 
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	worker := (*workers)[0]
+	workers = filterOutClusterWorkersByStatus(workers, statusDeprovisioning)
+	worker := workers[0]
 
 	tags := make(map[string]interface{}, len(worker.Tags))
 	for _, i := range worker.Tags {
@@ -644,7 +679,7 @@ func resourceVsphereMKSClusterRead(ctx context.Context, d *schema.ResourceData, 
 
 	workerNodePool := []interface{}{
 		map[string]interface{}{
-			"count":             len(*workers),
+			"count":             len(workers),
 			"plan_id":           worker.Plan.ID,
 			"resource_pool_id":  worker.ResourcePoolId,
 			"tags":              tags,
@@ -665,7 +700,8 @@ func doClusterWorkerAdd(client *morpheus.Client, clusterId int64, nodeCount int,
 	if err != nil {
 		return err
 	}
-	worker := (*workers)[0]
+	worker := workers[0]
+	desiredWorkerCount := len(workers) + nodeCount
 
 	serverPayload := map[string]interface{}{}
 	serverPayload["config"] = map[string]interface{}{
@@ -709,6 +745,26 @@ func doClusterWorkerAdd(client *morpheus.Client, clusterId int64, nodeCount int,
 		return err
 	}
 
+	for {
+		log.Printf("Waiting for all cluster worker nodes to be provisioned...")
+		time.Sleep(30 * time.Second)
+
+		workers, err := getClusterWorkers(client, clusterId)
+		if err != nil {
+			return err
+		}
+
+		failedWorkers := filterClusterWorkersByStatus(workers, statusFailed)
+		if len(failedWorkers) > 0 {
+			return fmt.Errorf("failed to provision all cluster worker nodes")
+		}
+
+		provisionedWorkers := filterClusterWorkersByStatus(workers, statusProvisioned)
+		if len(provisionedWorkers) == desiredWorkerCount {
+			break
+		}
+	}
+
 	return nil
 }
 
@@ -717,14 +773,30 @@ func doClusterWorkerDelete(client *morpheus.Client, clusterId int64, nodeCount i
 	if err != nil {
 		return err
 	}
+	workers = filterOutClusterWorkersByStatus(workers, statusDeprovisioning)
 
-	deleteWorkers := (*workers)[len(*workers)+nodeCount:]
+	deleteWorkers := workers[len(workers)+nodeCount:]
 	for _, worker := range deleteWorkers {
 		resp, err := client.DeleteClusterWorker(clusterId, worker.ID, &morpheus.Request{})
 		if err != nil {
 			log.Printf("API FAILURE - Error in deleting cluster worker node: %s - %s", resp, err)
 
 			return err
+		}
+	}
+
+	for {
+		log.Printf("Waiting for cluster worker nodes to be deprovisioned...")
+		time.Sleep(30 * time.Second)
+
+		workers, err := getClusterWorkers(client, clusterId)
+		if err != nil {
+			return err
+		}
+
+		deprovisioningWorkers := filterClusterWorkersByStatus(workers, statusDeprovisioning)
+		if len(deprovisioningWorkers) == 0 {
+			break
 		}
 	}
 
@@ -830,8 +902,8 @@ func resourceVsphereMKSClusterDelete(ctx context.Context, d *schema.ResourceData
 	log.Printf("API RESPONSE: %s", resp)
 
 	stateConf := &resource.StateChangeConf{
-		Pending: []string{"removing", "pendingRemoval", "stopping", "pending", "warning", "deprovisioning"},
-		Target:  []string{"removed"},
+		Pending: []string{statusRemoving, statusPendingRemoval, statusStopping, statusPending, statusWarning, statusDeprovisioning},
+		Target:  []string{statusRemoved},
 		Refresh: func() (interface{}, string, error) {
 			clusterDetails, err := client.GetCluster(toInt64(id), &morpheus.Request{})
 			if clusterDetails.StatusCode == 404 {
