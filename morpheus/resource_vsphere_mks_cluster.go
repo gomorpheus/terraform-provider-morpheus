@@ -649,46 +649,43 @@ func resourceVsphereMKSClusterRead(ctx context.Context, d *schema.ResourceData, 
 }
 
 func doClusterWorkerAdd(client *morpheus.Client, clusterId int64, nodeCount int, d *schema.ResourceData) error {
-	// Need to pull out some data from the worker_node_pool to send in the add worker requeset
 	workerpool := d.Get("worker_node_pool").([]interface{})[0].(map[string]interface{})
+
+	workers, err := getClusterWorkers(client, clusterId)
+	if err != nil {
+		return err
+	}
+	worker := (*workers)[0]
 
 	serverPayload := map[string]interface{}{}
 	serverPayload["config"] = map[string]interface{}{
-		"podCidr":        d.Get("pod_cidr").(string),
-		"serviceCidr":    d.Get("service_cidr").(string),
-		"nodeCount":      workerpool["count"], // Might need to go in serverPayload.server
-		"resourcePoolId": workerpool["resource_pool_id"],
-		// "vmwareFolderId": workerpool[]
+		"podCidr":            d.Get("pod_cidr").(string),
+		"serviceCidr":        d.Get("service_cidr").(string),
+		"nodeCount":          workerpool["count"], // Might need to go in serverPayload.server
+		"resourcePoolId":     workerpool["resource_pool_id"],
 		"defaultRepoAccount": d.Get("cluster_repo_account_id").(int),
 	}
 
-	// Let Morpheus set the name for us.
-	// Description not supported by update
+	// We will let Morpheus set the name for us.
+
+	serverPayload["serverType"] = map[string]interface{}{
+		"id": worker.ComputeServerType.ID,
+	}
 	serverPayload["cloud"] = map[string]interface{}{
 		"id": d.Get("cloud_id").(int),
 	}
 	serverPayload["plan"] = map[string]interface{}{
 		"id": workerpool["plan_id"],
 	}
-	// We have the service plan from above, don't set additional servicePlanOptions
+
 	serverPayload["volumes"] = parseStorageVolumes(workerpool["storage_volume"].([]interface{}))
-	serverPayload["networkInterfaces"] = parseWorkerNetworkInterfaces(workerpool["network_interface"].([]interface{}))
-
-	// NOTE: might not need this
-	// serverPayload["apiProxy"] = map[string]interface{}{
-	// 	"id": d.Get("api_proxy_id").(int),
-	// }
-
+	serverPayload["networkInterfaces"] = parseWorkerNetworkInterfacesForWorkerPayload(workerpool["network_interface"].([]interface{}))
 	serverPayload["nodeCount"] = nodeCount
+	serverPayload["tags"] = parseTags(workerpool["tags"].(map[string]interface{}))
 
-	// NOTE: Needed to fix a bug, fixed in Morpheus 8.05
+	// NOTE: Not needed from Morpheus 8.05 onward
 	serverPayload["server"] = map[string]interface{}{
-		"network": map[string]interface{}{
-			// "name": "eth0",
-		},
-	}
-	serverPayload["network"] = map[string]interface{}{
-		// "name": "eth0",
+		"network": map[string]interface{}{},
 	}
 
 	req := &morpheus.Request{Body: map[string]interface{}{
@@ -883,6 +880,25 @@ func parseWorkerNetworkInterfaces(variables []interface{}) []map[string]interfac
 			case "network_id":
 				networkId := make(map[string]interface{})
 				networkId["id"] = v.(int)
+				networkInterface["network"] = networkId
+			}
+		}
+		networkInterfaces = append(networkInterfaces, networkInterface)
+	}
+	return networkInterfaces
+}
+
+func parseWorkerNetworkInterfacesForWorkerPayload(variables []interface{}) []map[string]interface{} {
+	// For a payload for Add Workers API, it expects the ID of the network interface in the string form "network-{id}"
+	var networkInterfaces []map[string]interface{}
+
+	for i := 0; i < len(variables); i++ {
+		networkInterface := make(map[string]interface{})
+		for k, v := range variables[i].(map[string]interface{}) {
+			switch k {
+			case "network_id":
+				networkId := make(map[string]interface{})
+				networkId["id"] = fmt.Sprintf("network-%d", v.(int))
 				networkInterface["network"] = networkId
 			}
 		}
