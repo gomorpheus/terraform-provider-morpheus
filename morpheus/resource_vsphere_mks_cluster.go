@@ -581,7 +581,6 @@ func resourceVsphereMKSClusterRead(ctx context.Context, d *schema.ResourceData, 
 			return diag.FromErr(err)
 		}
 	}
-	log.Printf("API RESPONSE: %s", resp)
 
 	// store resource data
 	result := resp.Result.(*morpheus.GetClusterResult)
@@ -614,13 +613,13 @@ func resourceVsphereMKSClusterRead(ctx context.Context, d *schema.ResourceData, 
 
 	var volumes []map[string]interface{}
 	for _, v := range worker.Volumes {
-		log.Printf("VOLUME: %+v", v)
+		sizeGB := v.MaxStorage / (1 << 30)
 		volume := map[string]interface{}{
 			"root":         v.RootVolume,
 			"name":         v.Name,
 			"datastore_id": v.DatastoreId,
-			"storage_type": v.StorageType,
-			"size":         v.Size,
+			"storage_type": v.TypeId,
+			"size":         sizeGB,
 		}
 		volumes = append(volumes, volume)
 	}
