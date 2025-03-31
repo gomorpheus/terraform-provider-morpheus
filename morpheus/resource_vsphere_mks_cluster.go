@@ -2,7 +2,7 @@ package morpheus
 
 import (
 	"context"
-	"errors"
+	"encoding/json"
 	"fmt"
 	"log"
 	"strconv"
@@ -367,6 +367,21 @@ func resourceVsphereMKSCluster() *schema.Resource {
 	}
 }
 
+func getClusterWorkers(client *morpheus.Client, clusterId int64) (*[]morpheus.ClusterWorker, error) {
+	resp, err := client.ListClusterWorkers(clusterId, &morpheus.Request{})
+	if err != nil {
+		log.Printf("API FAILURE - Error in listing cluster worker nodes: %s - %s", resp, err)
+		return nil, err
+	}
+
+	var workerResp morpheus.ListClusterWorkersResults
+	if err := json.Unmarshal(resp.Body, &workerResp); err != nil {
+		return nil, err
+	}
+
+	return workerResp.Workers, nil
+}
+
 func resourceVsphereMKSClusterCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*morpheus.Client)
 
@@ -584,6 +599,44 @@ func resourceVsphereMKSClusterRead(ctx context.Context, d *schema.ResourceData, 
 	// d.Set("visibility", cluster.Visibility)
 	d.Set("kubernetes_version", cluster.ServiceVersion)
 	d.Set("api_endpoint", cluster.ServiceUrl)
+
+	workers, err := getClusterWorkers(client, cluster.ID)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	worker := (*workers)[0]
+
+	tags := make(map[string]interface{}, len(worker.Tags))
+	for _, i := range worker.Tags {
+		tag := i.(map[string]interface{})
+		tags[tag["name"].(string)] = tag["value"]
+	}
+
+	var volumes []map[string]interface{}
+	for _, v := range worker.Volumes {
+		log.Printf("VOLUME: %+v", v)
+		volume := map[string]interface{}{
+			"root":         v.RootVolume,
+			"name":         v.Name,
+			"datastore_id": v.DatastoreId,
+			"storage_type": v.StorageType,
+			"size":         v.Size,
+		}
+		volumes = append(volumes, volume)
+	}
+
+	workerNodePool := []interface{}{
+		map[string]interface{}{
+			"count":            len(*workers),
+			"plan_id":          worker.Plan.ID,
+			"resource_pool_id": worker.ResourcePoolId,
+			"tags":             tags,
+			"storage_volume":   volumes,
+		},
+	}
+
+	d.Set("worker_node_pool", workerNodePool)
+
 	return diags
 }
 
@@ -647,24 +700,10 @@ func doClusterWorkerDelete(client *morpheus.Client, clusterId int64, nodeCount i
 
 	resp, err := client.ListClusterWorkers(clusterId, &morpheus.Request{})
 	if err != nil {
-		log.Printf("API FAILURE - Error in listing cluster worker nodes: %s - %s", resp, err)
 		return err
 	}
 
-	// Delete the first n cluster workers that come in the response
-	workerResp, ok := resp.Result.(morpheus.ListClusterWorkersResults)
-	if !ok {
-		return errors.New("failed to get cluster workers from response")
-	}
-
-	if workerResp.Workers == nil {
-		if nodeCount > len(*workerResp.Workers) {
-			return errors.New("attempted to delete more workers than exist on the cluster")
-		}
-		return errors.New("cluster has no workers to delete")
-	}
-
-	deleteWorkers := (*workerResp.Workers)[:nodeCount]
+	deleteWorkers := (*workers)[:nodeCount]
 
 	for _, worker := range deleteWorkers {
 		resp, err := client.DeleteClusterWorker(toInt64(clusterId), worker.ID, &morpheus.Request{})
