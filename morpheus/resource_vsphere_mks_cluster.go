@@ -379,7 +379,17 @@ func getClusterWorkers(client *morpheus.Client, clusterId int64) (*[]morpheus.Cl
 		return nil, err
 	}
 
-	return workerResp.Workers, nil
+	// Skip deprovisioning workers
+	var workers []morpheus.ClusterWorker
+	for _, worker := range *workerResp.Workers {
+		if worker.Status == "deprovisioning" {
+			continue
+		}
+
+		workers = append(workers, worker)
+	}
+
+	return &workers, nil
 }
 
 func resourceVsphereMKSClusterCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
