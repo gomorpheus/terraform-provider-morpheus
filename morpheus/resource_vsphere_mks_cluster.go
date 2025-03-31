@@ -711,7 +711,7 @@ func doClusterWorkerDelete(client *morpheus.Client, clusterId int64, nodeCount i
 		return err
 	}
 
-	deleteWorkers := (*workers)[:nodeCount]
+	deleteWorkers := (*workers)[len(*workers)+nodeCount:]
 	for _, worker := range deleteWorkers {
 		resp, err := client.DeleteClusterWorker(clusterId, worker.ID, &morpheus.Request{})
 		if err != nil {
