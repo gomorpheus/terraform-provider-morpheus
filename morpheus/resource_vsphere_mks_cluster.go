@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"sort"
 	"strconv"
 	"time"
 
@@ -400,6 +401,11 @@ func getClusterWorkers(client *morpheus.Client, clusterId int64) ([]morpheus.Clu
 	if err := json.Unmarshal(resp.Body, &workerResp); err != nil {
 		return nil, err
 	}
+
+	// Sort the workers by date created to avoid naming problems i.e. worker-1-1
+	sort.Slice(*workerResp.Workers, func(i, j int) bool {
+		return (*workerResp.Workers)[i].DateCreated.Unix() < (*workerResp.Workers)[j].DateCreated.Unix()
+	})
 
 	return *workerResp.Workers, nil
 }
