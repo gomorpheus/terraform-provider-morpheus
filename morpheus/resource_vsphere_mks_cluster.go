@@ -17,10 +17,11 @@ import (
 
 const (
 	minimumMKSWorkerNodes = 3
-	pollSleepSeconds      = 10
+	pollIntervalSeconds   = 10
 
 	statusCancelled      = "cancelled"
 	statusDenied         = "denied"
+	statusDeprovisioned  = "deprovisioned"
 	statusDeprovisioning = "deprovisioning"
 	statusFailed         = "failed"
 	statusOk             = "ok"
@@ -694,7 +695,7 @@ func resourceVsphereMKSClusterRead(ctx context.Context, d *schema.ResourceData, 
 	return diags
 }
 
-func doClusterWorkerAdd(client *morpheus.Client, clusterId int64, nodeCount int, d *schema.ResourceData) error {
+func doClusterWorkerAdd(ctx context.Context, client *morpheus.Client, clusterId int64, nodeCount int, d *schema.ResourceData) error {
 	workerpool := d.Get("worker_node_pool").([]interface{})[0].(map[string]interface{})
 
 	workers, err := getClusterWorkers(client, clusterId)
@@ -746,30 +747,45 @@ func doClusterWorkerAdd(client *morpheus.Client, clusterId int64, nodeCount int,
 		return err
 	}
 
-	for {
-		log.Printf("Waiting for all cluster worker nodes to be provisioned...")
-		time.Sleep(pollSleepSeconds * time.Second)
+	stateConf := &resource.StateChangeConf{
+		Pending: []string{statusProvisioning},
+		Target:  []string{statusProvisioned},
+		Refresh: func() (interface{}, string, error) {
+			log.Printf("Waiting for all cluster worker nodes to be provisioned...")
 
-		workers, err := getClusterWorkers(client, clusterId)
-		if err != nil {
-			return err
-		}
+			workers, err := getClusterWorkers(client, clusterId)
+			if err != nil {
+				return "", "", err
+			}
 
-		failedWorkers := filterClusterWorkersByStatus(workers, statusFailed)
-		if len(failedWorkers) > 0 {
-			return fmt.Errorf("failed to provision all cluster worker nodes")
-		}
+			failedWorkers := filterClusterWorkersByStatus(workers, statusFailed)
+			if len(failedWorkers) > 0 {
+				return "", "", fmt.Errorf("failed to provision all cluster worker nodes")
+			}
 
-		provisionedWorkers := filterClusterWorkersByStatus(workers, statusProvisioned)
-		if len(provisionedWorkers) == desiredWorkerCount {
-			break
-		}
+			provisionedWorkers := filterClusterWorkersByStatus(workers, statusProvisioned)
+			if len(provisionedWorkers) == desiredWorkerCount {
+				return "", statusProvisioned, nil
+			}
+
+			return "", statusProvisioning, nil
+		},
+		Timeout:      30 * time.Minute,
+		MinTimeout:   1 * time.Minute,
+		Delay:        1 * time.Minute,
+		PollInterval: pollIntervalSeconds * time.Second,
+	}
+
+	// Wait, catching any errors
+	_, err = stateConf.WaitForStateContext(ctx)
+	if err != nil {
+		return err
 	}
 
 	return nil
 }
 
-func doClusterWorkerDelete(client *morpheus.Client, clusterId int64, nodeCount int) error {
+func doClusterWorkerDelete(ctx context.Context, client *morpheus.Client, clusterId int64, nodeCount int) error {
 	workers, err := getClusterWorkers(client, clusterId)
 	if err != nil {
 		return err
@@ -786,19 +802,34 @@ func doClusterWorkerDelete(client *morpheus.Client, clusterId int64, nodeCount i
 		}
 	}
 
-	for {
-		log.Printf("Waiting for cluster worker nodes to be deprovisioned...")
-		time.Sleep(pollSleepSeconds * time.Second)
+	stateConf := &resource.StateChangeConf{
+		Pending: []string{statusDeprovisioning},
+		Target:  []string{statusDeprovisioned},
+		Refresh: func() (interface{}, string, error) {
+			log.Printf("Waiting for cluster worker nodes to be deprovisioned...")
 
-		workers, err := getClusterWorkers(client, clusterId)
-		if err != nil {
-			return err
-		}
+			workers, err := getClusterWorkers(client, clusterId)
+			if err != nil {
+				return "", "", err
+			}
 
-		deprovisioningWorkers := filterClusterWorkersByStatus(workers, statusDeprovisioning)
-		if len(deprovisioningWorkers) == 0 {
-			break
-		}
+			deprovisioningWorkers := filterClusterWorkersByStatus(workers, statusDeprovisioning)
+			if len(deprovisioningWorkers) == 0 {
+				return "", statusDeprovisioned, nil
+			}
+
+			return "", statusDeprovisioning, nil
+		},
+		Timeout:      30 * time.Minute,
+		MinTimeout:   1 * time.Minute,
+		Delay:        1 * time.Minute,
+		PollInterval: pollIntervalSeconds * time.Second,
+	}
+
+	// Wait, catching any errors
+	_, err = stateConf.WaitForStateContext(ctx)
+	if err != nil {
+		return err
 	}
 
 	return nil
@@ -835,12 +866,12 @@ func resourceVsphereMKSClusterUpdate(ctx context.Context, d *schema.ResourceData
 			countDelta := newCount - oldCount
 
 			if countDelta > 0 {
-				err := doClusterWorkerAdd(client, clusterId, countDelta, d)
+				err := doClusterWorkerAdd(ctx, client, clusterId, countDelta, d)
 				if err != nil {
 					return diag.Errorf("error adding cluster worker node(s): %s", err)
 				}
 			} else {
-				err := doClusterWorkerDelete(client, clusterId, countDelta)
+				err := doClusterWorkerDelete(ctx, client, clusterId, countDelta)
 				if err != nil {
 					return diag.Errorf("error deleting cluster worker node(s): %s", err)
 				}
