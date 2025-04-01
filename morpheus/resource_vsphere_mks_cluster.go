@@ -17,6 +17,7 @@ import (
 
 const (
 	minimumMKSWorkerNodes = 3
+	pollSleepSeconds      = 10
 
 	statusCancelled      = "cancelled"
 	statusDenied         = "denied"
@@ -747,7 +748,7 @@ func doClusterWorkerAdd(client *morpheus.Client, clusterId int64, nodeCount int,
 
 	for {
 		log.Printf("Waiting for all cluster worker nodes to be provisioned...")
-		time.Sleep(30 * time.Second)
+		time.Sleep(pollSleepSeconds * time.Second)
 
 		workers, err := getClusterWorkers(client, clusterId)
 		if err != nil {
@@ -787,7 +788,7 @@ func doClusterWorkerDelete(client *morpheus.Client, clusterId int64, nodeCount i
 
 	for {
 		log.Printf("Waiting for cluster worker nodes to be deprovisioned...")
-		time.Sleep(30 * time.Second)
+		time.Sleep(pollSleepSeconds * time.Second)
 
 		workers, err := getClusterWorkers(client, clusterId)
 		if err != nil {
