@@ -234,7 +234,7 @@ func resourceVsphereMKSCluster() *schema.Resource {
 									},
 									"datastore_id": {
 										Description: "The ID of the datastore",
-										Type:        schema.TypeString,
+										Type:        schema.TypeInt,
 										ForceNew:    true,
 										Required:    true,
 									},
