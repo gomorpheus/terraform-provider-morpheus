@@ -9,6 +9,11 @@ description: |-
 
 Provides an Morpheus Kubernetes Service (MKS) cluster on VMware vSphere resource
 
+## Notes
+
+### What to do if worker nodes fail to provision
+Sometimes updating the number of worker nodes may fail unexpectedly and the new worker nodes will fail to provision. If this happens, manually delete the new worker nodes either through the Morpheus UI or using the [Morpheus CLI] (https://clidocs.morpheusdata.com/), and retry the `terraform apply`.
+
 ## Example Usage
 
 ```terraform
@@ -62,16 +67,16 @@ resource "morpheus_vsphere_mks_cluster" "tf_example_vsphere_instance" {
   cluster_layout_id       = 244
   pod_cidr                = "172.20.0.0/16"
   service_cidr            = "172.30.0.0/16"
-  workflow_id             = data.morpheus_workflow.example_workflow
+  workflow_id             = data.morpheus_workflow.example_workflow.id
   api_proxy_id            = 1
   cluster_repo_account_id = 1
 
   master_node_pool {
     plan_id          = data.morpheus_plan.master_nodes
-    resource_pool_id = data.morpheus_resource_pool.vsphere_resource_pool
+    resource_pool_id = data.morpheus_resource_pool.vsphere_resource_pool.id
 
     network_interface {
-      network_id = data.morpheus_network.vm_network
+      network_id = data.morpheus_network.vm_network.id
     }
 
     storage_volume {
@@ -79,7 +84,7 @@ resource "morpheus_vsphere_mks_cluster" "tf_example_vsphere_instance" {
       size         = 30
       name         = "root"
       storage_type = 1
-      datastore_id = data.morpheus_cloud_datastore.vsphere_datastore
+      datastore_id = data.morpheus_cloud_datastore.vsphere_datastore.id
     }
 
     tags = {
@@ -90,14 +95,14 @@ resource "morpheus_vsphere_mks_cluster" "tf_example_vsphere_instance" {
   worker_node_pool {
     count            = 3
     plan_id          = data.morpheus_plan.worker_nodes
-    resource_pool_id = data.morpheus_resource_pool.vsphere_resource_pool
+    resource_pool_id = data.morpheus_resource_pool.vsphere_resource_pool.id
 
     network_interface {
-      network_id = data.morpheus_network.vm_network
+      network_id = data.morpheus_network.vm_network.id
     }
 
     network_interface {
-      network_id = data.morpheus_network.internal_network
+      network_id = data.morpheus_network.internal_network.id
     }
 
     storage_volume {
@@ -105,7 +110,7 @@ resource "morpheus_vsphere_mks_cluster" "tf_example_vsphere_instance" {
       size         = 30
       name         = "root"
       storage_type = 1
-      datastore_id = data.morpheus_cloud_datastore.vsphere_datastore
+      datastore_id = data.morpheus_cloud_datastore.vsphere_datastore.id
     }
 
     storage_volume {
@@ -113,7 +118,7 @@ resource "morpheus_vsphere_mks_cluster" "tf_example_vsphere_instance" {
       size         = 15
       name         = "data"
       storage_type = 1
-      datastore_id = data.morpheus_cloud_datastore.vsphere_datastore
+      datastore_id = data.morpheus_cloud_datastore.vsphere_datastore.id
     }
 
     tags = {
@@ -208,11 +213,11 @@ Optional:
 
 Required:
 
-- `count` (Number) The number of worker nodes
 - `plan_id` (Number) The ID of the service plan associated with the worker nodes in the cluster
 
 Optional:
 
+- `count` (Number) The number of worker nodes
 - `network_interface` (Block List) The network interfaces to create for the cluster worker nodes (see [below for nested schema](#nestedblock--worker_node_pool--network_interface))
 - `resource_pool_id` (Number) The ID of the resource pool to provision the cluster worker nodes to
 - `storage_volume` (Block List) The storage volumes to create for the cluster worker nodes (see [below for nested schema](#nestedblock--worker_node_pool--storage_volume))

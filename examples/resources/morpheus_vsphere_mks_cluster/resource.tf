@@ -48,16 +48,16 @@ resource "morpheus_vsphere_mks_cluster" "tf_example_vsphere_instance" {
   cluster_layout_id       = 244
   pod_cidr                = "172.20.0.0/16"
   service_cidr            = "172.30.0.0/16"
-  workflow_id             = data.morpheus_workflow.example_workflow
+  workflow_id             = data.morpheus_workflow.example_workflow.id
   api_proxy_id            = 1
   cluster_repo_account_id = 1
 
   master_node_pool {
     plan_id          = data.morpheus_plan.master_nodes
-    resource_pool_id = data.morpheus_resource_pool.vsphere_resource_pool
+    resource_pool_id = data.morpheus_resource_pool.vsphere_resource_pool.id
 
     network_interface {
-      network_id = data.morpheus_network.vm_network
+      network_id = data.morpheus_network.vm_network.id
     }
 
     storage_volume {
@@ -65,7 +65,7 @@ resource "morpheus_vsphere_mks_cluster" "tf_example_vsphere_instance" {
       size         = 30
       name         = "root"
       storage_type = 1
-      datastore_id = data.morpheus_cloud_datastore.vsphere_datastore
+      datastore_id = data.morpheus_cloud_datastore.vsphere_datastore.id
     }
 
     tags = {
@@ -76,14 +76,14 @@ resource "morpheus_vsphere_mks_cluster" "tf_example_vsphere_instance" {
   worker_node_pool {
     count            = 3
     plan_id          = data.morpheus_plan.worker_nodes
-    resource_pool_id = data.morpheus_resource_pool.vsphere_resource_pool
+    resource_pool_id = data.morpheus_resource_pool.vsphere_resource_pool.id
 
     network_interface {
-      network_id = data.morpheus_network.vm_network
+      network_id = data.morpheus_network.vm_network.id
     }
 
     network_interface {
-      network_id = data.morpheus_network.internal_network
+      network_id = data.morpheus_network.internal_network.id
     }
 
     storage_volume {
@@ -91,7 +91,7 @@ resource "morpheus_vsphere_mks_cluster" "tf_example_vsphere_instance" {
       size         = 30
       name         = "root"
       storage_type = 1
-      datastore_id = data.morpheus_cloud_datastore.vsphere_datastore
+      datastore_id = data.morpheus_cloud_datastore.vsphere_datastore.id
     }
 
     storage_volume {
@@ -99,7 +99,7 @@ resource "morpheus_vsphere_mks_cluster" "tf_example_vsphere_instance" {
       size         = 15
       name         = "data"
       storage_type = 1
-      datastore_id = data.morpheus_cloud_datastore.vsphere_datastore
+      datastore_id = data.morpheus_cloud_datastore.vsphere_datastore.id
     }
 
     tags = {
@@ -107,3 +107,4 @@ resource "morpheus_vsphere_mks_cluster" "tf_example_vsphere_instance" {
     }
   }
 }
+
