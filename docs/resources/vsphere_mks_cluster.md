@@ -208,11 +208,11 @@ Optional:
 
 Required:
 
-- `count` (Number) The number of worker nodes
 - `plan_id` (Number) The ID of the service plan associated with the worker nodes in the cluster
 
 Optional:
 
+- `count` (Number) The number of worker nodes
 - `network_interface` (Block List) The network interfaces to create for the cluster worker nodes (see [below for nested schema](#nestedblock--worker_node_pool--network_interface))
 - `resource_pool_id` (Number) The ID of the resource pool to provision the cluster worker nodes to
 - `storage_volume` (Block List) The storage volumes to create for the cluster worker nodes (see [below for nested schema](#nestedblock--worker_node_pool--storage_volume))
