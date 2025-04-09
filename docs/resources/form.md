@@ -9,8 +9,7 @@ description: |-
 
 Provides a Morpheus form resource
 
-!> **Note:** Existing inputs or option types are not supported 
-and all inputs or option types must be defined in the form.
+!> **Note:** Existing inputs or option types are supported, using __only__ the id field.
 
 ## Example Usage
 
@@ -20,6 +19,10 @@ resource "morpheus_form" "tf_example_form" {
   code        = "demo"
   description = "demo"
   labels      = ["terraform", "demo"]
+
+  option_type {
+    id = 12345
+  }
 
   option_type {
     name                     = "tf example select"
