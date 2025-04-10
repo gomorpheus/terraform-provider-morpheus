@@ -24,7 +24,7 @@ https://github.com/gomorpheus/terraform-provider-morpheus/issues
 ## Requirements
 ------------
 
-* [Terraform](https://www.terraform.io/) | 0.13+
+* [Terraform](https://www.terraform.io/) | 0.15+
 * [Go](https://golang.org/dl/) 1.22 (to build the provider plugin)
 
 
