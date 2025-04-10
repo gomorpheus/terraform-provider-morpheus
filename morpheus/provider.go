@@ -189,6 +189,7 @@ func Provider() *schema.Provider {
 			"morpheus_cloud_datastore":            dataSourceMorpheusCloudDatastore(),
 			"morpheus_cloud":                      dataSourceMorpheusCloud(),
 			"morpheus_clouds":                     dataSourceMorpheusClouds(),
+			"morpheus_cloud_folder":               dataSourceMorpheusCloudFolder(),
 			"morpheus_cloud_type":                 dataSourceMorpheusCloudType(),
 			"morpheus_cluster_type":               dataSourceMorpheusClusterType(),
 			"morpheus_contact":                    dataSourceMorpheusContact(),
