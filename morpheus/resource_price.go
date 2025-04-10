@@ -199,8 +199,22 @@ func resourcePriceCreate(ctx context.Context, d *schema.ResourceData, meta inter
 			"id": volumeTypeID,
 		}
 	case "datastore":
+		var datastoreID int64
+		if v, ok := d.Get("datastore_id").(int64); ok {
+			datastoreID = v
+		} else if v, ok := d.Get("datastore_id").(int); ok {
+			datastoreID = int64(v)
+		} else {
+			return diag.Diagnostics{
+				diag.Diagnostic{
+					Severity: diag.Error,
+					Summary:  "Invalid type for datastore_id",
+					Detail:   "datastore_id must be an int or int64, got " + fmt.Sprintf("%T", d.Get("datastore_id")),
+				},
+			}
+		}
 		price["datastore"] = map[string]interface{}{
-			"id": d.Get("datastore_id").(int64),
+			"id": datastoreID,
 		}
 		price["crossCloudApply"] = d.Get("apply_price_accross_clouds").(bool)
 	}
@@ -361,8 +375,22 @@ func resourcePriceUpdate(ctx context.Context, d *schema.ResourceData, meta inter
 			"id": volumeTypeID,
 		}
 	case "datastore":
+		var datastoreID int64
+		if v, ok := d.Get("datastore_id").(int64); ok {
+			datastoreID = v
+		} else if v, ok := d.Get("datastore_id").(int); ok {
+			datastoreID = int64(v)
+		} else {
+			return diag.Diagnostics{
+				diag.Diagnostic{
+					Severity: diag.Error,
+					Summary:  "Invalid type for datastore_id",
+					Detail:   "datastore_id must be an int or int64, got " + fmt.Sprintf("%T", d.Get("datastore_id")),
+				},
+			}
+		}
 		price["datastore"] = map[string]interface{}{
-			"id": d.Get("datastore_id").(int64),
+			"id": datastoreID,
 		}
 		price["crossCloudApply"] = d.Get("apply_price_accross_clouds").(bool)
 	}
