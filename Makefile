@@ -12,8 +12,8 @@ ifeq ($(GOOS), "windows")
 endif
 
 dev:
-	mkdir -p $(INSTALL_PATH)	
-	go build -o $(INSTALL_PATH)/terraform-provider-morpheus main.go
+	mkdir -p ./build	
+	go build -o ./build/terraform-provider-morpheus main.go
 
 reset-repo:
 	git fetch upstream
