@@ -141,6 +141,12 @@ func resourceVsphereInstance() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 			},
+			"folder_id": {
+				Description: "The VMware folder to use when provisioning the instance",
+				Type:        schema.TypeInt,
+				ForceNew:    true,
+				Optional:    true,
+			},
 			"asset_tag": {
 				Description: "The asset tag associated with the instance",
 				Type:        schema.TypeString,
@@ -362,6 +368,9 @@ func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, 
 	// Nested Virtualization
 	config["nestedVirtualization"] = d.Get("nested_virtualization").(bool)
 
+	// Folder ID
+	config["vmwareFolderId"] = d.Get("folder_id").(int)
+
 	instancePayload := map[string]interface{}{
 		"name": name,
 		"type": instanceTypeCode,
@@ -565,6 +574,7 @@ func resourceVsphereInstanceRead(ctx context.Context, d *schema.ResourceData, me
 	d.Set("create_user", instance.Config["createUser"])
 	d.Set("asset_tag", instance.Config["smbiosAssetTag"])
 	d.Set("skip_agent_install", instance.Config["noAgent"])
+	d.Set("folder_id", instance.Config["vmwareFolderId"])
 	if instance.Config["nestedVirtualization"] == "off" {
 		d.Set("nested_virtualization", false)
 	} else {

@@ -96,6 +96,7 @@ resource "morpheus_vsphere_instance" "tf_example_vsphere_instance" {
 - `domain_id` (Number) The ID of the network domain to provision the instance to
 - `environment` (String) The environment to assign the instance to
 - `evar` (Block List) The environment variables to create (see [below for nested schema](#nestedblock--evar))
+- `folder_id` (Number) The VMware folder to use when provisioning the instance
 - `interfaces` (Block List) The instance network interfaces to create (see [below for nested schema](#nestedblock--interfaces))
 - `labels` (List of String) The list of labels to add to the instance
 - `name` (String) The name of the instance
