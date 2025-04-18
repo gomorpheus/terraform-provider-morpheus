@@ -293,25 +293,34 @@ func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, 
 	// Service Plan
 	planResp, err := client.GetPlan(int64(d.Get("plan_id").(int)), &morpheus.Request{})
 	if err != nil {
-		diag.FromErr(err)
+		return diag.FromErr(err)
 	}
-	planResult := planResp.Result.(*morpheus.GetPlanResult)
+	planResult, ok := planResp.Result.(*morpheus.GetPlanResult)
+	if !ok {
+		return diag.Errorf("Plan response is not of type *morpheus.GetPlanResult")
+	}
 	plan := planResult.Plan
 
 	// Instance Type
 	instanceTypeResp, err := client.GetInstanceType(int64(d.Get("instance_type_id").(int)), &morpheus.Request{})
 	if err != nil {
-		diag.FromErr(err)
+		return diag.FromErr(err)
 	}
-	instanceTypeResult := instanceTypeResp.Result.(*morpheus.GetInstanceTypeResult)
+	instanceTypeResult, ok := instanceTypeResp.Result.(*morpheus.GetInstanceTypeResult)
+	if !ok {
+		return diag.Errorf("Instance Type response is not of type *morpheus.GetInstanceTypeResult")
+	}
 	instanceTypeCode := instanceTypeResult.InstanceType.Code
 
 	// Instance Layout
 	instanceLayoutResp, err := client.GetInstanceLayout(int64(d.Get("instance_layout_id").(int)), &morpheus.Request{})
 	if err != nil {
-		diag.FromErr(err)
+		return diag.FromErr(err)
 	}
-	instanceLayoutResult := instanceLayoutResp.Result.(*morpheus.GetInstanceLayoutResult)
+	instanceLayoutResult, ok := instanceLayoutResp.Result.(*morpheus.GetInstanceLayoutResult)
+	if !ok {
+		return diag.Errorf("Instance Layout response is not of type *morpheus.GetInstanceLayoutResult")
+	}
 	instanceLayout := instanceLayoutResult.InstanceLayout
 
 	// Config
@@ -320,9 +329,12 @@ func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, 
 	// Resource Pool
 	resourcePoolResp, err := client.GetResourcePool(int64(cloud), int64(d.Get("resource_pool_id").(int)), &morpheus.Request{})
 	if err != nil {
-		diag.FromErr(err)
+		return diag.FromErr(err)
 	}
-	resourcePoolResult := resourcePoolResp.Result.(*morpheus.GetResourcePoolResult)
+	resourcePoolResult, ok := resourcePoolResp.Result.(*morpheus.GetResourcePoolResult)
+	if !ok {
+		return diag.Errorf("Resource Pool response is not of type *morpheus.GetResourcePoolResult")
+	}
 	resourcePool := resourcePoolResult.ResourcePool
 	config["resourcePoolId"] = resourcePool.ID
 
