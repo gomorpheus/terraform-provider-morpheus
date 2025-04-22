@@ -55,10 +55,17 @@ func resourceVsphereInstance() *schema.Resource {
 				Required:    true,
 			},
 			"instance_type_id": {
-				Description: "The type of instance to provision",
+				Description: "The id of type of instance to provision, specify this or 'instance_type_code'",
 				Type:        schema.TypeInt,
+				Optional:    true,
 				ForceNew:    true,
-				Required:    true,
+			},
+			"instance_type_code": {
+				Description:  "The code of type of instance to provision, specify this or 'instance_type_id'",
+				Type:         schema.TypeString,
+				ForceNew:     true,
+				Optional:     true,
+				ExactlyOneOf: []string{"instance_type_id"},
 			},
 			"instance_layout_id": {
 				Description: "The layout to provision the instance from",
@@ -308,15 +315,20 @@ func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, 
 	plan := planResult.Plan
 
 	// Instance Type
-	instanceTypeResp, err := client.GetInstanceType(int64(d.Get("instance_type_id").(int)), &morpheus.Request{})
-	if err != nil {
-		return diag.FromErr(err)
+	// The Schema validation will ensure that only one of "instance_type_code" or "instance_type_id" is set
+	instanceTypeCode := d.Get("instance_type_code").(string)
+	instanceTypeId := d.Get("instance_type_id").(int)
+	if instanceTypeId != 0 {
+		instanceTypeResp, err := client.GetInstanceType(int64(d.Get("instance_type_id").(int)), &morpheus.Request{})
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		instanceTypeResult, ok := instanceTypeResp.Result.(*morpheus.GetInstanceTypeResult)
+		if !ok {
+			return diag.Errorf("Instance Type response is not of type *morpheus.GetInstanceTypeResult")
+		}
+		instanceTypeCode = instanceTypeResult.InstanceType.Code
 	}
-	instanceTypeResult, ok := instanceTypeResp.Result.(*morpheus.GetInstanceTypeResult)
-	if !ok {
-		return diag.Errorf("Instance Type response is not of type *morpheus.GetInstanceTypeResult")
-	}
-	instanceTypeCode := instanceTypeResult.InstanceType.Code
 
 	// Instance Layout
 	instanceLayoutResp, err := client.GetInstanceLayout(int64(d.Get("instance_layout_id").(int)), &morpheus.Request{})
