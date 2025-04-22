@@ -12,10 +12,17 @@
 		"ghcr.io/devcontainers/features/go:1": {},
 		"ghcr.io/devcontainers/features/terraform:1": {}
 	},
-	"postCreateCommand": ".devcontainer/postCreateCommand.sh",
+	"postCreateCommand": ".devcontainer/postCreate.sh",
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 	// Configure tool-specific properties.
+	"mounts": [
+		{
+			"type": "bind",
+			"source": "${localEnv:HOME}/.devcontainer-shared",
+			"target": "/workspaces/terraform-provider-morpheus/builds"
+		}
+	],
 	"customizations": {
 		"vscode": {
 			"extensions": [
