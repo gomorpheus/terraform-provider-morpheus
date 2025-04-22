@@ -84,7 +84,6 @@ resource "morpheus_vsphere_instance" "tf_example_vsphere_instance" {
 - `cloud_id` (Number) The ID of the cloud associated with the instance
 - `group_id` (Number) The ID of the group associated with the instance
 - `instance_layout_id` (Number) The layout to provision the instance from
-- `instance_type_id` (Number) The type of instance to provision
 - `plan_id` (Number) The service plan associated with the instance
 
 ### Optional
@@ -97,6 +96,8 @@ resource "morpheus_vsphere_instance" "tf_example_vsphere_instance" {
 - `environment` (String) The environment to assign the instance to
 - `evar` (Block List) The environment variables to create (see [below for nested schema](#nestedblock--evar))
 - `folder_id` (Number) The VMware folder to use when provisioning the instance
+- `instance_type_code` (String) The code of type of instance to provision, specify this or 'instance_type_id'
+- `instance_type_id` (Number) The id of type of instance to provision, specify this or 'instance_type_code'
 - `interfaces` (Block List) The instance network interfaces to create (see [below for nested schema](#nestedblock--interfaces))
 - `labels` (List of String) The list of labels to add to the instance
 - `name` (String) The name of the instance
