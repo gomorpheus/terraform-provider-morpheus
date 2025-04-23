@@ -316,6 +316,7 @@ func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, 
 
 	// Instance Type
 	// The Schema validation will ensure that only one of "instance_type_code" or "instance_type_id" is set
+	// We need the code to create the instance
 	instanceTypeCode := d.Get("instance_type_code").(string)
 	instanceTypeId := d.Get("instance_type_id").(int)
 	if instanceTypeId != 0 {
@@ -330,16 +331,8 @@ func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, 
 		instanceTypeCode = instanceTypeResult.InstanceType.Code
 	}
 
-	// Instance Layout
-	instanceLayoutResp, err := client.GetInstanceLayout(int64(d.Get("instance_layout_id").(int)), &morpheus.Request{})
-	if err != nil {
-		return diag.FromErr(err)
-	}
-	instanceLayoutResult, ok := instanceLayoutResp.Result.(*morpheus.GetInstanceLayoutResult)
-	if !ok {
-		return diag.Errorf("Instance Layout response is not of type *morpheus.GetInstanceLayoutResult")
-	}
-	instanceLayout := instanceLayoutResult.InstanceLayout
+	// Instance Layout - we only need the ID to create the instance
+	instanceLayoutId := int64(d.Get("instance_layout_id").(int))
 
 	// Config
 	config := make(map[string]interface{})
@@ -395,9 +388,7 @@ func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, 
 			"name": plan.Name,
 		},
 		"layout": map[string]interface{}{
-			"id":   instanceLayout.ID,
-			"code": instanceLayout.Code,
-			"name": instanceLayout.Name,
+			"id": instanceLayoutId,
 		},
 	}
 
@@ -560,6 +551,7 @@ func resourceVsphereInstanceRead(ctx context.Context, d *schema.ResourceData, me
 	d.Set("cloud_id", instance.Cloud.ID)
 	d.Set("group_id", instance.Group.ID)
 	d.Set("instance_type_id", instance.InstanceType.ID)
+	d.Set("instance_type_code", instance.InstanceType.Code)
 	d.Set("instance_layout_id", instance.Layout.ID)
 	d.Set("plan_id", instance.Plan.ID)
 	d.Set("resource_pool_id", instance.Config["resourcePoolId"])
