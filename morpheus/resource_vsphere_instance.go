@@ -286,6 +286,34 @@ func resourceVsphereInstance() *schema.Resource {
 					},
 				},
 			},
+			"connection_info": {
+				Description: "Connection information for the instance, a list - this is returned by the API and not set by the user",
+				Type:        schema.TypeList,
+				Optional:    true,
+				Computed:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"ip": {
+							Description: "The IP address to connect to",
+							Type:        schema.TypeString,
+							Optional:    true,
+							Computed:    true,
+						},
+						"port": {
+							Description: "The port to connect to",
+							Type:        schema.TypeInt,
+							Optional:    true,
+							Computed:    true,
+						},
+						"name": {
+							Description: "The name of the connection protocol",
+							Type:        schema.TypeString,
+							Optional:    true,
+							Computed:    true,
+						},
+					},
+				},
+			},
 		},
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
@@ -594,6 +622,33 @@ func resourceVsphereInstanceRead(ctx context.Context, d *schema.ResourceData, me
 	}
 	d.Set("custom_options", instance.Config["customOptions"])
 	d.Set("domain_id", instance.NetworkDomain.Id)
+
+	var networkInterfaces []map[string]interface{}
+	// iterate over the array of interfaces
+	for i := 0; i < len(instance.Interfaces); i++ {
+		row := make(map[string]interface{})
+		networkInterface := instance.Interfaces[i]
+		row["network_id"] = int(networkInterface.Network.ID)
+		row["network_group"] = networkInterface.Network.Group
+		row["ip_address"] = networkInterface.IpAddress
+		row["ip_mode"] = networkInterface.IpMode
+		row["network_interface_type_id"] = networkInterface.NetworkInterfaceTypeId
+		networkInterfaces = append(networkInterfaces, row)
+	}
+	d.Set("interfaces", networkInterfaces)
+
+	var connectionInfo []map[string]interface{}
+	// Iterate over the array of connection info
+	for i := 0; i < len(instance.ConnectionInfo); i++ {
+		row := make(map[string]interface{})
+		connection := instance.ConnectionInfo[i]
+		row["ip"] = connection.Ip
+		row["port"] = connection.Port
+		row["name"] = connection.Name
+		connectionInfo = append(connectionInfo, row)
+	}
+	d.Set("connection_info", connectionInfo)
+
 	return diags
 }
 
