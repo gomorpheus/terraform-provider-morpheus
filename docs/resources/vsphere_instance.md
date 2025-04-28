@@ -89,7 +89,6 @@ resource "morpheus_vsphere_instance" "tf_example_vsphere_instance" {
 ### Optional
 
 - `asset_tag` (String) The asset tag associated with the instance
-- `connection_info` (Block List) Connection information for the instance, a list - this is returned by the API and not set by the user (see [below for nested schema](#nestedblock--connection_info))
 - `create_user` (Boolean) Whether to create a user account on the instance that is associated with the provisioning user account
 - `custom_options` (Map of String) Custom options to pass to the instance
 - `description` (String) The user friendly description of the instance
@@ -114,17 +113,8 @@ resource "morpheus_vsphere_instance" "tf_example_vsphere_instance" {
 
 ### Read-Only
 
+- `connection_info` (List of Object) Connection information for the instance, a list - this is returned by the API (see [below for nested schema](#nestedatt--connection_info))
 - `id` (String) The ID of the instance
-
-<a id="nestedblock--connection_info"></a>
-### Nested Schema for `connection_info`
-
-Optional:
-
-- `ip` (String) The IP address to connect to
-- `name` (String) The name of the connection protocol
-- `port` (Number) The port to connect to
-
 
 <a id="nestedblock--evar"></a>
 ### Nested Schema for `evar`
@@ -171,6 +161,16 @@ Optional:
 - `size` (Number) The size of the LV being created
 - `size_id` (Number) The ID of an existing LV to assign to the instance
 - `storage_type` (Number) The ID of the LV type
+
+
+<a id="nestedatt--connection_info"></a>
+### Nested Schema for `connection_info`
+
+Read-Only:
+
+- `ip` (String)
+- `name` (String)
+- `port` (Number)
 
 ## Import
 

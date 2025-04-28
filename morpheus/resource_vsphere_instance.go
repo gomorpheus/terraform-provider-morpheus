@@ -287,28 +287,24 @@ func resourceVsphereInstance() *schema.Resource {
 				},
 			},
 			"connection_info": {
-				Description: "Connection information for the instance, a list - this is returned by the API and not set by the user",
+				Description: "Connection information for the instance, a list - this is returned by the API",
 				Type:        schema.TypeList,
-				Optional:    true,
 				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"ip": {
 							Description: "The IP address to connect to",
 							Type:        schema.TypeString,
-							Optional:    true,
 							Computed:    true,
 						},
 						"port": {
 							Description: "The port to connect to",
 							Type:        schema.TypeInt,
-							Optional:    true,
 							Computed:    true,
 						},
 						"name": {
 							Description: "The name of the connection protocol",
 							Type:        schema.TypeString,
-							Optional:    true,
 							Computed:    true,
 						},
 					},
