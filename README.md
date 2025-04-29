@@ -4,7 +4,7 @@
 
 <img src="https://morpheusdata.com/wp-content/uploads/2020/04/morpheus-logo-v2.svg" width="300px">
 
-- Website: https://www.morpheusdata.com/
+- Website: <https://www.morpheusdata.com/>
 - Docs: [Morpheus Documentation](https://docs.morpheusdata.com)
 
 This is the Terraform provider for the Morpheus Data Cloud Management Platform (CMP). It interfaces with the [Morpheus API](https://apidocs.morpheusdata.com/) using the morpheus-go-sdk client. Like all [Terraform Providers](https://github.com/terraform-providers/), it is written in Go.
@@ -12,6 +12,7 @@ This is the Terraform provider for the Morpheus Data Cloud Management Platform (
 This is being developed in conjunction with [morpheus-go-sdk](https://github.com/gomorpheus/morpheus-go-sdk).  
 
 ## Support
+
 ------------
 The Morpheus Terraform provider uses a community support model. Morpheus welcomes pull requests and responds to issues on a best-effort basis.
 
@@ -19,21 +20,23 @@ The Morpheus Terraform provider uses a community support model. Morpheus welcome
 
 If you an encounter an issue with the Terraform provider, create a new issue in this GitHub repository.
 
-https://github.com/gomorpheus/terraform-provider-morpheus/issues
+<https://github.com/gomorpheus/terraform-provider-morpheus/issues>
 
 ## Requirements
+
 ------------
 
-* [Terraform](https://www.terraform.io/) | 0.13+
-* [Go](https://golang.org/dl/) 1.22 (to build the provider plugin)
-
+- [Terraform](https://www.terraform.io/) | 0.13+
+- [Go](https://golang.org/dl/) 1.22 (to build the provider plugin)
 
 ## Getting Started
+
 ---------------------
 
 The best way to get started using the Morpheus Terraform provider is by following the [getting started guide](docs/guides/getting_started.md).
 
 ## Supported Resources
+
 ----------------------
 
 The following list of resources are supported by the Morpheus Terraform provider:
@@ -133,12 +136,14 @@ The following list of resources are supported by the Morpheus Terraform provider
 | [morpheus_vro_task](docs/resources/vro_task.md)                                                 | Morpheus VMware vRealize Orchestrator task resource                                                                                  |
 | [morpheus_vsphere_cloud](docs/resources/vsphere_cloud.md)                                       | Morpheus VMware vSphere cloud resource                                                                                               |
 | [morpheus_vsphere_instance](docs/resources/vsphere_instance.md)                                 | Morpheus VMware vSphere instance resource                                                                                            |
+| [morpheus_vsphere_mks_cluster](docs/resources/vsphere_mks_cluster.md)                           | Morpheus VMware vSphere MKS Cluster resource                                                                                            |
 | [morpheus_wiki_page](docs/resources/wiki_page.md)                                               | Morpheus wiki page resource for creating and managing wiki pages                                                                     |
 | [morpheus_workflow_catalog_item](docs/resources/workflow_catalog_item.md)                       | Morpheus workflow catalog item resource for creating and managing operational workflow catalog items                                 |
 | [morpheus_workflow_policy](docs/resources/workflow_policy.md)                                   | Morpheus workflow policy resource for assigning a workflow to a group, cloud, role, user or globally                                 |
 | [morpheus_write_attributes_task](docs/resources/write_attributes_task.md)                       | Morpheus write attributes task resource for storing values from XaaS instance phases                                                 |
 
 ## Supported Data Sources
+
 ----------------------
 
 The following list of data sources are supported by the Morpheus Terraform provider:
@@ -183,6 +188,7 @@ The following list of data sources are supported by the Morpheus Terraform provi
 | [morpheus_workflow](docs/data-sources/workflow.md) | Morpheus workflow data source |
 
 ## Building the provider
+
 -------------------------
 
 Clone repository to: `$GOPATH/src/github.com/gomorpheus/terraform-provider-morpheus`
@@ -224,6 +230,7 @@ terraform {
 ```
 
 ## Generating Docs
+
 ----------------------
 From the root of the repo run:
 
@@ -232,6 +239,7 @@ go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs
 ```
 
 ## Developing the provider
+
 -------------------------
 
 See the [`contributing`](contributing/) directory for more developer documentation.
