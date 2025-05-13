@@ -10,7 +10,9 @@
 			"configureZshAsDefaultShell": true
 		},
 		"ghcr.io/devcontainers/features/go:1": {},
-		"ghcr.io/devcontainers/features/terraform:1": {}
+		"ghcr.io/devcontainers/features/terraform:1": {
+			"terragrunt": "none"
+		}
 	},
 	"postCreateCommand": ".devcontainer/postCreate.sh",
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
