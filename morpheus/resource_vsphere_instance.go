@@ -8,8 +8,10 @@ import (
 
 	"github.com/gomorpheus/morpheus-go-sdk"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/customdiff"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceVsphereInstance() *schema.Resource {
@@ -58,12 +60,10 @@ func resourceVsphereInstance() *schema.Resource {
 				Description: "The id of type of instance to provision, specify this or 'instance_type_code'",
 				Type:        schema.TypeInt,
 				Optional:    true,
-				ForceNew:    true,
 			},
 			"instance_type_code": {
 				Description:  "The code of type of instance to provision, specify this or 'instance_type_id'",
 				Type:         schema.TypeString,
-				ForceNew:     true,
 				Optional:     true,
 				ExactlyOneOf: []string{"instance_type_id"},
 			},
@@ -239,10 +239,16 @@ func resourceVsphereInstance() *schema.Resource {
 							Computed:    true,
 						},
 						"datastore_id": {
-							Description: "The ID of the datastore",
+							Description: "The ID of the datastore, specify this or datastore_auto_selection",
 							Type:        schema.TypeInt,
 							Optional:    true,
 							Computed:    true,
+						},
+						"datastore_auto_selection": {
+							Description:  "Whether to automatically select the datastore, values can be 'auto' or 'autoCluster', specify this or datastore_id",
+							Type:         schema.TypeString,
+							Optional:     true,
+							ValidateFunc: validation.StringInSlice([]string{"auto", "autoCluster"}, false),
 						},
 					},
 				},
@@ -311,10 +317,42 @@ func resourceVsphereInstance() *schema.Resource {
 				},
 			},
 		},
+		CustomizeDiff: customdiff.All(
+			volumesCustomizeDiff,
+			customdiff.ForceNewIfChange("instance_type_code", func(ctx context.Context, old, new, meta interface{}) bool {
+				// We will force a new instance if instance_type_code has a non-zero value, which means that it has been
+				// set by the user
+				return new.(string) != ""
+			}),
+			customdiff.ForceNewIfChange("instance_type_id", func(ctx context.Context, old, new, meta interface{}) bool {
+				// We will force a new instance if instance_type_id has a non-zero value, which means that it has been
+				// set by the user
+				return new.(int) != 0
+			}),
+		),
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
 	}
+}
+
+// volumesCustomizeDiff is a custom diff function to ensure that only one of datastore_id or datastore_auto_selection is set
+func volumesCustomizeDiff(ctx context.Context, d *schema.ResourceDiff, meta interface{}) error {
+	if d.HasChange("volumes") {
+		volumes := d.Get("volumes").([]interface{})
+		for _, volume := range volumes {
+			volumeMap := volume.(map[string]interface{})
+			// Check if both datastore_id and datastore_auto_selection are set
+			// We check for non-zero values of each, zero values (i.e. > 0 or != "") will be ignored
+			dataStoreID := volumeMap["datastore_id"].(int)
+			dataStoreAutoSelection := volumeMap["datastore_auto_selection"].(string)
+			if dataStoreID != 0 && dataStoreAutoSelection != "" {
+				return fmt.Errorf("only one of 'datastore_id' or 'datastore_auto_selection' can be set")
+			}
+		}
+	}
+
+	return nil
 }
 
 func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
@@ -373,8 +411,8 @@ func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, 
 	resourcePool := resourcePoolResult.ResourcePool
 	config["resourcePoolId"] = resourcePool.ID
 
-	// Custom Options
-	if d.Get("custom_options") != nil {
+	// Custom Options, check for non-zero value
+	if d.Get("custom_options") != nil && d.Get("custom_options").(map[string]interface{}) != nil {
 		customOptionsInput := d.Get("custom_options").(map[string]interface{})
 		customOptions := make(map[string]interface{})
 		for key, value := range customOptionsInput {
@@ -397,8 +435,10 @@ func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, 
 	// Nested Virtualization
 	config["nestedVirtualization"] = d.Get("nested_virtualization").(bool)
 
-	// Folder ID
-	config["vmwareFolderId"] = d.Get("folder_id").(int)
+	// Folder ID, check for non-zero value
+	if d.Get("folder_id") != nil && d.Get("folder_id").(int) != 0 {
+		config["vmwareFolderId"] = d.Get("folder_id").(int)
+	}
 
 	instancePayload := map[string]interface{}{
 		"name": name,
@@ -766,17 +806,26 @@ func parseStorageVolumes(volumes []interface{}) []map[string]interface{} {
 		if item["name"] != nil {
 			row["name"] = item["name"] // .(string)
 		}
-		if item["size"] != nil {
+		// Check for non-zero value of size
+		if item["size"] != nil && item["size"].(int) != 0 {
 			row["size"] = item["size"] // .(int)
 		}
-		if item["size_id"] != nil {
+		// Check for non-zero value of size_id
+		if item["size_id"] != nil && item["size_id"].(int) != 0 {
 			row["sizeId"] = item["size_id"] // .(int)
 		}
-		if item["storage_type"] != nil {
+		// Check for non-zero value of storage_type
+		if item["storage_type"] != nil && item["storage_type"].(int) != 0 {
 			row["storageType"] = item["storage_type"] // .(int)
 		}
-		if item["datastore_id"] != nil {
+		// Check for non-zero value of datastore_id
+		if item["datastore_id"] != nil && item["datastore_id"].(int) != 0 {
 			row["datastoreId"] = item["datastore_id"] // .(int)
+		}
+		// If "auto" or "autoCluster" have been specified set the datastoreId to the value
+		// Our CustomizeDiff function will ensure that only one of these is set
+		if item["datastore_auto_selection"] != nil && item["datastore_auto_selection"].(string) != "" {
+			row["datastoreId"] = item["datastore_auto_selection"] // .(string)
 		}
 		storageVolumes = append(storageVolumes, row)
 	}
