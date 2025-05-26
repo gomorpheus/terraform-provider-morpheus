@@ -155,7 +155,8 @@ Optional:
 
 Optional:
 
-- `datastore_id` (Number) The ID of the datastore
+- `datastore_auto_selection` (String) Whether to automatically select the datastore, values can be 'auto' or 'autoCluster', specify this or datastore_id
+- `datastore_id` (Number) The ID of the datastore, specify this or datastore_auto_selection
 - `name` (String) The name/type of the LV being created
 - `root` (Boolean) Whether the volume is the root volume of the instance
 - `size` (Number) The size of the LV being created
