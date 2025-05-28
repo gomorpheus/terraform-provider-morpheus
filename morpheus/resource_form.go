@@ -287,6 +287,12 @@ func resourceForm() *schema.Resource {
 							Optional:    true,
 							Computed:    true,
 						},
+						"cloud_type_id": {
+							Type:        schema.TypeString,
+							Description: "The cloud type id to filter (when option type is cloud)",
+							Optional:    true,
+							Computed:    true,
+						},
 						"layout_code": {
 							Type:        schema.TypeString,
 							Description: "The field name to bind this option type to a layout",
@@ -588,6 +594,12 @@ func resourceForm() *schema.Resource {
 										Optional:    true,
 										Computed:    true,
 									},
+									"cloud_type_id": {
+										Type:        schema.TypeString,
+										Description: "The cloud type id to filter (when option type is cloud)",
+										Optional:    true,
+										Computed:    true,
+									},
 									"layout_code": {
 										Type:        schema.TypeString,
 										Description: "The field name to bind this option type to a layout",
@@ -732,6 +744,9 @@ func resourceFormCreate(ctx context.Context, d *schema.ResourceData, meta interf
 					if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
 						config["groupFieldType"] = "field"
 						config["group"] = optionTypeConfig["group_code"]
+					}
+					if optionTypeConfig["cloud_type_id"] != nil && optionTypeConfig["cloud_type_id"].(string) != "" {
+						config["cloudType"] = optionTypeConfig["cloud_type_id"]
 					}
 					row["config"] = config
 				case "layout":
@@ -941,6 +956,9 @@ func resourceFormCreate(ctx context.Context, d *schema.ResourceData, meta interf
 							if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
 								config["groupFieldType"] = "field"
 								config["group"] = optionTypeConfig["group_code"]
+							}
+							if optionTypeConfig["cloud_type_id"] != nil && optionTypeConfig["cloud_type_id"].(string) != "" {
+								config["cloudType"] = optionTypeConfig["cloud_type_id"]
 							}
 							row["config"] = config
 						case "layout":
@@ -1168,6 +1186,7 @@ func resourceFormRead(ctx context.Context, d *schema.ResourceData, meta interfac
 					//nothing
 				case "cloud":
 					row["group_code"] = optionType.Config.Group
+					row["cloud_type_id"] = optionType.Config.CloudType
 				case "layout":
 					row["group_code"] = optionType.Config.GroupField
 					row["cloud_code"] = optionType.Config.CloudField
@@ -1277,6 +1296,7 @@ func resourceFormRead(ctx context.Context, d *schema.ResourceData, meta interfac
 							//nothing
 						case "cloud":
 							optionTypeRow["group_code"] = optionType.Config.Group
+							optionTypeRow["cloud_type_id"] = optionType.Config.CloudType
 						case "layout":
 							optionTypeRow["group_code"] = optionType.Config.GroupField
 							optionTypeRow["cloud_code"] = optionType.Config.CloudField
@@ -1443,6 +1463,9 @@ func resourceFormUpdate(ctx context.Context, d *schema.ResourceData, meta interf
 					config["groupFieldType"] = "field"
 					config["group"] = optionTypeConfig["group_code"]
 				}
+				if optionTypeConfig["cloud_type_id"] != nil && optionTypeConfig["cloud_type_id"].(string) != "" {
+					config["cloudType"] = optionTypeConfig["cloud_type_id"]
+				}
 				row["config"] = config
 			case "layout":
 				row["defaultValue"] = optionTypeConfig["default_value"]
@@ -1562,7 +1585,7 @@ func resourceFormUpdate(ctx context.Context, d *schema.ResourceData, meta interf
 					// Check if an existing option type is provided
 					if optionTypeConfig["id"].(int) > 0 {
 						row["id"] = optionTypeConfig["id"]
-					} 
+					}
 					row["name"] = optionTypeConfig["name"]
 					row["code"] = optionTypeConfig["code"]
 					row["type"] = optionTypeConfig["type"]
@@ -1650,6 +1673,9 @@ func resourceFormUpdate(ctx context.Context, d *schema.ResourceData, meta interf
 						if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
 							config["groupFieldType"] = "field"
 							config["group"] = optionTypeConfig["group_code"]
+						}
+						if optionTypeConfig["cloud_type_id"] != nil && optionTypeConfig["cloud_type_id"].(string) != "" {
+							config["cloudType"] = optionTypeConfig["cloud_type_id"]
 						}
 						row["config"] = config
 					case "layout":
