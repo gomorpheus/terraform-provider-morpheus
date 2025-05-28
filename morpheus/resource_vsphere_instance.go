@@ -618,7 +618,7 @@ func resourceVsphereInstanceRead(ctx context.Context, d *schema.ResourceData, me
 	}
 	if d.HasChange("instance_type_id") {
 		_, newVal := d.GetChange("instance_type_id")
-		d.Set("instance_type_id", newVal.(int64))
+		d.Set("instance_type_id", newVal.(int))
 	}
 
 	d.SetId(int64ToString(instance.ID))
