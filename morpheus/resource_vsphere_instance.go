@@ -609,13 +609,23 @@ func resourceVsphereInstanceRead(ctx context.Context, d *schema.ResourceData, me
 		return diag.Errorf("Instance not found in response data.") // should not happen
 	}
 
+	// Special logic for "instance_type_id" and "instance_type_code".
+	// Only one of these will have been specified by the user.  We need to figure out which it is
+	// and store that value in the State.
+	if d.HasChange("instance_type_code") {
+		_, newVal := d.GetChange("instance_type_code")
+		d.Set("instance_type_code", newVal.(string))
+	}
+	if d.HasChange("instance_type_id") {
+		_, newVal := d.GetChange("instance_type_id")
+		d.Set("instance_type_id", newVal.(int64))
+	}
+
 	d.SetId(int64ToString(instance.ID))
 	d.Set("name", instance.Name)
 	d.Set("description", instance.Description)
 	d.Set("cloud_id", instance.Cloud.ID)
 	d.Set("group_id", instance.Group.ID)
-	d.Set("instance_type_id", instance.InstanceType.ID)
-	d.Set("instance_type_code", instance.InstanceType.Code)
 	d.Set("instance_layout_id", instance.Layout.ID)
 	d.Set("plan_id", instance.Plan.ID)
 	d.Set("resource_pool_id", instance.Config["resourcePoolId"])
