@@ -4,12 +4,14 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strconv"
 	"time"
 
 	"github.com/gomorpheus/morpheus-go-sdk"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/customdiff"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/retry"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
@@ -768,6 +770,35 @@ func resourceVsphereInstanceDelete(ctx context.Context, d *schema.ResourceData, 
 		}
 	}
 	log.Printf("API RESPONSE: %s", resp)
+
+	// Since in a delete-create cycle we find that the API returns an error that
+	// "name must be unique" we will GET the VM instance until such time as the instance
+	// isn't available
+	stateConf := retry.StateChangeConf{
+		Delay:        1 * time.Second,
+		Timeout:      30 * time.Second,
+		PollInterval: 1 * time.Second,
+		MinTimeout:   1 * time.Second,
+		Pending:      []string{"200"},
+		Target:       []string{"404"},
+		Refresh: func() (interface{}, string, error) {
+			resp, err = client.GetInstance(toInt64(id), &morpheus.Request{})
+			if err != nil {
+				if resp != nil {
+					return resp, strconv.Itoa(resp.StatusCode), nil
+				}
+				return "", "", err
+			}
+
+			return resp, strconv.Itoa(resp.StatusCode), nil
+		},
+	}
+
+	_, err = stateConf.WaitForStateContext(ctx)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
 	d.SetId("")
 	return diags
 }
