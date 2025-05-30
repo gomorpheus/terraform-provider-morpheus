@@ -2,7 +2,6 @@ package morpheus
 
 import (
 	"context"
-
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -49,6 +48,14 @@ func Provider() *schema.Provider {
 				Description:   "Password of Morpheus user for authentication",
 				DefaultFunc:   schema.EnvDefaultFunc("MORPHEUS_API_PASSWORD", nil),
 				ConflictsWith: []string{"access_token"},
+			},
+
+			// defualts to false
+			"insecure": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Description: "Insecure SSL verification for all requests",
+				DefaultFunc: schema.EnvDefaultFunc("MORPHEUS_INSECURE", false),
 			},
 		},
 
@@ -256,7 +263,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 		TenantSubdomain: d.Get("tenant_subdomain").(string),
 		Username:        d.Get("username").(string),
 		Password:        d.Get("password").(string),
-		//Insecure:                d.Get("insecure").(bool), //.(bool),
+		Insecure:        d.Get("insecure").(bool),
 	}
 	return config.Client()
 }

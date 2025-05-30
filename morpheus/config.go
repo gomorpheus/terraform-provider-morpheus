@@ -2,11 +2,10 @@ package morpheus
 
 import (
 	"fmt"
-	"os"
-
 	"github.com/gomorpheus/morpheus-go-sdk"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/logging"
+	"os"
 )
 
 // Config is the configuration structure used to instantiate the Morpheus
@@ -31,10 +30,29 @@ func (c *Config) Client() (*morpheus.Client, diag.Diagnostics) {
 
 	debug := logging.IsDebugOrHigher() && os.Getenv("MORPHEUS_API_HTTPTRACE") == "true"
 
+	var diags diag.Diagnostics
+	var diagMessage string
+	var diagFixMessage string
+
 	if c.client == nil {
-		client := morpheus.NewClient(c.Url, morpheus.WithDebug(debug))
+		client := morpheus.NewClient(c.Url, morpheus.WithDebug(debug), morpheus.WithInsecure(c.Insecure))
 		// should validate url here too, and maybe ping it
 		// logging with access token or username and password?
+
+		if c.Insecure {
+			diagMessage = "INSECURE mode set to TRUE, this is NOT RECOMMENDED"
+			diagFixMessage = "To set Insecure, Remove Env Var MORPHEUS_INSECURE (Insecure defualts to false) OR explicitly set Env Var to false"
+		} else {
+			diagMessage = "INSECURE mode Defualted to FALSE"
+			diagFixMessage = "To set Insecure mode (NOT RECOMMENDED), Add Env Var (MORPHEUS_INSECURE:true)"
+		}
+
+		diags = append(diags, diag.Diagnostic{
+			Severity: diag.Warning,
+			Summary:  diagMessage,
+			Detail:   diagFixMessage,
+		})
+
 		if c.Username != "" {
 			if c.TenantSubdomain != "" {
 				username := fmt.Sprintf(`%s\\%s`, c.TenantSubdomain, c.Username)
@@ -48,5 +66,5 @@ func (c *Config) Client() (*morpheus.Client, diag.Diagnostics) {
 		}
 		c.client = client
 	}
-	return c.client, nil
+	return c.client, diags
 }
