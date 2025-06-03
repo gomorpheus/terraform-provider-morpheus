@@ -41,17 +41,14 @@ func (c *Config) Client() (*morpheus.Client, diag.Diagnostics) {
 
 		if c.Insecure {
 			diagMessage = "INSECURE mode set to TRUE, this is NOT RECOMMENDED"
-			diagFixMessage = "To set Insecure, Remove Env Var MORPHEUS_INSECURE (Insecure defualts to false) OR explicitly set Env Var to false"
-		} else {
-			diagMessage = "INSECURE mode Defualted to FALSE"
-			diagFixMessage = "To set Insecure mode (NOT RECOMMENDED), Add Env Var (MORPHEUS_INSECURE:true)"
-		}
+			diagFixMessage = "To set TLS SSL verification, Remove Env Var MORPHEUS_INSECURE (Insecure defualts to false) OR explicitly set Env Var to false"
 
-		diags = append(diags, diag.Diagnostic{
+			diags = append(diags, diag.Diagnostic{
 			Severity: diag.Warning,
 			Summary:  diagMessage,
 			Detail:   diagFixMessage,
 		})
+		} 
 
 		if c.Username != "" {
 			if c.TenantSubdomain != "" {
