@@ -263,7 +263,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 		TenantSubdomain: d.Get("tenant_subdomain").(string),
 		Username:        d.Get("username").(string),
 		Password:        d.Get("password").(string),
-		Insecure:        d.Get("insecure").(bool),
+		insecure:        d.Get("insecure").(bool),
 	}
 	return config.Client()
 }

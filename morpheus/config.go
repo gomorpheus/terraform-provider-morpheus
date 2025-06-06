@@ -2,10 +2,10 @@ package morpheus
 
 import (
 	"fmt"
+	"os"
 	"github.com/gomorpheus/morpheus-go-sdk"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/logging"
-	"os"
 )
 
 // Config is the configuration structure used to instantiate the Morpheus
@@ -21,7 +21,7 @@ type Config struct {
 	// Scope            string // "scope"
 	// GrantType            string  // "bearer"
 
-	Insecure bool
+	insecure bool
 
 	client *morpheus.Client
 }
@@ -35,11 +35,11 @@ func (c *Config) Client() (*morpheus.Client, diag.Diagnostics) {
 	var diagFixMessage string
 
 	if c.client == nil {
-		client := morpheus.NewClient(c.Url, morpheus.WithDebug(debug), morpheus.WithInsecure(c.Insecure))
+		client := morpheus.NewClient(c.Url, morpheus.WithDebug(debug), morpheus.WithInsecure(c.insecure))
 		// should validate url here too, and maybe ping it
 		// logging with access token or username and password?
 
-		if c.Insecure {
+		if c.insecure {
 			diagMessage = "INSECURE mode set to TRUE, this is NOT RECOMMENDED"
 			diagFixMessage = "To set TLS SSL verification, Remove Env Var MORPHEUS_INSECURE (Insecure defualts to false) OR explicitly set Env Var to false"
 
