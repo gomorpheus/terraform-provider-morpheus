@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	InsecureEnabledWarning= "Insecure mode enabled, this is NOT RECOMMENDED"
+	InsecureEnabledWarning = "Insecure mode enabled, this is NOT RECOMMENDED"
 	InsecureChangeWarning  = "To enable TLS verification, unset environment variable MORPHEUS_INSECURE (insecure mode defaults to false) or set MORPHEUS_INSECURE to false"
 )
 
