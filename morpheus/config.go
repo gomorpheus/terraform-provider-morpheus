@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	InsecureEnabledMessage = "Insecure mode enabled, this is NOT RECOMMENDED"
-	InsecureChangeMessage  = "To enable TLS verification, unset environment variable MORPHEUS_INSECURE (insecure mode defaults to false) or set MORPHEUS_INSECURE to false"
+	InsecureEnabledWarning= "Insecure mode enabled, this is NOT RECOMMENDED"
+	InsecureChangeWarning  = "To enable TLS verification, unset environment variable MORPHEUS_INSECURE (insecure mode defaults to false) or set MORPHEUS_INSECURE to false"
 )
 
 // Config is the configuration structure used to instantiate the Morpheus
@@ -45,8 +45,8 @@ func (c *Config) Client() (*morpheus.Client, diag.Diagnostics) {
 		if c.insecure {
 			diags = append(diags, diag.Diagnostic{
 				Severity: diag.Warning,
-				Summary:  InsecureEnabledMessage,
-				Detail:   InsecureChangeMessage,
+				Summary:  InsecureEnabledWarning,
+				Detail:   InsecureChangeWarning,
 			})
 		}
 
