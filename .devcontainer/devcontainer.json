@@ -18,13 +18,6 @@
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 	// Configure tool-specific properties.
-	"mounts": [
-		{
-			"type": "bind",
-			"source": "${localEnv:HOME}/.devcontainer-shared",
-			"target": "/workspaces/terraform-provider-morpheus/builds"
-		}
-	],
 	"customizations": {
 		"vscode": {
 			"extensions": [

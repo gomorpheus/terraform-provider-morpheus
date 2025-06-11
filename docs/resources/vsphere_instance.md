@@ -84,7 +84,6 @@ resource "morpheus_vsphere_instance" "tf_example_vsphere_instance" {
 - `cloud_id` (Number) The ID of the cloud associated with the instance
 - `group_id` (Number) The ID of the group associated with the instance
 - `instance_layout_id` (Number) The layout to provision the instance from
-- `instance_type_id` (Number) The type of instance to provision
 - `plan_id` (Number) The service plan associated with the instance
 
 ### Optional
@@ -96,6 +95,9 @@ resource "morpheus_vsphere_instance" "tf_example_vsphere_instance" {
 - `domain_id` (Number) The ID of the network domain to provision the instance to
 - `environment` (String) The environment to assign the instance to
 - `evar` (Block List) The environment variables to create (see [below for nested schema](#nestedblock--evar))
+- `folder_id` (Number) The VMware folder to use when provisioning the instance
+- `instance_type_code` (String) The code of type of instance to provision, specify this or 'instance_type_id'
+- `instance_type_id` (Number) The id of type of instance to provision, specify this or 'instance_type_code'
 - `interfaces` (Block List) The instance network interfaces to create (see [below for nested schema](#nestedblock--interfaces))
 - `labels` (List of String) The list of labels to add to the instance
 - `name` (String) The name of the instance
@@ -111,6 +113,7 @@ resource "morpheus_vsphere_instance" "tf_example_vsphere_instance" {
 
 ### Read-Only
 
+- `connection_info` (List of Object) Connection information for the instance, a list - this is returned by the API (see [below for nested schema](#nestedatt--connection_info))
 - `id` (String) The ID of the instance
 
 <a id="nestedblock--evar"></a>
@@ -152,12 +155,23 @@ Optional:
 
 Optional:
 
-- `datastore_id` (Number) The ID of the datastore
+- `datastore_auto_selection` (String) Whether to automatically select the datastore, values can be 'auto' or 'autoCluster', specify this or datastore_id
+- `datastore_id` (Number) The ID of the datastore, specify this or datastore_auto_selection
 - `name` (String) The name/type of the LV being created
 - `root` (Boolean) Whether the volume is the root volume of the instance
 - `size` (Number) The size of the LV being created
 - `size_id` (Number) The ID of an existing LV to assign to the instance
 - `storage_type` (Number) The ID of the LV type
+
+
+<a id="nestedatt--connection_info"></a>
+### Nested Schema for `connection_info`
+
+Read-Only:
+
+- `ip` (String)
+- `name` (String)
+- `port` (Number)
 
 ## Import
 

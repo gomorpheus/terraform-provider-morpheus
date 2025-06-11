@@ -4,12 +4,16 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strconv"
 	"time"
 
 	"github.com/gomorpheus/morpheus-go-sdk"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/customdiff"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/retry"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceVsphereInstance() *schema.Resource {
@@ -55,10 +59,15 @@ func resourceVsphereInstance() *schema.Resource {
 				Required:    true,
 			},
 			"instance_type_id": {
-				Description: "The type of instance to provision",
+				Description: "The id of type of instance to provision, specify this or 'instance_type_code'",
 				Type:        schema.TypeInt,
-				ForceNew:    true,
-				Required:    true,
+				Optional:    true,
+			},
+			"instance_type_code": {
+				Description:  "The code of type of instance to provision, specify this or 'instance_type_id'",
+				Type:         schema.TypeString,
+				Optional:     true,
+				ExactlyOneOf: []string{"instance_type_id"},
 			},
 			"instance_layout_id": {
 				Description: "The layout to provision the instance from",
@@ -140,6 +149,12 @@ func resourceVsphereInstance() *schema.Resource {
 				ForceNew:    true,
 				Optional:    true,
 				Computed:    true,
+			},
+			"folder_id": {
+				Description: "The VMware folder to use when provisioning the instance",
+				Type:        schema.TypeInt,
+				ForceNew:    true,
+				Optional:    true,
 			},
 			"asset_tag": {
 				Description: "The asset tag associated with the instance",
@@ -226,10 +241,16 @@ func resourceVsphereInstance() *schema.Resource {
 							Computed:    true,
 						},
 						"datastore_id": {
-							Description: "The ID of the datastore",
+							Description: "The ID of the datastore, specify this or datastore_auto_selection",
 							Type:        schema.TypeInt,
 							Optional:    true,
 							Computed:    true,
+						},
+						"datastore_auto_selection": {
+							Description:  "Whether to automatically select the datastore, values can be 'auto' or 'autoCluster', specify this or datastore_id",
+							Type:         schema.TypeString,
+							Optional:     true,
+							ValidateFunc: validation.StringInSlice([]string{"auto", "autoCluster"}, false),
 						},
 					},
 				},
@@ -273,11 +294,67 @@ func resourceVsphereInstance() *schema.Resource {
 					},
 				},
 			},
+			"connection_info": {
+				Description: "Connection information for the instance, a list - this is returned by the API",
+				Type:        schema.TypeList,
+				Computed:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"ip": {
+							Description: "The IP address to connect to",
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+						"port": {
+							Description: "The port to connect to",
+							Type:        schema.TypeInt,
+							Computed:    true,
+						},
+						"name": {
+							Description: "The name of the connection protocol",
+							Type:        schema.TypeString,
+							Computed:    true,
+						},
+					},
+				},
+			},
 		},
+		CustomizeDiff: customdiff.All(
+			volumesCustomizeDiff,
+			customdiff.ForceNewIfChange("instance_type_code", func(ctx context.Context, old, new, meta interface{}) bool {
+				// We will force a new instance if instance_type_code has a non-zero value, which means that it has been
+				// set by the user
+				return new.(string) != ""
+			}),
+			customdiff.ForceNewIfChange("instance_type_id", func(ctx context.Context, old, new, meta interface{}) bool {
+				// We will force a new instance if instance_type_id has a non-zero value, which means that it has been
+				// set by the user
+				return new.(int) != 0
+			}),
+		),
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
 	}
+}
+
+// volumesCustomizeDiff is a custom diff function to ensure that only one of datastore_id or datastore_auto_selection is set
+func volumesCustomizeDiff(ctx context.Context, d *schema.ResourceDiff, meta interface{}) error {
+	if d.HasChange("volumes") {
+		volumes := d.Get("volumes").([]interface{})
+		for _, volume := range volumes {
+			volumeMap := volume.(map[string]interface{})
+			// Check if both datastore_id and datastore_auto_selection are set
+			// We check for non-zero values of each, zero values (i.e. > 0 or != "") will be ignored
+			dataStoreID := volumeMap["datastore_id"].(int)
+			dataStoreAutoSelection := volumeMap["datastore_auto_selection"].(string)
+			if dataStoreID != 0 && dataStoreAutoSelection != "" {
+				return fmt.Errorf("only one of 'datastore_id' or 'datastore_auto_selection' can be set")
+			}
+		}
+	}
+
+	return nil
 }
 
 func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
@@ -293,26 +370,33 @@ func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, 
 	// Service Plan
 	planResp, err := client.GetPlan(int64(d.Get("plan_id").(int)), &morpheus.Request{})
 	if err != nil {
-		diag.FromErr(err)
+		return diag.FromErr(err)
 	}
-	planResult := planResp.Result.(*morpheus.GetPlanResult)
+	planResult, ok := planResp.Result.(*morpheus.GetPlanResult)
+	if !ok {
+		return diag.Errorf("Plan response is not of type *morpheus.GetPlanResult")
+	}
 	plan := planResult.Plan
 
 	// Instance Type
-	instanceTypeResp, err := client.GetInstanceType(int64(d.Get("instance_type_id").(int)), &morpheus.Request{})
-	if err != nil {
-		diag.FromErr(err)
+	// The Schema validation will ensure that only one of "instance_type_code" or "instance_type_id" is set
+	// We need the code to create the instance
+	instanceTypeCode := d.Get("instance_type_code").(string)
+	instanceTypeId := d.Get("instance_type_id").(int)
+	if instanceTypeId != 0 {
+		instanceTypeResp, err := client.GetInstanceType(int64(d.Get("instance_type_id").(int)), &morpheus.Request{})
+		if err != nil {
+			return diag.FromErr(err)
+		}
+		instanceTypeResult, ok := instanceTypeResp.Result.(*morpheus.GetInstanceTypeResult)
+		if !ok {
+			return diag.Errorf("Instance Type response is not of type *morpheus.GetInstanceTypeResult")
+		}
+		instanceTypeCode = instanceTypeResult.InstanceType.Code
 	}
-	instanceTypeResult := instanceTypeResp.Result.(*morpheus.GetInstanceTypeResult)
-	instanceTypeCode := instanceTypeResult.InstanceType.Code
 
-	// Instance Layout
-	instanceLayoutResp, err := client.GetInstanceLayout(int64(d.Get("instance_layout_id").(int)), &morpheus.Request{})
-	if err != nil {
-		diag.FromErr(err)
-	}
-	instanceLayoutResult := instanceLayoutResp.Result.(*morpheus.GetInstanceLayoutResult)
-	instanceLayout := instanceLayoutResult.InstanceLayout
+	// Instance Layout - we only need the ID to create the instance
+	instanceLayoutId := int64(d.Get("instance_layout_id").(int))
 
 	// Config
 	config := make(map[string]interface{})
@@ -320,14 +404,17 @@ func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, 
 	// Resource Pool
 	resourcePoolResp, err := client.GetResourcePool(int64(cloud), int64(d.Get("resource_pool_id").(int)), &morpheus.Request{})
 	if err != nil {
-		diag.FromErr(err)
+		return diag.FromErr(err)
 	}
-	resourcePoolResult := resourcePoolResp.Result.(*morpheus.GetResourcePoolResult)
+	resourcePoolResult, ok := resourcePoolResp.Result.(*morpheus.GetResourcePoolResult)
+	if !ok {
+		return diag.Errorf("Resource Pool response is not of type *morpheus.GetResourcePoolResult")
+	}
 	resourcePool := resourcePoolResult.ResourcePool
 	config["resourcePoolId"] = resourcePool.ID
 
-	// Custom Options
-	if d.Get("custom_options") != nil {
+	// Custom Options, check for non-zero value
+	if d.Get("custom_options") != nil && d.Get("custom_options").(map[string]interface{}) != nil {
 		customOptionsInput := d.Get("custom_options").(map[string]interface{})
 		customOptions := make(map[string]interface{})
 		for key, value := range customOptionsInput {
@@ -350,6 +437,11 @@ func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, 
 	// Nested Virtualization
 	config["nestedVirtualization"] = d.Get("nested_virtualization").(bool)
 
+	// Folder ID, check for non-zero value
+	if d.Get("folder_id") != nil && d.Get("folder_id").(int) != 0 {
+		config["vmwareFolderId"] = d.Get("folder_id").(int)
+	}
+
 	instancePayload := map[string]interface{}{
 		"name": name,
 		"type": instanceTypeCode,
@@ -362,9 +454,7 @@ func resourceVsphereInstanceCreate(ctx context.Context, d *schema.ResourceData, 
 			"name": plan.Name,
 		},
 		"layout": map[string]interface{}{
-			"id":   instanceLayout.ID,
-			"code": instanceLayout.Code,
-			"name": instanceLayout.Name,
+			"id": instanceLayoutId,
 		},
 	}
 
@@ -521,12 +611,23 @@ func resourceVsphereInstanceRead(ctx context.Context, d *schema.ResourceData, me
 		return diag.Errorf("Instance not found in response data.") // should not happen
 	}
 
+	// Special logic for "instance_type_id" and "instance_type_code".
+	// Only one of these will have been specified by the user.  We need to figure out which it is
+	// and store that value in the State.
+	if d.HasChange("instance_type_code") {
+		_, newVal := d.GetChange("instance_type_code")
+		d.Set("instance_type_code", newVal.(string))
+	}
+	if d.HasChange("instance_type_id") {
+		_, newVal := d.GetChange("instance_type_id")
+		d.Set("instance_type_id", newVal.(int))
+	}
+
 	d.SetId(int64ToString(instance.ID))
 	d.Set("name", instance.Name)
 	d.Set("description", instance.Description)
 	d.Set("cloud_id", instance.Cloud.ID)
 	d.Set("group_id", instance.Group.ID)
-	d.Set("instance_type_id", instance.InstanceType.ID)
 	d.Set("instance_layout_id", instance.Layout.ID)
 	d.Set("plan_id", instance.Plan.ID)
 	d.Set("resource_pool_id", instance.Config["resourcePoolId"])
@@ -553,6 +654,7 @@ func resourceVsphereInstanceRead(ctx context.Context, d *schema.ResourceData, me
 	d.Set("create_user", instance.Config["createUser"])
 	d.Set("asset_tag", instance.Config["smbiosAssetTag"])
 	d.Set("skip_agent_install", instance.Config["noAgent"])
+	d.Set("folder_id", instance.Config["vmwareFolderId"])
 	if instance.Config["nestedVirtualization"] == "off" {
 		d.Set("nested_virtualization", false)
 	} else {
@@ -560,6 +662,33 @@ func resourceVsphereInstanceRead(ctx context.Context, d *schema.ResourceData, me
 	}
 	d.Set("custom_options", instance.Config["customOptions"])
 	d.Set("domain_id", instance.NetworkDomain.Id)
+
+	var networkInterfaces []map[string]interface{}
+	// iterate over the array of interfaces
+	for i := 0; i < len(instance.Interfaces); i++ {
+		row := make(map[string]interface{})
+		networkInterface := instance.Interfaces[i]
+		row["network_id"] = int(networkInterface.Network.ID)
+		row["network_group"] = networkInterface.Network.Group
+		row["ip_address"] = networkInterface.IpAddress
+		row["ip_mode"] = networkInterface.IpMode
+		row["network_interface_type_id"] = networkInterface.NetworkInterfaceTypeId
+		networkInterfaces = append(networkInterfaces, row)
+	}
+	d.Set("interfaces", networkInterfaces)
+
+	var connectionInfo []map[string]interface{}
+	// Iterate over the array of connection info
+	for i := 0; i < len(instance.ConnectionInfo); i++ {
+		row := make(map[string]interface{})
+		connection := instance.ConnectionInfo[i]
+		row["ip"] = connection.Ip
+		row["port"] = connection.Port
+		row["name"] = connection.Name
+		connectionInfo = append(connectionInfo, row)
+	}
+	d.Set("connection_info", connectionInfo)
+
 	return diags
 }
 
@@ -641,6 +770,35 @@ func resourceVsphereInstanceDelete(ctx context.Context, d *schema.ResourceData, 
 		}
 	}
 	log.Printf("API RESPONSE: %s", resp)
+
+	// Since in a delete-create cycle we find that the API returns an error that
+	// "name must be unique" we will GET the VM instance until such time as the instance
+	// isn't available
+	stateConf := retry.StateChangeConf{
+		Delay:        1 * time.Second,
+		Timeout:      30 * time.Second,
+		PollInterval: 1 * time.Second,
+		MinTimeout:   1 * time.Second,
+		Pending:      []string{"200"},
+		Target:       []string{"404"},
+		Refresh: func() (interface{}, string, error) {
+			resp, err = client.GetInstance(toInt64(id), &morpheus.Request{})
+			if err != nil {
+				if resp != nil {
+					return resp, strconv.Itoa(resp.StatusCode), nil
+				}
+				return "", "", err
+			}
+
+			return resp, strconv.Itoa(resp.StatusCode), nil
+		},
+	}
+
+	_, err = stateConf.WaitForStateContext(ctx)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
 	d.SetId("")
 	return diags
 }
@@ -689,17 +847,26 @@ func parseStorageVolumes(volumes []interface{}) []map[string]interface{} {
 		if item["name"] != nil {
 			row["name"] = item["name"] // .(string)
 		}
-		if item["size"] != nil {
+		// Check for non-zero value of size
+		if item["size"] != nil && item["size"].(int) != 0 {
 			row["size"] = item["size"] // .(int)
 		}
-		if item["size_id"] != nil {
+		// Check for non-zero value of size_id
+		if item["size_id"] != nil && item["size_id"].(int) != 0 {
 			row["sizeId"] = item["size_id"] // .(int)
 		}
-		if item["storage_type"] != nil {
+		// Check for non-zero value of storage_type
+		if item["storage_type"] != nil && item["storage_type"].(int) != 0 {
 			row["storageType"] = item["storage_type"] // .(int)
 		}
-		if item["datastore_id"] != nil {
+		// Check for non-zero value of datastore_id
+		if item["datastore_id"] != nil && item["datastore_id"].(int) != 0 {
 			row["datastoreId"] = item["datastore_id"] // .(int)
+		}
+		// If "auto" or "autoCluster" have been specified set the datastoreId to the value
+		// Our CustomizeDiff function will ensure that only one of these is set
+		if item["datastore_auto_selection"] != nil && item["datastore_auto_selection"].(string) != "" {
+			row["datastoreId"] = item["datastore_auto_selection"] // .(string)
 		}
 		storageVolumes = append(storageVolumes, row)
 	}
