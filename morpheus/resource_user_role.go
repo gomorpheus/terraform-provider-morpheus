@@ -507,7 +507,7 @@ type RolePermissionPayload struct {
 	RoleType          string `json:"roleType"`
 	Multitenant       bool   `json:"multitenant"`
 	MultitenantLocked bool   `json:"multitenantLocked"`
-	DefaultPersona    struct {
+	DefaultPersona    *struct {
 		Code string `json:"code"`
 	} `json:"defaultPersona"`
 	GlobalGroupAccess           string                      `json:"globalSiteAccess"`
