@@ -2,10 +2,15 @@ package morpheus
 
 import (
 	"fmt"
-	"os"
 	"github.com/gomorpheus/morpheus-go-sdk"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/logging"
+	"os"
+)
+
+const (
+	InsecureEnabledMessage = "Insecure mode enabled, this is NOT RECOMMENDED"
+	InsecureChangeMessage  = "To enable TLS verification, unset environment variable MORPHEUS_INSECURE (insecure mode defaults to false) or set MORPHEUS_INSECURE to false"
 )
 
 // Config is the configuration structure used to instantiate the Morpheus
@@ -31,8 +36,6 @@ func (c *Config) Client() (*morpheus.Client, diag.Diagnostics) {
 	debug := logging.IsDebugOrHigher() && os.Getenv("MORPHEUS_API_HTTPTRACE") == "true"
 
 	var diags diag.Diagnostics
-	var diagMessage string
-	var diagFixMessage string
 
 	if c.client == nil {
 		client := morpheus.NewClient(c.Url, morpheus.WithDebug(debug), morpheus.WithInsecure(c.insecure))
@@ -40,15 +43,12 @@ func (c *Config) Client() (*morpheus.Client, diag.Diagnostics) {
 		// logging with access token or username and password?
 
 		if c.insecure {
-			diagMessage = "INSECURE mode set to TRUE, this is NOT RECOMMENDED"
-			diagFixMessage = "To set TLS SSL verification, Remove Env Var MORPHEUS_INSECURE (Insecure defualts to false) OR explicitly set Env Var to false"
-
 			diags = append(diags, diag.Diagnostic{
-			Severity: diag.Warning,
-			Summary:  diagMessage,
-			Detail:   diagFixMessage,
-		})
-		} 
+				Severity: diag.Warning,
+				Summary:  InsecureEnabledMessage,
+				Detail:   InsecureChangeMessage,
+			})
+		}
 
 		if c.Username != "" {
 			if c.TenantSubdomain != "" {

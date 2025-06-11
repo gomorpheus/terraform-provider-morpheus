@@ -50,11 +50,11 @@ func Provider() *schema.Provider {
 				ConflictsWith: []string{"access_token"},
 			},
 
-			// defualts to false
+			// defaults to false
 			"insecure": {
 				Type:        schema.TypeBool,
 				Optional:    true,
-				Description: "Insecure SSL verification for all requests",
+				Description: "Disables TLS verification on all requests",
 				DefaultFunc: schema.EnvDefaultFunc("MORPHEUS_INSECURE", false),
 			},
 		},
