@@ -80,7 +80,9 @@ func resourceUserRoleCreate(ctx context.Context, d *schema.ResourceData, meta in
 	roleDefinition.RoleType = "user"
 	roleDefinition.Multitenant = d.Get("multitenant_role").(bool)
 	roleDefinition.MultitenantLocked = d.Get("multitenant_locked").(bool)
-	roleDefinition.DefaultPersona.Code = data.DefaultPersona
+	if data.DefaultPersona != "" {
+		roleDefinition.DefaultPersona.Code = data.DefaultPersona
+	}
 	roleDefinition.GlobalGroupAccess = data.DefaultGroupPermission
 	roleDefinition.GlobalInstanceTypeAccess = data.DefaultInstanceTypePermission
 	roleDefinition.GlobalBlueprintAccess = data.DefaultBlueprintPermission
@@ -233,7 +235,9 @@ func resourceUserRoleRead(ctx context.Context, d *schema.ResourceData, meta inte
 	permissionSet.DefaultInstanceTypePermission = role.GlobalInstanceTypeAccess
 	permissionSet.DefaultBlueprintPermission = role.GlobalAppTemplateAccess
 	permissionSet.DefaultReportTypePermission = role.GlobalReportTypeAccess
-	permissionSet.DefaultPersona = role.Role.DefaultPersona.Code
+	if role.Role.DefaultPersona.Code != "" {
+		permissionSet.DefaultPersona = role.Role.DefaultPersona.Code
+	}
 	permissionSet.DefaultCatalogItemTypePermission = role.GlobalCatalogItemTypeAccess
 	permissionSet.DefaultVdiPoolPermission = role.GlobalVDIPoolAccess
 	permissionSet.DefaultWorkflowPermission = role.GlobalTaskSetAccess
@@ -406,7 +410,9 @@ func resourceUserRoleUpdate(ctx context.Context, d *schema.ResourceData, meta in
 	roleDefinition.RoleType = "user"
 	roleDefinition.Multitenant = d.Get("multitenant_role").(bool)
 	roleDefinition.MultitenantLocked = d.Get("multitenant_locked").(bool)
-	roleDefinition.DefaultPersona.Code = data.DefaultPersona
+	if data.DefaultPersona != "" {
+		roleDefinition.DefaultPersona.Code = data.DefaultPersona
+	}
 	roleDefinition.GlobalGroupAccess = data.DefaultGroupPermission
 	roleDefinition.GlobalInstanceTypeAccess = data.DefaultInstanceTypePermission
 	roleDefinition.GlobalBlueprintAccess = data.DefaultBlueprintPermission
@@ -507,8 +513,8 @@ type RolePermissionPayload struct {
 	RoleType          string `json:"roleType"`
 	Multitenant       bool   `json:"multitenant"`
 	MultitenantLocked bool   `json:"multitenantLocked"`
-	DefaultPersona    *struct {
-		Code string `json:"code"`
+	DefaultPersona    struct {
+		Code string `json:"code,omitempty"`
 	} `json:"defaultPersona"`
 	GlobalGroupAccess           string                      `json:"globalSiteAccess"`
 	GlobalInstanceTypeAccess    string                      `json:"globalInstanceTypeAccess"`
