@@ -2,7 +2,7 @@ package morpheus
 
 import (
 	"context"
-	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"sort"
@@ -394,12 +394,15 @@ func getClusterWorkers(client *morpheus.Client, clusterId int64) ([]morpheus.Clu
 	resp, err := client.ListClusterWorkers(clusterId, &morpheus.Request{})
 	if err != nil {
 		log.Printf("API FAILURE - Error in listing cluster worker nodes: %s - %s", resp, err)
+
 		return nil, err
 	}
 
-	var workerResp morpheus.ListClusterWorkersResults
-	if err := json.Unmarshal(resp.Body, &workerResp); err != nil {
-		return nil, err
+	workerResp, ok := resp.Result.(*morpheus.ListClusterWorkersResults)
+	if !ok {
+		log.Printf("API FAILURE - Error asserting cluster worker nodes result: %s", resp.Result)
+
+		return nil, errors.New("error asserting cluster worker nodes result")
 	}
 
 	// Sort the workers by date created to avoid naming problems i.e. worker-1-1
