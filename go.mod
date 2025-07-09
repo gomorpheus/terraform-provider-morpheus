@@ -88,4 +88,3 @@ require (
 )
 
 // voodoo
-//replace github.com/gomorpheus/morpheus-go-sdk => ../morpheus-go-sdk

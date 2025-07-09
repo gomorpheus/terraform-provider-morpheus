@@ -2,15 +2,11 @@ package morpheus
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/gomorpheus/morpheus-go-sdk"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/logging"
-	"os"
-)
-
-const (
-	InsecureEnabledWarning = "Insecure mode enabled, this is NOT RECOMMENDED"
-	InsecureChangeWarning  = "To enable TLS verification, unset environment variable MORPHEUS_INSECURE (insecure mode defaults to false) or set MORPHEUS_INSECURE to false"
 )
 
 // Config is the configuration structure used to instantiate the Morpheus
@@ -32,23 +28,12 @@ type Config struct {
 }
 
 func (c *Config) Client() (*morpheus.Client, diag.Diagnostics) {
-
 	debug := logging.IsDebugOrHigher() && os.Getenv("MORPHEUS_API_HTTPTRACE") == "true"
-
-	var diags diag.Diagnostics
 
 	if c.client == nil {
 		client := morpheus.NewClient(c.Url, morpheus.WithDebug(debug), morpheus.WithInsecure(c.insecure))
 		// should validate url here too, and maybe ping it
 		// logging with access token or username and password?
-
-		if c.insecure {
-			diags = append(diags, diag.Diagnostic{
-				Severity: diag.Warning,
-				Summary:  InsecureEnabledWarning,
-				Detail:   InsecureChangeWarning,
-			})
-		}
 
 		if c.Username != "" {
 			if c.TenantSubdomain != "" {
@@ -63,5 +48,5 @@ func (c *Config) Client() (*morpheus.Client, diag.Diagnostics) {
 		}
 		c.client = client
 	}
-	return c.client, diags
+	return c.client, nil
 }
