@@ -1,10 +1,10 @@
 module github.com/gomorpheus/terraform-provider-morpheus
 
-go 1.22.7
-toolchain go1.24.1
+go 1.23.0
+
+toolchain go1.24.2
 
 require (
-	github.com/davecgh/go-spew v1.1.1
 	github.com/gomorpheus/morpheus-go-sdk v0.5.3
 	github.com/hashicorp/go-cty v1.4.1-0.20200414143053-d3edf31b6320
 	github.com/hashicorp/terraform-plugin-docs v0.21.0
