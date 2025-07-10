@@ -252,7 +252,7 @@ func resourceMVMInstance() *schema.Resource {
 						},
 						"datastore_id": {
 							Description: "The ID of the datastore",
-							Type:        schema.TypeInt,
+							Type:        schema.TypeString,
 							Required:    true,
 						},
 					},
@@ -488,7 +488,7 @@ func resourceMVMInstanceCreate(ctx context.Context, d *schema.ResourceData, meta
 
 	// Volumes
 	if d.Get("storage_volume") != nil {
-		payload["volumes"] = parseStorageVolumes(d.Get("storage_volume").([]interface{}))
+		payload["volumes"] = parseStorageVolumesMVM(d.Get("storage_volume").([]interface{}))
 	}
 
 	req := &morpheus.Request{Body: payload}
@@ -641,7 +641,7 @@ func resourceMVMInstanceRead(ctx context.Context, d *schema.ResourceData, meta i
 		row["name"] = volume.Name
 		row["size"] = volume.Size.(float64)
 		row["storage_type"] = volume.StorageType.(float64)
-		row["datastore_id"] = volume.DatastoreId.(int)
+		row["datastore_id"] = volume.DatastoreId.(string)
 		volumes = append(volumes, row)
 	}
 	d.Set("storage_volume", volumes)
@@ -1026,4 +1026,39 @@ type Volumes []struct {
 		ID   int64  `json:"id"`
 		Name string `json:"name"`
 	} `json:"owner"`
+}
+
+func parseStorageVolumesMVM(volumes []interface{}) []map[string]interface{} {
+	var storageVolumes []map[string]interface{}
+	for i := 0; i < len(volumes); i++ {
+		row := make(map[string]interface{})
+		item := (volumes)[i].(map[string]interface{})
+		if item["id"] != nil {
+			row["id"] = item["id"]
+		}
+		if item["root"] != nil {
+			row["rootVolume"] = item["root"]
+		}
+		if item["name"] != nil {
+			row["name"] = item["name"] // .(string)
+		}
+		// Check for non-zero value of size
+		if item["size"] != nil && item["size"].(int) != 0 {
+			row["size"] = item["size"] // .(int)
+		}
+		// Check for non-zero value of size_id
+		if item["size_id"] != nil && item["size_id"].(int) != 0 {
+			row["sizeId"] = item["size_id"] // .(int)
+		}
+		// Check for non-zero value of storage_type
+		if item["storage_type"] != nil && item["storage_type"].(int) != 0 {
+			row["storageType"] = item["storage_type"] // .(int)
+		}
+
+		if item["datastore_id"] != nil && item["datastore_id"].(string) != "" {
+			row["datastoreId"] = item["datastore_id"] // .(string)
+		}
+		storageVolumes = append(storageVolumes, row)
+	}
+	return storageVolumes // .([]map[string]interface{})
 }
