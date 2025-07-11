@@ -9,6 +9,21 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/logging"
 )
 
+const sslCertErrorMsg = `
+
+If you understand the potential security risks of accepting an untrusted server
+certificate, you can bypass this error by setting "insecure = true" in your
+provider configuration or by setting environment variable morpheus_insecure to true. Use this option with caution.
+
+	morpheus {
+		url = "https://..."
+		.
+		.
+		.
+		insecure = true <-- set to true to ignore SSL certificate errors
+}
+`
+
 // Config is the configuration structure used to instantiate the Morpheus
 // provider.  Only Url and AccessToken are required.
 type Config struct {
@@ -30,6 +45,15 @@ type Config struct {
 func (c *Config) Client() (*morpheus.Client, diag.Diagnostics) {
 	debug := logging.IsDebugOrHigher() && os.Getenv("MORPHEUS_API_HTTPTRACE") == "true"
 
+	var diags diag.Diagnostics
+
+	if !c.insecure {
+		diags = append(diags, diag.Diagnostic{
+			Severity: diag.Warning,
+			Summary:  sslCertErrorMsg,
+		})
+	}
+
 	if c.client == nil {
 		client := morpheus.NewClient(c.Url, morpheus.WithDebug(debug), morpheus.WithInsecure(c.insecure))
 		// should validate url here too, and maybe ping it
@@ -48,5 +72,5 @@ func (c *Config) Client() (*morpheus.Client, diag.Diagnostics) {
 		}
 		c.client = client
 	}
-	return c.client, nil
+	return c.client, diags
 }

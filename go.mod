@@ -1,6 +1,7 @@
 module github.com/gomorpheus/terraform-provider-morpheus
 
 go 1.22.7
+
 toolchain go1.24.1
 
 require (
@@ -85,5 +86,3 @@ require (
 	gopkg.in/yaml.v2 v2.3.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-
-// voodoo
