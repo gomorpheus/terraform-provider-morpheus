@@ -13,7 +13,7 @@ const sslCertErrorMsg = `
 
 If you understand the potential security risks of accepting an untrusted server
 certificate, you can bypass this error by setting "insecure = true" in your
-provider configuration or by setting environment variable morpheus_insecure to true. Use this option with caution.
+provider configuration or by setting environment variable MORPHEUS_API_INSECURE to true. Use this option with caution.
 
 	morpheus {
 		url = "https://..."
