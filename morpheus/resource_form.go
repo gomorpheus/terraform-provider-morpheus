@@ -299,6 +299,12 @@ func resourceForm() *schema.Resource {
 							Optional:    true,
 							Computed:    true,
 						},
+						"layout_id": {
+							Type:        schema.TypeString,
+							Description: "The layout ID to bind this option type to a specific layout",
+							Optional:    true,
+							Computed:    true,
+						},
 						"instance_type_code": {
 							Type:        schema.TypeString,
 							Description: "The instance type code to filter layouts",
@@ -606,6 +612,12 @@ func resourceForm() *schema.Resource {
 										Optional:    true,
 										Computed:    true,
 									},
+									"layout_id": {
+										Type:        schema.TypeString,
+										Description: "The layout ID to bind this option type to a specific layout",
+										Optional:    true,
+										Computed:    true,
+									},
 									"instance_type_code": {
 										Type:        schema.TypeString,
 										Description: "The instance type code to filter layouts",
@@ -822,6 +834,10 @@ func resourceFormCreate(ctx context.Context, d *schema.ResourceData, meta interf
 						config["layoutFieldType"] = "field"
 						config["layoutField"] = optionTypeConfig["layout_code"]
 					}
+					if optionTypeConfig["layout_id"] != nil && optionTypeConfig["layout_id"].(string) != "" {
+						config["layoutFieldType"] = "value"
+						config["layoutId"] = optionTypeConfig["layout_id"]
+					}
 					if optionTypeConfig["pool_code"] != nil && optionTypeConfig["pool_code"].(string) != "" {
 						config["poolFieldType"] = "field"
 						config["poolField"] = optionTypeConfig["pool_code"]
@@ -1034,6 +1050,10 @@ func resourceFormCreate(ctx context.Context, d *schema.ResourceData, meta interf
 								config["layoutFieldType"] = "field"
 								config["layoutField"] = optionTypeConfig["layout_code"]
 							}
+							if optionTypeConfig["layout_id"] != nil && optionTypeConfig["layout_id"].(string) != "" {
+								config["layoutFieldType"] = "value"
+								config["layoutId"] = optionTypeConfig["layout_id"]
+							}
 							if optionTypeConfig["pool_code"] != nil && optionTypeConfig["pool_code"].(string) != "" {
 								config["poolFieldType"] = "field"
 								config["poolField"] = optionTypeConfig["pool_code"]
@@ -1207,6 +1227,7 @@ func resourceFormRead(ctx context.Context, d *schema.ResourceData, meta interfac
 					row["group_code"] = optionType.Config.GroupField
 					row["cloud_code"] = optionType.Config.CloudField
 					row["layout_code"] = optionType.Config.LayoutField
+					row["layout_id"] = optionType.Config.LayoutId
 					row["pool_code"] = optionType.Config.PoolField
 				}
 				row["remove_select_option"] = optionType.NoBlank
@@ -1317,6 +1338,7 @@ func resourceFormRead(ctx context.Context, d *schema.ResourceData, meta interfac
 							optionTypeRow["group_code"] = optionType.Config.GroupField
 							optionTypeRow["cloud_code"] = optionType.Config.CloudField
 							optionTypeRow["layout_code"] = optionType.Config.LayoutField
+							optionTypeRow["layout_id"] = optionType.Config.LayoutId
 							optionTypeRow["pool_code"] = optionType.Config.PoolField
 						}
 						optionTypeRow["remove_select_option"] = optionType.NoBlank
@@ -1540,6 +1562,10 @@ func resourceFormUpdate(ctx context.Context, d *schema.ResourceData, meta interf
 					config["layoutFieldType"] = "field"
 					config["layoutField"] = optionTypeConfig["layout_code"]
 				}
+				if optionTypeConfig["layout_id"] != nil && optionTypeConfig["layout_id"].(string) != "" {
+					config["layoutFieldType"] = "value"
+					config["layoutId"] = optionTypeConfig["layout_id"]
+				}
 				if optionTypeConfig["pool_code"] != nil && optionTypeConfig["pool_code"].(string) != "" {
 					config["poolFieldType"] = "field"
 					config["poolField"] = optionTypeConfig["pool_code"]
@@ -1750,6 +1776,10 @@ func resourceFormUpdate(ctx context.Context, d *schema.ResourceData, meta interf
 						if optionTypeConfig["layout_code"] != nil && optionTypeConfig["layout_code"].(string) != "" {
 							config["layoutFieldType"] = "field"
 							config["layoutField"] = optionTypeConfig["layout_code"]
+						}
+						if optionTypeConfig["layout_id"] != nil && optionTypeConfig["layout_id"].(string) != "" {
+							config["layoutFieldType"] = "value"
+							config["layoutId"] = optionTypeConfig["layout_id"]
 						}
 						if optionTypeConfig["pool_code"] != nil && optionTypeConfig["pool_code"].(string) != "" {
 							config["poolFieldType"] = "field"
