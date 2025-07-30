@@ -197,7 +197,9 @@ func resourceVrealizeOrchestratorTaskRead(ctx context.Context, d *schema.Resourc
 	result := resp.Result.(*morpheus.GetTaskResult)
 	workflowTask := result.Task
 
-	json.Unmarshal(resp.Body, &workflowTask)
+	if err := json.Unmarshal(resp.Body, &workflowTask); err != nil {
+		return diag.FromErr(err)
+	}
 	d.SetId(int64ToString(workflowTask.ID))
 	d.Set("name", workflowTask.Name)
 	d.Set("code", workflowTask.Code)

@@ -204,7 +204,9 @@ func resourceKubernetesAppBlueprintRead(ctx context.Context, d *schema.ResourceD
 
 	// store resource data
 	var kubernetesBlueprint KubernetesAppBlueprint
-	json.Unmarshal(resp.Body, &kubernetesBlueprint)
+	if err := json.Unmarshal(resp.Body, &kubernetesBlueprint); err != nil {
+		return diag.FromErr(err)
+	}
 	d.SetId(intToString(kubernetesBlueprint.Blueprint.ID))
 	d.Set("name", kubernetesBlueprint.Blueprint.Name)
 	d.Set("description", kubernetesBlueprint.Blueprint.Description)

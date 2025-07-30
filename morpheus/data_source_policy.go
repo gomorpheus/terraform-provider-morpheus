@@ -99,7 +99,9 @@ func dataSourceMorpheusPolicyRead(ctx context.Context, d *schema.ResourceData, m
 
 	// store resource data
 	var policyPayload PolicyPayload
-	json.Unmarshal(resp.Body, &policyPayload)
+	if err := json.Unmarshal(resp.Body, &policyPayload); err != nil {
+		return diag.FromErr(err)
+	}
 
 	if policy != nil {
 		d.SetId(int64ToString(int64(policyPayload.Policy.ID)))

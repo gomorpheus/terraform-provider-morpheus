@@ -57,7 +57,9 @@ func dataSourceMorpheusServiceNowWorkflowRead(ctx context.Context, d *schema.Res
 	log.Println("API RESPONSE:", resp)
 
 	var itemResponsePayload CodeRepositories
-	json.Unmarshal(resp.Body, &itemResponsePayload)
+	if err := json.Unmarshal(resp.Body, &itemResponsePayload); err != nil {
+		return diag.FromErr(err)
+	}
 	foundWorkflow := false
 	for _, v := range itemResponsePayload.Data {
 		if v.Name == name {

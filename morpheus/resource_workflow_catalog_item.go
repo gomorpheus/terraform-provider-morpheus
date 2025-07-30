@@ -2,7 +2,6 @@ package morpheus
 
 import (
 	"context"
-	"encoding/json"
 	"os"
 	"strings"
 
@@ -292,16 +291,7 @@ func resourceWorkflowCatalogItemRead(ctx context.Context, d *schema.ResourceData
 	d.Set("context_type", catalogItem.Context)
 	d.Set("visibility", catalogItem.Visibility)
 	d.Set("form_id", catalogItem.Form.ID)
-	// Parse workflow ID
-	var data map[string]interface{}
-	err = json.Unmarshal([]byte(resp.Body), &data)
-	if err != nil {
-		panic(err)
-	}
-	catalogItemData := data["catalogItemType"].(map[string]interface{})
-	workflowData := catalogItemData["workflow"].(map[string]interface{})
-	workflowId := int(workflowData["id"].(float64))
-	d.Set("workflow_id", workflowId)
+	d.Set("workflow_id", catalogItem.Workflow.ID)
 	imagePath := strings.Split(catalogItem.ImagePath, "/")
 	opt := strings.Replace(imagePath[len(imagePath)-1], "_original", "", 1)
 	d.Set("logo_image_name", opt)

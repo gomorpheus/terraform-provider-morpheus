@@ -70,7 +70,9 @@ func resourceUserRoleCreate(ctx context.Context, d *schema.ResourceData, meta in
 	var diags diag.Diagnostics
 
 	data := PermissionSet{}
-	json.Unmarshal([]byte(d.Get("permission_set").(string)), &data)
+	if err := json.Unmarshal([]byte(d.Get("permission_set").(string)), &data); err != nil {
+		return diag.FromErr(err)
+	}
 
 	var roleDefinition RolePermissionPayload
 	roleDefinition.Name = d.Get("name").(string)
@@ -78,7 +80,9 @@ func resourceUserRoleCreate(ctx context.Context, d *schema.ResourceData, meta in
 	roleDefinition.RoleType = "user"
 	roleDefinition.Multitenant = d.Get("multitenant_role").(bool)
 	roleDefinition.MultitenantLocked = d.Get("multitenant_locked").(bool)
-	roleDefinition.DefaultPersona.Code = data.DefaultPersona
+	if data.DefaultPersona != "" {
+		roleDefinition.DefaultPersona.Code = data.DefaultPersona
+	}
 	roleDefinition.GlobalGroupAccess = data.DefaultGroupPermission
 	roleDefinition.GlobalInstanceTypeAccess = data.DefaultInstanceTypePermission
 	roleDefinition.GlobalBlueprintAccess = data.DefaultBlueprintPermission
@@ -87,6 +91,7 @@ func resourceUserRoleCreate(ctx context.Context, d *schema.ResourceData, meta in
 	roleDefinition.GlobalVDIPoolAccess = data.DefaultVdiPoolPermission
 	roleDefinition.GlobalWorkflowAccess = data.DefaultWorkflowPermission
 	roleDefinition.GlobalTaskAccess = data.DefaultTaskPermission
+	roleDefinition.GlobalPersonaAccess = data.DefaultPersonaPermission
 	roleDefinition.FeaturePermissions = data.FeaturePermissions
 	roleDefinition.GroupPermissions = data.GroupPermissions
 	roleDefinition.InstanceTypePermissions = data.InstanceTypePermissions
@@ -115,7 +120,9 @@ func resourceUserRoleCreate(ctx context.Context, d *schema.ResourceData, meta in
 	log.Printf("API RESPONSE: %s", resp)
 
 	var role CreateRoleResult
-	json.Unmarshal(resp.Body, &role)
+	if err := json.Unmarshal(resp.Body, &role); err != nil {
+		return diag.FromErr(err)
+	}
 
 	// Successfully created resource, now set id
 	d.SetId(int64ToString(role.Role.ID))
@@ -168,7 +175,9 @@ func resourceUserRoleRead(ctx context.Context, d *schema.ResourceData, meta inte
 
 	// Convert the Morpheus API response into the permission set JSON format for comparison
 	data := PermissionSet{}
-	json.Unmarshal([]byte(d.Get("permission_set").(string)), &data)
+	if err := json.Unmarshal([]byte(d.Get("permission_set").(string)), &data); err != nil {
+		return diag.FromErr(err)
+	}
 
 	var featureList []string
 	for _, feature := range data.FeaturePermissions {
@@ -226,11 +235,14 @@ func resourceUserRoleRead(ctx context.Context, d *schema.ResourceData, meta inte
 	permissionSet.DefaultInstanceTypePermission = role.GlobalInstanceTypeAccess
 	permissionSet.DefaultBlueprintPermission = role.GlobalAppTemplateAccess
 	permissionSet.DefaultReportTypePermission = role.GlobalReportTypeAccess
-	permissionSet.DefaultPersona = role.Role.DefaultPersona.Code
+	if role.Role.DefaultPersona.Code != "" {
+		permissionSet.DefaultPersona = role.Role.DefaultPersona.Code
+	}
 	permissionSet.DefaultCatalogItemTypePermission = role.GlobalCatalogItemTypeAccess
 	permissionSet.DefaultVdiPoolPermission = role.GlobalVDIPoolAccess
 	permissionSet.DefaultWorkflowPermission = role.GlobalTaskSetAccess
 	permissionSet.DefaultTaskPermission = role.GlobalTaskAccess
+	permissionSet.DefaultPersonaPermission = role.GlobalPersonaAccess
 
 	// Feature Permissions
 	var featurePermissions []featurePermission
@@ -388,7 +400,9 @@ func resourceUserRoleUpdate(ctx context.Context, d *schema.ResourceData, meta in
 	id := d.Id()
 
 	data := PermissionSet{}
-	json.Unmarshal([]byte(d.Get("permission_set").(string)), &data)
+	if err := json.Unmarshal([]byte(d.Get("permission_set").(string)), &data); err != nil {
+		return diag.FromErr(err)
+	}
 
 	var roleDefinition RolePermissionPayload
 	roleDefinition.Name = d.Get("name").(string)
@@ -396,7 +410,9 @@ func resourceUserRoleUpdate(ctx context.Context, d *schema.ResourceData, meta in
 	roleDefinition.RoleType = "user"
 	roleDefinition.Multitenant = d.Get("multitenant_role").(bool)
 	roleDefinition.MultitenantLocked = d.Get("multitenant_locked").(bool)
-	roleDefinition.DefaultPersona.Code = data.DefaultPersona
+	if data.DefaultPersona != "" {
+		roleDefinition.DefaultPersona.Code = data.DefaultPersona
+	}
 	roleDefinition.GlobalGroupAccess = data.DefaultGroupPermission
 	roleDefinition.GlobalInstanceTypeAccess = data.DefaultInstanceTypePermission
 	roleDefinition.GlobalBlueprintAccess = data.DefaultBlueprintPermission
@@ -405,6 +421,7 @@ func resourceUserRoleUpdate(ctx context.Context, d *schema.ResourceData, meta in
 	roleDefinition.GlobalVDIPoolAccess = data.DefaultVdiPoolPermission
 	roleDefinition.GlobalWorkflowAccess = data.DefaultWorkflowPermission
 	roleDefinition.GlobalTaskAccess = data.DefaultTaskPermission
+	roleDefinition.GlobalPersonaAccess = data.DefaultPersonaPermission
 	roleDefinition.FeaturePermissions = data.FeaturePermissions
 	roleDefinition.GroupPermissions = data.GroupPermissions
 	roleDefinition.InstanceTypePermissions = data.InstanceTypePermissions
@@ -429,7 +446,9 @@ func resourceUserRoleUpdate(ctx context.Context, d *schema.ResourceData, meta in
 	}
 	log.Printf("API RESPONSE: %s", resp)
 	var role CreateRoleResult
-	json.Unmarshal(resp.Body, &role)
+	if err := json.Unmarshal(resp.Body, &role); err != nil {
+		return diag.FromErr(err)
+	}
 
 	// Successfully updated resource, now set id
 	// err, it should not have changed though..
@@ -495,7 +514,7 @@ type RolePermissionPayload struct {
 	Multitenant       bool   `json:"multitenant"`
 	MultitenantLocked bool   `json:"multitenantLocked"`
 	DefaultPersona    struct {
-		Code string `json:"code"`
+		Code string `json:"code,omitempty"`
 	} `json:"defaultPersona"`
 	GlobalGroupAccess           string                      `json:"globalSiteAccess"`
 	GlobalInstanceTypeAccess    string                      `json:"globalInstanceTypeAccess"`

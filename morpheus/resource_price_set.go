@@ -57,8 +57,8 @@ func resourcePriceSet() *schema.Resource {
 			},
 			"type": {
 				Type:         schema.TypeString,
-				Description:  "The price type (fixed, compute, memory, cores, storage, datastore, platform, software_or_service, load_balancer, load_balancer_virtual_server)",
-				ValidateFunc: validation.StringInSlice([]string{"fixed", "compute", "memory", "cores", "storage", "datastore", "platform", "software_or_service", "load_balancer", "load_balancer_virtual_server"}, false),
+				Description:  "The price type (fixed, compute_plus_storage, component, load_balancer, virtual_image, snapshot, software_or_service)",
+				ValidateFunc: validation.StringInSlice([]string{"fixed", "compute_plus_storage", "component", "load_balancer", "virtual_image", "snapshot", "software_or_service"}, false),
 				Required:     true,
 				ForceNew:     true,
 			},
@@ -168,7 +168,9 @@ func resourcePriceSetRead(ctx context.Context, d *schema.ResourceData, meta inte
 
 	// store resource data
 	var priceSet MorpheusPriceSet
-	json.Unmarshal(resp.Body, &priceSet)
+	if err := json.Unmarshal(resp.Body, &priceSet); err != nil {
+		return diag.FromErr(err)
+	}
 
 	// Remove the resource from state if the
 	// price set has

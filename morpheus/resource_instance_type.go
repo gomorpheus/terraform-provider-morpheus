@@ -297,7 +297,9 @@ func resourceInstanceTypeRead(ctx context.Context, d *schema.ResourceData, meta 
 
 	// store resource data
 	var instanceTypePayload InstanceTypePayload
-	json.Unmarshal(resp.Body, &instanceTypePayload)
+	if err := json.Unmarshal(resp.Body, &instanceTypePayload); err != nil {
+		return diag.FromErr(err)
+	}
 
 	d.SetId(int64ToString(int64(instanceTypePayload.InstanceType.ID)))
 	d.Set("name", instanceTypePayload.InstanceType.Name)
@@ -426,7 +428,9 @@ func resourceInstanceTypeUpdate(ctx context.Context, d *schema.ResourceData, met
 			FileContent:   data,
 		}
 		filePayloads = append(filePayloads, filePayload)
-		client.UpdateInstanceTypeLogo(instanceType.ID, filePayloads, &morpheus.Request{})
+		if _, err := client.UpdateInstanceTypeLogo(instanceType.ID, filePayloads, &morpheus.Request{}); err != nil {
+			return diag.FromErr(err)
+		}
 	}
 
 	// Successfully updated resource, now set id

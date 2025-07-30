@@ -232,7 +232,9 @@ func resourceTerraformAppBlueprintRead(ctx context.Context, d *schema.ResourceDa
 
 	// store resource data
 	var terraformBlueprint TerraformAppBlueprint
-	json.Unmarshal(resp.Body, &terraformBlueprint)
+	if err := json.Unmarshal(resp.Body, &terraformBlueprint); err != nil {
+		return diag.FromErr(err)
+	}
 	d.SetId(intToString(terraformBlueprint.Blueprint.ID))
 	d.Set("name", terraformBlueprint.Blueprint.Name)
 	d.Set("description", terraformBlueprint.Blueprint.Description)

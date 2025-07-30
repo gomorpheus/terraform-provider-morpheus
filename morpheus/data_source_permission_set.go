@@ -528,7 +528,9 @@ func dataSourceMorpheusPermissionSetRead(ctx context.Context, d *schema.Resource
 				continue
 			}
 			overridePayload := &PermissionSet{}
-			json.Unmarshal([]byte(overrideJSON.(string)), overridePayload)
+			if err := json.Unmarshal([]byte(overrideJSON.(string)), overridePayload); err != nil {
+				return diag.FromErr(err)
+			}
 			if overridePayload.DefaultCloudPermission != "" {
 				permissionData.DefaultCloudPermission = overridePayload.DefaultCloudPermission
 			}

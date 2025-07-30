@@ -7,6 +7,7 @@ examples/main.tf
 terraform.tfvars
 terraform.tfplan
 terraform.tfstate
+.terraform.lock.hcl
 bin/
 terraform-provider-morpheus
 modules-dev/

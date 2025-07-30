@@ -161,7 +161,9 @@ func resourceHelmAppBlueprintRead(ctx context.Context, d *schema.ResourceData, m
 
 	// store resource data
 	var helmBlueprint HelmAppBlueprint
-	json.Unmarshal(resp.Body, &helmBlueprint)
+	if err := json.Unmarshal(resp.Body, &helmBlueprint); err != nil {
+		return diag.FromErr(err)
+	}
 	d.SetId(intToString(helmBlueprint.Blueprint.ID))
 	d.Set("name", helmBlueprint.Blueprint.Name)
 	d.Set("description", helmBlueprint.Blueprint.Description)

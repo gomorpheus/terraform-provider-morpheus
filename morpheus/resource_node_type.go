@@ -307,7 +307,9 @@ func resourceNodeTypeRead(ctx context.Context, d *schema.ResourceData, meta inte
 
 	// store resource data
 	var nodeType NodeTypePayload
-	json.Unmarshal(resp.Body, &nodeType)
+	if err := json.Unmarshal(resp.Body, &nodeType); err != nil {
+		return diag.FromErr(err)
+	}
 
 	log.Printf("RESPONSE_PAYLOAD: %v", nodeType)
 	d.SetId(int64ToString(nodeType.NodeType.ID))

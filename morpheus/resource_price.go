@@ -3,6 +3,7 @@ package morpheus
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 
 	"log"
 
@@ -179,12 +180,41 @@ func resourcePriceCreate(ctx context.Context, d *schema.ResourceData, meta inter
 	case "software":
 		price["software"] = d.Get("software").(string)
 	case "storage":
+		var volumeTypeID int64
+		if v, ok := d.Get("volume_type_id").(int64); ok {
+			volumeTypeID = v
+		} else if v, ok := d.Get("volume_type_id").(int); ok {
+			volumeTypeID = int64(v)
+		} else {
+			return diag.Diagnostics{
+				diag.Diagnostic{
+					Severity: diag.Error,
+					Summary:  "Invalid type for volume_type_id",
+					Detail:   "volume_type_id must be an int or int64, got " + fmt.Sprintf("%T", d.Get("volume_type_id")),
+				},
+			}
+		}
+
 		price["volumeType"] = map[string]interface{}{
-			"id": d.Get("volume_type_id").(int64),
+			"id": volumeTypeID,
 		}
 	case "datastore":
+		var datastoreID int64
+		if v, ok := d.Get("datastore_id").(int64); ok {
+			datastoreID = v
+		} else if v, ok := d.Get("datastore_id").(int); ok {
+			datastoreID = int64(v)
+		} else {
+			return diag.Diagnostics{
+				diag.Diagnostic{
+					Severity: diag.Error,
+					Summary:  "Invalid type for datastore_id",
+					Detail:   "datastore_id must be an int or int64, got " + fmt.Sprintf("%T", d.Get("datastore_id")),
+				},
+			}
+		}
 		price["datastore"] = map[string]interface{}{
-			"id": d.Get("datastore_id").(int64),
+			"id": datastoreID,
 		}
 		price["crossCloudApply"] = d.Get("apply_price_accross_clouds").(bool)
 	}
@@ -242,7 +272,9 @@ func resourcePriceRead(ctx context.Context, d *schema.ResourceData, meta interfa
 
 	// store resource data
 	var price MorpheusPrice
-	json.Unmarshal(resp.Body, &price)
+	if err := json.Unmarshal(resp.Body, &price); err != nil {
+		return diag.FromErr(err)
+	}
 
 	if !price.Price.Active {
 		d.SetId("")
@@ -324,12 +356,41 @@ func resourcePriceUpdate(ctx context.Context, d *schema.ResourceData, meta inter
 	case "software":
 		price["software"] = d.Get("software").(string)
 	case "storage":
+		var volumeTypeID int64
+		if v, ok := d.Get("volume_type_id").(int64); ok {
+			volumeTypeID = v
+		} else if v, ok := d.Get("volume_type_id").(int); ok {
+			volumeTypeID = int64(v)
+		} else {
+			return diag.Diagnostics{
+				diag.Diagnostic{
+					Severity: diag.Error,
+					Summary:  "Invalid type for volume_type_id",
+					Detail:   "volume_type_id must be an int or int64, got " + fmt.Sprintf("%T", d.Get("volume_type_id")),
+				},
+			}
+		}
+
 		price["volumeType"] = map[string]interface{}{
-			"id": d.Get("volume_type_id").(int64),
+			"id": volumeTypeID,
 		}
 	case "datastore":
+		var datastoreID int64
+		if v, ok := d.Get("datastore_id").(int64); ok {
+			datastoreID = v
+		} else if v, ok := d.Get("datastore_id").(int); ok {
+			datastoreID = int64(v)
+		} else {
+			return diag.Diagnostics{
+				diag.Diagnostic{
+					Severity: diag.Error,
+					Summary:  "Invalid type for datastore_id",
+					Detail:   "datastore_id must be an int or int64, got " + fmt.Sprintf("%T", d.Get("datastore_id")),
+				},
+			}
+		}
 		price["datastore"] = map[string]interface{}{
-			"id": d.Get("datastore_id").(int64),
+			"id": datastoreID,
 		}
 		price["crossCloudApply"] = d.Get("apply_price_accross_clouds").(bool)
 	}

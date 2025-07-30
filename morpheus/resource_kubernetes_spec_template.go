@@ -159,7 +159,9 @@ func resourceKubernetesSpecTemplateRead(ctx context.Context, d *schema.ResourceD
 
 	// store resource data
 	var kubernetesSpecTemplate KubernetesSpecTemplate
-	json.Unmarshal(resp.Body, &kubernetesSpecTemplate)
+	if err := json.Unmarshal(resp.Body, &kubernetesSpecTemplate); err != nil {
+		return diag.FromErr(err)
+	}
 	d.SetId(intToString(kubernetesSpecTemplate.Spectemplate.ID))
 	d.Set("name", kubernetesSpecTemplate.Spectemplate.Name)
 	d.Set("source_type", kubernetesSpecTemplate.Spectemplate.File.Sourcetype)

@@ -158,7 +158,9 @@ func resourceTerraformSpecTemplateRead(ctx context.Context, d *schema.ResourceDa
 
 	// store resource data
 	var terraformSpecTemplate TerraformSpecTemplate
-	json.Unmarshal(resp.Body, &terraformSpecTemplate)
+	if err := json.Unmarshal(resp.Body, &terraformSpecTemplate); err != nil {
+		return diag.FromErr(err)
+	}
 	d.SetId(intToString(terraformSpecTemplate.Spectemplate.ID))
 	d.Set("name", terraformSpecTemplate.Spectemplate.Name)
 	d.Set("source_type", terraformSpecTemplate.Spectemplate.File.Sourcetype)

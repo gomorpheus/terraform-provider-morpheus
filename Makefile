@@ -1,7 +1,7 @@
-default: dev 
+default: dev
 GOOS=$(shell go env GOOS)
 GOARCH=$(shell go env GOARCH)
-INSTALL_PATH=~/.local/share/terraform/plugins/localhost/providers/morpheus/0.0.1/linux_$(GOARCH)
+INSTALL_PATH=$(PWD)/linux_$(GOARCH)
 BUILD_ALL_PATH=${PWD}/bin
 
 ifeq ($(GOOS), darwin)
@@ -12,7 +12,7 @@ ifeq ($(GOOS), "windows")
 endif
 
 dev:
-	mkdir -p $(INSTALL_PATH)	
+	mkdir -p $(INSTALL_PATH)
 	go build -o $(INSTALL_PATH)/terraform-provider-morpheus main.go
 
 reset-repo:

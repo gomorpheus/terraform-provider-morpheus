@@ -157,7 +157,9 @@ func resourceArmSpecTemplateRead(ctx context.Context, d *schema.ResourceData, me
 
 	// store resource data
 	var armSpecTemplate ArmSpecTemplate
-	json.Unmarshal(resp.Body, &armSpecTemplate)
+	if err := json.Unmarshal(resp.Body, &armSpecTemplate); err != nil {
+		return diag.FromErr(err)
+	}
 	d.SetId(intToString(armSpecTemplate.Spectemplate.ID))
 	d.Set("name", armSpecTemplate.Spectemplate.Name)
 	d.Set("source_type", armSpecTemplate.Spectemplate.File.Sourcetype)

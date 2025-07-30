@@ -293,7 +293,9 @@ func resourceInstanceLayoutRead(ctx context.Context, d *schema.ResourceData, met
 
 	// store resource data
 	var instanceLayout InstanceLayoutPayload
-	json.Unmarshal(resp.Body, &instanceLayout)
+	if err := json.Unmarshal(resp.Body, &instanceLayout); err != nil {
+		return diag.FromErr(err)
+	}
 
 	d.SetId(int64ToString(instanceLayout.InstanceLayout.ID))
 	d.Set("instance_type_id", instanceLayout.InstanceLayout.InstanceType.ID)

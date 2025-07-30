@@ -128,7 +128,9 @@ func resourceExecuteScheduleRead(ctx context.Context, d *schema.ResourceData, me
 
 	// store resource data
 	var executeSchedule ExecuteSchedule
-	json.Unmarshal(resp.Body, &executeSchedule)
+	if err := json.Unmarshal(resp.Body, &executeSchedule); err != nil {
+		return diag.FromErr(err)
+	}
 
 	d.SetId(intToString(executeSchedule.Schedule.ID))
 	d.Set("name", executeSchedule.Schedule.Name)

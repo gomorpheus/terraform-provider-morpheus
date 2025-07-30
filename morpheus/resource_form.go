@@ -2,6 +2,7 @@ package morpheus
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 
 	"log"
@@ -54,6 +55,12 @@ func resourceForm() *schema.Resource {
 				Optional:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
+						"id": {
+							Type:        schema.TypeInt,
+							Description: "The id of an existing option type to add to the form. This is the only attribute that needs to be defined when using an existing option type.",
+							Optional:    true,
+							Computed:    true,
+						},
 						"code": {
 							Type:        schema.TypeString,
 							Description: "The code of the option type to add to the form",
@@ -77,8 +84,8 @@ func resourceForm() *schema.Resource {
 						},
 						"type": {
 							Type:         schema.TypeString,
-							Description:  "The type of option type to add to the form (checkbox, hidden, number, password, radio, select, text, textarea, byteSize, code-editor, fileContent, logoSelector, textArray, typeahead, environment)",
-							ValidateFunc: validation.StringInSlice([]string{"checkbox", "hidden", "number", "password", "radio", "select", "text", "textarea", "byteSize", "code-editor", "fileContent", "logoSelector", "textArray", "typeahead", "environment"}, false),
+							Description:  "The type of option type to add to the form (checkbox, hidden, number, password, radio, select, text, textarea, byteSize, code-editor, fileContent, logoSelector, textArray, typeahead, environment, group, cloud, layout, plan, tag, networkManager, resourcePool)",
+							ValidateFunc: validation.StringInSlice([]string{"checkbox", "hidden", "number", "password", "radio", "select", "text", "textarea", "byteSize", "code-editor", "fileContent", "logoSelector", "textArray", "typeahead", "environment", "group", "cloud", "layout", "plan", "tag", "networkManager", "resourcePool"}, false),
 							Optional:     true,
 						},
 						"option_list_id": {
@@ -268,6 +275,54 @@ func resourceForm() *schema.Resource {
 							Optional:    true,
 							Computed:    true,
 						},
+						"cloud_code": {
+							Type:        schema.TypeString,
+							Description: "The field name to bind this option type to a cloud",
+							Optional:    true,
+							Computed:    true,
+						},
+						"group_code": {
+							Type:        schema.TypeString,
+							Description: "The field name to bind this option type to a group",
+							Optional:    true,
+							Computed:    true,
+						},
+						"cloud_type_id": {
+							Type:        schema.TypeString,
+							Description: "The cloud type id to filter (when option type is cloud)",
+							Optional:    true,
+							Computed:    true,
+						},
+						"layout_code": {
+							Type:        schema.TypeString,
+							Description: "The field name to bind this option type to a layout",
+							Optional:    true,
+							Computed:    true,
+						},
+						"layout_id": {
+							Type:        schema.TypeString,
+							Description: "The layout ID to bind this option type to a specific layout",
+							Optional:    true,
+							Computed:    true,
+						},
+						"instance_type_code": {
+							Type:        schema.TypeString,
+							Description: "The instance type code to filter layouts",
+							Optional:    true,
+							Computed:    true,
+						},
+						"plan_code": {
+							Type:        schema.TypeString,
+							Description: "The instance type code to filter layouts",
+							Optional:    true,
+							Computed:    true,
+						},
+						"pool_code": {
+							Type:        schema.TypeString,
+							Description: "The instance type code to filter layouts",
+							Optional:    true,
+							Computed:    true,
+						},
 					},
 				},
 			},
@@ -312,6 +367,12 @@ func resourceForm() *schema.Resource {
 							Optional:    true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
+									"id": {
+										Type:        schema.TypeInt,
+										Description: "The id of an existing option type to add to the field group. This is the only attribute that needs to be defined when using an existing option type.",
+										Optional:    true,
+										Computed:    true,
+									},
 									"code": {
 										Type:        schema.TypeString,
 										Description: "The code of the option type to add to the field group",
@@ -337,7 +398,7 @@ func resourceForm() *schema.Resource {
 									"type": {
 										Type:         schema.TypeString,
 										Description:  "The type of option type to add to the field group (checkbox, hidden, number, password, radio, select, text, textarea, byteSize, code-editor, fileContent, logoSelector, textArray, typeahead, environment)",
-										ValidateFunc: validation.StringInSlice([]string{"checkbox", "hidden", "number", "password", "radio", "select", "text", "textarea", "byteSize", "code-editor", "fileContent", "logoSelector", "textArray", "typeahead", "environment"}, false),
+										ValidateFunc: validation.StringInSlice([]string{"checkbox", "hidden", "number", "password", "radio", "select", "text", "textarea", "byteSize", "code-editor", "fileContent", "logoSelector", "textArray", "typeahead", "environment", "group", "cloud", "layout", "plan", "tag", "networkManager", "resourcePool"}, false),
 										Optional:     true,
 									},
 									"option_list_id": {
@@ -527,6 +588,54 @@ func resourceForm() *schema.Resource {
 										Optional:    true,
 										Computed:    true,
 									},
+									"cloud_code": {
+										Type:        schema.TypeString,
+										Description: "The field name to bind this option type to a cloud",
+										Optional:    true,
+										Computed:    true,
+									},
+									"group_code": {
+										Type:        schema.TypeString,
+										Description: "The field name to bind this option type to a group",
+										Optional:    true,
+										Computed:    true,
+									},
+									"cloud_type_id": {
+										Type:        schema.TypeString,
+										Description: "The cloud type id to filter (when option type is cloud)",
+										Optional:    true,
+										Computed:    true,
+									},
+									"layout_code": {
+										Type:        schema.TypeString,
+										Description: "The field name to bind this option type to a layout",
+										Optional:    true,
+										Computed:    true,
+									},
+									"layout_id": {
+										Type:        schema.TypeString,
+										Description: "The layout ID to bind this option type to a specific layout",
+										Optional:    true,
+										Computed:    true,
+									},
+									"instance_type_code": {
+										Type:        schema.TypeString,
+										Description: "The instance type code to filter layouts",
+										Optional:    true,
+										Computed:    true,
+									},
+									"plan_code": {
+										Type:        schema.TypeString,
+										Description: "The instance type code to filter layouts",
+										Optional:    true,
+										Computed:    true,
+									},
+									"pool_code": {
+										Type:        schema.TypeString,
+										Description: "The instance type code to filter layouts",
+										Optional:    true,
+										Computed:    true,
+									},
 								},
 							},
 						},
@@ -556,98 +665,197 @@ func resourceFormCreate(ctx context.Context, d *schema.ResourceData, meta interf
 		for i := 0; i < len(optionTypeList); i++ {
 			row := make(map[string]interface{})
 			optionTypeConfig := optionTypeList[i].(map[string]interface{})
-			row["name"] = optionTypeConfig["name"]
-			row["code"] = optionTypeConfig["code"]
-			row["type"] = optionTypeConfig["type"]
-			row["description"] = optionTypeConfig["description"]
-			row["fieldName"] = optionTypeConfig["field_name"]
-			row["fieldLabel"] = optionTypeConfig["field_label"]
-			row["placeHolder"] = optionTypeConfig["placeholder"]
-			row["helpBlock"] = optionTypeConfig["help_block"]
-			// Evaluate the option type selected
-			switch optionTypeConfig["type"] {
-			case "byteSize":
-				row["defaultValue"] = optionTypeConfig["default_value"]
-				config := make(map[string]interface{})
-				config["display"] = optionTypeConfig["display"]
-				config["lockDisplay"] = optionTypeConfig["lock_display"]
-				row["config"] = config
-			case "code-editor":
-				row["defaultValue"] = optionTypeConfig["default_value"]
-				config := make(map[string]interface{})
-				config["lang"] = optionTypeConfig["code_language"]
-				config["showLineNumbers"] = optionTypeConfig["show_line_numbers"]
-				row["config"] = config
-			case "checkbox":
-				defaultValue := optionTypeConfig["default_value"].(string)
-				if defaultValue != "true" && defaultValue != "false" {
-					return diag.Errorf("The default_value attribute cannot be set when the type attribute is set to checkbox, use the default_checked attribute instead for the %s checkbox resource", optionTypeConfig["name"].(string))
+			// Check if an existing option type is provided
+			if optionTypeConfig["id"].(int) > 0 {
+				row["id"] = optionTypeConfig["id"]
+			} else {
+				row["name"] = optionTypeConfig["name"]
+				row["code"] = optionTypeConfig["code"]
+				row["type"] = optionTypeConfig["type"]
+				row["description"] = optionTypeConfig["description"]
+				row["fieldName"] = optionTypeConfig["field_name"]
+				row["fieldLabel"] = optionTypeConfig["field_label"]
+				row["placeHolder"] = optionTypeConfig["placeholder"]
+				row["helpBlock"] = optionTypeConfig["help_block"]
+				// Evaluate the option type selected
+				switch optionTypeConfig["type"] {
+				case "byteSize":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+					config := make(map[string]interface{})
+					config["display"] = optionTypeConfig["display"]
+					config["lockDisplay"] = optionTypeConfig["lock_display"]
+					row["config"] = config
+				case "code-editor":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+					config := make(map[string]interface{})
+					config["lang"] = optionTypeConfig["code_language"]
+					config["showLineNumbers"] = optionTypeConfig["show_line_numbers"]
+					row["config"] = config
+				case "checkbox":
+					defaultValue := optionTypeConfig["default_value"].(string)
+					if defaultValue != "true" && defaultValue != "false" {
+						return diag.Errorf("The default_value attribute cannot be set when the type attribute is set to checkbox, use the default_checked attribute instead for the %s checkbox resource", optionTypeConfig["name"].(string))
+					}
+					row["defaultValue"] = optionTypeConfig["default_checked"]
+				case "number":
+					number, err := strconv.Atoi(optionTypeConfig["default_value"].(string))
+					if err != nil {
+						return diag.Errorf("The default_value attribute must be a number string when the type attribute is set to number")
+					}
+					row["defaultValue"] = number
+					row["minVal"] = optionTypeConfig["min_value"]
+					row["maxVal"] = optionTypeConfig["max_value"]
+					if optionTypeConfig["step"].(int) > 0 {
+						configStep := make(map[string]interface{})
+						configStep["step"] = optionTypeConfig["step"]
+						row["config"] = configStep
+					}
+				case "radio":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+					row["optionList"] = optionTypeConfig["option_list_id"]
+				case "select":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+					row["optionList"] = optionTypeConfig["option_list_id"]
+					config := make(map[string]interface{})
+					config["multiSelect"] = optionTypeConfig["allow_multiple_selections"]
+					config["sortable"] = optionTypeConfig["sortable"]
+					row["config"] = config
+					row["noBlank"] = optionTypeConfig["remove_select_option"]
+				case "password":
+					config := make(map[string]interface{})
+					config["canPeek"] = optionTypeConfig["allow_password_peek"]
+					row["config"] = config
+				case "textArray":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+					config := make(map[string]interface{})
+					config["separator"] = optionTypeConfig["delimiter"]
+					row["config"] = config
+				case "textarea":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+					config := make(map[string]interface{})
+					config["rows"] = optionTypeConfig["text_rows"]
+					row["config"] = config
+				case "typeahead":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+					config := make(map[string]interface{})
+					config["sortable"] = optionTypeConfig["sortable"]
+					config["allowDuplicates"] = optionTypeConfig["allow_duplicates"]
+					config["multiSelect"] = optionTypeConfig["allow_multiple_selections"]
+					config["customData"] = optionTypeConfig["custom_data"]
+					row["optionList"] = optionTypeConfig["option_list_id"]
+					row["config"] = config
+				case "hidden":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+				case "text":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+				case "group":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+				case "cloud":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+					config := make(map[string]interface{})
+					if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
+						config["groupFieldType"] = "field"
+						config["group"] = optionTypeConfig["group_code"]
+					}
+					if optionTypeConfig["cloud_type_id"] != nil && optionTypeConfig["cloud_type_id"].(string) != "" {
+						config["cloudType"] = optionTypeConfig["cloud_type_id"]
+					}
+					row["config"] = config
+				case "layout":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+					config := make(map[string]interface{})
+					if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
+						config["groupFieldType"] = "field"
+						config["groupField"] = optionTypeConfig["group_code"]
+					}
+					if optionTypeConfig["cloud_code"] != nil && optionTypeConfig["cloud_code"].(string) != "" {
+						config["cloudFieldType"] = "field"
+						config["cloudField"] = optionTypeConfig["cloud_code"]
+					}
+					if optionTypeConfig["instance_type_code"] != nil && optionTypeConfig["instance_type_code"].(string) != "" {
+						config["instanceTypeFieldType"] = "value"
+						config["instanceTypeCode"] = optionTypeConfig["instance_type_code"]
+					}
+					row["config"] = config
+				case "plan":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+					config := make(map[string]interface{})
+					if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
+						config["groupFieldType"] = "field"
+						config["groupField"] = optionTypeConfig["group_code"]
+					}
+					if optionTypeConfig["cloud_code"] != nil && optionTypeConfig["cloud_code"].(string) != "" {
+						config["cloudFieldType"] = "field"
+						config["cloudField"] = optionTypeConfig["cloud_code"]
+					}
+					if optionTypeConfig["layout_code"] != nil && optionTypeConfig["layout_code"].(string) != "" {
+						config["layoutFieldType"] = "field"
+						config["layoutField"] = optionTypeConfig["layout_code"]
+					}
+					if optionTypeConfig["pool_code"] != nil && optionTypeConfig["pool_code"].(string) != "" {
+						config["poolFieldType"] = "field"
+						config["poolField"] = optionTypeConfig["pool_code"]
+					}
+					row["config"] = config
+				case "resourcePool":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+					config := make(map[string]interface{})
+					if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
+						config["groupFieldType"] = "field"
+						config["groupField"] = optionTypeConfig["group_code"]
+					}
+					if optionTypeConfig["cloud_code"] != nil && optionTypeConfig["cloud_code"].(string) != "" {
+						config["cloudFieldType"] = "field"
+						config["cloudField"] = optionTypeConfig["cloud_code"]
+					}
+					if optionTypeConfig["layout_code"] != nil && optionTypeConfig["layout_code"].(string) != "" {
+						config["layoutFieldType"] = "field"
+						config["layoutField"] = optionTypeConfig["layout_code"]
+					}
+					if optionTypeConfig["plan_code"] != nil && optionTypeConfig["plan_code"].(string) != "" {
+						config["planFieldType"] = "field"
+						config["planField"] = optionTypeConfig["plan_code"]
+					}
+					row["config"] = config
+				case "tag":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+				case "networkManager":
+					row["defaultValue"] = optionTypeConfig["default_value"]
+					config := make(map[string]interface{})
+					if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
+						config["groupFieldType"] = "field"
+						config["groupField"] = optionTypeConfig["group_code"]
+					}
+					if optionTypeConfig["cloud_code"] != nil && optionTypeConfig["cloud_code"].(string) != "" {
+						config["cloudFieldType"] = "field"
+						config["cloudField"] = optionTypeConfig["cloud_code"]
+					}
+					if optionTypeConfig["layout_code"] != nil && optionTypeConfig["layout_code"].(string) != "" {
+						config["layoutFieldType"] = "field"
+						config["layoutField"] = optionTypeConfig["layout_code"]
+					}
+					if optionTypeConfig["layout_id"] != nil && optionTypeConfig["layout_id"].(string) != "" {
+						config["layoutFieldType"] = "value"
+						config["layoutId"] = optionTypeConfig["layout_id"]
+					}
+					if optionTypeConfig["pool_code"] != nil && optionTypeConfig["pool_code"].(string) != "" {
+						config["poolFieldType"] = "field"
+						config["poolField"] = optionTypeConfig["pool_code"]
+					}
+					row["config"] = config
 				}
-				row["defaultValue"] = optionTypeConfig["default_checked"]
-			case "number":
-				number, err := strconv.Atoi(optionTypeConfig["default_value"].(string))
-				if err != nil {
-					return diag.Errorf("The default_value attribute must be a number string when the type attribute is set to number")
-				}
-				row["defaultValue"] = number
-				row["minVal"] = optionTypeConfig["min_value"]
-				row["maxVal"] = optionTypeConfig["max_value"]
-				if optionTypeConfig["step"].(int) > 0 {
-					configStep := make(map[string]interface{})
-					configStep["step"] = optionTypeConfig["step"]
-					row["config"] = configStep
-				}
-			case "radio":
-				row["defaultValue"] = optionTypeConfig["default_value"]
-				row["optionList"] = optionTypeConfig["option_list_id"]
-			case "select":
-				row["defaultValue"] = optionTypeConfig["default_value"]
-				row["optionList"] = optionTypeConfig["option_list_id"]
-				config := make(map[string]interface{})
-				config["multiSelect"] = optionTypeConfig["allow_multiple_selections"]
-				config["sortable"] = optionTypeConfig["sortable"]
-				row["config"] = config
-				row["noBlank"] = optionTypeConfig["remove_select_option"]
-			case "password":
-				config := make(map[string]interface{})
-				config["canPeek"] = optionTypeConfig["allow_password_peek"]
-				row["config"] = config
-			case "textArray":
-				row["defaultValue"] = optionTypeConfig["default_value"]
-				config := make(map[string]interface{})
-				config["separator"] = optionTypeConfig["delimiter"]
-				row["config"] = config
-			case "textarea":
-				row["defaultValue"] = optionTypeConfig["default_value"]
-				config := make(map[string]interface{})
-				config["rows"] = optionTypeConfig["text_rows"]
-				row["config"] = config
-			case "typeahead":
-				row["defaultValue"] = optionTypeConfig["default_value"]
-				config := make(map[string]interface{})
-				config["sortable"] = optionTypeConfig["sortable"]
-				config["allowDuplicates"] = optionTypeConfig["allow_duplicates"]
-				config["multiSelect"] = optionTypeConfig["allow_multiple_selections"]
-				config["customData"] = optionTypeConfig["custom_data"]
-				row["optionList"] = optionTypeConfig["option_list_id"]
-				row["config"] = config
-			case "hidden":
-				row["defaultValue"] = optionTypeConfig["default_value"]
-			case "text":
-				row["defaultValue"] = optionTypeConfig["default_value"]
+				row["required"] = optionTypeConfig["required"]
+				row["exportMeta"] = optionTypeConfig["export_meta"]
+				row["editable"] = optionTypeConfig["editable"]
+				row["displayValueOnDetails"] = optionTypeConfig["display_value_on_details"]
+				row["isLocked"] = optionTypeConfig["locked"]
+				row["isHidden"] = optionTypeConfig["hidden"]
+				row["excludeFromSearch"] = optionTypeConfig["exclude_from_search"]
+				row["dependsOnCode"] = optionTypeConfig["dependent_field"]
+				row["visibleOnCode"] = optionTypeConfig["visibility_field"]
+				row["verifyPattern"] = optionTypeConfig["verify_pattern"]
+				row["requireOnCode"] = optionTypeConfig["require_field"]
 			}
-			row["required"] = optionTypeConfig["required"]
-			row["exportMeta"] = optionTypeConfig["export_meta"]
-			row["editable"] = optionTypeConfig["editable"]
-			row["displayValueOnDetails"] = optionTypeConfig["display_value_on_details"]
-			row["isLocked"] = optionTypeConfig["locked"]
-			row["isHidden"] = optionTypeConfig["hidden"]
-			row["excludeFromSearch"] = optionTypeConfig["exclude_from_search"]
-			row["dependsOnCode"] = optionTypeConfig["dependent_field"]
-			row["visibleOnCode"] = optionTypeConfig["visibility_field"]
-			row["verifyPattern"] = optionTypeConfig["verify_pattern"]
-			row["requireOnCode"] = optionTypeConfig["require_field"]
-
 			optionTypes = append(optionTypes, row)
 		}
 	}
@@ -673,98 +881,197 @@ func resourceFormCreate(ctx context.Context, d *schema.ResourceData, meta interf
 				for i := 0; i < len(optionTypeList); i++ {
 					row := make(map[string]interface{})
 					optionTypeConfig := optionTypeList[i].(map[string]interface{})
-					row["name"] = optionTypeConfig["name"]
-					row["code"] = optionTypeConfig["code"]
-					row["type"] = optionTypeConfig["type"]
-					row["description"] = optionTypeConfig["description"]
-					row["fieldName"] = optionTypeConfig["field_name"]
-					row["fieldLabel"] = optionTypeConfig["field_label"]
-					row["placeHolder"] = optionTypeConfig["placeholder"]
-					row["helpBlock"] = optionTypeConfig["help_block"]
-					// Evaluate the option type selected
-					switch optionTypeConfig["type"] {
-					case "byteSize":
-						row["defaultValue"] = optionTypeConfig["default_value"]
-						config := make(map[string]interface{})
-						config["display"] = optionTypeConfig["display"]
-						config["lockDisplay"] = optionTypeConfig["lock_display"]
-						row["config"] = config
-					case "code-editor":
-						row["defaultValue"] = optionTypeConfig["default_value"]
-						config := make(map[string]interface{})
-						config["lang"] = optionTypeConfig["code_language"]
-						config["showLineNumbers"] = optionTypeConfig["show_line_numbers"]
-						row["config"] = config
-					case "checkbox":
-						defaultValue := optionTypeConfig["default_value"].(string)
-						if defaultValue != "true" && defaultValue != "false" {
-							return diag.Errorf("The default_value attribute cannot be set when the type attribute is set to checkbox, use the default_checked attribute instead for the %s checkbox resource", optionTypeConfig["name"].(string))
+					// Check if an existing option type is provided
+					if optionTypeConfig["id"].(int) > 0 {
+						row["id"] = optionTypeConfig["id"]
+					} else {
+						row["name"] = optionTypeConfig["name"]
+						row["code"] = optionTypeConfig["code"]
+						row["type"] = optionTypeConfig["type"]
+						row["description"] = optionTypeConfig["description"]
+						row["fieldName"] = optionTypeConfig["field_name"]
+						row["fieldLabel"] = optionTypeConfig["field_label"]
+						row["placeHolder"] = optionTypeConfig["placeholder"]
+						row["helpBlock"] = optionTypeConfig["help_block"]
+						// Evaluate the option type selected
+						switch optionTypeConfig["type"] {
+						case "byteSize":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+							config := make(map[string]interface{})
+							config["display"] = optionTypeConfig["display"]
+							config["lockDisplay"] = optionTypeConfig["lock_display"]
+							row["config"] = config
+						case "code-editor":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+							config := make(map[string]interface{})
+							config["lang"] = optionTypeConfig["code_language"]
+							config["showLineNumbers"] = optionTypeConfig["show_line_numbers"]
+							row["config"] = config
+						case "checkbox":
+							defaultValue := optionTypeConfig["default_value"].(string)
+							if defaultValue != "true" && defaultValue != "false" {
+								return diag.Errorf("The default_value attribute cannot be set when the type attribute is set to checkbox, use the default_checked attribute instead for the %s checkbox resource", optionTypeConfig["name"].(string))
+							}
+							row["defaultValue"] = optionTypeConfig["default_checked"]
+						case "number":
+							number, err := strconv.Atoi(optionTypeConfig["default_value"].(string))
+							if err != nil {
+								return diag.Errorf("The default_value attribute must be a number string when the type attribute is set to number")
+							}
+							row["defaultValue"] = number
+							row["minVal"] = optionTypeConfig["min_value"]
+							row["maxVal"] = optionTypeConfig["max_value"]
+							if optionTypeConfig["step"].(int) > 0 {
+								configStep := make(map[string]interface{})
+								configStep["step"] = optionTypeConfig["step"]
+								row["config"] = configStep
+							}
+						case "radio":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+							row["optionList"] = optionTypeConfig["option_list_id"]
+						case "select":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+							row["optionList"] = optionTypeConfig["option_list_id"]
+							config := make(map[string]interface{})
+							config["multiSelect"] = optionTypeConfig["allow_multiple_selections"]
+							config["sortable"] = optionTypeConfig["sortable"]
+							row["config"] = config
+							row["noBlank"] = optionTypeConfig["remove_select_option"]
+						case "password":
+							config := make(map[string]interface{})
+							config["canPeek"] = optionTypeConfig["allow_password_peek"]
+							row["config"] = config
+						case "textArray":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+							config := make(map[string]interface{})
+							config["separator"] = optionTypeConfig["delimiter"]
+							row["config"] = config
+						case "textarea":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+							config := make(map[string]interface{})
+							config["rows"] = optionTypeConfig["text_rows"]
+							row["config"] = config
+						case "typeahead":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+							config := make(map[string]interface{})
+							config["sortable"] = optionTypeConfig["sortable"]
+							config["allowDuplicates"] = optionTypeConfig["allow_duplicates"]
+							config["multiSelect"] = optionTypeConfig["allow_multiple_selections"]
+							config["customData"] = optionTypeConfig["custom_data"]
+							row["optionList"] = optionTypeConfig["option_list_id"]
+							row["config"] = config
+						case "hidden":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+						case "text":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+							// case "group":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+						case "cloud":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+							config := make(map[string]interface{})
+							if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
+								config["groupFieldType"] = "field"
+								config["group"] = optionTypeConfig["group_code"]
+							}
+							if optionTypeConfig["cloud_type_id"] != nil && optionTypeConfig["cloud_type_id"].(string) != "" {
+								config["cloudType"] = optionTypeConfig["cloud_type_id"]
+							}
+							row["config"] = config
+						case "layout":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+							config := make(map[string]interface{})
+							if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
+								config["groupFieldType"] = "field"
+								config["groupField"] = optionTypeConfig["group_code"]
+							}
+							if optionTypeConfig["cloud_code"] != nil && optionTypeConfig["cloud_code"].(string) != "" {
+								config["cloudFieldType"] = "field"
+								config["cloudField"] = optionTypeConfig["cloud_code"]
+							}
+							if optionTypeConfig["instance_type_code"] != nil && optionTypeConfig["instance_type_code"].(string) != "" {
+								config["instanceTypeFieldType"] = "value"
+								config["instanceTypeCode"] = optionTypeConfig["instance_type_code"]
+							}
+							row["config"] = config
+						case "plan":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+							config := make(map[string]interface{})
+							if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
+								config["groupFieldType"] = "field"
+								config["groupField"] = optionTypeConfig["group_code"]
+							}
+							if optionTypeConfig["cloud_code"] != nil && optionTypeConfig["cloud_code"].(string) != "" {
+								config["cloudFieldType"] = "field"
+								config["cloudField"] = optionTypeConfig["cloud_code"]
+							}
+							if optionTypeConfig["layout_code"] != nil && optionTypeConfig["layout_code"].(string) != "" {
+								config["layoutFieldType"] = "field"
+								config["layoutField"] = optionTypeConfig["layout_code"]
+							}
+							if optionTypeConfig["pool_code"] != nil && optionTypeConfig["pool_code"].(string) != "" {
+								config["poolFieldType"] = "field"
+								config["poolField"] = optionTypeConfig["pool_code"]
+							}
+							row["config"] = config
+						case "resourcePool":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+							config := make(map[string]interface{})
+							if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
+								config["groupFieldType"] = "field"
+								config["groupField"] = optionTypeConfig["group_code"]
+							}
+							if optionTypeConfig["cloud_code"] != nil && optionTypeConfig["cloud_code"].(string) != "" {
+								config["cloudFieldType"] = "field"
+								config["cloudField"] = optionTypeConfig["cloud_code"]
+							}
+							if optionTypeConfig["layout_code"] != nil && optionTypeConfig["layout_code"].(string) != "" {
+								config["layoutFieldType"] = "field"
+								config["layoutField"] = optionTypeConfig["layout_code"]
+							}
+							if optionTypeConfig["plan_code"] != nil && optionTypeConfig["plan_code"].(string) != "" {
+								config["planFieldType"] = "field"
+								config["planField"] = optionTypeConfig["plan_code"]
+							}
+							row["config"] = config
+						case "tag":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+						case "networkManager":
+							row["defaultValue"] = optionTypeConfig["default_value"]
+							config := make(map[string]interface{})
+							if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
+								config["groupFieldType"] = "field"
+								config["groupField"] = optionTypeConfig["group_code"]
+							}
+							if optionTypeConfig["cloud_code"] != nil && optionTypeConfig["cloud_code"].(string) != "" {
+								config["cloudFieldType"] = "field"
+								config["cloudField"] = optionTypeConfig["cloud_code"]
+							}
+							if optionTypeConfig["layout_code"] != nil && optionTypeConfig["layout_code"].(string) != "" {
+								config["layoutFieldType"] = "field"
+								config["layoutField"] = optionTypeConfig["layout_code"]
+							}
+							if optionTypeConfig["layout_id"] != nil && optionTypeConfig["layout_id"].(string) != "" {
+								config["layoutFieldType"] = "value"
+								config["layoutId"] = optionTypeConfig["layout_id"]
+							}
+							if optionTypeConfig["pool_code"] != nil && optionTypeConfig["pool_code"].(string) != "" {
+								config["poolFieldType"] = "field"
+								config["poolField"] = optionTypeConfig["pool_code"]
+							}
+							row["config"] = config
 						}
-						row["defaultValue"] = optionTypeConfig["default_checked"]
-					case "number":
-						number, err := strconv.Atoi(optionTypeConfig["default_value"].(string))
-						if err != nil {
-							return diag.Errorf("The default_value attribute must be a number string when the type attribute is set to number")
-						}
-						row["defaultValue"] = number
-						row["minVal"] = optionTypeConfig["min_value"]
-						row["maxVal"] = optionTypeConfig["max_value"]
-						if optionTypeConfig["step"].(int) > 0 {
-							configStep := make(map[string]interface{})
-							configStep["step"] = optionTypeConfig["step"]
-							row["config"] = configStep
-						}
-					case "radio":
-						row["defaultValue"] = optionTypeConfig["default_value"]
-						row["optionList"] = optionTypeConfig["option_list_id"]
-					case "select":
-						row["defaultValue"] = optionTypeConfig["default_value"]
-						row["optionList"] = optionTypeConfig["option_list_id"]
-						config := make(map[string]interface{})
-						config["multiSelect"] = optionTypeConfig["allow_multiple_selections"]
-						config["sortable"] = optionTypeConfig["sortable"]
-						row["config"] = config
-						row["noBlank"] = optionTypeConfig["remove_select_option"]
-					case "password":
-						config := make(map[string]interface{})
-						config["canPeek"] = optionTypeConfig["allow_password_peek"]
-						row["config"] = config
-					case "textArray":
-						row["defaultValue"] = optionTypeConfig["default_value"]
-						config := make(map[string]interface{})
-						config["separator"] = optionTypeConfig["delimiter"]
-						row["config"] = config
-					case "textarea":
-						row["defaultValue"] = optionTypeConfig["default_value"]
-						config := make(map[string]interface{})
-						config["rows"] = optionTypeConfig["text_rows"]
-						row["config"] = config
-					case "typeahead":
-						row["defaultValue"] = optionTypeConfig["default_value"]
-						config := make(map[string]interface{})
-						config["sortable"] = optionTypeConfig["sortable"]
-						config["allowDuplicates"] = optionTypeConfig["allow_duplicates"]
-						config["multiSelect"] = optionTypeConfig["allow_multiple_selections"]
-						config["customData"] = optionTypeConfig["custom_data"]
-						row["optionList"] = optionTypeConfig["option_list_id"]
-						row["config"] = config
-					case "hidden":
-						row["defaultValue"] = optionTypeConfig["default_value"]
-					case "text":
-						row["defaultValue"] = optionTypeConfig["default_value"]
+						row["required"] = optionTypeConfig["required"]
+						row["exportMeta"] = optionTypeConfig["export_meta"]
+						row["editable"] = optionTypeConfig["editable"]
+						row["displayValueOnDetails"] = optionTypeConfig["display_value_on_details"]
+						row["isLocked"] = optionTypeConfig["locked"]
+						row["isHidden"] = optionTypeConfig["hidden"]
+						row["excludeFromSearch"] = optionTypeConfig["exclude_from_search"]
+						row["dependsOnCode"] = optionTypeConfig["dependent_field"]
+						row["visibleOnCode"] = optionTypeConfig["visibility_field"]
+						row["verifyPattern"] = optionTypeConfig["verify_pattern"]
+						row["requireOnCode"] = optionTypeConfig["require_field"]
 					}
-					row["required"] = optionTypeConfig["required"]
-					row["exportMeta"] = optionTypeConfig["export_meta"]
-					row["editable"] = optionTypeConfig["editable"]
-					row["displayValueOnDetails"] = optionTypeConfig["display_value_on_details"]
-					row["isLocked"] = optionTypeConfig["locked"]
-					row["isHidden"] = optionTypeConfig["hidden"]
-					row["excludeFromSearch"] = optionTypeConfig["exclude_from_search"]
-					row["dependsOnCode"] = optionTypeConfig["dependent_field"]
-					row["visibleOnCode"] = optionTypeConfig["visibility_field"]
-					row["verifyPattern"] = optionTypeConfig["verify_pattern"]
-					row["requireOnCode"] = optionTypeConfig["require_field"]
-
 					optionTypes = append(optionTypes, row)
 				}
 				row["options"] = optionTypes
@@ -792,8 +1099,6 @@ func resourceFormCreate(ctx context.Context, d *schema.ResourceData, meta interf
 			},
 		},
 	}
-	//	jsonRequest, _ := json.Marshal(req.Body)
-	//	log.Printf("API JSON REQUEST: %s", string(jsonRequest))
 
 	resp, err := client.CreateForm(req)
 	if err != nil {
@@ -860,61 +1165,100 @@ func resourceFormRead(ctx context.Context, d *schema.ResourceData, meta interfac
 		//optionTypeList := d.Get("option_type").([]interface{})
 		for _, optionType := range form.Options {
 			row := make(map[string]interface{})
-			switch optionType.Type {
-			case "byteSize":
-				row["display"] = optionType.Config.Display
-				row["lock_display"] = optionType.Config.LockDisplay
-			case "checkbox":
-				// convert string text to boolean
-				if optionType.DefaultValue == "true" {
-					row["default_checked"] = true
-				} else {
-					row["default_checked"] = false
+			// Check if the input uses an existing input or not
+			if optionType.FormField {
+				switch optionType.Type {
+				case "byteSize":
+					row["display"] = optionType.Config.Display
+					row["lock_display"] = optionType.Config.LockDisplay
+				case "checkbox":
+					// convert string text to boolean
+					if optionType.DefaultValue == "true" {
+						row["default_checked"] = true
+					} else {
+						row["default_checked"] = false
+					}
+				case "code-editor":
+					row["show_line_numbers"] = optionType.Config.ShowLineNumbers
+					row["code_language"] = optionType.Config.Lang
+				case "number":
+					row["step"] = optionType.Config.Step
+					row["min_value"] = optionType.MinVal
+					row["max_value"] = optionType.MaxVal
+				case "radio":
+					row["option_list_id"] = optionType.OptionList.ID
+				case "select":
+					row["option_list_id"] = optionType.OptionList.ID
+				case "textarea":
+					row["text_rows"] = optionType.Config.Rows
+				case "hidden":
+					log.Printf("HIDDEN DEFAULT: %v", optionType.DefaultValue)
+				case "textArray":
+					row["delimiter"] = optionType.Config.Separator
+				case "typeahead":
+					row["sortable"] = optionType.Config.Sortable
+					row["allow_duplicates"] = optionType.Config.AllowDuplicates
+					row["custom_data"] = optionType.Config.CustomData
+					row["allow_multiple_selections"] = optionType.Config.MultiSelect
+					row["option_list_id"] = optionType.OptionList.ID
+				//Complex types
+				case "group":
+					//nothing
+				case "cloud":
+					row["group_code"] = optionType.Config.Group
+					row["cloud_type_id"] = optionType.Config.CloudType
+				case "layout":
+					row["group_code"] = optionType.Config.GroupField
+					row["cloud_code"] = optionType.Config.CloudField
+					row["instance_type_code"] = optionType.Config.InstanceTypeCode
+				case "plan":
+					row["group_code"] = optionType.Config.GroupField
+					row["cloud_code"] = optionType.Config.CloudField
+					row["layout_code"] = optionType.Config.LayoutField
+					row["pool_code"] = optionType.Config.PoolField
+				case "resourcePool":
+					row["group_code"] = optionType.Config.GroupField
+					row["cloud_code"] = optionType.Config.CloudField
+					row["layout_code"] = optionType.Config.LayoutField
+					row["plan_code"] = optionType.Config.PlanField
+				case "tag":
+					//nothing
+				case "networkManager":
+					row["group_code"] = optionType.Config.GroupField
+					row["cloud_code"] = optionType.Config.CloudField
+					row["layout_code"] = optionType.Config.LayoutField
+					row["layout_id"] = optionType.Config.LayoutId
+					row["pool_code"] = optionType.Config.PoolField
 				}
-			case "code-editor":
-				row["show_line_numbers"] = optionType.Config.ShowLineNumbers
-				row["code_language"] = optionType.Config.Lang
-			case "number":
-				row["step"] = optionType.Config.Step
-				row["min_value"] = optionType.MinVal
-				row["max_value"] = optionType.MaxVal
-			case "radio":
-				row["option_list_id"] = optionType.OptionList.ID
-			case "select":
-				row["option_list_id"] = optionType.OptionList.ID
-			case "textarea":
-				row["text_rows"] = optionType.Config.Rows
-			case "hidden":
-				log.Printf("HIDDEN DEFAULT: %v", optionType.DefaultValue)
-			case "textArray":
-				row["delimiter"] = optionType.Config.Separator
-			case "typeahead":
-				row["sortable"] = optionType.Config.Sortable
-				row["allow_duplicates"] = optionType.Config.AllowDuplicates
-				row["custom_data"] = optionType.Config.CustomData
-				row["allow_multiple_selections"] = optionType.Config.MultiSelect
-				row["option_list_id"] = optionType.OptionList.ID
+				row["remove_select_option"] = optionType.NoBlank
+				row["name"] = optionType.Name
+				row["description"] = optionType.Description
+				row["code"] = optionType.Code
+				row["type"] = optionType.Type
+				row["field_label"] = optionType.FieldLabel
+				row["field_name"] = optionType.FieldName
+				if optionType.Config.DefaultValue != "" {
+					row["default_value"] = optionType.Config.DefaultValue
+				} else {
+					row["default_value"] = optionType.DefaultValue
+				}
+				row["placeholder"] = optionType.PlaceHolder
+				row["help_block"] = optionType.HelpBlock
+				row["required"] = optionType.Required
+				row["export_meta"] = optionType.ExportMeta
+				row["display_value_on_details"] = optionType.DisplayValueOnDetails
+				row["locked"] = optionType.IsLocked
+				row["hidden"] = optionType.IsHidden
+				row["exclude_from_search"] = optionType.ExcludeFromSearch
+				row["dependent_field"] = optionType.DependsOnCode
+				row["visibility_field"] = optionType.VisibleOnCode
+				row["verify_pattern"] = optionType.VerifyPattern
+				row["require_field"] = optionType.RequireOnCode
 			}
-			row["remove_select_option"] = optionType.NoBlank
-			row["name"] = optionType.Name
-			row["description"] = optionType.Description
-			row["code"] = optionType.Code
-			row["type"] = optionType.Type
-			row["field_label"] = optionType.FieldLabel
-			row["field_name"] = optionType.FieldName
-			row["default_value"] = optionType.DefaultValue
-			row["placeholder"] = optionType.PlaceHolder
-			row["help_block"] = optionType.HelpBlock
-			row["required"] = optionType.Required
-			row["export_meta"] = optionType.ExportMeta
-			row["display_value_on_details"] = optionType.DisplayValueOnDetails
-			row["locked"] = optionType.IsLocked
-			row["hidden"] = optionType.IsHidden
-			row["exclude_from_search"] = optionType.ExcludeFromSearch
-			row["dependent_field"] = optionType.DependsOnCode
-			row["visibility_field"] = optionType.VisibleOnCode
-			row["verify_pattern"] = optionType.VerifyPattern
-			row["require_field"] = optionType.RequireOnCode
+			//always save ID from JSON
+			fmt.Printf("%v ---> %v\n", optionType.Name, optionType.ID)
+			row["id"] = optionType.ID
+
 			optionTypes = append(optionTypes, row)
 		}
 	}
@@ -935,59 +1279,96 @@ func resourceFormRead(ctx context.Context, d *schema.ResourceData, meta interfac
 				for _, optionType := range fieldGroup.Options {
 					optionTypeRow := make(map[string]interface{})
 					// Check if the input uses an existing input or not
-					switch optionType.Type {
-					case "byteSize":
-						optionTypeRow["display"] = optionType.Config.Display
-						optionTypeRow["lock_display"] = optionType.Config.LockDisplay
-					case "checkbox":
-						// convert string text to boolean
-						if optionType.DefaultValue == "true" {
-							row["default_checked"] = true
-						} else {
-							row["default_checked"] = false
+					if optionType.FormField {
+						switch optionType.Type {
+						case "byteSize":
+							optionTypeRow["display"] = optionType.Config.Display
+							optionTypeRow["lock_display"] = optionType.Config.LockDisplay
+						case "checkbox":
+							// convert string text to boolean
+							if optionType.DefaultValue == "true" {
+								row["default_checked"] = true
+							} else {
+								row["default_checked"] = false
+							}
+						case "code-editor":
+							optionTypeRow["show_line_numbers"] = optionType.Config.ShowLineNumbers
+							optionTypeRow["code_language"] = optionType.Config.Lang
+						case "number":
+							optionTypeRow["step"] = optionType.Config.Step
+							optionTypeRow["min_value"] = optionType.MinVal
+							optionTypeRow["max_value"] = optionType.MaxVal
+						case "radio":
+							optionTypeRow["option_list_id"] = optionType.OptionList.ID
+						case "select":
+							optionTypeRow["option_list_id"] = optionType.OptionList.ID
+						case "textarea":
+							optionTypeRow["text_rows"] = optionType.Config.Rows
+						case "textArray":
+							optionTypeRow["delimiter"] = optionType.Config.Separator
+						case "typeahead":
+							optionTypeRow["sortable"] = optionType.Config.Sortable
+							optionTypeRow["allow_duplicates"] = optionType.Config.AllowDuplicates
+							optionTypeRow["custom_data"] = optionType.Config.CustomData
+							optionTypeRow["allow_multiple_selections"] = optionType.Config.MultiSelect
+							optionTypeRow["option_list_id"] = optionType.OptionList.ID
+						//Complex types
+						case "group":
+							//nothing
+						case "cloud":
+							optionTypeRow["group_code"] = optionType.Config.Group
+							optionTypeRow["cloud_type_id"] = optionType.Config.CloudType
+						case "layout":
+							optionTypeRow["group_code"] = optionType.Config.GroupField
+							optionTypeRow["cloud_code"] = optionType.Config.CloudField
+							optionTypeRow["instance_type_code"] = optionType.Config.InstanceTypeCode
+						case "plan":
+							optionTypeRow["group_code"] = optionType.Config.GroupField
+							optionTypeRow["cloud_code"] = optionType.Config.CloudField
+							optionTypeRow["layout_code"] = optionType.Config.LayoutField
+							optionTypeRow["pool_code"] = optionType.Config.PoolField
+						case "resourcePool":
+							optionTypeRow["group_code"] = optionType.Config.GroupField
+							optionTypeRow["cloud_code"] = optionType.Config.CloudField
+							optionTypeRow["layout_code"] = optionType.Config.LayoutField
+							optionTypeRow["plan_code"] = optionType.Config.PlanField
+						case "tag":
+							//nothing
+						case "networkManager":
+							optionTypeRow["group_code"] = optionType.Config.GroupField
+							optionTypeRow["cloud_code"] = optionType.Config.CloudField
+							optionTypeRow["layout_code"] = optionType.Config.LayoutField
+							optionTypeRow["layout_id"] = optionType.Config.LayoutId
+							optionTypeRow["pool_code"] = optionType.Config.PoolField
 						}
-					case "code-editor":
-						optionTypeRow["show_line_numbers"] = optionType.Config.ShowLineNumbers
-						optionTypeRow["code_language"] = optionType.Config.Lang
-					case "number":
-						optionTypeRow["step"] = optionType.Config.Step
-						optionTypeRow["min_value"] = optionType.MinVal
-						optionTypeRow["max_value"] = optionType.MaxVal
-					case "radio":
-						optionTypeRow["option_list_id"] = optionType.OptionList.ID
-					case "select":
-						optionTypeRow["option_list_id"] = optionType.OptionList.ID
-					case "textarea":
-						optionTypeRow["text_rows"] = optionType.Config.Rows
-					case "textArray":
-						optionTypeRow["delimiter"] = optionType.Config.Separator
-					case "typeahead":
-						optionTypeRow["sortable"] = optionType.Config.Sortable
-						optionTypeRow["allow_duplicates"] = optionType.Config.AllowDuplicates
-						optionTypeRow["custom_data"] = optionType.Config.CustomData
-						optionTypeRow["allow_multiple_selections"] = optionType.Config.MultiSelect
-						optionTypeRow["option_list_id"] = optionType.OptionList.ID
+						optionTypeRow["remove_select_option"] = optionType.NoBlank
+						optionTypeRow["name"] = optionType.Name
+						optionTypeRow["description"] = optionType.Description
+						optionTypeRow["code"] = optionType.Code
+						optionTypeRow["type"] = optionType.Type
+						optionTypeRow["field_label"] = optionType.FieldLabel
+						optionTypeRow["field_name"] = optionType.FieldName
+						if optionType.Config.DefaultValue != "" {
+							optionTypeRow["default_value"] = optionType.Config.DefaultValue
+						} else {
+							optionTypeRow["default_value"] = optionType.DefaultValue
+						}
+						optionTypeRow["placeholder"] = optionType.PlaceHolder
+						optionTypeRow["help_block"] = optionType.HelpBlock
+						optionTypeRow["required"] = optionType.Required
+						optionTypeRow["export_meta"] = optionType.ExportMeta
+						optionTypeRow["display_value_on_details"] = optionType.DisplayValueOnDetails
+						optionTypeRow["locked"] = optionType.IsLocked
+						optionTypeRow["hidden"] = optionType.IsHidden
+						optionTypeRow["exclude_from_search"] = optionType.ExcludeFromSearch
+						optionTypeRow["dependent_field"] = optionType.DependsOnCode
+						optionTypeRow["visibility_field"] = optionType.VisibleOnCode
+						optionTypeRow["verify_pattern"] = optionType.VerifyPattern
+						optionTypeRow["require_field"] = optionType.RequireOnCode
 					}
-					optionTypeRow["remove_select_option"] = optionType.NoBlank
-					optionTypeRow["name"] = optionType.Name
-					optionTypeRow["description"] = optionType.Description
-					optionTypeRow["code"] = optionType.Code
-					optionTypeRow["type"] = optionType.Type
-					optionTypeRow["field_label"] = optionType.FieldLabel
-					optionTypeRow["field_name"] = optionType.FieldName
-					optionTypeRow["default_value"] = optionType.DefaultValue
-					optionTypeRow["placeholder"] = optionType.PlaceHolder
-					optionTypeRow["help_block"] = optionType.HelpBlock
-					optionTypeRow["required"] = optionType.Required
-					optionTypeRow["export_meta"] = optionType.ExportMeta
-					optionTypeRow["display_value_on_details"] = optionType.DisplayValueOnDetails
-					optionTypeRow["locked"] = optionType.IsLocked
-					optionTypeRow["hidden"] = optionType.IsHidden
-					optionTypeRow["exclude_from_search"] = optionType.ExcludeFromSearch
-					optionTypeRow["dependent_field"] = optionType.DependsOnCode
-					optionTypeRow["visibility_field"] = optionType.VisibleOnCode
-					optionTypeRow["verify_pattern"] = optionType.VerifyPattern
-					optionTypeRow["require_field"] = optionType.RequireOnCode
+					//always save ID from JSON
+					optionTypeRow["id"] = optionType.ID
+
 					fgOptionTypes = append(fgOptionTypes, optionTypeRow)
 				}
 			}
@@ -1012,6 +1393,10 @@ func resourceFormUpdate(ctx context.Context, d *schema.ResourceData, meta interf
 		for i := 0; i < len(optionTypeList); i++ {
 			row := make(map[string]interface{})
 			optionTypeConfig := optionTypeList[i].(map[string]interface{})
+			// Check if an existing option type is provided
+			if optionTypeConfig["id"].(int) > 0 {
+				row["id"] = optionTypeConfig["id"]
+			}
 			row["name"] = optionTypeConfig["name"]
 			row["code"] = optionTypeConfig["code"]
 			row["type"] = optionTypeConfig["type"]
@@ -1091,6 +1476,101 @@ func resourceFormUpdate(ctx context.Context, d *schema.ResourceData, meta interf
 				row["defaultValue"] = optionTypeConfig["default_value"]
 			case "text":
 				row["defaultValue"] = optionTypeConfig["default_value"]
+			case "group":
+				row["defaultValue"] = optionTypeConfig["default_value"]
+			case "cloud":
+				row["defaultValue"] = optionTypeConfig["default_value"]
+				config := make(map[string]interface{})
+				if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
+					config["groupFieldType"] = "field"
+					config["group"] = optionTypeConfig["group_code"]
+				}
+				if optionTypeConfig["cloud_type_id"] != nil && optionTypeConfig["cloud_type_id"].(string) != "" {
+					config["cloudType"] = optionTypeConfig["cloud_type_id"]
+				}
+				row["config"] = config
+			case "layout":
+				row["defaultValue"] = optionTypeConfig["default_value"]
+				config := make(map[string]interface{})
+				if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
+					config["groupFieldType"] = "field"
+					config["groupField"] = optionTypeConfig["group_code"]
+				}
+				if optionTypeConfig["cloud_code"] != nil && optionTypeConfig["cloud_code"].(string) != "" {
+					config["cloudFieldType"] = "field"
+					config["cloudField"] = optionTypeConfig["cloud_code"]
+				}
+				if optionTypeConfig["instance_type_code"] != nil && optionTypeConfig["instance_type_code"].(string) != "" {
+					config["instanceTypeFieldType"] = "value"
+					config["instanceTypeCode"] = optionTypeConfig["instance_type_code"]
+				}
+				row["config"] = config
+			case "plan":
+				row["defaultValue"] = optionTypeConfig["default_value"]
+				config := make(map[string]interface{})
+				if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
+					config["groupFieldType"] = "field"
+					config["groupField"] = optionTypeConfig["group_code"]
+				}
+				if optionTypeConfig["cloud_code"] != nil && optionTypeConfig["cloud_code"].(string) != "" {
+					config["cloudFieldType"] = "field"
+					config["cloudField"] = optionTypeConfig["cloud_code"]
+				}
+				if optionTypeConfig["layout_code"] != nil && optionTypeConfig["layout_code"].(string) != "" {
+					config["layoutFieldType"] = "field"
+					config["layoutField"] = optionTypeConfig["layout_code"]
+				}
+				if optionTypeConfig["pool_code"] != nil && optionTypeConfig["pool_code"].(string) != "" {
+					config["poolFieldType"] = "field"
+					config["poolField"] = optionTypeConfig["pool_code"]
+				}
+				row["config"] = config
+			case "resourcePool":
+				row["defaultValue"] = optionTypeConfig["default_value"]
+				config := make(map[string]interface{})
+				if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
+					config["groupFieldType"] = "field"
+					config["groupField"] = optionTypeConfig["group_code"]
+				}
+				if optionTypeConfig["cloud_code"] != nil && optionTypeConfig["cloud_code"].(string) != "" {
+					config["cloudFieldType"] = "field"
+					config["cloudField"] = optionTypeConfig["cloud_code"]
+				}
+				if optionTypeConfig["layout_code"] != nil && optionTypeConfig["layout_code"].(string) != "" {
+					config["layoutFieldType"] = "field"
+					config["layoutField"] = optionTypeConfig["layout_code"]
+				}
+				if optionTypeConfig["plan_code"] != nil && optionTypeConfig["plan_code"].(string) != "" {
+					config["planFieldType"] = "field"
+					config["planField"] = optionTypeConfig["plan_code"]
+				}
+				row["config"] = config
+			case "tag":
+				row["defaultValue"] = optionTypeConfig["default_value"]
+			case "networkManager":
+				row["defaultValue"] = optionTypeConfig["default_value"]
+				config := make(map[string]interface{})
+				if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
+					config["groupFieldType"] = "field"
+					config["groupField"] = optionTypeConfig["group_code"]
+				}
+				if optionTypeConfig["cloud_code"] != nil && optionTypeConfig["cloud_code"].(string) != "" {
+					config["cloudFieldType"] = "field"
+					config["cloudField"] = optionTypeConfig["cloud_code"]
+				}
+				if optionTypeConfig["layout_code"] != nil && optionTypeConfig["layout_code"].(string) != "" {
+					config["layoutFieldType"] = "field"
+					config["layoutField"] = optionTypeConfig["layout_code"]
+				}
+				if optionTypeConfig["layout_id"] != nil && optionTypeConfig["layout_id"].(string) != "" {
+					config["layoutFieldType"] = "value"
+					config["layoutId"] = optionTypeConfig["layout_id"]
+				}
+				if optionTypeConfig["pool_code"] != nil && optionTypeConfig["pool_code"].(string) != "" {
+					config["poolFieldType"] = "field"
+					config["poolField"] = optionTypeConfig["pool_code"]
+				}
+				row["config"] = config
 			}
 			row["required"] = optionTypeConfig["required"]
 			row["exportMeta"] = optionTypeConfig["export_meta"]
@@ -1103,7 +1583,6 @@ func resourceFormUpdate(ctx context.Context, d *schema.ResourceData, meta interf
 			row["visibleOnCode"] = optionTypeConfig["visibility_field"]
 			row["verifyPattern"] = optionTypeConfig["verify_pattern"]
 			row["requireOnCode"] = optionTypeConfig["require_field"]
-
 			optionTypes = append(optionTypes, row)
 		}
 	}
@@ -1129,6 +1608,10 @@ func resourceFormUpdate(ctx context.Context, d *schema.ResourceData, meta interf
 				for i := 0; i < len(optionTypeList); i++ {
 					row := make(map[string]interface{})
 					optionTypeConfig := optionTypeList[i].(map[string]interface{})
+					// Check if an existing option type is provided
+					if optionTypeConfig["id"].(int) > 0 {
+						row["id"] = optionTypeConfig["id"]
+					}
 					row["name"] = optionTypeConfig["name"]
 					row["code"] = optionTypeConfig["code"]
 					row["type"] = optionTypeConfig["type"]
@@ -1208,6 +1691,101 @@ func resourceFormUpdate(ctx context.Context, d *schema.ResourceData, meta interf
 						row["defaultValue"] = optionTypeConfig["default_value"]
 					case "text":
 						row["defaultValue"] = optionTypeConfig["default_value"]
+					case "group":
+						row["defaultValue"] = optionTypeConfig["default_value"]
+					case "cloud":
+						row["defaultValue"] = optionTypeConfig["default_value"]
+						config := make(map[string]interface{})
+						if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
+							config["groupFieldType"] = "field"
+							config["group"] = optionTypeConfig["group_code"]
+						}
+						if optionTypeConfig["cloud_type_id"] != nil && optionTypeConfig["cloud_type_id"].(string) != "" {
+							config["cloudType"] = optionTypeConfig["cloud_type_id"]
+						}
+						row["config"] = config
+					case "layout":
+						row["defaultValue"] = optionTypeConfig["default_value"]
+						config := make(map[string]interface{})
+						if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
+							config["groupFieldType"] = "field"
+							config["groupField"] = optionTypeConfig["group_code"]
+						}
+						if optionTypeConfig["cloud_code"] != nil && optionTypeConfig["cloud_code"].(string) != "" {
+							config["cloudFieldType"] = "field"
+							config["cloudField"] = optionTypeConfig["cloud_code"]
+						}
+						if optionTypeConfig["instance_type_code"] != nil && optionTypeConfig["instance_type_code"].(string) != "" {
+							config["instanceTypeFieldType"] = "value"
+							config["instanceTypeCode"] = optionTypeConfig["instance_type_code"]
+						}
+						row["config"] = config
+					case "plan":
+						row["defaultValue"] = optionTypeConfig["default_value"]
+						config := make(map[string]interface{})
+						if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
+							config["groupFieldType"] = "field"
+							config["groupField"] = optionTypeConfig["group_code"]
+						}
+						if optionTypeConfig["cloud_code"] != nil && optionTypeConfig["cloud_code"].(string) != "" {
+							config["cloudFieldType"] = "field"
+							config["cloudField"] = optionTypeConfig["cloud_code"]
+						}
+						if optionTypeConfig["layout_code"] != nil && optionTypeConfig["layout_code"].(string) != "" {
+							config["layoutFieldType"] = "field"
+							config["layoutField"] = optionTypeConfig["layout_code"]
+						}
+						if optionTypeConfig["pool_code"] != nil && optionTypeConfig["pool_code"].(string) != "" {
+							config["poolFieldType"] = "field"
+							config["poolField"] = optionTypeConfig["pool_code"]
+						}
+						row["config"] = config
+					case "resourcePool":
+						row["defaultValue"] = optionTypeConfig["default_value"]
+						config := make(map[string]interface{})
+						if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
+							config["groupFieldType"] = "field"
+							config["groupField"] = optionTypeConfig["group_code"]
+						}
+						if optionTypeConfig["cloud_code"] != nil && optionTypeConfig["cloud_code"].(string) != "" {
+							config["cloudFieldType"] = "field"
+							config["cloudField"] = optionTypeConfig["cloud_code"]
+						}
+						if optionTypeConfig["layout_code"] != nil && optionTypeConfig["layout_code"].(string) != "" {
+							config["layoutFieldType"] = "field"
+							config["layoutField"] = optionTypeConfig["layout_code"]
+						}
+						if optionTypeConfig["plan_code"] != nil && optionTypeConfig["plan_code"].(string) != "" {
+							config["planFieldType"] = "field"
+							config["planField"] = optionTypeConfig["plan_code"]
+						}
+						row["config"] = config
+					case "tag":
+						row["defaultValue"] = optionTypeConfig["default_value"]
+					case "networkManager":
+						row["defaultValue"] = optionTypeConfig["default_value"]
+						config := make(map[string]interface{})
+						if optionTypeConfig["group_code"] != nil && optionTypeConfig["group_code"].(string) != "" {
+							config["groupFieldType"] = "field"
+							config["groupField"] = optionTypeConfig["group_code"]
+						}
+						if optionTypeConfig["cloud_code"] != nil && optionTypeConfig["cloud_code"].(string) != "" {
+							config["cloudFieldType"] = "field"
+							config["cloudField"] = optionTypeConfig["cloud_code"]
+						}
+						if optionTypeConfig["layout_code"] != nil && optionTypeConfig["layout_code"].(string) != "" {
+							config["layoutFieldType"] = "field"
+							config["layoutField"] = optionTypeConfig["layout_code"]
+						}
+						if optionTypeConfig["layout_id"] != nil && optionTypeConfig["layout_id"].(string) != "" {
+							config["layoutFieldType"] = "value"
+							config["layoutId"] = optionTypeConfig["layout_id"]
+						}
+						if optionTypeConfig["pool_code"] != nil && optionTypeConfig["pool_code"].(string) != "" {
+							config["poolFieldType"] = "field"
+							config["poolField"] = optionTypeConfig["pool_code"]
+						}
+						row["config"] = config
 					}
 					row["required"] = optionTypeConfig["required"]
 					row["exportMeta"] = optionTypeConfig["export_meta"]
@@ -1220,7 +1798,6 @@ func resourceFormUpdate(ctx context.Context, d *schema.ResourceData, meta interf
 					row["visibleOnCode"] = optionTypeConfig["visibility_field"]
 					row["verifyPattern"] = optionTypeConfig["verify_pattern"]
 					row["requireOnCode"] = optionTypeConfig["require_field"]
-
 					optionTypes = append(optionTypes, row)
 				}
 				row["options"] = optionTypes

@@ -87,7 +87,9 @@ func dataSourceMorpheusGitIntegrationRead(ctx context.Context, d *schema.Resourc
 		repo_ids := make(map[string]int)
 
 		var itemResponsePayload CodeRepositories
-		json.Unmarshal(resp.Body, &itemResponsePayload)
+		if err := json.Unmarshal(resp.Body, &itemResponsePayload); err != nil {
+			return diag.FromErr(err)
+		}
 		for _, v := range itemResponsePayload.Data {
 			repo_ids[v.Name] = v.Value
 		}

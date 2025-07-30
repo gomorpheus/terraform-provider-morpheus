@@ -359,7 +359,9 @@ func resourceMVMInstanceCreate(ctx context.Context, d *schema.ResourceData, meta
 	}
 
 	var itemResponsePayload ResourcePoolOptions
-	json.Unmarshal(resourcePoolResp.Body, &itemResponsePayload)
+	if err := json.Unmarshal(resourcePoolResp.Body, &itemResponsePayload); err != nil {
+		return diag.FromErr(err)
+	}
 	var resourcePoolId int
 	resourcePoolFound := false
 	for _, v := range itemResponsePayload.Data {
