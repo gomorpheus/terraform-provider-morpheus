@@ -776,7 +776,7 @@ func resourceVsphereInstanceDelete(ctx context.Context, d *schema.ResourceData, 
 	// isn't available
 	stateConf := retry.StateChangeConf{
 		Delay:        1 * time.Second,
-		Timeout:      30 * time.Second,
+		Timeout:      5 * time.Minute,
 		PollInterval: 1 * time.Second,
 		MinTimeout:   1 * time.Second,
 		Pending:      []string{"200"},

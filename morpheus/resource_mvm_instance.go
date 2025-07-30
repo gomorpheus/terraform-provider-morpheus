@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"strconv"
 	"time"
 
 	"github.com/gomorpheus/morpheus-go-sdk"
@@ -362,10 +363,15 @@ func resourceMVMInstanceCreate(ctx context.Context, d *schema.ResourceData, meta
 		return diag.FromErr(err)
 	}
 	var resourcePoolId int
+	resourcePoolFound := false
 	for _, v := range itemResponsePayload.Data {
 		if v.ProviderType == "mvm" && v.Name == d.Get("resource_pool_name").(string) {
 			resourcePoolId = v.Id
+			resourcePoolFound = true
 		}
+	}
+	if !resourcePoolFound {
+		return diag.Errorf("resource pool with name %s not found with providerType mvm", d.Get("resource_pool_name").(string))
 	}
 
 	config["resourcePoolId"] = resourcePoolId
@@ -592,16 +598,33 @@ func resourceMVMInstanceRead(ctx context.Context, d *schema.ResourceData, meta i
 	d.Set("labels", instance.Labels)
 
 	var evars []map[string]interface{}
+	evarMap := make(map[string]string, len(instance.EnvironmentVariables))
 	for i := 0; i < len(instance.EnvironmentVariables); i++ {
 		evar := instance.EnvironmentVariables[i]
 		row := make(map[string]interface{})
 		row["name"] = evar.Name
-		row["value"] = fmt.Sprintf("%v", evar.Value)
+		value := fmt.Sprintf("%v", evar.Value)
+		row["value"] = value
 		row["export"] = evar.Export
 		row["masked"] = evar.Masked
+		evarMap[evar.Name] = value
 		evars = append(evars, row)
 	}
-	d.Set("evar", evars)
+
+	// If the evar field is set, we need to check if the evars match
+	if d.Get("evar") != nil {
+		for _, row := range d.Get("evar").([]interface{}) {
+			evarData := row.(map[string]interface{})
+			evarName := evarData["name"].(string)
+			value := evarData["value"].(string)
+
+			if mapValue, exists := evarMap[evarName]; exists {
+				if mapValue != value {
+					return diag.Errorf("evar %s is missing from returned evar map", evarName)
+				}
+			}
+		}
+	}
 
 	// Tags
 	tags := make(map[string]interface{})
@@ -634,19 +657,59 @@ func resourceMVMInstanceRead(ctx context.Context, d *schema.ResourceData, meta i
 	d.Set("primary_ip_address", instance.ConnectionInfo[0].Ip)
 
 	var volumes []map[string]interface{}
-	// iterate over the array of svcports
+	// iterate over the array of volumes
 	for i := 0; i < len(instance.Volumes); i++ {
 		row := make(map[string]interface{})
 		volume := instance.Volumes[i]
 		row["uuid"] = volume.Uuid
 		row["root"] = volume.RootVolume.(bool)
 		row["name"] = volume.Name
-		row["size"] = volume.Size.(float64)
-		row["storage_type"] = volume.StorageType.(float64)
-		row["datastore_id"] = volume.DatastoreId.(int)
+		if volume.Size != nil {
+			row["size"] = volume.Size.(float64)
+		}
+		if volume.StorageType != nil {
+			row["storage_type"] = volume.StorageType.(float64)
+		}
+		if volume.DatastoreId != nil {
+			datastoreId, errConv := convertToInt(volume.DatastoreId)
+			if errConv != nil {
+				log.Printf("Error converting datastore ID to int: %s", errConv)
+
+				return diag.FromErr(errConv)
+			}
+
+			row["datastore_id"] = datastoreId
+		}
 		volumes = append(volumes, row)
 	}
-	d.Set("storage_volume", volumes)
+
+	// If the storage_volume field is set, we need to check if the volumes match
+	// And it there is a match, we need to set the uuid in the state
+	var volumesForState []map[string]interface{}
+	if d.Get("storage_volume") != nil {
+		for _, row := range d.Get("storage_volume").([]interface{}) {
+			volumeData := row.(map[string]interface{})
+			volumeName := volumeData["name"]
+			datastoreId := volumeData["datastore_id"]
+
+			found := false
+			for _, v := range volumes {
+				if v["name"] == volumeName && v["datastore_id"] == datastoreId {
+					found = true
+					volumeData["uuid"] = v["uuid"]
+					volumesForState = append(volumesForState, volumeData)
+
+					break
+				}
+			}
+			if !found {
+				return diag.Errorf("storage_volume %s is missing from returned storage volume map", volumeName)
+			}
+		}
+	}
+	if len(volumesForState) > 0 {
+		d.Set("storage_volume", volumesForState)
+	}
 
 	var networkInterfaces []map[string]interface{}
 	// iterate over the array of svcports
@@ -662,6 +725,18 @@ func resourceMVMInstanceRead(ctx context.Context, d *schema.ResourceData, meta i
 	d.Set("network_interface", networkInterfaces)
 
 	return diags
+}
+
+// convertToInt converts a value to an int, supporting both int and string types.
+func convertToInt(value interface{}) (int, error) {
+	switch v := value.(type) {
+	case int:
+		return v, nil
+	case string:
+		return strconv.Atoi(v)
+	default:
+		return 0, fmt.Errorf("unsupported type %T for conversion to int", value)
+	}
 }
 
 func resourceMVMInstanceUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
