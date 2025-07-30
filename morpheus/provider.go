@@ -2,6 +2,7 @@ package morpheus
 
 import (
 	"context"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -52,9 +53,11 @@ func Provider() *schema.Provider {
 
 			// defaults to false
 			"insecure": {
-				Type:        schema.TypeBool,
-				Optional:    true,
-				Description: "Disables TLS verification on all requests",
+				Type:     schema.TypeBool,
+				Optional: true,
+				Description: "Explicitly allow the provider to perform " +
+					"\"insecure\" SSL requests. If omitted, " +
+					"default value is `false`",
 				DefaultFunc: schema.EnvDefaultFunc("MORPHEUS_INSECURE", false),
 			},
 		},

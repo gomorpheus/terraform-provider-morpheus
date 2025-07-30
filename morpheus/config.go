@@ -10,17 +10,16 @@ import (
 )
 
 const sslCertErrorMsg = `
-
 If you understand the potential security risks of accepting an untrusted server
 certificate, you can bypass this error by setting "insecure = true" in your
 provider configuration or by setting environment variable MORPHEUS_API_INSECURE to true. Use this option with caution.
 
-	morpheus {
-		url = "https://..."
-		.
-		.
-		.
-		insecure = true <-- set to true to ignore SSL certificate errors
+provider "morpheus" {
+	url = "https://..."
+	.
+	.
+	.
+	insecure = true <-- set to true to ignore SSL certificate errors
 }
 `
 
@@ -55,7 +54,12 @@ func (c *Config) Client() (*morpheus.Client, diag.Diagnostics) {
 	}
 
 	if c.client == nil {
-		client := morpheus.NewClient(c.Url, morpheus.WithDebug(debug), morpheus.WithInsecure(c.insecure))
+		var client *morpheus.Client
+		if c.insecure {
+			client = morpheus.NewClient(c.Url, morpheus.WithDebug(debug), morpheus.Insecure())
+		} else {
+			client = morpheus.NewClient(c.Url, morpheus.WithDebug(debug))
+		}
 		// should validate url here too, and maybe ping it
 		// logging with access token or username and password?
 
