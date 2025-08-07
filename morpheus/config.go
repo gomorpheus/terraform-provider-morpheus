@@ -1,6 +1,8 @@
 package morpheus
 
 import (
+	"crypto/x509"
+	"errors"
 	"fmt"
 	"os"
 
@@ -23,6 +25,14 @@ provider "morpheus" {
 }
 `
 
+func certErrCallback(err error) error {
+	var certErr x509.UnknownAuthorityError
+	if errors.As(err, &certErr) {
+		return errors.New(certErr.Error() + sslCertErrorMsg)
+	}
+	return nil
+}
+
 // Config is the configuration structure used to instantiate the Morpheus
 // provider.  Only Url and AccessToken are required.
 type Config struct {
@@ -38,6 +48,8 @@ type Config struct {
 
 	insecure bool
 
+	diags diag.Diagnostics
+
 	client *morpheus.Client
 }
 
@@ -47,20 +59,14 @@ func (c *Config) Client() (*morpheus.Client, diag.Diagnostics) {
 
 	var diags diag.Diagnostics
 
-	if !c.insecure {
-		diags = append(diags, diag.Diagnostic{
-			Severity: diag.Warning,
-			Summary:  sslCertErrorMsg,
-		})
-	}
-
 	if c.client == nil {
 		var client *morpheus.Client
 		if c.insecure {
 			client = morpheus.NewClient(c.Url, morpheus.WithDebug(debug), morpheus.Insecure())
 		} else {
-			client = morpheus.NewClient(c.Url, morpheus.WithDebug(debug))
+			client = morpheus.NewClient(c.Url, morpheus.WithDebug(debug), morpheus.WithErrCallbackFunc(certErrCallback))
 		}
+
 		// should validate url here too, and maybe ping it
 		// logging with access token or username and password?
 
