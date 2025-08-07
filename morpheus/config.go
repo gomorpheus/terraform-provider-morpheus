@@ -21,7 +21,7 @@ provider "morpheus" {
 	.
 	.
 	.
-	insecure = true <-- set to true to ignore SSL certificate errors
+	insecure = true <-- set to true to disable certificate verification
 }
 `
 
