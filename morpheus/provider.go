@@ -50,6 +50,14 @@ func Provider() *schema.Provider {
 				DefaultFunc:   schema.EnvDefaultFunc("MORPHEUS_API_PASSWORD", nil),
 				ConflictsWith: []string{"access_token"},
 			},
+
+			// defaults to false
+			"insecure": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Description: `Allow the provider to disable certificate verification. If omitted, default value is "false".`,
+				DefaultFunc: schema.EnvDefaultFunc("MORPHEUS_INSECURE", false),
+			},
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
@@ -256,7 +264,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 		TenantSubdomain: d.Get("tenant_subdomain").(string),
 		Username:        d.Get("username").(string),
 		Password:        d.Get("password").(string),
-		//Insecure:                d.Get("insecure").(bool), //.(bool),
+		insecure:        d.Get("insecure").(bool),
 	}
 	return config.Client()
 }
