@@ -52,7 +52,7 @@ type Config struct {
 }
 
 func (c *Config) Client() (*morpheus.Client, diag.Diagnostics) {
-	
+
 	debug := logging.IsDebugOrHigher() && os.Getenv("MORPHEUS_API_HTTPTRACE") == "true"
 
 	if c.client == nil {
