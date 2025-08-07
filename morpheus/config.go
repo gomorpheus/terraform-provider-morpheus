@@ -48,8 +48,6 @@ type Config struct {
 
 	insecure bool
 
-	diags diag.Diagnostics
-
 	client *morpheus.Client
 }
 
