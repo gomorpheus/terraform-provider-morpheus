@@ -4,6 +4,7 @@ go 1.22.7
 toolchain go1.24.1
 
 require (
+	github.com/davecgh/go-spew v1.1.1
 	github.com/gomorpheus/morpheus-go-sdk v0.5.3
 	github.com/hashicorp/go-cty v1.4.1-0.20200414143053-d3edf31b6320
 	github.com/hashicorp/terraform-plugin-docs v0.21.0
@@ -11,7 +12,6 @@ require (
 )
 
 require (
-	github.com/davecgh/go-spew v1.1.1
 	github.com/BurntSushi/toml v1.2.1 // indirect
 	github.com/Kunde21/markdownfmt/v3 v3.1.0 // indirect
 	github.com/Masterminds/goutils v1.1.1 // indirect
