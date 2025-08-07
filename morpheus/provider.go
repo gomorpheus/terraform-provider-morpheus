@@ -55,9 +55,7 @@ func Provider() *schema.Provider {
 			"insecure": {
 				Type:     schema.TypeBool,
 				Optional: true,
-				Description: "Explicitly allow the provider to perform " +
-					"\"insecure\" SSL requests. If omitted, " +
-					"default value is `false`",
+				Description: "Allow the provider to disable certificate verification. If omitted, default value is "false".",
 				DefaultFunc: schema.EnvDefaultFunc("MORPHEUS_INSECURE", false),
 			},
 		},
