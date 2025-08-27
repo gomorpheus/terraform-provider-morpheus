@@ -60,6 +60,8 @@ github.com/golang/protobuf v1.5.4 h1:i7eJL8qZTpSEXOPTxNKhASYpMn+8e5Q6AdndVa1dWek
 github.com/golang/protobuf v1.5.4/go.mod h1:lnTiLA8Wa4RWRcIUkrtSVa5nRhsEGBg48fD6rSs7xps=
 github.com/gomorpheus/morpheus-go-sdk v0.5.3 h1:2boLae5iKAIWctCiuaLCtbYSNdNNYz4ztshv2rUF05g=
 github.com/gomorpheus/morpheus-go-sdk v0.5.3/go.mod h1:xVE9JlpQ6qxTr7mXad5MlzxLKvavIJ/cHcN1up7RikY=
+github.com/gomorpheus/morpheus-go-sdk v0.6.0 h1:u6qJnMYExAJKapLbMXXalFtzuTiUP1dkH80YQfK2Ya4=
+github.com/gomorpheus/morpheus-go-sdk v0.6.0/go.mod h1:xVE9JlpQ6qxTr7mXad5MlzxLKvavIJ/cHcN1up7RikY=
 github.com/google/go-cmp v0.3.1/go.mod h1:8QqcDgzrUqlUb/G2PQTWiueGozuR1884gddMywk6iLU=
 github.com/google/go-cmp v0.5.5/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
 github.com/google/go-cmp v0.6.0 h1:ofyhxvXcZhMsU5ulbFiLKl/XBFqE1GSq7atu8tAmTRI=
