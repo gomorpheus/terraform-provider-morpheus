@@ -11,6 +11,13 @@ The Morpheus provider is used to interact with the resources supported by [Morph
 
 Use the navigation to the left to read about the available resources.
 
+!> Previous versions of this provider had Morpheus SSL cert checking disabled with no
+option to enable it. We've added the option to enable SSL cert checking by
+setting the `secure` argument to `true` or by setting the `MORPHEUS_API_SECURE` environment
+variable to `true`. The default value is `false` to maintain backwards compatibility.
+We recommend enabling SSL cert checking in production environments.  A warning message will
+be displayed if SSL cert checking is disabled.
+
 ## Authentication
 
 The Morpheus provider supports a number of different methods for authenticating to Morpheus:

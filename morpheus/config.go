@@ -1,6 +1,8 @@
 package morpheus
 
 import (
+	"crypto/x509"
+	"errors"
 	"fmt"
 	"os"
 
@@ -27,12 +29,61 @@ type Config struct {
 	client *morpheus.Client
 }
 
+const sslCertErrorMsg = `
+You have enabled SSL certificate verification, but the certificate presented by
+the Morpheus server is not trusted. This could be due to a self-signed
+certificate or an internal certificate authority.
+
+We recommend fixing the certificate issue. If you need to bypass this check,
+proceed with caution and understand the security implications of doing so. You can
+disable certificate verification by either setting the provider argument
+"secure = false" in your provider configuration or by setting the environment
+variable MORPHEUS_API_SECURE to false.
+provider "morpheus" {
+	url = "https://..."
+	.
+	.
+	.
+	secure = false <-- set to false to disable certificate verification
+}
+`
+
+func certErrCallback(err error) error {
+	var certErr x509.UnknownAuthorityError
+	if errors.As(err, &certErr) {
+		return errors.New(certErr.Error() + sslCertErrorMsg)
+	}
+	return nil
+}
+
 func (c *Config) Client() (*morpheus.Client, diag.Diagnostics) {
 
 	debug := logging.IsDebugOrHigher() && os.Getenv("MORPHEUS_API_HTTPTRACE") == "true"
+	diags := diag.Diagnostics{}
 
 	if c.client == nil {
-		client := morpheus.NewClient(c.Url, morpheus.WithDebug(debug))
+		var client *morpheus.Client
+		if c.Insecure {
+			client = morpheus.NewClient(c.Url, morpheus.WithDebug(debug), morpheus.Insecure())
+			diags = append(diags, diag.Diagnostic{
+				Severity: diag.Warning,
+				Summary:  "SSL Certificate Verification Disabled",
+				Detail: `
+SSL certificate verification is disabled. To enable verification, set "secure = true" in your
+provider configuration or set environment variable MORPHEUS_API_SECURE to true.
+provider "morpheus" {
+	url = "https://..."
+	.
+	.
+	.
+	secure = true <-- set to true to enable certificate verification
+}
+`,
+			})
+		} else {
+			client = morpheus.NewClient(c.Url, morpheus.WithDebug(debug), morpheus.WithErrCallbackFunc(certErrCallback))
+		}
+
 		// should validate url here too, and maybe ping it
 		// logging with access token or username and password?
 		if c.Username != "" {
@@ -48,5 +99,6 @@ func (c *Config) Client() (*morpheus.Client, diag.Diagnostics) {
 		}
 		c.client = client
 	}
-	return c.client, nil
+
+	return c.client, diags
 }
