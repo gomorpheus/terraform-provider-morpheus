@@ -22,6 +22,11 @@ func dataSourceMorpheusAnsibleTowerJobTemplate() *schema.Resource {
 				Computed:      true,
 				ConflictsWith: []string{"name"},
 			},
+			"ansible_tower_integration_id": {
+				Type:        schema.TypeInt,
+				Description: "The ID of the ansible tower integration",
+				Required:    true,
+			},
 			"name": {
 				Type:          schema.TypeString,
 				Description:   "The name of the ansible tower job template",
@@ -40,12 +45,17 @@ func dataSourceMorpheusAnsibleTowerJobTemplateRead(ctx context.Context, d *schem
 
 	name := d.Get("name").(string)
 	value := d.Get("id")
+	ansibleTowerIntegrationId := d.Get("ansible_tower_integration_id").(string)
 
 	// lookup by name if we do not have an value yet
 	var resp *morpheus.Response
 	var err error
 
-	resp, err = client.GetOptionSource("ansibleTowerJobTemplate", &morpheus.Request{})
+	resp, err = client.GetOptionSource("ansibleTowerJobTemplate", &morpheus.Request{
+		QueryParams: map[string]string{
+			"ansibleTowerIntegrationId": ansibleTowerIntegrationId,
+		},
+	})
 	if err != nil {
 		if resp != nil && resp.StatusCode == 404 {
 			log.Printf("API 404: %s - %v", resp, err)
