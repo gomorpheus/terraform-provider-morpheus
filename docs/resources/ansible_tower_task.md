@@ -12,12 +12,13 @@ Provides a Morpheus vRealize Orchestrator (vRO) task resource
 ## Example Usage
 
 ```terraform
-data "morpheus_ansible_tower_job_template" "example_ansible_tower_job_template" {
-  name = "Demo Job Template"
-}
-
 data "morpheus_integration" "tf_example_ansible_tower_integration" {
   name = "Demo Ansible Tower"
+}
+
+data "morpheus_ansible_tower_job_template" "example_ansible_tower_job_template" {
+  ansible_tower_integration_id = data.morpheus_integration.tf_example_ansible_tower_integration.id
+  name                         = "Demo Job Template"
 }
 
 data "morpheus_ansible_tower_inventory" "example_ansible_tower_inventory" {
