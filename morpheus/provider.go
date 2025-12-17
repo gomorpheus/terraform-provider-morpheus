@@ -86,6 +86,7 @@ func Provider() *schema.Provider {
 			"morpheus_cluster_layout":                        resourceClusterLayout(),
 			"morpheus_cluster_package":                       resourceClusterPackage(),
 			"morpheus_cluster_resource_name_policy":          resourceClusterResourceNamePolicy(),
+			"morpheus_conditional_workflow_task":		      resourceConditionalWorkflowTask(),
 			"morpheus_contact":                               resourceContact(),
 			"morpheus_credential":                            resourceCredential(),
 			"morpheus_cypher_access_policy":                  resourceCypherAccessPolicy(),
