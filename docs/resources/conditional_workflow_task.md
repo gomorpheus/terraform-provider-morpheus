@@ -14,20 +14,20 @@ Provides a Morpheus conditional workflow task resource
 
 ```terraform
 data "morpheus_workflow" "example_if_workflow" {
-  name = "If Workflow"
+  name = "Example If Workflow"
 }
 
 data "morpheus_workflow" "example_else_workflow" {
-  name = "Else Workflow"
+  name = "Example Else Workflow"
 }
 
-resource "morpheus_conditional_workflow_task" "tfexample_conditional_workflow" {
+resource "morpheus_nested_workflow_task" "tfexample_nested_workflow" {
   name                           = "tfexample_conditional_workflow"
   code                           = "tfexample_conditional_workflow"
   labels                         = ["demo", "terraform"]
-  conditional_script             = "return Math.round(Date.now() / 1000) % 2 == 0"
-  if_operational_workflow_id     = data.morpheus_workflow.example_if_workflow.id
-  else_operational_workflow_id   = data.morpheus_workflow.example_else_workflow.id
+  conditional_script             = "return Math.round(Date.now() / 1000) % 2 == 0;"
+  if_operational_workflow_name   = resource.morpheus_workflow.example_if_workflow.name
+  else_operational_workflow_name = resource.morpheus_workflow.example_else_workflow.name
 }
 ```
 
@@ -43,8 +43,8 @@ resource "morpheus_conditional_workflow_task" "tfexample_conditional_workflow" {
 - `allow_custom_config` (Boolean) Custom configuration data to pass during the execution of the shell script
 - `code` (String) The code of the conditional workflow task
 - `conditional_script` (String) The JS conditional script to run
-- `else_operational_workflow_id` (Number) The ID of the workflow on false
-- `if_operational_workflow_id` (Number) The ID of the workflow on true
+- `else_operational_workflow_name` (String) The name of the workflow on false
+- `if_operational_workflow_name` (String) The name of the workflow on true
 - `labels` (Set of String) The organization labels associated with the task (Only supported on Morpheus 5.5.3 or higher)
 - `retry_count` (Number) The number of times to retry the task if there is a failure
 - `retry_delay_seconds` (Number) The number of seconds to wait between retry attempts

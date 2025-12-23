@@ -48,15 +48,15 @@ func resourceConditionalWorkflowTask() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 			},
-			"if_operational_workflow_id": {
-				Type:        schema.TypeInt,
-				Description: "The ID of the workflow on true",
+			"if_operational_workflow_name": {
+				Type:        schema.TypeString,
+				Description: "The name of the workflow on true",
 				Optional:    true,
 				Computed:    true,
 			},
-			"else_operational_workflow_id": {
-				Type:        schema.TypeInt,
-				Description: "The ID of the workflow on false",
+			"else_operational_workflow_name": {
+				Type:        schema.TypeString,
+				Description: "The name of the workflow on false",
 				Optional:    true,
 				Computed:    true,
 			},
@@ -104,9 +104,9 @@ func resourceConditionalWorkflowTaskCreate(ctx context.Context, d *schema.Resour
 	}
 
 	taskOptions := map[string]interface{}{
-		"conditionalScript": 	     d.Get("conditional_script").(string),
-		"ifOperationalWorkflowId":   d.Get("if_operational_workflow_id").(int),
-		"elseOperationalWorkflowId": d.Get("else_operational_workflow_id").(int),
+		"conditionalScript": 	       d.Get("conditional_script").(string),
+		"ifOperationalWorkflowName":   d.Get("if_operational_workflow_name").(string),
+		"elseOperationalWorkflowName": d.Get("else_operational_workflow_name").(string),
 	}
 
 	labelsPayload := make([]string, 0)
@@ -192,8 +192,8 @@ func resourceConditionalWorkflowTaskRead(ctx context.Context, d *schema.Resource
 	d.Set("labels", conditionalWorkflowTask.Labels)
 	d.Set("execute_target", conditionalWorkflowTask.ExecuteTarget)
 	d.Set("conditional_script", conditionalWorkflowTask.TaskOptions.ConditionalScript)
-	d.Set("if_operational_workflow_id", conditionalWorkflowTask.TaskOptions.IfOperationalWorkflowId)
-	d.Set("else_operational_workflow_id", conditionalWorkflowTask.TaskOptions.ElseOperationalWorkflowId)
+	d.Set("if_operational_workflow_name", conditionalWorkflowTask.TaskOptions.IfOperationalWorkflowName)
+	d.Set("else_operational_workflow_name", conditionalWorkflowTask.TaskOptions.ElseOperationalWorkflowName)
 	d.Set("retryable", conditionalWorkflowTask.Retryable)
 	d.Set("retry_count", conditionalWorkflowTask.RetryCount)
 	d.Set("retry_delay_seconds", conditionalWorkflowTask.RetryDelaySeconds)
@@ -212,8 +212,8 @@ func resourceConditionalWorkflowTaskUpdate(ctx context.Context, d *schema.Resour
 
 	taskOptions := map[string]interface{}{
 		"conditionalScript": 	     d.Get("conditional_script").(string),
-		"ifOperationalWorkflowId":   d.Get("if_operational_workflow_id").(int),
-		"elseOperationalWorkflowId": d.Get("else_operational_workflow_id").(int),
+		"ifOperationalWorkflowName":   d.Get("if_operational_workflow_name").(string),
+		"elseOperationalWorkflowName": d.Get("else_operational_workflow_name").(string),
 	}
 
 	labelsPayload := make([]string, 0)
