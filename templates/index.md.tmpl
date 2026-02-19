@@ -15,10 +15,10 @@ supported provider to the new officially supported HPE provider.<br><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; legacy Morpheus provider during this transition. However, please note that all new<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; features and significant improvements will be implemented exclusively in HPE. Changes<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; will not be backported.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;- **Feature Parity**: As of V1.0.0 the HPE provider achieved full feature parity with the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;- **Feature Parity**: As of V1.0.0 the [HPE](https://registry.terraform.io/providers/HPE/hpe/latest) provider achieved full feature parity with the<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Morpheus provider, ensuring a smooth transition for your infrastructure.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;- **Migration Path**: We strongly encourage all users to begin migrating. Please refer to<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; our Migration Guide for step-by-step instructions.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; our [Migration Guide](https://registry.terraform.io/providers/HPE/hpe/latest/docs) for step-by-step instructions.
 
 The Morpheus provider is used to interact with the resources supported by [Morpheus Cloud Management Platform (CMP)](https://morpheusdata.com/). The provider needs to be configured with the proper credentials before it can be used.
 
