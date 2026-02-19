@@ -7,8 +7,8 @@ The Morpheus provider is officially deprecated and will reach End-of-Life (EOL) 
 To provide a more robust and feature-rich experience, we are transitioning all development from this community supported provider to the new officially supported HPE provider.
 
 - **Maintenance Policy**: We will continue to review new Issues and Pull Requests for the legacy Morpheus provider during this transition. However, please note that all new features and significant improvements will be implemented exclusively in HPE. Changes will not be backported.
-- **Feature Parity**: As of V1.0.0 the HPE provider achieved full feature parity with the Morpheus provider, ensuring a smooth transition for your infrastructure.
-- **Migration Path**: We strongly encourage all users to begin migrating. Please refer to our Migration Guide for step-by-step instructions.
+- **Feature Parity**: As of V1.0.0 the [HPE](https://registry.terraform.io/providers/HPE/hpe/latest) provider achieved full feature parity with the Morpheus provider, ensuring a smooth transition for your infrastructure.
+- **Migration Path**: We strongly encourage all users to begin migrating. Please refer to our [Migration Guide](https://registry.terraform.io/providers/HPE/hpe/latest/docs) for step-by-step instructions.
 
 
 
